@@ -1,21 +1,29 @@
 # Feuille de route de P3
 
-## Première version distribuable
+## Première distribution autonome
 
-Le paquet de base doit permettre d’installer P3 sur un serveur vierge avec le moteur, les composants indispensables et un thème neutre par défaut.
+Le paquet de base comprend le moteur, les composants indispensables et un thème neutre par défaut. Il doit permettre d’installer P3 sur un serveur vierge.
 
-- [x] Valider la suite de tests sur PHP 8.2, 8.3 et 8.4.
-- [x] Effectuer un premier essai d’installation neuve. Cet essai a révélé l’ancien titre proposé et le nom SQLite imposé.
-- [ ] Intégrer le titre P3 dans l’installateur après validation de la PR nº 2.
-- [ ] Permettre de générer ou de saisir le nom de la base SQLite à l’installation. Enregistrer le nom validé dans la configuration et le résoudre de manière cohérente dans le moteur et les outils de maintenance. Conserver le chemin historique pour les installations déjà configurées.
-- [ ] Refaire une installation neuve depuis le paquet, puis vérifier la connexion administrateur, la publication d’un article et son affichage public.
-- [ ] Tester une mise à jour sur une copie existante, avec contrôle de la conservation des données et de la restauration.
-- [ ] Vérifier les ressources, licences et fichiers inclus dans l’archive avant publication.
+### Acquis
+
+- [x] Suite automatisée validée sur PHP 8.2, 8.3 et 8.4.
+- [x] Premier essai d’installation neuve. Il a révélé deux points corrigés depuis.
+- [x] Titre P3 proposé par l’installateur ([PR nº 2](https://github.com/portix1/P3/pull/2)).
+- [x] Nom SQLite saisi ou généré à l’installation. P3 conserve le chemin historique pour les sites existants ([PR nº 4](https://github.com/portix1/P3/pull/4)).
+
+### Ordre des prochains travaux
+
+1. **Préparer une archive candidate.** Définir les composants livrés et vérifier les ressources et leurs licences. Contrôler que l’archive ne contient ni base, ni configuration privée, ni médias d’une installation.
+2. **Tester l’installation depuis cette archive.** Sur un serveur vierge, vérifier les prérequis, les permissions, le formulaire et les deux modes de nommage SQLite. Se connecter comme administrateur, publier un article et ouvrir sa page publique. Vérifier les guides fournis au fil de cet essai.
+3. **Tester une mise à jour sur une copie existante.** Vérifier la conservation des contenus, comptes, réglages et URL. Tester la sauvegarde et la restauration, y compris avec un nom SQLite personnalisé.
+4. **Préparer la publication.** Vérifier que l’archive testée correspond au code validé et consigner les conditions d’installation et de mise à jour.
 
 ## Distribution des extensions
 
+Après validation du paquet de base :
+
 1. Préparer le catalogue des versions et les archives vérifiées du moteur, des modules et des thèmes.
 2. Préparer le lanceur PHP qui permet de choisir les composants et de les installer.
-3. Ajouter ensuite la détection et l’installation des mises à jour depuis l’administration.
+3. Ajouter la détection et l’installation des mises à jour depuis l’administration.
 
-Le dépôt P3 sert à préparer et valider le CMS. Le déploiement sur Univers Guitare suit son propre cycle.
+Le déploiement sur Univers Guitare suit son propre cycle.
