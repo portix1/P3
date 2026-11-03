@@ -615,3 +615,6 @@ $_LANG['extension_updates_failed'] = 'The check failed. Reload the page and try 
 
 $_LANG['dashboard_update_one'] = '%d update available';
 $_LANG['dashboard_update_many'] = '%d updates available';
+
+$_LANG['dashboard_updates_none'] = 'No updates available';
+$_LANG['dashboard_updates_unavailable'] = 'Update check unavailable';

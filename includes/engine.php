@@ -236,8 +236,13 @@ if ($canAccessAdmin && $route === 'Admin') {
                 $count = count($updates[$kind] ?? []);
                 $template->set('admin_' . $kind . '_updates', $count > 0
                     ? sprintf($translator->text($count === 1 ? 'dashboard_update_one' : 'dashboard_update_many'), $count)
-                    : '');
+                    : ($isAdmin ? $translator->text(isset($_SESSION['p3_update_catalogue']['json'])
+                        ? 'dashboard_updates_none' : 'dashboard_updates_unavailable') : ''));
             }
+            $template->set('admin_core_status', $isAdmin && $coreUpdate === ''
+                ? $translator->text(($_SESSION['p3_core_release']['version'] ?? '') !== ''
+                    ? 'dashboard_updates_none' : 'dashboard_updates_unavailable')
+                : '');
             $template->set('extension_updates_download', $translator->text('extension_updates_download'));
             $template->set('admin_core_update', $coreUpdate);
             $template->set('admin_module_count', (string) $visibleModuleCount);

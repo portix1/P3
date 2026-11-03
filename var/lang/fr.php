@@ -615,3 +615,6 @@ $_LANG['extension_updates_failed'] = 'La vérification a échoué. Rechargez la 
 
 $_LANG['dashboard_update_one'] = '%d mise à jour disponible';
 $_LANG['dashboard_update_many'] = '%d mises à jour disponibles';
+
+$_LANG['dashboard_updates_none'] = 'Aucune mise à jour disponible';
+$_LANG['dashboard_updates_unavailable'] = 'Vérification indisponible';

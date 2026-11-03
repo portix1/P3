@@ -23,6 +23,7 @@
         <h2>{{ dashboard_portix_version }}</h2>
         <p>{{ dashboard_current_installation }}</p>
         {% if admin_core_update %}<p><a href="https://github.com/portix1/P3/releases/latest">{{ extension_updates_download }} {{ admin_core_update }}</a></p>{% endif %}
+        {% if admin_core_status %}<p>{{ admin_core_status }}</p>{% endif %}
     </article>
     {% if admin_theme_updates %}
     <article class="metric-card">
