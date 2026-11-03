@@ -1,6 +1,7 @@
 # P3 — CMS PHP modulaire
 
-**Version de l’archive source :** `0.8.01-beta1-preview5`  
+**Version de travail du dépôt :** `0.8.1` (aucune release publiée à ce stade)  
+**Archive source historique :** `0.8.01-beta1-preview5`  
 **Licence du projet :** `GPL-3.0-or-later`
 
 ## État de cette copie

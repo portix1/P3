@@ -5,7 +5,7 @@
   "version": "0.1.7",
   "kind": "theme",
   "contract": "1",
-  "p3_min": "0.8.01-beta1-preview5",
+  "p3_min": "0.8.1",
   "p3_max": null,
   "php_min": "8.2",
   "requires": [
