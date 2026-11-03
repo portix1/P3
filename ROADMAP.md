@@ -15,6 +15,8 @@ Le paquet de base comprend le moteur, les composants indispensables et un thème
 - [x] Installation de l’archive candidate confirmée sur le serveur de test.
 - [x] Restauration testée sur une copie de l’archive avec un nom SQLite personnalisé. Articles, identifiants, URL, compte et configuration ont été comparés avant et après.
 
+- [x] Mise à jour de 0.8.01-rc1 vers 0.8.1 sur une installation de test sous PHP 8.4. Sauvegarde préalable, conservation des articles, comptes, slugs et réglages, maintien du fichier SQLite historique et intégrité SQLite contrôlés.
+
 ### Ordre des prochains travaux
 
 1. **Préparer une archive candidate.** Définir les composants livrés et vérifier les ressources et leurs licences. Contrôler que l’archive ne contient ni base, ni configuration privée, ni médias d’une installation.
