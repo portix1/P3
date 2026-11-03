@@ -122,6 +122,7 @@ try {
         'downloads_list_current', 'downloads_listing', 'downloads_message',
         'downloads_new_current', 'downloads_status_draft_selected',
         'downloads_status_published_selected', 'downloads_title_value',
+        'insights_confirmed_pages', 'insights_unconfirmed_pages', 'insights_previous_audience_note',
         'insights_analytics_days', 'insights_application_days', 'insights_audit_current',
         'insights_audit_days', 'insights_bots', 'insights_dashboard_current',
         'insights_measurement_note', 'insights_legacy_note', 'insights_days', 'insights_has_visits', 'insights_logs_current',
