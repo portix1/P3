@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "packages": [
+    {
+      "kind": "module",
+      "id": "articles",
+      "name": "Articles",
+      "version": "1.4.6",
+      "file": "P3-articles-1.4.6.zip",
+      "sha256": "bd025ac0318a0aeb3f073bd9c09c49b362050dec90c0390b5870cc98220f5be8",
+      "p3_min": "0.8.1",
+      "php_min": "8.2",
+      "tested_on": {
+        "p3": "0.8.1",
+        "php": "8.4"
+      }
+    },
+    {
+      "kind": "theme",
+      "id": "six-cordes-ux-clair",
+      "name": "Six Cordes UX Clair",
+      "version": "0.1.7",
+      "file": "P3-six-cordes-ux-clair-0.1.7.zip",
+      "sha256": "30bf3f16f5a1d7c816d3fa53c0b329a289de1539aea20c4137f454d4d892d8ac",
+      "requires": [
+        "shared"
+      ],
+      "p3_min": "0.8.1",
+      "php_min": "8.2",
+      "tested_on": {
+        "p3": "0.8.1",
+        "php": "8.4"
+      }
+    }
+  ]
+}
