@@ -9,6 +9,7 @@ use RuntimeException;
 final class SiteConfiguration
 {
     private const DEFAULTS = [
+        'database_file' => 'portix2.sqlite',
         'lang' => 'fr',
         'template' => 'modern',
         'defaultpage' => 'news',
@@ -57,6 +58,21 @@ final class SiteConfiguration
         }
 
         return new self($file, $values);
+    }
+
+    public static function databaseRelativePath(string $filename): string
+    {
+        if (preg_match('/\A[A-Za-z0-9][A-Za-z0-9_-]{0,63}\.sqlite\z/', $filename) !== 1
+            || preg_match('/\A(?:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])\.sqlite\z/i', $filename) === 1) {
+            throw new RuntimeException('Nom de fichier SQLite invalide.');
+        }
+
+        return 'database/' . $filename;
+    }
+
+    public function databasePath(): string
+    {
+        return self::databaseRelativePath((string) $this->get('database_file'));
     }
 
     public function isInstalled(): bool

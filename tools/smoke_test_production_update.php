@@ -23,15 +23,15 @@ try {
             throw new RuntimeException('Impossible de préparer le site de test : ' . $directory);
         }
     }
-    file_put_contents($temporaryRoot . '/var/sys/config.json', "{}\n");
+    file_put_contents($temporaryRoot . '/var/sys/config.json', "{\"database_file\":\"atelier-test.sqlite\"}\n");
     file_put_contents($temporaryRoot . '/var/sys/contact.json', "{\"recipient_name\":\"Test\"}\n");
     file_put_contents($temporaryRoot . '/var/uploads/images/test.webp', 'image-test');
     file_put_contents($temporaryRoot . '/var/private/downloads/test.bin', 'download-test');
 
     if (!in_array('sqlite', PDO::getAvailableDrivers(), true)) {
-        file_put_contents($temporaryRoot . '/database/portix2.sqlite', 'sqlite-placeholder');
+        file_put_contents($temporaryRoot . '/database/atelier-test.sqlite', 'sqlite-placeholder');
     } else {
-        $pdo = new PDO('sqlite:' . $temporaryRoot . '/database/portix2.sqlite', null, null, [
+        $pdo = new PDO('sqlite:' . $temporaryRoot . '/database/atelier-test.sqlite', null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ]);
         $pdo->exec('CREATE TABLE proof (value TEXT NOT NULL)');

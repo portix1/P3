@@ -10,7 +10,7 @@ use RuntimeException;
 
 final class Bootstrap
 {
-    public static function boot(string $root): Application
+    public static function boot(string $root, ?string $installationDatabase = null): Application
     {
         if (PHP_VERSION_ID < 80200) {
             throw new RuntimeException('P3 nécessite PHP 8.2 ou plus récent.');
@@ -31,7 +31,13 @@ final class Bootstrap
             self::startSession($root, $request);
         }
 
-        $database = new Database($root . '/database/portix2.sqlite');
+        if ($installationDatabase !== null && $configuration->isInstalled()) {
+            throw new RuntimeException('P3 est déjà configuré.');
+        }
+        $relativePath = $installationDatabase === null
+            ? $configuration->databasePath()
+            : SiteConfiguration::databaseRelativePath($installationDatabase);
+        $database = new Database($root . '/' . $relativePath);
         return new Application($root, $request, $configuration, $database);
     }
 
@@ -57,6 +63,9 @@ final class Bootstrap
             return true;
         }
 
+        if (basename($request->path()) === 'install.php') {
+            return true;
+        }
         $route = strtolower($request->routeName());
         foreach (['admin', 'login', 'disconnect', 'personnal', 'forgot-password', 'reset-password', 'contact'] as $prefix) {
             if ($route === $prefix || str_starts_with($route, $prefix . '-')) {

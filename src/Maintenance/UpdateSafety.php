@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Portix\Maintenance;
 
 use PDO;
+use Portix\Configuration\SiteConfiguration;
 use RuntimeException;
 use Throwable;
 
@@ -16,7 +17,7 @@ final class UpdateSafety
     public static function assertInstalled(string $root): void
     {
         $root = rtrim($root, '/\\');
-        foreach (['var/sys/config.json', 'database/portix2.sqlite'] as $relative) {
+        foreach (['var/sys/config.json', SiteConfiguration::load($root)->databasePath()] as $relative) {
             $path = $root . '/' . $relative;
             if (!is_file($path)) {
                 throw new RuntimeException(
@@ -141,7 +142,7 @@ final class UpdateSafety
 
         try {
             self::snapshotDatabase(
-                $root . '/database/portix2.sqlite',
+                $root . '/' . SiteConfiguration::load($root)->databasePath(),
                 $partial . '/database/portix2.sqlite'
             );
             self::copyTree($root . '/var/sys', $partial . '/var/sys', ['maintenance.lock']);
@@ -210,7 +211,7 @@ final class UpdateSafety
         [$partial,$final]=self::uniqueBackupPaths($parent,gmdate('Ymd-His').'-rollback');
         if(!mkdir($partial,0700,true)&&!is_dir($partial)) throw new RuntimeException('Impossible de préparer le point de restauration.');
         try {
-            self::snapshotDatabase($root.'/database/portix2.sqlite',$partial.'/database/portix2.sqlite');
+            self::snapshotDatabase($root.'/'.SiteConfiguration::load($root)->databasePath(),$partial.'/database/portix2.sqlite');
             self::copyTree($root.'/var/sys',$partial.'/var/sys',['maintenance.lock']);
             self::copyTree($root.'/var/uploads/images',$partial.'/var/uploads/images');
             self::copyTree($root.'/var/private',$partial.'/var/private',['update-backups']);
@@ -233,13 +234,18 @@ final class UpdateSafety
         $source=$root.'/'.self::BACKUP_DIRECTORY.'/'.$name; $manifestFile=$source.'/manifest.json';
         if(!is_file($manifestFile)) throw new RuntimeException('Point de restauration introuvable.');
         $manifest=json_decode((string)file_get_contents($manifestFile),true); if(!is_array($manifest)||($manifest['kind']??'')!=='rollback_point') throw new RuntimeException('Ce dossier n’est pas un point de restauration complet.');
+        $activeConfig = SiteConfiguration::load($root);
+        $backupConfig = SiteConfiguration::load($source);
+        if (!$backupConfig->isInstalled() || $backupConfig->databasePath() !== $activeConfig->databasePath()) {
+            throw new RuntimeException('Ce point de restauration correspond à un autre fichier SQLite.');
+        }
         self::createRollbackPoint($root); // point de secours avant restauration
         self::enableMaintenance($root,(string)($manifest['previous_version']??'rollback'));
         try {
             foreach(['bootstrap','includes','src','tools'] as $dir){ self::removeTree($root.'/'.$dir); self::copyTree($source.'/application/'.$dir,$root.'/'.$dir); }
             foreach(['admin','editor','lang','modules','templates'] as $dir){ self::removeTree($root.'/var/'.$dir); self::copyTree($source.'/application/var/'.$dir,$root.'/var/'.$dir); }
             foreach(($manifest['root_files']??[]) as $entry){ if(!is_string($entry)||basename($entry)!==$entry) continue; if(is_file($source.'/application/'.$entry)&&!copy($source.'/application/'.$entry,$root.'/'.$entry)) throw new RuntimeException('Impossible de restaurer '.$entry); }
-            if(!copy($source.'/database/portix2.sqlite',$root.'/database/portix2.sqlite')) throw new RuntimeException('Impossible de restaurer la base SQLite.');
+            if(!copy($source.'/database/portix2.sqlite',$root.'/'.SiteConfiguration::load($root)->databasePath())) throw new RuntimeException('Impossible de restaurer la base SQLite.');
             self::replaceTree($source.'/var/sys',$root.'/var/sys',['maintenance.lock']);
             self::replaceTree($source.'/var/uploads/images',$root.'/var/uploads/images');
             self::replaceTree($source.'/var/private',$root.'/var/private',['update-backups']);
@@ -329,8 +335,8 @@ final class UpdateSafety
 
     private static function estimateBackupBytes(string $root): int
     {
-        $total = is_file($root . '/database/portix2.sqlite')
-            ? (int) filesize($root . '/database/portix2.sqlite')
+        $total = is_file($root . '/' . SiteConfiguration::load($root)->databasePath())
+            ? (int) filesize($root . '/' . SiteConfiguration::load($root)->databasePath())
             : 0;
         foreach ([
             [$root . '/var/sys', ['maintenance.lock']],
