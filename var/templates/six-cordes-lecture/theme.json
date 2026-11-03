@@ -1,26 +1,26 @@
 {
-    "schema": 1,
-    "id": "six-cordes-lecture",
-    "name": "Six Cordes — Lecture UX",
-    "version": "0.1.10",
-    "kind": "theme",
-    "contract": "1",
-    "p3_min": "0.8.1",
-    "p3_max": null,
-    "php_min": "8.2",
-    "requires": [
-        "shared"
-    ],
-    "variant_of": "six-cordes",
-    "files": {
-        "assets/contour.svg": "be6c13f989769bb35bf7a4127aa595131155b14e24a5044fcdfed3d518a070d2",
-        "assets/guitar-header.webp": "3919f356c3fe352bf36bc3439003c3f3cf1a913bc0cd46eceaf87e498ab43b4b",
-        "assets/reading-mobile.css": "04985c7c463f7a2c9a73b21d7dce2c8acd5ee290f0bc1c017e6c1a51334e3ee3",
-        "assets/reading-mobile.js": "73de9e91f41d2ffbce4eb53aad0c7dae3733a9b25cef2d82ff02be5d0849e49d",
-        "index.tpl": "d3b50139dcede5ba8c78b59168a687b54681a5914ed9dac27abd5e3ab0c515b0",
-        "menu.tpl": "fc67a5c1ed0920c9488c8f080564c7434f2689e46049fb352aa9909fd3817536",
-        "not-found.tpl": "30efe61e1389b6611855d026424add73cd4a1875de3b454a2defec765e9e5cb6",
-        "style.css": "a0f30c4cf8f0e193c23797cb25ed750e615da82d5aa15ce9f234e51ac6c0c275",
-        "style.min.css": "b5b7c7d7c8bc3cdea95c39ac7562563cb718533c96a93fb70319b51208c5f362"
-    }
+  "schema": 1,
+  "id": "six-cordes-lecture",
+  "name": "Six Cordes — Lecture UX",
+  "version": "0.1.10",
+  "kind": "theme",
+  "contract": "1",
+  "p3_min": "0.8.1",
+  "p3_max": null,
+  "php_min": "8.2",
+  "requires": [
+    "shared"
+  ],
+  "variant_of": "six-cordes",
+  "files": {
+    "assets/contour.svg": "be6c13f989769bb35bf7a4127aa595131155b14e24a5044fcdfed3d518a070d2",
+    "assets/guitar-header.webp": "3919f356c3fe352bf36bc3439003c3f3cf1a913bc0cd46eceaf87e498ab43b4b",
+    "assets/reading-mobile.css": "04985c7c463f7a2c9a73b21d7dce2c8acd5ee290f0bc1c017e6c1a51334e3ee3",
+    "assets/reading-mobile.js": "73de9e91f41d2ffbce4eb53aad0c7dae3733a9b25cef2d82ff02be5d0849e49d",
+    "index.tpl": "dc648d69350c8bf1fddd10e5c4661edfc6c56ff30102708024f719643ad7c6ea",
+    "menu.tpl": "fc67a5c1ed0920c9488c8f080564c7434f2689e46049fb352aa9909fd3817536",
+    "not-found.tpl": "30efe61e1389b6611855d026424add73cd4a1875de3b454a2defec765e9e5cb6",
+    "style.css": "dc91c677a03b7bd71c2dde0132198d5a4cc64cb4cbed0fe368b75c050d875705",
+    "style.min.css": "afa1b56a731a631b234063b96264a85ab8ee7c6d93189ccbabecda90b9040fc1"
+  }
 }

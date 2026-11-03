@@ -52,7 +52,6 @@ body.theme-six-cordes .site-footer.six-cordes-footer a:focus-visible { color: #f
 }
 </style>
 <script src="var/editor/portix-ui.js?v={{ asset_version }}" defer></script>
-<link rel="stylesheet" href="var/templates/six-cordes-lecture/assets/reading-mobile.css?v=0.1.10" media="screen" />
 <script src="var/templates/six-cordes-lecture/assets/reading-mobile.js?v=0.1.10" defer></script>
 </head>
 <body class="theme-six-cordes">
