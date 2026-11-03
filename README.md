@@ -21,7 +21,7 @@ PHP 8.2 ou plus récent ; PDO SQLite, extensions utilisées par P3 (notamment `m
 - Test d’installation à partir de zéro et vérification des permissions du serveur.
 - Vérification des fichiers de configuration et des dépendances sous licence tierce.
 - Audit des thèmes propres à Univers Guitare et des droits sur les illustrations / polices / ressources incluses.
-- Nettoyage des messages de versions/patchs encore présents dans les contenus initiaux de `src/Installation/default-content.json` ; le travail doit préserver la documentation fonctionnelle souhaitée.
+- Contrôler que les guides livrés dans `src/Installation/default-content.json` restent conformes au fonctionnement effectivement testé du CMS.
 - Vérification de l’installateur, dont le nom du fichier SQLite est actuellement fixé dans le code. Le choix d’un nom personnalisé ou généré aléatoirement reste à développer dans un chantier séparé.
 - Confirmation des tests unitaires et fonctionnels avec l’environnement de développement adapté.
 
