@@ -15,7 +15,7 @@ $settings = PortixSettings::read('contact', [
 ]);
 $systemSenderName = trim((string) ($CONFIG['mail_sender_name'] ?? ''));
 if ($systemSenderName === '') {
-    $systemSenderName = (string) ($CONFIG['title'] ?? 'Portix 3');
+    $systemSenderName = (string) ($CONFIG['title'] ?? 'P3');
 }
 $systemSenderEmail = trim((string) ($CONFIG['mail_sender_email'] ?? ''));
 $view = (string) ($argument[2] ?? 'inbox');

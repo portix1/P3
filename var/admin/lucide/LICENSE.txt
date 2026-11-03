@@ -1,6 +1,6 @@
 Lucide / Feather icon notice
 
-Portix 3 uses a small local subset of icon shapes derived from Lucide and Feather.
+P3 uses a small local subset of icon shapes derived from Lucide and Feather.
 
 Lucide portions — ISC License
 Copyright (c) Lucide Icons and Contributors

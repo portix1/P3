@@ -27,13 +27,13 @@ final class DefaultContentSeeder
     {
         $json = @file_get_contents($this->contentFile);
         if (!is_string($json) || $json === '') {
-            throw new RuntimeException('Le contenu initial de Portix 3 est introuvable.');
+            throw new RuntimeException('Le contenu initial de P3 est introuvable.');
         }
 
         try {
             $content = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
-            throw new RuntimeException('Le contenu initial de Portix 3 est invalide.', 0, $exception);
+            throw new RuntimeException('Le contenu initial de P3 est invalide.', 0, $exception);
         }
 
         if (!is_array($content)
@@ -41,7 +41,7 @@ final class DefaultContentSeeder
             || !is_array($content['categories'])
             || !is_array($content['articles'])
             || !is_array($content['news'])) {
-            throw new RuntimeException('La structure du contenu initial de Portix 3 est invalide.');
+            throw new RuntimeException('La structure du contenu initial de P3 est invalide.');
         }
 
         return [

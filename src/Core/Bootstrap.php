@@ -13,7 +13,7 @@ final class Bootstrap
     public static function boot(string $root): Application
     {
         if (PHP_VERSION_ID < 80200) {
-            throw new RuntimeException('Portix 3 nécessite PHP 8.2 ou plus récent.');
+            throw new RuntimeException('P3 nécessite PHP 8.2 ou plus récent.');
         }
 
         $root = rtrim($root, '/\\');

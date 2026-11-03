@@ -339,8 +339,8 @@ final class Application
         $message = $debug
             ? $error->getMessage() . "\n\n" . $error->getTraceAsString()
             : 'Une erreur interne est survenue. Consultez le journal PHP.';
-        echo '<!doctype html><html lang="fr"><meta charset="utf-8"><title>Erreur Portix 3</title>'
-            . '<body><h1>Erreur Portix 3</h1><pre>'
+        echo '<!doctype html><html lang="fr"><meta charset="utf-8"><title>Erreur P3</title>'
+            . '<body><h1>Erreur P3</h1><pre>'
             . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             . '</pre></body></html>';
     }

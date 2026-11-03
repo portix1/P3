@@ -1,5 +1,5 @@
 /*
- * Portix 3 — sous-ensemble local d'icônes Lucide / Feather.
+ * P3 — sous-ensemble local d'icônes Lucide / Feather.
  * SVG décoratifs : aria-hidden="true".
  */
 (() => {

@@ -39,11 +39,11 @@ final class UpdateSafety
         }
         $json = file_get_contents($file);
         if ($json === false) {
-            throw new RuntimeException('Impossible de lire la version installée de Portix 3.');
+            throw new RuntimeException('Impossible de lire la version installée de P3.');
         }
         $data = json_decode($json, true);
         if (!is_array($data) || !isset($data['version']) || !is_string($data['version'])) {
-            throw new RuntimeException('Le fichier de suivi de version Portix 3 est invalide.');
+            throw new RuntimeException('Le fichier de suivi de version P3 est invalide.');
         }
         $version = trim($data['version']);
         return $version === '' ? null : $version;
@@ -55,7 +55,7 @@ final class UpdateSafety
         $file = $root . '/' . self::RELEASE_STATE;
         $directory = dirname($file);
         if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) {
-            throw new RuntimeException('Impossible de préparer le suivi de version Portix 3.');
+            throw new RuntimeException('Impossible de préparer le suivi de version P3.');
         }
         $payload = json_encode([
             'version' => $version,
@@ -63,18 +63,18 @@ final class UpdateSafety
             'recorded_at' => gmdate('c'),
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if (!is_string($payload)) {
-            throw new RuntimeException('Impossible de sérialiser le suivi de version Portix 3.');
+            throw new RuntimeException('Impossible de sérialiser le suivi de version P3.');
         }
         $temporary = $file . '.tmp-' . bin2hex(random_bytes(6));
         if (file_put_contents($temporary, $payload . "\n", LOCK_EX) === false) {
-            throw new RuntimeException('Impossible d’écrire le suivi de version Portix 3.');
+            throw new RuntimeException('Impossible d’écrire le suivi de version P3.');
         }
         $previous = null;
         if (DIRECTORY_SEPARATOR === '\\' && is_file($file)) {
             $previous = $file . '.bak-' . bin2hex(random_bytes(6));
             if (!rename($file, $previous)) {
                 @unlink($temporary);
-                throw new RuntimeException('Impossible de préparer le remplacement du suivi de version Portix 3.');
+                throw new RuntimeException('Impossible de préparer le remplacement du suivi de version P3.');
             }
         }
         if (!rename($temporary, $file)) {
@@ -82,7 +82,7 @@ final class UpdateSafety
                 @rename($previous, $file);
             }
             @unlink($temporary);
-            throw new RuntimeException('Impossible d’activer le suivi de version Portix 3.');
+            throw new RuntimeException('Impossible d’activer le suivi de version P3.');
         }
         if ($previous !== null) {
             @unlink($previous);

@@ -12,7 +12,7 @@ final class SiteConfiguration
         'lang' => 'fr',
         'template' => 'modern',
         'defaultpage' => 'news',
-        'title' => 'Portix 3',
+        'title' => 'P3',
         'site_url' => '',
         'site_description' => '',
         'seo_home_title' => '',

@@ -21,7 +21,7 @@ final class Migrator
         if (!$this->tableExists($pdo, 'schema_migrations')) {
             if ($this->hasApplicationTables($pdo)) {
                 throw new RuntimeException(
-                    'Cette base précède le socle SQLite natif de Portix 3 0.7.x et n’est plus prise en charge.'
+                    'Cette base précède le socle SQLite natif de P3 0.7.x et n’est plus prise en charge.'
                 );
             }
             $this->database->transaction(function (PDO $pdo): void {

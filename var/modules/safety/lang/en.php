@@ -1,7 +1,7 @@
 <?php
 $_LANG = array_merge($_LANG, [
     'safety_title' => 'Content protection',
-    'safety_intro' => 'Revisions, trash and Portix 3 restore points.',
+    'safety_intro' => 'Revisions, trash and P3 restore points.',
     'safety_nav' => 'safety_nav',
     'safety_trash' => 'Trash',
     'safety_revisions' => 'Revisions',

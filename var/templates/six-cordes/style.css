@@ -900,7 +900,7 @@ body.theme-signature {
 .theme-signature .content-card { background-image: url("assets/contour.svg"); background-position: right top; background-size: min(56vw,860px) auto; background-repeat:no-repeat; }
 
 
-/* Portix 3 0.7.2 article table of contents */
+/* Sommaire des articles P3 */
 .article-toc { display: grid; gap: .35rem; }
 .article-toc h2, .article-toc h3, .article-toc h4, .article-toc h5, .article-toc h6 { margin-bottom: .15rem; }
 .article-toc ul { margin-top: 0; }

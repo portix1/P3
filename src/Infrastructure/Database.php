@@ -21,7 +21,7 @@ final class Database
             return $this->connection;
         }
         if (!in_array('sqlite', PDO::getAvailableDrivers(), true)) {
-            throw new RuntimeException('Portix 3 nécessite l’extension PDO_SQLITE.');
+            throw new RuntimeException('P3 nécessite l’extension PDO_SQLITE.');
         }
 
         $directory = dirname($this->file);

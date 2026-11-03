@@ -145,7 +145,7 @@ if ($authRoute === 'forgot-password') {
                         $senderName = trim((string) ($CONFIG['mail_sender_name'] ?? ''));
                         $senderEmail = trim((string) ($CONFIG['mail_sender_email'] ?? ''));
                         if ($senderName === '') {
-                            $senderName = (string) ($CONFIG['title'] ?? 'Portix 3');
+                            $senderName = (string) ($CONFIG['title'] ?? 'P3');
                         }
                         if ($siteUrl !== '' && $senderEmail !== '') {
                             $token = bin2hex(random_bytes(32));
@@ -158,7 +158,7 @@ if ($authRoute === 'forgot-password') {
                                 . $translator->text('password_reset_mail_ignore');
                             $sent = (new NativeMailTransport())->send(
                                 $candidate->email(),
-                                (string) ($CONFIG['title'] ?? 'Portix 3') . ' — '
+                                (string) ($CONFIG['title'] ?? 'P3') . ' — '
                                     . $translator->text('password_reset_mail_subject'),
                                 $body,
                                 $senderName,

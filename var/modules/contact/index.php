@@ -13,7 +13,7 @@ $settings = PortixSettings::read('contact', [
 ]);
 $systemSenderName = trim((string) ($CONFIG['mail_sender_name'] ?? ''));
 if ($systemSenderName === '') {
-    $systemSenderName = (string) ($CONFIG['title'] ?? 'Portix 3');
+    $systemSenderName = (string) ($CONFIG['title'] ?? 'P3');
 }
 $systemSenderEmail = trim((string) ($CONFIG['mail_sender_email'] ?? ''));
 $pageMetadata->define($translator->text('contact'), $translator->text('contact_public_intro'), 'contact.html');

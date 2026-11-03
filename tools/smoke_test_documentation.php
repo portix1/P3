@@ -44,7 +44,7 @@ try {
     }
 
     documentationRequires($articles, 'presentation', [
-        'Portix 3 0.7.09',
+        '<h2>P3</h2>',
         'PHP 8.2',
         'SQLite',
         'Actualités',
@@ -65,14 +65,14 @@ try {
     ]);
 
     documentationRequires($articles, 'administration-de-portix-3', [
-        'Contact 1.1.1',
+        'Gestion des conversations depuis la liste',
         'Corbeille et conservation',
         '30 jours',
         'deux colonnes',
         'Actualités épinglées',
-        'Search 1.0.3',
-        'Affiliation 1.1.2',
-        'confirmations de suppression',
+        'Le module Recherche',
+        'L’administration du module Affiliation',
+        'Confirmations de suppression en affiliation',
         'Métadonnées propres à l’accueil',
         'Version des modules',
         'Thèmes versionnés et installation ZIP',
@@ -83,7 +83,7 @@ try {
     documentationRequires($articles, 'guide-du-redacteur-portix-3', [
         'palette image et collage en cellule',
         'sans scinder le tableau',
-        'Éditeur visuel Snow — RC11', 'Images et légendes attachées', 'Déplacer par glisser-déposer',
+        'Éditeur visuel Snow', 'Images et légendes attachées', 'Déplacer par glisser-déposer',
         'Palette du tableau', 'Ligne horizontale',
         'Épingler une actualité',
         'Coller un tableau dans l’éditeur',
