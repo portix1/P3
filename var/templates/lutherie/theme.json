@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "id": "lutherie",
+  "name": "Lutherie",
+  "version": "0.1.0",
+  "kind": "theme",
+  "contract": "1",
+  "p3_min": "0.8.1",
+  "p3_max": null,
+  "php_min": "8.2",
+  "requires": [
+    "shared"
+  ],
+  "variant_of": null,
+  "files": {
+    "assets/fret-lines.svg": "45a259646730bdd5be15955d0ba91fab70533bce7d7cac1a3e52d575f55db3d8",
+    "assets/paper-grain.svg": "ce0df770814fdeb108f7da68c9541f17cac109466b43e944677a7abea3c77ebc",
+    "assets/wood.svg": "31a258f3869fb1a8d4135932b30d18313ab39acb29892c0a96bb6a9d1c9d44f6",
+    "index.tpl": "b684c401122ec06ef970a89eb236b16aa1c0ed6197a6537c7712e0eef7e622ea",
+    "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+    "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+    "style.css": "67de80cdc6beac29d17c0b7e40e8af4b1140ede4e545a723657c8a480e784276",
+    "style.min.css": "8b4baed082ded30e25aa760179de7ad3b332fb362797aa1de87e9dd35c860261"
+  }
+}

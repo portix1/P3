@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "id": "cupertino",
+  "name": "Cupertino",
+  "version": "0.1.0",
+  "kind": "theme",
+  "contract": "1",
+  "p3_min": "0.8.1",
+  "p3_max": null,
+  "php_min": "8.2",
+  "requires": [
+    "shared"
+  ],
+  "variant_of": null,
+  "files": {
+    "index.tpl": "fba8f000a61ff8f547f3295f24d51276fcf4eb1b23e80a6c0fd3105c3f82755b",
+    "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+    "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+    "style.css": "cf1d282116534320f91c7eac92fbc7666977d4e57781012bd283cc2d8b45d851",
+    "style.min.css": "378fdb883875bacd2edf8eea5c9496d2b6fbed4420827bd9a1738d73996f0ccc"
+  }
+}

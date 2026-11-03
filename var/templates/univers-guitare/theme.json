@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "id": "univers-guitare",
+  "name": "Univers Guitare",
+  "version": "0.1.0",
+  "kind": "theme",
+  "contract": "1",
+  "p3_min": "0.8.1",
+  "p3_max": null,
+  "php_min": "8.2",
+  "requires": [
+    "shared"
+  ],
+  "variant_of": null,
+  "files": {
+    "assets/guitar-fretboard-header-0703.webp": "431874cb35e4653dab0d44c70d694773456d0e8840bb8ef9ed3b47df4351372e",
+    "index.tpl": "09874af29f02ac786e6cf795972a18dad0d1be21cd1492a3b2cf742a481055ae",
+    "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+    "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+    "style.css": "97ae3dcf53485e1a1253802024347dab5ff25cc844a6e92c5237c3298c203675",
+    "style.min.css": "61419546e0c78297ced0ff6afbcf261389082f85f43f8ebcdce0eea17ed65a24"
+  }
+}
