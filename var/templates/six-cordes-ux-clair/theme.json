@@ -1,31 +1,31 @@
 {
-    "schema": 1,
-    "id": "six-cordes-ux-clair",
-    "name": "Six Cordes UX Clair",
-    "version": "0.1.7",
-    "kind": "theme",
-    "contract": "1",
-    "p3_min": "0.8.1",
-    "p3_max": null,
-    "php_min": "8.2",
-    "requires": [
-        "shared"
-    ],
-    "variant_of": "six-cordes-lecture",
-    "files": {
-        "assets/clair-ui.js": "aadc7f0d4b20aba00af00c16bc4f33a17c7f98b62287246101e280227f701bc0",
-        "assets/contour.svg": "be6c13f989769bb35bf7a4127aa595131155b14e24a5044fcdfed3d518a070d2",
-        "assets/fonts/licenses.css": "899d634bcec0db142d68fb6cbc5fb2b3ba6bef8efd6951781c9696f854b048de",
-        "assets/fonts/literata-latin-ext-wght-normal.woff2": "46792f7cd10b28fb512161caeaaa11b049feb2221ccaa72bb4d4ccc286199155",
-        "assets/fonts/literata-latin-wght-normal.woff2": "9adbeac5b167fe5ad6c49d9e29aa0c76e2f1bb3b46bf4ebf12a9eca7d3525384",
-        "assets/fonts/work-sans-latin-ext-wght-normal.woff2": "2aa17fc7b072e46652e84bbe3dbba9ec57cdea320d89e8c951ed7cf3218c300b",
-        "assets/fonts/work-sans-latin-wght-normal.woff2": "1dd49afc07fb2231b2ff686cbf007725fb2742271bb1f28ebd98f22a0d817343",
-        "assets/guitar-header.webp": "3919f356c3fe352bf36bc3439003c3f3cf1a913bc0cd46eceaf87e498ab43b4b",
-        "assets/reading-mobile.js": "73de9e91f41d2ffbce4eb53aad0c7dae3733a9b25cef2d82ff02be5d0849e49d",
-        "index.tpl": "4a0817753ad7f87c3bd752dc9ea5a3f55a79ca52736aacb4f3ae5edc7270eb32",
-        "menu.tpl": "fc67a5c1ed0920c9488c8f080564c7434f2689e46049fb352aa9909fd3817536",
-        "not-found.tpl": "30efe61e1389b6611855d026424add73cd4a1875de3b454a2defec765e9e5cb6",
-        "style.css": "298c6f74bf029de744f4d130790db7099ff005e895660e492fbe27196779c263",
-        "style.min.css": "72de11ef97d46762791eea2cfd0322d0813c528839833ae00deb982cec5c59b1"
-    }
+  "schema": 1,
+  "id": "six-cordes-ux-clair",
+  "name": "Six Cordes UX Clair",
+  "version": "0.1.7",
+  "kind": "theme",
+  "contract": "1",
+  "p3_min": "0.8.1",
+  "p3_max": null,
+  "php_min": "8.2",
+  "requires": [
+    "shared"
+  ],
+  "variant_of": "six-cordes-lecture",
+  "files": {
+    "assets/clair-ui.js": "23b7f11faa5ad860d69f679879fce08c89defea7fe21d18668ed41d256fc2cac",
+    "assets/contour.svg": "be6c13f989769bb35bf7a4127aa595131155b14e24a5044fcdfed3d518a070d2",
+    "assets/fonts/licenses.css": "5cb0d477b4b0b53f5e117e48940b3502f24c3ad649952a90d93befa2f0b0f0db",
+    "assets/fonts/literata-latin-ext-wght-normal.woff2": "46792f7cd10b28fb512161caeaaa11b049feb2221ccaa72bb4d4ccc286199155",
+    "assets/fonts/literata-latin-wght-normal.woff2": "9adbeac5b167fe5ad6c49d9e29aa0c76e2f1bb3b46bf4ebf12a9eca7d3525384",
+    "assets/fonts/work-sans-latin-ext-wght-normal.woff2": "2aa17fc7b072e46652e84bbe3dbba9ec57cdea320d89e8c951ed7cf3218c300b",
+    "assets/fonts/work-sans-latin-wght-normal.woff2": "1dd49afc07fb2231b2ff686cbf007725fb2742271bb1f28ebd98f22a0d817343",
+    "assets/guitar-header.webp": "3919f356c3fe352bf36bc3439003c3f3cf1a913bc0cd46eceaf87e498ab43b4b",
+    "assets/reading-mobile.js": "7f8fda50320c5c0cb4f39201b2aa5f1312228d5dc062dc1938b44d8399356558",
+    "index.tpl": "ddb2736badcde96de5633a8e115b7b216dc54eabdf985c505edbad7283bb7887",
+    "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+    "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+    "style.css": "6c50e1ad0b598f0c754c65bc65d6d70e50193818554a4827fe7acb9fe0046443",
+    "style.min.css": "72de11ef97d46762791eea2cfd0322d0813c528839833ae00deb982cec5c59b1"
+  }
 }
