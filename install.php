@@ -24,6 +24,8 @@ if ($preflight['ok']) {
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $installLock = null;
+        $createdDatabase = null;
         try {
             $preflight = (new Portix\Installation\EnvironmentPreflight(__DIR__))->run();
             if (!$preflight['ok']) {
@@ -50,6 +52,17 @@ if ($preflight['ok']) {
                 );
             }
 
+            $installLock = fopen(__DIR__ . '/var/sys/install.lock', 'c');
+            if ($installLock === false || !flock($installLock, LOCK_EX)) {
+                throw new RuntimeException('Impossible de verrouiller l’installation.');
+            }
+            if ($application->configuration()->isInstalled()) {
+                throw new RuntimeException('P3 est déjà configuré.');
+            }
+
+            if (is_link('./database/portix2.sqlite')) {
+                throw new RuntimeException('Lien symbolique inattendu pour la base existante.');
+            }
             if (is_file('./database/portix2.sqlite')) {
                 $existingDatabase = $application->database()->connection();
                 $hasCurrentUsersTable = $existingDatabase->query(
@@ -62,6 +75,25 @@ if ($preflight['ok']) {
                     );
                 }
             }
+
+            unset($existingDatabase);
+            $application->database()->close();
+
+            $name = $_POST['database_name'] ?? '';
+            if (!is_string($name)) {
+                throw new RuntimeException('Nom de fichier SQLite invalide.');
+            }
+            $name = trim($name);
+            $filename = ($name === '' ? 'db_' . bin2hex(random_bytes(8)) : $name) . '.sqlite';
+            $relativePath = Portix\Configuration\SiteConfiguration::databaseRelativePath($filename);
+            $databasePath = __DIR__ . '/' . $relativePath;
+            $reservation = @fopen($databasePath, 'x');
+            if ($reservation === false) {
+                throw new RuntimeException('Impossible de créer cette base. Choisissez un autre nom ou vérifiez les permissions.');
+            }
+            fclose($reservation);
+            $createdDatabase = $databasePath;
+            $application = Portix\Core\Bootstrap::boot(__DIR__, $filename);
 
             $application->migrate();
             (new Portix\Module\BundledModuleSynchronizer(
@@ -92,17 +124,6 @@ if ($preflight['ok']) {
                 (new Portix\Installation\DefaultContentSeeder())->seed($pdo, $pseudo, $now);
             });
 
-            $application->configuration()->replace([
-                'lang' => 'fr',
-                'template' => 'modern',
-                'defaultpage' => 'news',
-                'title' => $title,
-                'site_url' => '',
-                'site_description' => '',
-                'mail_sender_name' => $title,
-                'mail_sender_email' => '',
-                'debug' => false,
-            ]);
             PortixSettings::write('contact', [
                 'recipient_name' => $pseudo,
                 'notification_email' => $email,
@@ -124,10 +145,36 @@ if ($preflight['ok']) {
                 'install'
             );
 
+            $application->configuration()->replace([
+                'database_file' => $filename,
+                'lang' => 'fr',
+                'template' => 'modern',
+                'defaultpage' => 'news',
+                'title' => $title,
+                'site_url' => '',
+                'site_description' => '',
+                'mail_sender_name' => $title,
+                'mail_sender_email' => '',
+                'debug' => false,
+            ]);
             unset($_SESSION['install_token']);
             $installed = true;
         } catch (Throwable $exception) {
             $error = $exception->getMessage();
+        } finally {
+            if ($createdDatabase !== null && !$application->configuration()->isInstalled()) {
+                unset($repositories);
+                $application->database()->close();
+                foreach (['', '-wal', '-shm', '-journal'] as $suffix) {
+                    if (is_file($createdDatabase . $suffix)) {
+                        unlink($createdDatabase . $suffix);
+                    }
+                }
+            }
+            if (is_resource($installLock)) {
+                flock($installLock, LOCK_UN);
+                fclose($installLock);
+            }
         }
     }
 }
@@ -203,6 +250,13 @@ function installCheckRow(array $check): string
 <label>Titre
 <input name="title" required maxlength="150" value="<?= installEscape($_POST['title'] ?? 'Portix 3') ?>">
 </label>
+</fieldset>
+<fieldset>
+<legend>Base SQLite</legend>
+<label>Nom de la base (facultatif)
+<input name="database_name" maxlength="64" pattern="[A-Za-z0-9][A-Za-z0-9_\-]{0,63}" aria-describedby="database-name-help" value="<?= installEscape($_POST['database_name'] ?? '') ?>">
+</label>
+<p id="database-name-help">Laissez vide pour générer un nom. Utilisez des lettres, des chiffres, des tirets ou des soulignements. L’extension .sqlite est ajoutée automatiquement.</p>
 </fieldset>
 <fieldset>
 <legend>Administrateur</legend>

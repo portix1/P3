@@ -36,6 +36,23 @@ try {
         }
     }
 
+    $configuration = Portix\Configuration\SiteConfiguration::load($root);
+    if ($configuration->databasePath() !== 'database/portix2.sqlite') {
+        throw new RuntimeException('Le chemin historique doit rester utilisable.');
+    }
+    $configuration->replace(['database_file' => 'atelier-test.sqlite']);
+    if (Portix\Configuration\SiteConfiguration::load($root)->databasePath() !== 'database/atelier-test.sqlite') {
+        throw new RuntimeException('Le nom SQLite doit être conservé après relecture.');
+    }
+    foreach (['../atelier.sqlite', 'autre/atelier.sqlite', 'CON.sqlite', 'atelier.php'] as $invalidName) {
+        try {
+            Portix\Configuration\SiteConfiguration::databaseRelativePath($invalidName);
+        } catch (RuntimeException) {
+            continue;
+        }
+        throw new RuntimeException('Le nom SQLite invalide a été accepté.');
+    }
+
     $blockedRoot = $root . DIRECTORY_SEPARATOR . 'blocked';
     if (!mkdir($blockedRoot, 0770, true) && !is_dir($blockedRoot)) {
         throw new RuntimeException('Impossible de préparer le cas d’échec.');
