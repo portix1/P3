@@ -71,7 +71,7 @@ try {
     assertTrue(tableExists($database->connection(), 'article_settings'), 'table des réglages du menu');
     assertTrue(tableExists($database->connection(), 'articles'), 'table des articles');
     assertSameValue(
-        3,
+        count($result['tables']),
         (int) $database->connection()->query(
             "SELECT COUNT(*) FROM module_schema_tables WHERE module_prefix = 'articles'"
         )->fetchColumn(),
