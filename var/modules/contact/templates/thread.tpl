@@ -1,0 +1,5 @@
+<header class="content-heading"><h1>{{ contact_thread_subject }}</h1><p>{{ contact_thread_private }}</p></header>
+{% if contact_thread_error %}<p class="error-box" role="alert">{{ contact_thread_error }}</p>{% endif %}
+{% if contact_thread_notice %}<p class="status-message" role="status">{{ contact_thread_notice }}</p>{% endif %}
+{% for publicmessage in publicmessage %}<section class="contact-public-message"><h2>{{ publicmessage.author }}</h2><time>{{ publicmessage.date }}</time><p>{{ publicmessage.body }}</p></section>{% endfor %}
+<form method="post" action="contact-discussion-{{ contact_thread_token }}.html" class="settings-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input type="hidden" name="contact_thread_reply" value="1" /><label class="contact-honeypot" aria-hidden="true">{{ contact_website }}<input type="text" name="website" tabindex="-1" autocomplete="off" /></label><label><span>{{ yourmessage }}</span><textarea name="message" rows="8" maxlength="20000" required></textarea></label><button type="submit" title="{{ contact_send }}">{{ contact_send }}</button></form>

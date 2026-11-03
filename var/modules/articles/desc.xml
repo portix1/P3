@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modules>
+    <Name>Articles</Name>
+	<Version>1.4.6</Version>
+    <Prefix>articles</Prefix>
+    <Type>module</Type>
+    <Priority>5</Priority>
+    <DefLang>fr</DefLang>
+    <Path>articles</Path>
+    <Enabled>1</Enabled>
+    <AdminAccess>editor</AdminAccess>
+    <SchemaFormat>desc-csv</SchemaFormat>
+    <PublicNavigation>navigation.php</PublicNavigation>
+    <PublicRouteResolver>routes.php</PublicRouteResolver>
+    <PublicSitemap>sitemap.php</PublicSitemap>
+</modules>

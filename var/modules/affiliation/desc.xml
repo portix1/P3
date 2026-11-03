@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modules>
+    <Name>Affiliation</Name>
+    <Prefix>affiliation</Prefix>
+    <Version>1.1.2</Version>
+    <Type>plugin</Type>
+    <Priority>9</Priority>
+    <DefLang>fr</DefLang>
+    <Path>affiliation</Path>
+    <Enabled>1</Enabled>
+    <AdminAccess>admin</AdminAccess>
+    <SchemaFormat>desc-csv</SchemaFormat>
+</modules>

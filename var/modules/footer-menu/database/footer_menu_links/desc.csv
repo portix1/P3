@@ -1,0 +1,7 @@
+id; numeric; notnull; ; ; ; primary; ;
+column_id; numeric; notnull; ; ; index; ; footer_menu_columns.id; cascade
+label; text; notnull; ; ; ; ; ;
+url; text; notnull; ; ; ; ; ;
+position; numeric; notnull; 0; ; index; ; ;
+target_blank; bool; notnull; 0; ; ; ; ;
+enabled; bool; notnull; 1; ; index; ; ;

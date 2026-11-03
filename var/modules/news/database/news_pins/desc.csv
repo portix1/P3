@@ -1,0 +1,2 @@
+news_id; numeric; notnull; ; unique; index; primary; ;
+pinned_at; date; notnull; ; ; index; ; ;

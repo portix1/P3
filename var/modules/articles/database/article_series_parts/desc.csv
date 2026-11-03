@@ -1,0 +1,4 @@
+id; numeric; notnull; ; ; ; primary; ;
+series_id; numeric; notnull; ; ; index; ; article_series.id; cascade
+article_id; numeric; notnull; ; unique; index; ; articles.id; cascade
+position; numeric; notnull; 0; ; index; ; ;

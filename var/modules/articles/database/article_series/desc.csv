@@ -1,0 +1,4 @@
+id; numeric; notnull; ; ; ; primary; ;
+title; text; notnull; ; ; ; ; ;
+description; text; notnull; ; ; ; ; ;
+show_title; bool; notnull; 1; ; ; ; ;

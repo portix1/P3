@@ -1,0 +1,12 @@
+id; numeric; notnull; ; ; ; primary; ;
+public_token; text; notnull; ; unique; index; ; ;
+visitor_name; text; notnull; ; ; index; ; ;
+visitor_email; text; notnull; ; ; index; ; ;
+subject; text; notnull; ; ; ; ; ;
+status; text; notnull; open; ; index; ; ;
+assigned_to; text; notnull; ; ; index; ; ;
+created_at; date; notnull; ; ; index; ; ;
+updated_at; date; notnull; ; ; index; ; ;
+deleted_at; text; ; ; ; index; ; ;
+archived; numeric; notnull; 0; ; index; ; ;
+unread; numeric; notnull; 0; ; index; ; ;

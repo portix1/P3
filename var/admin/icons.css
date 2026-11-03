@@ -1,0 +1,34 @@
+/* Portix 3 — icônes locales du back-office. */
+.portix-admin-icon {
+    width: 1.05em;
+    height: 1.05em;
+    flex: 0 0 auto;
+    vertical-align: -0.15em;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+.button > .portix-admin-icon,
+button > .portix-admin-icon,
+.management-card > .portix-admin-icon,
+.action-grid a > .portix-admin-icon { margin-right: .42rem; }
+
+.management-card > .portix-admin-icon,
+.action-grid a > .portix-admin-icon { width: 1.2rem; height: 1.2rem; }
+
+.management-card,
+.action-grid a { grid-template-columns: auto 1fr; }
+
+.management-card > .portix-admin-icon,
+.action-grid a > .portix-admin-icon {
+    grid-row: 1 / span 2;
+    align-self: center;
+}
+.management-card > strong,
+.management-card > span,
+.action-grid a > strong,
+.action-grid a > span { grid-column: 2; }
+
+.page-heading h1 > .portix-admin-icon { margin-right: .35em; }

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<modules>
+	<Name>
+		Actualités
+	</Name>
+	<Version>1.0.1</Version>
+	<Prefix>
+		news
+	</Prefix>
+	<Type>
+		module
+	</Type>
+	<Priority>
+		4
+	</Priority>
+	<DefLang>
+		fr
+	</DefLang>
+	<Path>
+		news
+	</Path>
+	<Enabled>
+		1
+	</Enabled>
+	<SchemaFormat>desc-csv</SchemaFormat>
+	<PublicSitemap>sitemap.php</PublicSitemap>
+</modules>

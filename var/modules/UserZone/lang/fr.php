@@ -1,0 +1,60 @@
+<?php 
+$_LANG['signin']="S'inscrire";
+$_LANG['pseudo']='Pseudo';
+$_LANG['pswd']="Mot de passe";
+$_LANG['email']="Adresse &eacute;lectronique";
+$_LANG['code']="Veuiller copier le code ci-dessous";
+$_LANG['firstname']="Pr&eacute;nom";
+$_LANG['name']="Nom";
+$_LANG['logout']="D&eacute;connecter";
+$_LANG['hello']="Bonjour";
+$_LANG['usrmgr']="Gestionnaire d'utilisateur";
+$_LANG['modify_personnal']="Modifier mon compte";
+$_LANG['inscription']="Cr&eacute;er un compte utilisateur";
+$_LANG['mustfillallfields'] = "Vous devez remplir tous les champs";
+$_LANG['codedonotmatch'] = "Le code insér&eacute; ne correspond pas";
+$_LANG['passdonotmatch'] = "Les nouveaux mots de passe ne correspond pas";
+$_LANG['usrconfig'] = "Gestion des utilisateurs";
+$_LANG['search'] = "Rechercher";
+$_LANG['usradmin'] = "Administrateur";
+$_LANG['usrredac'] = "R&eacute;dacteur";
+$_LANG['modify'] = "Modifier";
+$_LANG['updateok'] = "Mise à jour réalisée avec succes";
+$_LANG['oldpass'] = 'Ancien mot de passe';
+$_LANG['newpass'] = 'Nouveau mot de passe';
+$_LANG['emptyname'] = 'Le nom ne peut pas être vide';
+$_LANG['emptyfirstname'] = 'Le pr&eacute;nom ne peut pas être vide';
+$_LANG['badpass'] = 'Mauvais mot de passe';
+$_LANG['Numberofusers'] = 'utilisateurs enregistr&eacute;s';
+$_LANG['profile_identity'] = 'Identité';
+$_LANG['profile_change_password'] = 'Changer le mot de passe';
+$_LANG['profile_password_optional'] = 'Laissez ces champs vides pour conserver le mot de passe actuel.';
+$_LANG['profile_confirm_password'] = 'Confirmer le nouveau mot de passe';
+
+$_LANG['login_title'] = 'Connexion';
+$_LANG['login_introduction'] = 'Accès réservé aux utilisateurs autorisés.';
+
+
+$_LANG = array_merge($_LANG, [
+    'password_forgot_link' => 'Mot de passe oublié ?',
+    'password_forgot_title' => 'Mot de passe oublié',
+    'password_forgot_intro' => 'Indiquez l’adresse e-mail associée à votre compte. Si elle correspond à un compte unique, Portix 3 enverra un lien de réinitialisation.',
+    'password_forgot_email' => 'Adresse e-mail',
+    'password_forgot_submit' => 'Envoyer le lien de réinitialisation',
+    'password_forgot_confirmation' => 'Si un compte correspond à cette adresse, un lien de réinitialisation vient d’être envoyé.',
+    'password_forgot_invalid_email' => 'Saisissez une adresse e-mail valide.',
+    'password_reset_title' => 'Nouveau mot de passe',
+    'password_reset_intro' => 'Choisissez un nouveau mot de passe pour votre compte.',
+    'password_reset_new' => 'Nouveau mot de passe',
+    'password_reset_confirm' => 'Confirmer le nouveau mot de passe',
+    'password_reset_submit' => 'Enregistrer le nouveau mot de passe',
+    'password_reset_invalid' => 'Ce lien de réinitialisation est invalide ou a expiré.',
+    'password_reset_requirements' => 'Les mots de passe doivent être identiques et contenir entre 12 et 4 096 caractères.',
+    'password_reset_success' => 'Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.',
+    'password_reset_request_new' => 'Demander un nouveau lien',
+    'password_reset_back_login' => 'Revenir à la connexion',
+    'password_reset_mail_subject' => 'Réinitialisation de votre mot de passe',
+    'password_reset_mail_intro' => 'Une demande de réinitialisation du mot de passe de votre compte a été reçue.',
+    'password_reset_mail_instruction' => 'Utilisez le lien suivant dans l’heure qui vient :',
+    'password_reset_mail_ignore' => 'Si vous n’êtes pas à l’origine de cette demande, ignorez simplement ce message.',
+]);

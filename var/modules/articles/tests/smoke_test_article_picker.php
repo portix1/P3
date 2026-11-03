@@ -1,0 +1,12 @@
+<?php
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'){http_response_code(404);exit;}
+$root=dirname(__DIR__,4);chdir($root);require $root.'/bootstrap/autoload.php';require $root.'/var/modules/articles/src/ArticleRepository.php';require $root.'/var/modules/articles/src/ArticleAdminController.php';require $root.'/includes/class/security.class.php';
+$db=new Portix\Infrastructure\Database(':memory:');(new Portix\Infrastructure\Migrator($db))->migrate();(new Portix\Module\ModuleInstaller($db,new Portix\Repository\ModuleRepository($db->connection())))->installDirectory($root.'/var/modules/articles');$a=new PortixModule\Articles\ArticleRepository($db->connection());$same=$a->createCategory('Même catégorie','same',null);$other=$a->createCategory('Autre catégorie','other',null);$source=$a->createArticle($same,'Article en cours','source','<p>Body</p>','draft','test',null,'2026-01-01');$ids=[];
+for($i=0;$i<121;$i++)$ids[]=$a->createArticle($i<4?$same:$other,$i===0?'Z même catégorie':($i===1?'Électricité et contrôles':sprintf('Article %03d',$i)),'article-'.$i,'<p>Body</p>','published','test',null,'2026-01-01');
+$a->editorial()->saveReading($source,false,[$ids[90],$ids[70]]);
+$_LANG=[];require $root.'/var/lang/fr.php';require $root.'/var/modules/articles/lang/fr.php';$t=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');foreach($_LANG as $k=>$v)$t->set($k,$v);$t->set('asset_version','fixture');$t->set('csrf_token','fixture');$_SERVER['REQUEST_METHOD']='GET';$_POST=[];$u=new Portix\Domain\UserAccount(['pseudo'=>'test','is_admin'=>true,'is_redactor'=>false]);(new PortixModule\Articles\ArticleAdminController($a,$root,new Portix\Support\Translator($_LANG)))->handle($t,['Admin','articles','edit',(string)$source],$u);
+$rows=$t->rows('relationoption');if(count($rows)!==121||$rows[0]['id']!==(string)$ids[90]||$rows[1]['id']!==(string)$ids[70])throw new RuntimeException('selected order');foreach(array_slice($rows,2,4) as $row)if($row['category']!=='Même catégorie')throw new RuntimeException('same category rank');
+$html=$t->render();
+if(!str_contains($html,'data-picker-category-filter')||!str_contains($html,'article-picker.js?v=1.4.2')||!str_contains($html,'data-picker-row'))throw new RuntimeException('compact picker template');
+echo "Article picker: 121 candidates, chosen order retained, same category prioritized, accessible progressive-enhancement template PASS\n";

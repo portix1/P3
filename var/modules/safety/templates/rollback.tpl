@@ -1,0 +1,7 @@
+<header class="page-heading"><p class="eyebrow">{{ safety_title }}</p><h1>{{ safety_rollback }}</h1><p>{{ safety_rollback_help }}</p></header>
+{% include "var/modules/safety/templates/nav.tpl" %}
+{% if safety_message %}<p class="status-message" role="status">{{ safety_message }}</p>{% endif %}
+<form method="post" action="Admin-safety-rollback.html"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="safety_action" value="create_point"><button type="submit">{{ safety_create_point }}</button></form>
+<div class="admin-section table-scroll"><table><caption>{{ safety_rollback }}</caption><thead><tr><th scope="col">{{ safety_point }}</th><th scope="col">{{ safety_previous_version }}</th><th scope="col">{{ safety_date }}</th><th scope="col"></th></tr></thead><tbody>{% for rollbackrow in rollbackrow %}<tr><td>{{ rollbackrow.name }}</td><td>{{ rollbackrow.version }}</td><td>{{ rollbackrow.date }}</td><td><form method="post" action="Admin-safety-rollback.html" data-confirm><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="safety_action" value="restore_point"><input type="hidden" name="name" value="{{ rollbackrow.name }}"><button class="button-danger" type="submit">{{ safety_restore_point }}</button></form></td></tr>{% endfor %}</tbody></table></div>
+{% if safety_has_points == "0" %}<p>{{ safety_no_points }}</p>{% endif %}
+<p class="field-help">{{ safety_restore_point_warning }}</p>

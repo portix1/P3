@@ -1,0 +1,31 @@
+P3 / Portix 3
+SPDX-License-Identifier: GPL-3.0-or-later
+Copyright (C) 2005-2026 Marc
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+The complete license is supplied in COPYING.
+
+PÉRIMÈTRE
+La GPL-3.0-or-later couvre le code propre à P3 et les ressources propres
+au projet livrées avec ce paquet, notamment les modèles et le favicon.
+Les composants tiers conservent leurs licences et mentions respectives :
+voir THIRD-PARTY-NOTICES.txt et les fichiers de licence dans leurs dossiers.
+Cette licence n’accorde aucun droit supplémentaire sur ces composants.
+
+Les articles, photographies, médias, données, thèmes et modules indépendants
+ajoutés par les utilisateurs ne sont pas automatiquement placés sous GPL
+par leur utilisation de P3. Leurs titulaires définissent leurs conditions,
+sous réserve des obligations applicables aux éventuels travaux dérivés.
+Les huit articles et deux actualités initialement fournis comme documentation
+et exemples dans src/Installation/default-content.json font partie du paquet P3.

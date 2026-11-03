@@ -1,0 +1,2 @@
+article_id; numeric; notnull; ; unique; index; ; articles.id; cascade
+toc_enabled; bool; notnull; 0; ; ; ; ;

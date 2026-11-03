@@ -1,0 +1,17 @@
+Options -Indexes
+<FilesMatch "^(?![a-f0-9]{32}\.(?:pdf|zip)$).*$">
+    Require all denied
+</FilesMatch>
+<IfModule mod_mime.c>
+    RemoveHandler .pdf .zip .php .php3 .php4 .php5 .php7 .php8 .phtml .phar
+    AddType application/pdf .pdf
+    AddType application/zip .zip
+</IfModule>
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Disposition "attachment"
+    Header set Cache-Control "no-cache, must-revalidate"
+</IfModule>
+<IfModule mod_expires.c>
+    ExpiresActive Off
+</IfModule>

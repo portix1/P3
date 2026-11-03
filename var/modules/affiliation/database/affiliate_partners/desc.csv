@@ -1,0 +1,7 @@
+id; numeric; notnull; ; ; ; primary; ;
+name; text; notnull; ; ; index; ; ;
+website_url; text; notnull; ; ; ; ; ;
+enabled; bool; notnull; 1; ; index; ; ;
+position; numeric; notnull; 0; ; index; ; ;
+created_at; date; notnull; ; ; ; ; ;
+updated_at; date; notnull; ; ; index; ; ;

@@ -1,0 +1,4 @@
+day; text; notnull; ; unique; index; primary; ;
+page_views; numeric; notnull; 0; ; ; ; ;
+visits_estimated; numeric; notnull; 0; ; ; ; ;
+bot_views; numeric; notnull; 0; ; ; ; ;

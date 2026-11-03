@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "id": "shared",
+  "name": "Ressources communes",
+  "version": "0.1.0",
+  "kind": "shared",
+  "contract": "1",
+  "p3_min": "0.8.01-beta1-preview3",
+  "p3_max": null,
+  "php_min": "8.2",
+  "requires": [],
+  "variant_of": null,
+  "files": {
+    "breadcrumb.tpl": "2617483a12f3158c9c810b4738b4bf2389abb9484dd9a706e44256de01e60f17"
+  }
+}

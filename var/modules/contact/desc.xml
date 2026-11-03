@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<modules>
+	<Name>
+		Contact
+	</Name>
+	<Version>1.1.1</Version>
+	<Prefix>
+		contact
+	</Prefix>
+	<Type>
+		module
+	</Type>
+	<Priority>
+		6
+	</Priority>
+
+	<DefLang>
+		fr
+	</DefLang>
+	<Path>
+		contact
+	</Path>
+	<Enabled>
+		1
+	</Enabled>
+	<AdminAccess>editor</AdminAccess>
+	<SchemaFormat>desc-csv</SchemaFormat>
+	<PublicSitemap>sitemap.php</PublicSitemap>
+</modules>

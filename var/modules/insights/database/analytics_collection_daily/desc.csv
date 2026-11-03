@@ -1,0 +1,3 @@
+day; date; notnull; ; unique; index; primary; ;
+confirmed_pages; numeric; notnull; 0; ; ; ; ;
+unconfirmed_pages; numeric; notnull; 0; ; ; ; ;

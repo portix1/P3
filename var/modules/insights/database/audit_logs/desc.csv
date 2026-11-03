@@ -1,0 +1,7 @@
+id; numeric; notnull; ; ; ; primary; ;
+created_at; date; notnull; ; ; index; ; ;
+actor; text; notnull; ; ; index; ; ;
+action; text; notnull; ; ; index; ; ;
+target; text; notnull; ; ; ; ; ;
+context_json; text; notnull; {}; ; ; ; ;
+request_id; text; notnull; ; ; index; ; ;

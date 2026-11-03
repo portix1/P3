@@ -1,0 +1,31 @@
+<?php
+declare(strict_types=1);
+require dirname(__DIR__) . '/bootstrap/autoload.php';
+$root = dirname(__DIR__);
+$directory = sys_get_temp_dir() . '/p3-register-' . bin2hex(random_bytes(8));
+mkdir($directory);
+$db = new Portix\Infrastructure\Database($directory . '/test.sqlite');
+(new Portix\Infrastructure\Migrator($db))->migrate();
+$pdo = $db->connection();
+$pdo->exec('CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY KEY, title TEXT, body TEXT)');
+$pdo->exec("INSERT INTO articles (id,title,body) VALUES (44,'Test','Contenu à préserver')");
+$pdo->exec("INSERT INTO modules (name,prefix,type,priority,default_language,enabled,path) VALUES ('Test existant','existing','plugin',10,'fr',0,'existing')");
+$pdo->exec("DELETE FROM modules WHERE prefix = 'media'");
+$before = $pdo->query('SELECT * FROM articles ORDER BY id')->fetchAll();
+$other = $pdo->query('SELECT * FROM modules ORDER BY prefix')->fetchAll();
+$make = fn() => new Portix\Core\Application($root, Portix\Http\Request::fromGlobals(), Portix\Configuration\SiteConfiguration::load($root), $db);
+$make()->migrate();
+assert((int)$pdo->query("SELECT enabled FROM modules WHERE prefix='media'")->fetchColumn() === 1);
+assert($pdo->query("SELECT name FROM sqlite_master WHERE name='media_items'")->fetchColumn() === 'media_items');
+assert($pdo->query('SELECT * FROM articles ORDER BY id')->fetchAll() === $before);
+assert($pdo->query("SELECT * FROM modules WHERE prefix != 'media' ORDER BY prefix")->fetchAll() === $other);
+$pdo->exec("UPDATE modules SET enabled=0 WHERE prefix='media'");
+$make()->migrate();
+assert((int)$pdo->query("SELECT enabled FROM modules WHERE prefix='media'")->fetchColumn() === 0);
+echo "PASS startup registers media, creates catalogue, preserves articles and other modules, respects disabling on subsequent startup\n";
+$make = null;
+$pdo = null;
+$db->close();
+unlink($directory . '/test.sqlite');
+foreach (glob($directory . '/*') ?: [] as $temporary) { unlink($temporary); }
+rmdir($directory);

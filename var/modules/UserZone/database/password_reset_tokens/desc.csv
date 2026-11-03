@@ -1,0 +1,5 @@
+id; numeric; notnull; ; ; ; primary; ;
+pseudo; text; notnull; ; ; index; ; ;
+token_hash; text; notnull; ; unique; index; ; ;
+created_at; date; notnull; ; ; index; ; ;
+expires_at; date; notnull; ; ; index; ; ;

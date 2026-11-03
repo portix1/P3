@@ -1,0 +1,3 @@
+id; numeric; notnull; ; ; ; primary; ;
+title; text; notnull; ; ; ; ; ;
+position; numeric; notnull; 0; ; index; ; ;

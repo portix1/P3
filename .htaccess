@@ -1,0 +1,58 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Les données, réglages, journaux, outils et fichiers transférés ne sont
+# jamais servis directement par Apache. Les contrôleurs PHP autorisés les
+# diffusent après validation.
+RewriteRule ^(?:bootstrap|src|includes|database|sessions|tmp|tools|download)(?:/|$) - [F,L,NC]
+RewriteRule ^var/(?:sys|private)(?:/|$) - [F,L,NC]
+RewriteRule ^var/modules/[^/]+/database(?:/|$) - [F,L,NC]
+
+# Seuls les contrôleurs PHP publics connus sont exécutables.
+RewriteRule ^(?:index|install)\.php$ - [L]
+RewriteRule ^var/modules/download/download\.php$ - [L]
+
+# Toute autre URL PHP est envoyée au routeur P3 : elle produit une vraie 404 thémée.\n# Le fichier demandé n'est jamais exécuté.\nRewriteRule ^.*\.(?:phar|phtml|php[0-9]?)$ index.php [L,QSA,NC]
+
+
+# Ces deux réponses restent dynamiques même si un ancien fichier physique est
+# encore présent sur le serveur.
+RewriteRule ^(?:sitemap\.xml|robots\.txt|agents\.txt|agents\.json|llms\.txt|sitemap\.txt|feed\.xml|atom\.xml|feed\.json)$ index.php [L,QSA,NC]
+
+# Les ressources publiques réelles (CSS, images et scripts) sont servies telles quelles.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Portix lit l'URL publique originale dans REQUEST_URI : PATH_INFO est inutile.
+RewriteRule ^[A-Za-z0-9_%~-]+(?:-[A-Za-z0-9_.%~-]+)*\.html$ index.php [L,QSA,NC]
+</IfModule>
+
+# Les URL des CSS et scripts portent une version calculée par Portix. Elles
+# peuvent donc être conservées longtemps sans empêcher la publication d'une
+# nouvelle version. Les images des thèmes et les polices sont également des
+# ressources statiques versionnées par leur nom ou par leur thème.
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType text/css "access plus 1 year"
+ExpiresByType application/javascript "access plus 1 year"
+ExpiresByType text/javascript "access plus 1 year"
+ExpiresByType image/avif "access plus 1 year"
+ExpiresByType image/webp "access plus 1 year"
+ExpiresByType image/png "access plus 1 year"
+ExpiresByType image/jpeg "access plus 1 year"
+ExpiresByType image/gif "access plus 1 year"
+ExpiresByType image/svg+xml "access plus 1 year"
+ExpiresByType image/x-icon "access plus 1 year"
+ExpiresByType font/woff2 "access plus 1 year"
+ExpiresByType font/woff "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+<FilesMatch "\.(?:css|js|avif|webp|png|jpe?g|gif|svg|ico|woff2?)$">
+Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>

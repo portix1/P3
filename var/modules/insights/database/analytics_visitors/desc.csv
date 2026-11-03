@@ -1,0 +1,3 @@
+visitor_key; text; notnull; ; unique; index; primary; ;
+day; date; notnull; ; ; index; ; ;
+expires_at; date; notnull; ; ; index; ; ;

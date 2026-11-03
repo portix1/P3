@@ -1,0 +1,104 @@
+<?php
+declare(strict_types=1);
+if (PHP_SAPI !== 'cli') { http_response_code(403); exit(1); }
+require dirname(__DIR__) . '/bootstrap/autoload.php';
+require dirname(__DIR__) . '/includes/class/security.class.php';
+require dirname(__DIR__) . '/var/modules/articles/src/ArticleRepository.php';
+require dirname(__DIR__) . '/var/modules/articles/src/ArticleAdminController.php';
+require dirname(__DIR__) . '/var/modules/articles/src/ArticleNavigation.php';
+use Portix\Domain\ArticlePermissions as P;
+use Portix\Domain\UserAccount as U;
+function permissionAssert(bool $ok, string $label): void { if (!$ok) { throw new RuntimeException($label); } }
+function permissionUser(array $overrides = [], bool $admin = false): U { return new U(['pseudo'=>'writer', 'is_admin'=>$admin, 'is_redactor'=>true, 'article_permissions'=>json_encode($overrides)]); }
+function permissionRun(): void {
+    $root = dirname(__DIR__); chdir($root);
+    $cats = [['id'=>1,'parent_id'=>null],['id'=>2,'parent_id'=>1],['id'=>3,'parent_id'=>2],['id'=>4,'parent_id'=>null]];
+    $own = ['created_by'=>'writer','category_id'=>2,'status'=>'draft'];
+    $other = array_replace($own,['created_by'=>'admin']);
+    $live = array_replace($own,['status'=>'published']);
+    $u = permissionUser();
+    permissionAssert(P::allows($u,'edit',null,null,$cats), 'default create uncategorized');
+    permissionAssert(P::allows($u,'edit',$own,2,$cats), 'default edit own draft');
+    foreach (['publish','delete'] as $action) { permissionAssert(!P::allows($u,$action,$own,2,$cats),'default deny '.$action); }
+    permissionAssert(!P::allows($u,'edit',$other,2,$cats),'deny other author');
+    permissionAssert(!P::allows($u,'edit',$live,2,$cats),'deny published');
+    $restricted = permissionUser(['all_categories'=>false,'categories'=>[1]]);
+    permissionAssert(!P::allows($restricted,'edit',$own,2,$cats),'children explicit opt in');
+    $restricted = permissionUser(['all_categories'=>false,'categories'=>[1],'include_children'=>true]);
+    permissionAssert(P::allows($restricted,'edit',$own,3,$cats),'recursive descendants and move within scope');
+    permissionAssert(!P::allows($restricted,'edit',$own,4,$cats),'destination outside scope');
+    permissionAssert(!P::allows($restricted,'edit',array_replace($own,['category_id'=>4]),2,$cats),'source outside scope');
+    permissionAssert(!P::allows($restricted,'edit',null,null,$cats),'uncategorized denied');
+    permissionAssert(!P::allows(permissionUser(['all_categories'=>false]),'edit',null,2,$cats),'empty selection denies all');
+    permissionAssert(!P::allows(permissionUser(['all_categories'=>false,'categories'=>[99]]),'edit',null,99,$cats),'deleted category denies');
+    permissionAssert(!P::category(P::decode('{"all_categories":false,"include_children":true}'),5,[['id'=>5,'parent_id'=>6],['id'=>6,'parent_id'=>5]]),'cycle terminates');
+    permissionAssert(P::allows(permissionUser(['edit_others'=>true]),'edit',$other,2,$cats),'grant edit other');
+    permissionAssert(P::allows(permissionUser(['publish'=>true]),'publish',$own,2,$cats),'grant publish');
+    permissionAssert(P::allows(permissionUser(['edit_published'=>true]),'edit',$live,2,$cats),'grant published editing');
+    permissionAssert(P::allows(permissionUser(['delete_own'=>true]),'delete',$own,2,$cats),'grant own deletion');
+    permissionAssert(!P::allows(permissionUser(['delete_own'=>true,'edit_others'=>true]),'delete',$other,2,$cats),'never delete other author');
+    permissionAssert(P::allows(permissionUser([],true),'delete',$other,4,$cats),'admin bypass');
+    permissionAssert(!P::allows(new U(['pseudo'=>'x','is_admin'=>false,'is_redactor'=>false]),'edit',$own,2,$cats),'non writer denied');
+    permissionAssert(!P::decode('{broken')['create'],'corrupt persisted rights fail closed');
+    $db = new Portix\Infrastructure\Database(':memory:');
+    (new Portix\Infrastructure\Migrator($db))->migrate();
+    (new Portix\Infrastructure\Migrator($db))->migrate();
+    $pdo = $db->connection();
+    $repo = new Portix\Repository\UserRepository($pdo);
+    $repo->create('writer','hash','','','',false,true);
+    $repo->saveArticlePermissions('writer',['all_categories'=>false,'categories'=>[1],'include_children'=>true]);
+    permissionAssert($repo->find('writer')->authVersion()===2,'rights invalidate old sessions');
+    permissionAssert($repo->find('writer')->articlePermissions()['categories']===[1],'persisted permissions');
+    $installer = new Portix\Module\ModuleInstaller($db,new Portix\Repository\ModuleRepository($pdo));
+    $installer->installDirectory($root.'/var/modules/articles');
+    $articles = new PortixModule\Articles\ArticleRepository($pdo);
+    $a=$articles->createCategory('Allowed','allowed',null,true,'');
+    $b=$articles->createCategory('Child','child',$a,true,'');
+    $outside=$articles->createCategory('Outside','outside',null,true,'');
+    $now=gmdate('Y-m-d H:i:s');
+    $id=$articles->createArticle($b,'Own','own','<p>Original</p>','draft','writer',null,$now,'','','');
+    $otherId=$articles->createArticle($b,'Other','other','<p>Private</p>','draft','admin',null,$now,'','','');
+    $_LANG=[]; require $root.'/var/lang/fr.php';require $root.'/var/modules/articles/lang/fr.php';
+    $translator=new Portix\Support\Translator($_LANG);
+    $controller=new PortixModule\Articles\ArticleAdminController($articles,$root,$translator);
+    $user=$repo->find('writer');
+    foreach ([['edit',$otherId],['preview',$otherId],['status',$id],['delete',$id],['category','new'],['order']] as $route) {
+        $_SERVER['REQUEST_METHOD']='GET'; $_POST=[]; http_response_code(200);
+        $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');
+        $controller->handle($tpl,array_merge(['Admin','articles'],$route),$user);
+        permissionAssert(http_response_code()===403,'route denied '.implode('/',$route));
+    }
+    $_SESSION=['csrf_token'=>'fixture'];$_SERVER['REQUEST_METHOD']='POST';
+    foreach ([['status'=>'published','category_id'=>$b],['status'=>'draft','category_id'=>$outside]] as $changes) {
+        $_POST=array_replace(['csrf_token'=>'fixture','title'=>'Modified','slug'=>'modified','content'=>'<p>Changed</p>'], $changes);
+        $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');
+        $tpl->set('csrf_token','fixture'); foreach ($_LANG as $key=>$value) { $tpl->set($key,$value); }
+        $controller->handle($tpl,['Admin','articles','edit',(string)$id],$user);
+        permissionAssert($articles->find($id)['title']==='Own','forged POST does not mutate');
+        permissionAssert(str_contains($tpl->render(),'Accès refusé'),'error displayed for forbidden POST');
+    }
+    $_POST=[];$_SERVER['REQUEST_METHOD']='GET';
+    $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');$tpl->set('csrf_token','fixture'); foreach ($_LANG as $key=>$value) { $tpl->set($key,$value); }
+    $controller->handle($tpl,['Admin','articles'],$user);$html=json_encode($tpl->rows('articlerow')); 
+    permissionAssert(str_contains($html,'Own')&&!str_contains($html,'Other'),'list filters other authors');
+    permissionAssert(!str_contains($html,'"can_publish":"1"'),'publish controls hidden');
+    $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');$tpl->set('csrf_token','fixture'); foreach ($_LANG as $key=>$value) { $tpl->set($key,$value); }
+    $controller->handle($tpl,['Admin','articles','edit',(string)$id],$user);$html=$tpl->render();
+    permissionAssert(!str_contains($html,'>Outside</option>')&&!str_contains($html,'value="published"'),'form filters category and publish');
+    // Migration from the exact previous schema preserves user/content data.
+    $pdo->exec('ALTER TABLE users DROP COLUMN article_permissions');
+    $pdo->exec("UPDATE schema_migrations SET version=7 WHERE version=8");$pdo->exec('PRAGMA user_version=7');
+    (new Portix\Infrastructure\Migrator($db))->migrate();
+    permissionAssert($repo->find('writer')->articlePermissions()===P::DEFAULTS,'old users inherit defaults');
+    permissionAssert($articles->find($id)['title']==='Own','upgrade preserves content');
+    // The leaf root has articles but no child category: header must omit its dropdown, sidebar keeps articles.
+    $leaf=$articles->createCategory('Leaf','leaf',null,true,'');
+    $articles->createArticle($leaf,'Public','public','text','published','admin',$now,$now,'','','');
+    $tpl=new Portix\View\Template($root.'/var/templates/six-cordes/index.tpl');
+    (new PortixModule\Articles\ArticleNavigation($articles,$translator))->append($tpl,['articles','categorie','leaf']);
+    $rows=$tpl->rows('navigation');
+    $leafRows=array_values(array_filter($rows, static fn(array $row): bool => $row['name']==='Leaf'));
+    permissionAssert(count($leafRows)===1 && $leafRows[0]['has_header_submenu']==='0' && $leafRows[0]['has_submenu']==='1','leaf has only sidebar submenu');
+    echo "Permissions: defaults, overrides, recursive scope, ownership, forged routes/POST, persistence, migration and leaf menu OK\n";
+}
+try { permissionRun(); } catch (Throwable $error) { fwrite(STDERR,'Permissions : ÉCHEC - '.$error->getMessage()."\n".$error->getTraceAsString()."\n");exit(1); }

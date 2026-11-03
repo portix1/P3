@@ -1,0 +1,7 @@
+id; numeric; notnull; ; ; ; primary; ;
+name; text; notnull; ; ; index; ; ;
+slug; text; notnull; ; unique; index; ; ;
+parent_id; numeric; null; ; ; index; ; article_categories.id; setnull
+position; numeric; notnull; 0; ; index; ; ;
+is_visible; numeric; notnull; 1; ; index; ; ;
+description; text; null; ; ; ; ; ;

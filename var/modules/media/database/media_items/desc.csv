@@ -1,0 +1,12 @@
+id; numeric; notnull; ; ; ; primary; ;
+public_path; text; notnull; ; unique; index; ; ;
+original_name; text; notnull; ; ; ; ; ;
+family; text; notnull; ; ; index; ; ;
+mime_type; text; notnull; ; ; ; ; ;
+size_bytes; numeric; notnull; 0; ; ; ; ;
+sha256; text; notnull; ; ; ; ; ;
+width; numeric; notnull; 0; ; ; ; ;
+height; numeric; notnull; 0; ; ; ; ;
+created_at; date; notnull; ; ; ; ; ;
+created_by; text; notnull; ; ; ; ; ;
+updated_at; date; notnull; ; ; ; ; ;

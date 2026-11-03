@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<modules>
+	<Name>
+		Menu principal
+	</Name>
+	<Version>1.0.0</Version>
+	<Prefix>
+		menu
+	</Prefix>
+	<Type>
+		plugin
+	</Type>
+	<Priority>
+		3
+	</Priority>
+	<DefLang>
+		fr
+	</DefLang>
+	<Path>
+		menu
+	</Path>
+	<Enabled>
+		1
+	</Enabled>
+</modules>

@@ -1,0 +1,14 @@
+id; numeric; notnull; ; ; ; primary; ;
+category_id; numeric; null; ; ; index; ; article_categories.id; setnull
+title; text; notnull; ; ; ; ; ;
+slug; text; notnull; ; unique; index; ; ;
+summary; text; notnull; ; ; ; ; ;
+body; text; notnull; ; ; ; ; ;
+status; text; notnull; draft; ; index; ; ;
+position; numeric; notnull; 0; ; index; ; ;
+created_by; text; notnull; ; ; ; ; ;
+author_name; text; null; ; ; ; ; ;
+featured_image; text; null; ; ; ; ; ;
+published_at; date; null; ; ; index; ; ;
+created_at; date; notnull; ; ; ; ; ;
+updated_at; date; notnull; ; ; index; ; ;

@@ -1,0 +1,4 @@
+entry_key; text; notnull; ; unique; index; primary; ;
+day; date; notnull; ; ; index; ; ;
+visitor_key; text; notnull; ; ; index; ; ;
+page_views; numeric; notnull; 0; ; ; ; ;

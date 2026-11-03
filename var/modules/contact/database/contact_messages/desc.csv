@@ -1,0 +1,8 @@
+id; numeric; notnull; ; ; ; primary; ;
+conversation_id; numeric; notnull; ; ; index; ; contact_conversations.id; cascade
+direction; text; notnull; ; ; index; ; ;
+body; text; notnull; ; ; ; ; ;
+author_name; text; notnull; ; ; ; ; ;
+sent_at; date; notnull; ; ; index; ; ;
+delivery_status; text; notnull; ; ; index; ; ;
+deleted_at; text; ; ; ; index; ; ;

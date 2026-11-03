@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modules>
+    <Name>Recherche</Name>
+    <Version>1.0.4</Version>
+    <Prefix>search</Prefix>
+    <Type>module</Type>
+    <Priority>90</Priority>
+    <DefLang>fr</DefLang>
+    <Path>search</Path>
+    <Enabled>1</Enabled>
+    <AdminAccess>admin</AdminAccess>
+    <PublicNavigation>navigation.php</PublicNavigation>
+</modules>

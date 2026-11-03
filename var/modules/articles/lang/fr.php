@@ -1,0 +1,156 @@
+<?php
+$_LANG = array_merge($_LANG, array(
+    'articles_title' => 'Articles',
+    'articles_public_introduction' => 'Consultez les contenus durables du site, organisés par catégories.',
+    'articles_categories' => 'Catégories',
+    'articles_all' => 'Tous les articles',
+    'articles_uncategorized' => 'Sans catégorie',
+    'articles_read' => 'Lire l’article',
+    'articles_back_to_list' => 'Revenir aux articles',
+    'articles_empty' => 'Aucun article n’est publié dans cette rubrique.',
+    'articles_breadcrumb_label' => 'Chemin de l’article',
+    'articles_previous' => 'Article précédent',
+    'articles_next' => 'Article suivant',
+
+    'articles_admin_title' => 'Articles',
+    'articles_admin_introduction' => 'Rédigez les contenus intemporels du site et classez-les dans une arborescence.',
+    'articles_admin_summary' => 'Vue d’ensemble des articles',
+    'articles_admin_total' => 'article(s)',
+    'articles_admin_published_total' => 'publié(s)',
+    'articles_new' => 'Nouvel article',
+    'articles_manage_categories' => 'Gérer les catégories',
+    'articles_manage_menu' => 'Configurer le menu',
+    'articles_manage_order' => 'Organiser les contenus',
+    'articles_last_update' => 'Dernière modification',
+    'articles_status_draft' => 'Brouillon',
+    'articles_status_published' => 'Publié',
+    'articles_publish' => 'Publier',
+    'articles_make_draft' => 'Passer en brouillon',
+    'articles_delete_title' => 'Supprimer cet article ?',
+    'articles_delete_description' => 'Vous allez supprimer définitivement',
+    'articles_delete_confirm' => 'Supprimer définitivement',
+    'articles_delete_forbidden' => 'Seul un administrateur peut supprimer un article ou une catégorie.',
+    'articles_not_found' => 'Article introuvable.',
+    'articles_invalid_id' => 'Identifiant d’article ou de catégorie invalide.',
+    'articles_invalid_slug' => 'Adresse d’article invalide.',
+    'articles_invalid_title' => 'Le titre est obligatoire et limité à 250 caractères.',
+    'articles_invalid_navigation_mode' => 'Mode de navigation entre les articles invalide.',
+    'articles_invalid_order' => 'L’ordre transmis est invalide. Rechargez la page avant de recommencer.',
+    'articles_invalid_status' => 'État d’article invalide.',
+
+    'articles_form_new' => 'Nouvel article',
+    'articles_form_edit' => 'Modifier l’article',
+    'articles_form_help' => 'Le titre propose l’adresse publique. Le slug peut rester inchangé lorsque le titre évolue.',
+    'articles_field_title' => 'Titre',
+    'articles_field_url' => 'Adresse publique',
+    'articles_slug_placeholder' => 'générée depuis le titre',
+    'articles_slug_help' => 'Laissez vide pour générer automatiquement le slug.',
+    'articles_field_status' => 'État',
+    'articles_field_category' => 'Catégorie',
+    'articles_field_author' => 'Auteur',
+    'articles_field_author_help' => 'Optionnel. À défaut, l’auteur général configuré pour le site est utilisé.',
+    'articles_field_featured_image' => 'Image principale pour le référencement',
+    'articles_field_featured_image_help' => 'Optionnel. Laissez vide pour reprendre automatiquement la première image de l’article.',
+    'articles_field_summary' => 'Description pour Google et les partages',
+    'articles_field_summary_help' => 'Optionnelle. 170 caractères maximum. Elle sert aux aperçus et aux métadonnées, pas au contenu visible de l’article.',
+    'articles_invalid_summary' => 'La description ne peut pas dépasser 170 caractères.',
+    'articles_invalid_seo_fields' => 'Les informations de référencement de l’article sont trop longues.',
+    'articles_field_body' => 'Contenu',
+    'articles_body_help' => 'Le contenu complet de l’article. Les images sont optimisées et stockées localement.',
+
+    'articles_menu_settings' => 'Menu des articles',
+    'articles_menu_introduction' => 'Chaque catégorie principale peut devenir une entrée du menu du header, avec ses sous-catégories sur plusieurs niveaux.',
+    'articles_menu_header_title' => 'Affichage dans le header',
+    'articles_menu_header_enabled' => 'Afficher les catégories principales dans le menu',
+    'articles_menu_header_help' => 'Leur ordre reprend la position définie dans la gestion des catégories.',
+    'articles_menu_show_articles' => 'Afficher les articles publiés dans les sous-menus',
+    'articles_menu_show_articles_help' => 'Les articles apparaissent sous leur catégorie. Les brouillons et les articles sans catégorie restent absents.',
+    'articles_menu_navigation_title' => 'Navigation entre les articles',
+    'articles_menu_navigation_label' => 'Étendue des liens précédent et suivant',
+    'articles_menu_navigation_off' => 'Aucun lien précédent ou suivant',
+    'articles_menu_navigation_category' => 'Rester dans la catégorie exacte',
+    'articles_menu_navigation_book' => 'Parcourir toute la catégorie principale comme un livre',
+    'articles_menu_navigation_help' => 'Le mode livre suit l’ordre des catégories et des articles, mais ne passe jamais dans une autre catégorie principale.',
+    'articles_menu_saved' => 'Configuration du menu enregistrée.',
+    'articles_menu_toggle' => 'Ouvrir ou fermer le sous-menu « %s »',
+
+    'articles_categories_help' => 'Les sous-catégories peuvent être imbriquées sur plusieurs niveaux.',
+    'articles_back_to_admin' => 'Revenir aux articles',
+    'articles_category_new' => 'Nouvelle catégorie',
+    'articles_category_edit' => 'Modifier la catégorie',
+    'articles_category_name' => 'Nom',
+    'articles_category_description' => 'Description pour Google et les partages',
+    'articles_category_description_help' => '170 caractères maximum. Laissez vide pour laisser P3 générer la description.',
+    'articles_category_invalid_description' => 'La description de catégorie ne peut pas dépasser 170 caractères.',
+    'articles_category_count' => 'Articles publiés',
+    'articles_category_parent' => 'Catégorie parente',
+    'articles_category_visible' => 'Afficher dans la navigation publique',
+    'articles_category_visible_help' => 'Une catégorie masquée et sa branche disparaissent des menus et des listes publiques. Leurs pages et articles publiés restent accessibles par leur adresse directe.',
+    'articles_category_shown' => 'Affichée dans la navigation',
+    'articles_category_hidden' => 'Masquée de la navigation',
+    'articles_category_no_parent' => 'Aucune — catégorie principale',
+    'articles_category_position' => 'Position',
+    'articles_category_form_help' => 'La catégorie parente construit l’arborescence publique.',
+    'articles_category_delete_title' => 'Supprimer cette catégorie ?',
+    'articles_category_delete_description' => 'Les articles et sous-catégories seront replacés sans catégorie après la suppression de',
+    'articles_category_not_found' => 'Catégorie introuvable.',
+    'articles_category_invalid_name' => 'Le nom de catégorie est obligatoire et limité à 150 caractères.',
+    'articles_category_cycle' => 'Une catégorie ne peut pas devenir l’enfant d’une de ses sous-catégories.',
+
+    'articles_order_title' => 'Organisation éditoriale',
+    'articles_order_introduction' => 'Définissez l’ordre de lecture par glisser-déposer ou avec les flèches. Articles et sous-catégories peuvent être intercalés au même niveau.',
+    'articles_order_save' => 'Enregistrer l’ordre',
+    'articles_order_saved' => 'Ordre des catégories et des articles enregistré.',
+    'articles_order_categories_title' => 'Organisation du contenu',
+    'articles_order_categories_help' => 'Articles, catégories et sous-catégories partagent le même ordre éditorial à chaque niveau.',
+    'articles_order_drag_help' => 'Glisser-déposer',
+    'articles_order_uncategorized_help' => 'Ces articles restent hors de la navigation en mode livre.',
+    'articles_order_articles_in_category' => 'Articles de cette catégorie',
+    'articles_order_subcategories' => 'Sous-catégories',
+    'articles_order_no_category' => 'Aucune catégorie pour le moment.',
+    'articles_order_no_article' => 'Aucun article à ce niveau.',
+    'articles_order_move_up' => 'Monter « %s »',
+    'articles_order_move_down' => 'Descendre « %s »'
+));
+
+$_LANG['articles_table_scroll'] = 'Tableau : défilement horizontal';
+
+$_LANG['articles_series'] = 'Séries d’articles';
+$_LANG['articles_series_new'] = 'Créer une série';
+$_LANG['articles_series_delete'] = 'Supprimer la série';
+$_LANG['articles_series_description'] = 'Description facultative';
+$_LANG['articles_series_show_title'] = 'Afficher le titre de la série dans les articles';
+$_LANG['articles_series_order_help'] = 'Cocher les articles à associer. Les flèches changent leur ordre ; les positions restent modifiables sans JavaScript. Un article appartient à une seule série.';
+$_LANG['articles_series_position'] = 'Position';
+$_LANG['articles_series_up'] = 'Monter cette partie';
+$_LANG['articles_series_down'] = 'Descendre cette partie';
+$_LANG['articles_series_part'] = 'Partie %d sur %d';
+$_LANG['articles_series_parts'] = 'Liste des parties';
+$_LANG['articles_series_invalid'] = 'Titre requis (250 caractères maximum), description limitée à 2 000 caractères.';
+$_LANG['articles_series_missing'] = 'Série introuvable.';
+$_LANG['articles_series_conflict'] = 'Un article sélectionné appartient déjà à une autre série. Retirez-le de celle-ci avant de le déplacer.';
+
+$_LANG['articles_related'] = 'Pour prolonger la lecture';
+$_LANG['articles_related_help'] = 'Sélectionner les articles associés et leur ordre. Ces liens sont facultatifs et indépendants des catégories et des séries.';
+$_LANG['articles_related_invalid'] = 'Relations invalides : choisir des articles accessibles, distincts de cet article et sans doublon.';
+$_LANG['articles_reading_settings'] = 'Options de lecture';
+$_LANG['articles_heading_toc'] = 'Sommaire de cet article';
+$_LANG['articles_heading_toc_enable'] = 'Afficher un sommaire automatique à partir des intertitres';
+
+$_LANG['articles_picker_search'] = 'Rechercher un article';
+$_LANG['articles_picker_search_hint'] = 'Titre ou catégorie…';
+$_LANG['articles_picker_category'] = 'Catégorie';
+$_LANG['articles_picker_all_categories'] = 'Toutes les catégories';
+$_LANG['articles_picker_more'] = 'Afficher davantage de propositions';
+$_LANG['articles_picker_count'] = '{selected} sélectionné(s) · {shown} proposition(s) affichée(s) sur {total}';
+$_LANG['articles_picker_related_order'] = 'Sélectionnés en premier, puis même catégorie, puis autres articles par ordre alphabétique. Aucun lien n’est ajouté automatiquement.';
+
+$_LANG['articles_toc_batch_done'] = 'Sommaire activé dans %d article(s) contenant au moins quatre intertitres.';
+$_LANG['articles_toc_batch_failed'] = 'L’activation des sommaires n’a pas abouti. Les réglages sont conservés ; consultez le journal PHP avant de réessayer.';
+$_LANG['articles_toc_batch_backup_failed'] = 'Impossible de sauvegarder les réglages de sommaire. Aucune modification appliquée.';
+
+$_LANG['articles_series_batch_done'] = '%d série(s) créée(s), %d article(s) associés. %d ensemble(s) incomplet(s), ambigu(s) ou déjà classé(s) conservé(s) sans modification.';
+$_LANG['articles_series_batch_failed'] = 'La création des séries n’a pas abouti. Aucune série du lot n’a été ajoutée ; consultez le journal PHP.';
+$_LANG['articles_series_batch_backup_failed'] = 'Impossible de sauvegarder les séries existantes. Aucune modification appliquée.';
+
+$_LANG['articles_public_edit'] = 'Modifier cet article';

@@ -1,0 +1,14 @@
+id; numeric; notnull; ; ; ; primary; ;
+category_id; numeric; null; ; ; index; ; download_categories.id; setnull
+title; text; notnull; ; ; ; ; ;
+original_name; text; notnull; ; ; ; ; ;
+stored_name; text; notnull; ; ; index; ; ;
+mime_type; text; notnull; application/octet-stream; ; ; ; ;
+size_bytes; numeric; notnull; 0; ; ; ; ;
+sha256; text; notnull; ; ; ; ; ;
+description; text; notnull; ; ; ; ; ;
+status; text; notnull; draft; ; index; ; ;
+position; numeric; notnull; 0; ; index; ; ;
+download_count; numeric; notnull; 0; ; ; ; ;
+created_at; date; notnull; ; ; ; ; ;
+updated_at; date; notnull; ; ; index; ; ;

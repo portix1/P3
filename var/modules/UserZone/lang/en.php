@@ -1,0 +1,60 @@
+<?php 
+$_LANG['signin']="SUbscribe";
+$_LANG['pseudo']='ID';
+$_LANG['pswd']="Password";
+$_LANG['email']="Email";
+$_LANG['code']="Copy the code below";
+$_LANG['firstname']="Firstname";
+$_LANG['name']="Lastname";
+$_LANG['logout']="Logout";
+$_LANG['hello']="Hello";
+$_LANG['usrmgr']="User management";
+$_LANG['modify_personnal']="Modify my account";
+$_LANG['inscription']="Creaye an user account";
+$_LANG['mustfillallfields'] = "All fields must be filled";
+$_LANG['codedonotmatch'] = "The code do not matche";
+$_LANG['passdonotmatch'] = "The passwords do not matche";
+$_LANG['usrconfig'] = "User management";
+$_LANG['search'] = "Search";
+$_LANG['usradmin'] = "Administrator";
+$_LANG['usrredac'] = "Redactor";
+$_LANG['modify'] = "Modify";
+$_LANG['updateok'] = "Update succed";
+$_LANG['oldpass'] = 'Old password';
+$_LANG['newpass'] = 'New password';
+$_LANG['emptyname'] = 'Lastname must be filled';
+$_LANG['emptyfirstname'] = 'Firstname must be filled';
+$_LANG['badpass'] = 'Bad password';
+$_LANG['Numberofusers'] = 'users registred';
+$_LANG['profile_identity'] = 'Identity';
+$_LANG['profile_change_password'] = 'Change password';
+$_LANG['profile_password_optional'] = 'Leave these fields empty to keep the current password.';
+$_LANG['profile_confirm_password'] = 'Confirm the new password';
+
+$_LANG['login_title'] = 'Log in';
+$_LANG['login_introduction'] = 'Access is restricted to authorized users.';
+
+
+$_LANG = array_merge($_LANG, [
+    'password_forgot_link' => 'Forgot your password?',
+    'password_forgot_title' => 'Forgot your password',
+    'password_forgot_intro' => 'Enter the email address associated with your account. If it matches a unique account, Portix 3 will send a reset link.',
+    'password_forgot_email' => 'Email address',
+    'password_forgot_submit' => 'Send reset link',
+    'password_forgot_confirmation' => 'If an account matches this address, a password reset link has just been sent.',
+    'password_forgot_invalid_email' => 'Enter a valid email address.',
+    'password_reset_title' => 'New password',
+    'password_reset_intro' => 'Choose a new password for your account.',
+    'password_reset_new' => 'New password',
+    'password_reset_confirm' => 'Confirm new password',
+    'password_reset_submit' => 'Save new password',
+    'password_reset_invalid' => 'This reset link is invalid or has expired.',
+    'password_reset_requirements' => 'The passwords must match and contain between 12 and 4,096 characters.',
+    'password_reset_success' => 'Your password has been changed. You can now log in.',
+    'password_reset_request_new' => 'Request a new link',
+    'password_reset_back_login' => 'Back to login',
+    'password_reset_mail_subject' => 'Reset your password',
+    'password_reset_mail_intro' => 'A request was made to reset the password for your account.',
+    'password_reset_mail_instruction' => 'Use the following link within the next hour:',
+    'password_reset_mail_ignore' => 'If you did not request this change, simply ignore this message.',
+]);

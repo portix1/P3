@@ -1,0 +1,7 @@
+id; numeric; notnull; ; ; ; primary; ;
+created_at; date; notnull; ; ; index; ; ;
+level; text; notnull; info; ; index; ; ;
+event; text; notnull; ; ; index; ; ;
+message; text; notnull; ; ; ; ; ;
+context_json; text; notnull; {}; ; ; ; ;
+request_id; text; notnull; ; ; index; ; ;

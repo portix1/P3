@@ -1,0 +1,9 @@
+id; numeric; notnull; ; ; ; primary; ;
+product_id; numeric; notnull; ; ; index; ; affiliate_products.id; cascade
+partner_id; numeric; notnull; ; ; index; ; affiliate_partners.id; cascade
+affiliate_url; text; notnull; ; ; ; ; ;
+button_label; text; notnull; ; ; ; ; ;
+enabled; bool; notnull; 1; ; index; ; ;
+position; numeric; notnull; 0; ; index; ; ;
+created_at; date; notnull; ; ; ; ; ;
+updated_at; date; notnull; ; ; index; ; ;

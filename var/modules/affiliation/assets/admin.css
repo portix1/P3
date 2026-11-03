@@ -1,0 +1,47 @@
+/* Affiliation 1.1 — product-centric administration. */
+.checkbox-list { display: grid; gap: .4rem; }
+.checkbox-list label { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); align-items: start; gap: .65rem; margin: 0; padding: .55rem .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); cursor: pointer; }
+.checkbox-list label:hover { background: var(--surface-soft); }
+.checkbox-list label > input[type="checkbox"] { width: 1.1rem; height: 1.1rem; margin: .18rem 0 0; }
+.checkbox-list label > span { display: grid; gap: .12rem; min-width: 0; }
+.checkbox-list label strong { font-weight: 700; }
+.checkbox-list label small { color: var(--muted); font-size: .8rem; line-height: 1.4; }
+
+.affiliation-dashboard { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)) auto; gap: .8rem; align-items: stretch; margin: 1rem 0 1.2rem; }
+.affiliation-dashboard > div { display: grid; gap: .1rem; min-width: 0; padding: .9rem 1rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.affiliation-dashboard > div strong { font-size: 1.45rem; line-height: 1.15; }
+.affiliation-dashboard > div span { color: var(--muted); font-size: .84rem; }
+.affiliation-dashboard > .button { align-self: center; }
+
+.affiliation-product-form { display: grid; gap: 1rem; }
+.affiliation-form-section { margin: 1rem 0; padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.affiliation-form-section > h2, .affiliation-section-heading h2 { margin-top: 0; }
+.affiliation-section-heading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+.affiliation-section-heading p { margin: -.25rem 0 .75rem; color: var(--muted); }
+.affiliation-section-heading > strong { min-width: 2rem; padding: .2rem .5rem; border-radius: 999px; background: var(--surface-soft); text-align: center; }
+.affiliation-filter { display: grid; gap: .3rem; margin-bottom: .7rem; }
+.affiliation-filter input { width: min(100%, 32rem); }
+.affiliation-article-list { max-height: 27rem; overflow: auto; padding-right: .25rem; }
+.affiliation-article-list label[hidden] { display: none; }
+.affiliation-sticky-actions { position: sticky; z-index: 4; bottom: .5rem; padding: .7rem; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(8px); }
+
+.affiliation-merchants-section { display: grid; gap: .8rem; }
+.affiliation-offer-list { display: grid; gap: .8rem; }
+.affiliation-offer-card { position: relative; padding: .85rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); }
+.affiliation-offer-card-title { display: flex; justify-content: space-between; gap: .75rem; margin-bottom: .7rem; }
+.affiliation-offer-card-title span { color: var(--muted); font-size: .84rem; }
+.affiliation-offer-form { display: grid; gap: .7rem; }
+.affiliation-offer-form label { display: grid; gap: .25rem; }
+.affiliation-offer-form button { justify-self: start; }
+.affiliation-offer-delete { position: absolute; right: .85rem; bottom: .85rem; }
+.affiliation-add-link { padding: .75rem .85rem; border: 1px dashed var(--line); border-radius: 10px; }
+.affiliation-add-link summary { cursor: pointer; font-weight: 700; }
+.affiliation-add-link[open] summary { margin-bottom: .8rem; }
+.affiliation-inline-notice { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem .85rem; border-radius: 9px; background: var(--surface-soft); }
+.affiliation-inline-notice p { margin: 0; }
+
+@media (max-width: 760px) {
+    .affiliation-dashboard { grid-template-columns: 1fr 1fr; }
+    .affiliation-dashboard > .button { grid-column: 1 / -1; }
+    .affiliation-offer-delete { position: static; margin-top: .6rem; }
+}

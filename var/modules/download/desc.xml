@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<modules>
+	<Name>
+		Download Manager
+	</Name>
+	<Version>1.0.0</Version>
+	<Prefix>
+		dwl
+	</Prefix>
+	<Type>
+		module
+	</Type>
+	<Priority>
+		7
+	</Priority>
+	<DefLang>
+		fr
+	</DefLang>
+	<Path>
+		download
+	</Path>
+	<Enabled>
+		1
+	</Enabled>
+	<AdminAccess>admin</AdminAccess>
+	<SchemaFormat>desc-csv</SchemaFormat>
+	<PublicSitemap>sitemap.php</PublicSitemap>
+</modules>

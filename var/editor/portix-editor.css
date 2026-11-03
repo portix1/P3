@@ -1,0 +1,590 @@
+.portix-editor {
+    width: 100%;
+    max-width: none;
+    margin: .45rem 0 1.2rem;
+}
+
+.portix-editor-source {
+    display: block;
+    width: 100%;
+    min-height: 18rem;
+}
+
+.portix-editor--compact .portix-editor-source {
+    min-height: 9rem;
+}
+
+.portix-editor-surface {
+    display: none;
+}
+
+.portix-editor.is-enhanced .portix-editor-source {
+    display: none;
+}
+
+.portix-editor.is-enhanced .portix-editor-surface {
+    display: block;
+    height: clamp(28rem, 62vh, 48rem);
+    min-height: 0;
+    background: #fff;
+}
+
+.portix-editor--compact.is-enhanced .portix-editor-surface {
+    height: clamp(14rem, 32vh, 24rem);
+}
+
+.portix-editor .ql-toolbar.ql-snow {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    border-color: #7a899c;
+    border-radius: 9px 9px 0 0;
+    background: #f4f7fa;
+}
+
+.portix-editor .ql-toolbar.ql-snow button {
+    box-sizing: border-box !important;
+    width: 28px !important;
+    height: 24px !important;
+    min-width: 28px !important;
+    min-height: 24px !important;
+    padding: 3px 5px !important;
+}
+
+.portix-editor .ql-container.ql-snow {
+    border-color: #7a899c;
+    border-radius: 0 0 9px 9px;
+    font: inherit;
+}
+
+.portix-editor .ql-editor {
+    height: 100%;
+    min-height: 0;
+    font-size: 1rem;
+    line-height: 1.65;
+    overflow-wrap: normal;
+    word-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+}
+
+/* Entrée crée un nouveau paragraphe ; MAJ+Entrée reste un simple <br>. */
+.portix-editor .ql-editor p + p { margin-top: .65em; }
+
+.portix-editor .ql-editor .ql-size-small { font-size: .75em; }
+
+.portix-editor .ql-editor a { overflow-wrap: anywhere; }
+
+.portix-editor .ql-editor img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 1rem auto;
+    border-radius: 8px;
+}
+
+.portix-editor .ql-editor img.portix-image-size-25 { width: 25%; }
+.portix-editor .ql-editor img.portix-image-size-33 { width: 33.333%; }
+.portix-editor .ql-editor img.portix-image-size-50 { width: 50%; }
+.portix-editor .ql-editor img.portix-image-size-66 { width: 66.667%; }
+.portix-editor .ql-editor img.portix-image-size-75 { width: 75%; }
+.portix-editor .ql-editor img.portix-image-size-100 { width: 100%; }
+.portix-editor .ql-editor img.portix-image-align-left {
+    float: left;
+    margin: .35rem 1.25rem .8rem 0;
+}
+.portix-editor .ql-editor img.portix-image-align-right {
+    float: right;
+    margin: .35rem 0 .8rem 1.25rem;
+}
+.portix-editor .ql-editor img.portix-image-align-center {
+    float: none;
+    margin: 1rem auto;
+}
+.portix-editor .ql-editor img.is-portix-selected {
+    outline: 3px solid #2563eb;
+    outline-offset: 3px;
+}
+
+.portix-editor .ql-editor p[data-portix-caption]:has(> img) {
+    display: block;
+    max-width: 100%;
+    margin: 1rem auto;
+}
+.portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-size-25) { width: 25%; }
+.portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-size-33) { width: 33.333%; }
+.portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-size-50) { width: 50%; }
+.portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-size-66) { width: 66.667%; }
+.portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-size-75) { width: 75%; }
+.portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-size-100) { width: 100%; }
+.portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-align-left) {
+    float: left;
+    margin: .35rem 1.25rem .8rem 0;
+}
+.portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-align-right) {
+    float: right;
+    margin: .35rem 0 .8rem 1.25rem;
+}
+.portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-align-center) {
+    float: none;
+    margin: 1rem auto;
+}
+.portix-editor .ql-editor p[data-portix-caption]:has(> img) > img {
+    float: none;
+    width: 100%;
+    margin: 0;
+}
+.portix-editor .ql-editor p[data-portix-caption]:has(> img)::after {
+    content: attr(data-portix-caption);
+    display: block;
+    margin: .45rem auto 0;
+    color: #667085;
+    font-size: .9em;
+    font-style: italic;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.portix-image-tools {
+    position: sticky;
+    top: 42px;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: .75rem 1rem;
+    padding: .8rem 1rem;
+    border: 1px solid #7a899c;
+    border-top: 0;
+    border-radius: 0;
+    background: #eef4ff;
+}
+.portix-image-tools[hidden] { display: none; }
+.portix-image-tools strong { align-self: center; color: #1d2939; }
+.portix-image-tools label {
+    display: grid;
+    gap: .25rem;
+    min-width: min(10rem, 100%);
+    color: #344054;
+    font-size: .82rem;
+    font-weight: 700;
+}
+.portix-image-tools select,
+.portix-image-tools input[type="text"] {
+    min-height: 44px;
+    padding: .35rem 2rem .35rem .55rem;
+    border: 1px solid #98a2b3;
+    border-radius: 7px;
+    background: #fff;
+    color: #101828;
+    font: inherit;
+}
+.portix-image-tools input[type="text"] {
+    min-width: min(18rem, 100%);
+    padding-right: .55rem;
+}
+.portix-image-move {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+.portix-image-move button {
+    min-height: 44px;
+    padding: .45rem .75rem;
+    border: 1px solid #667085;
+    border-radius: 7px;
+    background: #fff;
+    color: #1d2939;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+.portix-image-move button:hover:not(:disabled),
+.portix-image-move button:focus-visible {
+    border-color: #2563eb;
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+.portix-image-move button:disabled {
+    cursor: not-allowed;
+    opacity: .45;
+}
+
+.portix-editor:has(.portix-image-tools:not([hidden])) .ql-container.ql-snow {
+    border-radius: 0 0 9px 9px;
+}
+
+.portix-editor .ql-editor a[target="_blank"]::after {
+    content: " ↗";
+    color: #2563eb;
+    font-size: .75em;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.portix-editor .ql-tooltip .portix-link-target-option {
+    display: none;
+    clear: both;
+    align-items: center;
+    gap: .45rem;
+    margin: .65rem 0 0;
+    color: #344054;
+    font-size: .82rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.portix-editor .ql-tooltip.ql-editing .portix-link-target-option { display: flex; }
+.portix-editor .ql-tooltip .portix-link-target-option input {
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+}
+
+.portix-editor-status {
+    min-height: 1.5em;
+    margin: -.7rem 0 1rem;
+    color: #475467;
+    font-size: .9rem;
+}
+
+.portix-editor-status.is-error { color: #b42318; font-weight: 700; }
+.portix-editor-status.is-success { color: #067647; }
+.portix-editor-help { margin: -.35rem 0 .65rem; color: #667085; font-size: .9rem; }
+
+@media (max-width: 480px) {
+    .portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-align-left),
+    .portix-editor .ql-editor p[data-portix-caption]:has(> img.portix-image-align-right) {
+        float: none;
+        width: auto;
+        margin: 1rem auto;
+    }
+    .portix-image-tools { align-items: stretch; flex-direction: column; padding: .75rem; }
+    .portix-image-tools label { min-width: 0; }
+    .portix-image-tools select,
+    .portix-image-tools input[type="text"] { width: 100%; min-width: 0; }
+    .portix-image-move { align-items: stretch; flex-direction: column; }
+}
+
+/* Structured content: tables, formulas and Markdown import */
+.portix-rich-tools,
+.portix-table-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    padding: .5rem .65rem;
+    border: 1px solid #d7dce3;
+    border-top: 0;
+    background: #f8fafc;
+}
+.portix-table-tools { background: #fff8ed; }
+.portix-table-tools[hidden] { display: none; }
+.portix-rich-tool,
+.portix-table-tool {
+    min-height: 34px;
+    padding: .35rem .65rem;
+    border: 1px solid #b8c2cf;
+    border-radius: 6px;
+    background: #fff;
+    color: #263445;
+    font: inherit;
+    font-size: .82rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+.portix-rich-tool:hover,
+.portix-table-tool:hover { background: #eef3f8; }
+.portix-rich-tool:disabled { opacity: .5; cursor: not-allowed; }
+.portix-table-tool.is-danger { color: #9b241d; border-color: #dfb3af; }
+.portix-editor .ql-editor table {
+    width: 100%;
+    margin: 1rem 0;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+.portix-editor .ql-editor td,
+.portix-editor .ql-editor th {
+    min-width: 5rem;
+    padding: .45rem .55rem;
+    border: 1px solid #b8c2cf;
+    vertical-align: top;
+}
+.portix-editor .ql-editor td { background: #fff; }
+.portix-editor .ql-editor table[data-portix-header="1"] tr:first-child td {
+    background: #f1f3f6;
+    font-weight: 700;
+}
+.portix-table-tool[aria-pressed="true"] {
+    background: #e7edf4;
+    border-color: #8798aa;
+    font-weight: 700;
+}
+.portix-editor .ql-formula[data-display="1"] {
+    display: block;
+    margin: .8rem 0;
+    text-align: center;
+}
+.portix-editor-dialog {
+    width: min(42rem, calc(100vw - 2rem));
+    max-height: calc(100vh - 2rem);
+    padding: 0;
+    border: 1px solid #c8d0d9;
+    border-radius: 12px;
+    background: #fff;
+    color: #1f2937;
+    box-shadow: 0 20px 60px rgba(0,0,0,.22);
+}
+.portix-editor-dialog::backdrop { background: rgba(15,23,42,.48); }
+.portix-editor-dialog-form { margin: 0; padding: 1rem; }
+.portix-editor-dialog-form h3 { margin: 0 0 1rem; }
+.portix-editor-dialog-body { display: grid; gap: .8rem; }
+.portix-editor-dialog-field { display: grid; gap: .3rem; font-weight: 700; }
+.portix-editor-dialog-field input,
+.portix-editor-dialog-field textarea { width: 100%; }
+.portix-editor-dialog-check { display: flex; align-items: center; gap: .35rem; }
+.portix-editor-dialog-check input { width: auto; }
+.portix-editor-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-top: 1rem;
+}
+.portix-editor-dialog-help { margin: 0; color: #667085; }
+.portix-formula-preview {
+    min-height: 3.5rem;
+    overflow-x: auto;
+    padding: .75rem;
+    border: 1px solid #d7dce3;
+    border-radius: 8px;
+    background: #fafbfc;
+}
+.portix-formula-input,
+.portix-markdown-input { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.portix-markdown-input { min-height: 18rem; resize: vertical; }
+
+/* P3 ChatGPT table paste v2: table header styles are defined above. */
+
+
+.portix-editor-surface td img,
+.portix-editor-surface th img {
+    max-width: 100%;
+    height: auto;
+}
+.portix-editor-surface td .portix-image-figure,
+.portix-editor-surface th .portix-image-figure,
+.portix-content td .portix-image-figure,
+.portix-content th .portix-image-figure {
+    max-width: 100%;
+    margin: .5rem 0;
+}
+
+
+/* Structured video embeds */
+.portix-editor .ql-editor .portix-video {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin: 1rem 0;
+    overflow: hidden;
+    border: 1px solid #c8d0d9;
+    border-radius: 10px;
+    background: #111827;
+}
+.portix-editor .ql-editor .portix-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+.portix-video-editor-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: .65rem;
+    cursor: pointer;
+    background: transparent;
+}
+.portix-video-editor-hint {
+    padding: .35rem .6rem;
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(15, 23, 42, .78);
+    font-size: .78rem;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity .15s ease;
+}
+.portix-editor .ql-editor .portix-video:hover .portix-video-editor-hint,
+.portix-editor .ql-editor .portix-video:focus-within .portix-video-editor-hint {
+    opacity: 1;
+}
+.portix-editor .ql-editor .portix-video:hover,
+.portix-editor .ql-editor .portix-video:focus-within {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
+}
+.portix-editor-dialog-error {
+    margin: 0;
+    color: #b42318;
+    font-weight: 700;
+}
+
+
+.portix-editor .ql-editor .portix-video[data-width="33"] { width: 33.333%; }
+.portix-editor .ql-editor .portix-video[data-width="50"] { width: 50%; }
+.portix-editor .ql-editor .portix-video[data-width="66"] { width: 66.667%; }
+.portix-editor .ql-editor .portix-video[data-width="75"] { width: 75%; }
+.portix-editor .ql-editor .portix-video[data-width="100"] { width: 100%; }
+.portix-editor .ql-editor .portix-video[data-width] {
+    max-width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (max-width: 640px) {
+    .portix-editor .ql-editor .portix-video[data-width] { width: 100%; }
+}
+
+/* RC11: Snow controls retain Quill's geometry; contextual palettes use compact groups. */
+.portix-editor { min-width: 0; position: relative; }
+.portix-editor .ql-toolbar.ql-snow { background: #fff; border-radius: 4px 4px 0 0; }
+.portix-editor .ql-toolbar.ql-snow .ql-formats { margin-right: 10px; }
+.portix-editor .ql-picker.ql-font { width: 108px; }
+.portix-editor .ql-picker.ql-header { width: 98px; }
+.portix-editor .ql-picker-label { min-height: 24px; }
+.portix-image-tools, .portix-table-tools { position: static; gap: .4rem .6rem; padding: .5rem .65rem; background: #f5f6f8; align-items: center; }
+.portix-image-tools label, .portix-table-tools label { min-width: 0; font-size: .78rem; }
+.portix-image-tools input[type="text"] { min-width: 12rem; }
+.portix-image-tools select, .portix-image-tools input, .portix-table-tools select { min-height: 30px; padding: .2rem .4rem; border-radius: 3px; }
+.portix-image-tools input[type="number"] { width: 5rem; }
+.portix-image-tools .portix-image-move button, .portix-rich-tool, .portix-table-tool { min-height: 30px; padding: .25rem .5rem; border-radius: 3px; font-size: .8rem; }
+.portix-editor-imports { display: flex; justify-content: flex-end; padding: .3rem .65rem; border: 1px solid #ccc; border-top: 0; background: #fff; }
+.portix-table-tools strong { font-size: .82rem; }
+.portix-editor .ql-editor .portix-image-object { display: inline-block; position: relative; max-width: 100%; margin: .5rem 0; vertical-align: top; }
+.portix-editor .ql-editor .portix-image-object img { display: block; float: none; width: 100%; max-width: 100%; height: auto; margin: 0; border-radius: 0; }
+.portix-editor .ql-editor .portix-image-object.portix-image-align-left { float: left; margin: .35rem 1.25rem .8rem 0; }
+.portix-editor .ql-editor .portix-image-object.portix-image-align-right { float: right; margin: .35rem 0 .8rem 1.25rem; }
+.portix-editor .ql-editor .portix-image-object.portix-image-align-center { display: block; float: none; clear: both; margin: 1rem auto; }
+.portix-editor .ql-editor .portix-image-object[data-wrap="none"] { display: block; float: none; clear: both; }
+.portix-editor .ql-editor .portix-image-object[data-wrap="none"].portix-image-align-right { margin-left: auto; margin-right: 0; }
+.portix-editor .ql-editor .portix-image-caption { display: block; margin-top: .45rem; color: #667085; font-size: .9em; line-height: 1.4; text-align: center; }
+.portix-editor .ql-editor .portix-image-caption[hidden] { display: none; }
+.portix-image-drop-marker { position: absolute; right: 15px; left: 15px; height: 3px; background: #2563eb; pointer-events: none; z-index: 8; }
+.portix-image-drop-marker[hidden] { display: none; }
+.portix-editor .ql-editor { display: flow-root; }
+.portix-editor .ql-editor hr { clear: both; border: 0; border-top: 1px solid #98a2b3; margin: 1rem 0; }
+.portix-editor .ql-editor td[data-portix-cell-header], .portix-editor .ql-editor th { background: #f1f3f6; font-weight: 700; }
+.portix-editor .ql-editor td .portix-image-object { float: none; display: inline-block; margin: .5rem 0; }
+.portix-editor .ql-editor .portix-cell-valign-top { vertical-align: top; }
+.portix-editor .ql-editor .portix-cell-valign-middle { vertical-align: middle; }
+.portix-editor .ql-editor .portix-cell-valign-bottom { vertical-align: bottom; }
+@media (max-width: 640px) {
+    .portix-editor .ql-editor .portix-image-object.portix-image-align-left,
+    .portix-editor .ql-editor .portix-image-object.portix-image-align-right { float: none; display: block; margin: 1rem auto; }
+}
+.portix-editor .ql-editor .portix-image-object.portix-image-size-25 { width: 25%; }
+.portix-editor .ql-editor .portix-image-object.portix-image-size-33 { width: 33.333%; }
+.portix-editor .ql-editor .portix-image-object.portix-image-size-50 { width: 50%; }
+.portix-editor .ql-editor .portix-image-object.portix-image-size-66 { width: 66.667%; }
+.portix-editor .ql-editor .portix-image-object.portix-image-size-75 { width: 75%; }
+.portix-editor .ql-editor .portix-image-object.portix-image-size-100 { width: 100%; }
+
+.portix-image-resize { display: none; position: absolute; right: 0; bottom: 0; width: 14px; height: 14px; border: 2px solid #fff; background: #2563eb; cursor: nwse-resize; touch-action: none; z-index: 1; }
+.portix-image-object.is-portix-selected .portix-image-resize { display: block; }
+.portix-image-resize[data-corner="nw"] { left: -5px; top: -5px; right: auto; bottom: auto; cursor: nwse-resize; }
+.portix-image-resize[data-corner="ne"] { right: -5px; top: -5px; bottom: auto; cursor: nesw-resize; }
+.portix-image-resize[data-corner="sw"] { left: -5px; bottom: -5px; right: auto; cursor: nesw-resize; }
+.portix-image-resize[data-corner="se"] { right: -5px; bottom: -5px; cursor: nwse-resize; }
+
+.portix-editor .ql-editor .portix-image-object { font-size: 0; line-height: 0; }
+.portix-editor .ql-editor .portix-image-object > span[contenteditable="false"] { display: block; font-size: 1rem; line-height: 1.65; }
+
+
+/* RC15: Snow toolbar and small object-context palettes. */
+.portix-editor .ql-toolbar.ql-snow { display:block; background:#fff; border-radius:3px 3px 0 0; padding:8px; }
+.portix-editor .ql-toolbar .portix-rich-tools.ql-formats { display:inline-block; padding:0; border:0; background:transparent; margin-bottom:0; }
+.portix-editor .ql-toolbar .portix-command { display:inline-block; float:left; background:none; border:0; border-radius:0; color:#444; }
+.portix-editor .ql-toolbar .portix-command svg { width:100%; height:100%; }
+.portix-editor .ql-toolbar .portix-command:hover { background:none; color:#06c; }
+.portix-context-palette:not([hidden]) { position:absolute; display:flex; align-items:center; gap:4px; padding:5px; z-index:8; max-width:calc(100% - 8px); background:#fff; border:1px solid #cbd0d6; border-radius:4px; box-shadow:0 3px 10px #0002; }
+.portix-context-palette[hidden] { display:none; }
+.portix-image-align-buttons { display:flex; gap:2px; }
+.portix-context-palette .portix-command { display:inline-flex; align-items:center; justify-content:center; flex-direction:column; gap:3px; min-width:30px; min-height:30px; padding:4px; border:1px solid transparent; border-radius:3px; background:transparent; color:#444; cursor:pointer; }
+.portix-context-palette .portix-command svg { width:22px; height:22px; }
+.portix-context-palette .portix-command:hover, .portix-context-palette [aria-pressed="true"] { color:#06c; background:#e8f1fb; border-color:#bad3ee; }
+.portix-context-palette button:focus-visible, .portix-context-menu summary:focus-visible { outline:2px solid #06c; outline-offset:1px; }
+.portix-context-palette .portix-rich-tool:not(.portix-command) { padding:5px 8px; background:transparent; color:#444; border:1px solid transparent; font-size:12px; }
+.portix-context-menu { position:relative; }
+.portix-context-menu summary { font-size:12px; padding:5px 7px; cursor:pointer; color:#444; }
+.portix-context-menu-content { position:absolute; top:100%; left:0; display:flex; flex-direction:column; align-items:stretch; gap:5px; min-width:180px; max-width:calc(100vw - 30px); padding:8px; border:1px solid #cbd0d6; border-radius:3px; background:#fff; box-shadow:0 3px 10px #0002; }
+.portix-context-menu:last-child .portix-context-menu-content { left:auto; right:0; }
+.portix-context-menu-content .portix-command { flex-direction:row; justify-content:flex-start; gap:8px; font-size:12px; }
+.portix-context-menu-content .portix-command span { font-size:12px; }
+.portix-context-menu-content .is-danger { color:#a52828; }
+.portix-editor-imports { border:0; background:transparent; padding:4px 0; }
+.portix-editor-dialog-field input[type="number"] { width:100%; }
+.portix-context-palette:not([hidden]) { flex-direction:row; flex-wrap:nowrap; }
+.portix-editor .ql-toolbar .portix-rich-tools button { min-height:24px; }
+
+/* Image controls stay available in the compact context palette. */
+.portix-image-tools.portix-context-palette:not([hidden]) { flex-wrap: wrap; }
+.portix-image-tools .portix-image-move { display:flex;gap:2px;align-items:center;margin:0;padding-left:4px;border-left:1px solid #d5dbe3; }
+.portix-image-tools .portix-image-drag { cursor:grab; }
+.portix-image-tools .portix-image-drag:active { cursor:grabbing; }
+.portix-image-tools .portix-command:disabled { opacity:.4;cursor:default; }
+.portix-image-tools .portix-context-menu-content label { display:flex;flex-direction:column;gap:4px;margin:0;font-size:12px; }
+.portix-image-tools .portix-context-menu-content select { max-width:100%;font-size:12px; }
+
+/* Table ribbon stays outside the editable cells; geometry controls are never saved. */
+.portix-editor .portix-table-tools { position: sticky; top: 0; z-index: 12; margin: .4rem 0; }
+.portix-editor .ql-editor td, .portix-editor .ql-editor th { cursor: text; overflow-wrap: anywhere; }
+.portix-column-resizers { pointer-events: none; }
+.portix-column-resizer { position: absolute; z-index: 10; width: 10px; min-width: 10px; padding: 0; border: 0; border-radius: 0; background: transparent; cursor: col-resize; pointer-events: auto; touch-action: none; }
+.portix-column-resizer:hover, .portix-column-resizer:focus-visible, .portix-column-resizer.is-dragging { background: #175cd359; outline: 2px solid #175cd3; outline-offset: -3px; }
+
+/* P3 editorial callouts: explicit labels, local colors, printable borders. */
+.portix-callout { --callout-bg:#f1f5f1; --callout-ink:#244d36; --callout-border:#577e60; box-sizing:border-box; clear:both; margin:1.25em 0; padding:16px 20px; border:1px solid var(--callout-border); border-left-width:4px; border-radius:6px; background:var(--callout-bg); color:#252820; overflow-wrap:anywhere; }
+.portix-callout.portix-callout-warning { --callout-bg:#fff4e3; --callout-ink:#74420a; --callout-border:#ae7325; }
+.portix-callout.portix-callout-equipment { --callout-bg:#eef2f6; --callout-ink:#28475f; --callout-border:#5a7b94; }
+.portix-callout.portix-callout-note { --callout-bg:#f2eff5; --callout-ink:#594264; --callout-border:#887095; }
+.content-card .portix-callout > .portix-callout-label, .portix-callout > .portix-callout-label { margin:0 0 8px !important; font:700 14px/1.4 system-ui,sans-serif !important; color:var(--callout-ink); }
+.content-card .portix-callout > .portix-callout-title, .portix-callout > .portix-callout-title { margin:0 0 10px !important; font-weight:700; color:var(--callout-ink); }
+.portix-callout > :last-child { margin-bottom:0 !important; }
+.portix-callout a { color:var(--callout-ink); text-decoration:underline; }
+.portix-callout-tools[hidden] { display:none !important; }
+.portix-callout-tools { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0; padding:12px; border:1px solid #a5b4c6; background:#f1f5fa; color:#172638; }
+.portix-callout-tools legend { font-weight:600; font-size:14px; }
+.portix-callout-tools button, .portix-callout-tools select { min-height:36px; padding:6px 10px; border:1px solid #a5b4c6; border-radius:4px; background:#fff; color:#172638; font:inherit; cursor:pointer; }
+.portix-editor .ql-toolbar.ql-snow .portix-callout-toggle { width:30px; min-width:30px; min-height:30px; padding:4px; font-size:13px; }
+.ql-editor :is(.portix-callout-advice,.portix-callout-warning,.portix-callout-equipment,.portix-callout-note) { border-left:4px solid #577e60; background:#f1f5f1; color:#252820; padding:8px 14px; }
+.ql-editor .portix-callout-warning { border-color:#ae7325; background:#fff4e3; }
+.ql-editor .portix-callout-equipment { border-color:#5a7b94; background:#eef2f6; }
+.ql-editor .portix-callout-note { border-color:#887095; background:#f2eff5; }
+.ql-editor :is(.portix-callout-advice,.portix-callout-warning,.portix-callout-equipment,.portix-callout-note):not(:is(.portix-callout-advice,.portix-callout-warning,.portix-callout-equipment,.portix-callout-note) + *)::before { display:block; font:700 12px/1.5 system-ui,sans-serif; margin-bottom:5px; }
+.ql-editor .portix-callout-advice::before { content:'Conseil'; }
+.ql-editor .portix-callout-warning::before { content:'Avertissement'; }
+.ql-editor .portix-callout-equipment::before { content:'Information'; }
+.ql-editor .portix-callout-note::before { content:'Note'; }
+.ql-editor .portix-box-title-yes { font-weight:700; }
+@media (max-width:600px) { .portix-callout { padding:12px; } .portix-callout-tools button,.portix-callout-tools select { min-height:44px; } }
+@media print { .portix-callout { break-inside:avoid; background:white; color:black; border-color:#555; } }
+
+.ql-editor .portix-callout-advice + .portix-callout-advice::before { content:none; }
+
+.ql-editor .portix-callout-warning + .portix-callout-warning::before { content:none; }
+
+.ql-editor .portix-callout-equipment + .portix-callout-equipment::before { content:none; }
+
+.ql-editor .portix-callout-note + .portix-callout-note::before { content:none; }
+
+.portix-editor .ql-toolbar.ql-snow .portix-callout-toggle svg { width:20px; height:20px; display:block; }
+
+.portix-editor .portix-callout-tools { min-width:0; max-width:100%; box-sizing:border-box; font:14px/1.4 system-ui,sans-serif; }
+.portix-editor .portix-callout-tools legend { font:600 14px/1.4 system-ui,sans-serif; }
+.portix-editor .portix-callout-tools label { display:flex; flex-wrap:wrap; align-items:center; gap:6px; font:600 14px/1.4 system-ui,sans-serif; }
+.portix-editor .portix-callout-tools :is(button,select) { max-width:100%; font:400 14px/1.4 system-ui,sans-serif; white-space:normal; }

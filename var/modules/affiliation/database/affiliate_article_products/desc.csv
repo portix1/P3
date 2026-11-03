@@ -1,0 +1,4 @@
+id; numeric; notnull; ; ; ; primary; ;
+article_id; numeric; notnull; ; ; index; ; ;
+product_id; numeric; notnull; ; ; index; ; affiliate_products.id; cascade
+position; numeric; notnull; 0; ; index; ; ;

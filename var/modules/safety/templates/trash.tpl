@@ -1,0 +1,7 @@
+<header class="page-heading"><p class="eyebrow">{{ safety_title }}</p><h1>{{ safety_trash }}</h1><p>{{ safety_intro }}</p></header>
+{% include "var/modules/safety/templates/nav.tpl" %}
+{% if safety_message %}<p class="status-message" role="status">{{ safety_message }}</p>{% endif %}
+<div class="admin-section table-scroll"><table><caption>{{ safety_trash }}</caption><thead><tr><th scope="col">{{ safety_type }}</th><th scope="col">{{ safety_title_col }}</th><th scope="col">{{ safety_date }}</th><th scope="col">{{ safety_actor }}</th><th scope="col"></th></tr></thead><tbody>
+{% for trashrow in trashrow %}<tr><td>{{ trashrow.type }}</td><td>{{ trashrow.title }}</td><td>{{ trashrow.date }}</td><td>{{ trashrow.actor }}</td><td><form method="post" action="Admin-safety.html"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="safety_action" value="restore_trash"><input type="hidden" name="id" value="{{ trashrow.id }}"><button type="submit">{{ safety_restore }}</button></form><form method="post" action="Admin-safety.html" data-confirm><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="safety_action" value="delete_trash"><input type="hidden" name="id" value="{{ trashrow.id }}"><button class="button-danger" type="submit">{{ safety_delete_forever }}</button></form></td></tr>{% endfor %}
+</tbody></table></div>
+{% if safety_has_trash == "0" %}<p>{{ safety_empty_trash }}</p>{% endif %}

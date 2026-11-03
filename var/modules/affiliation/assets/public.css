@@ -1,0 +1,14 @@
+/* Affiliation module: discreet, visually distinct note beneath editorial content. */
+.content-card .article-affiliation { margin: 2rem 0 0; padding: 1rem 1.15rem; border: 1px solid #ded4c9; border-left: 3px solid #9a7658; border-radius: 10px; background: #f7f4ef; color: #62584e; font-size: .92rem; }
+.content-card .article-affiliation > h2 { margin: 0 0 .45rem; color: #675846; font-size: .92rem; font-weight: 800; letter-spacing: .075em; line-height: 1.4; text-transform: uppercase; }
+.content-card .article-affiliation-disclosure { margin: 0 0 .8rem; color: #766d64; font-size: .8rem; line-height: 1.5; }
+.content-card .article-affiliation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: .65rem; }
+.content-card .article-affiliation-product { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .65rem .8rem; padding: .7rem .8rem; border: 1px solid #e8dfd5; border-radius: 8px; background: rgb(255 255 255 / 62%); }
+.content-card .article-affiliation-product > img { width: 3.5rem; max-height: 3.5rem; object-fit: contain; }
+.content-card .article-affiliation-content { min-width: 0; }
+.content-card .article-affiliation-content > h3 { margin: 0 0 .25rem; color: #554638; font-size: 1rem; letter-spacing: 0; }
+.content-card .article-affiliation-content > p { margin: 0 0 .55rem; color: #6f665e; font-size: .86rem; line-height: 1.5; }
+.content-card .article-affiliation-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.content-card .article-affiliation-link { display: inline-flex; min-height: 2.3rem; align-items: center; padding: .4rem .7rem; border: 1px solid #c9b49f; border-radius: 6px; background: #f4eee7; color: #654b34; font-size: .84rem; font-weight: 700; text-decoration: none; }
+.content-card .article-affiliation-link:hover { border-color: #9a7658; background: #eee4d9; color: #493522; text-decoration: underline; }
+@media (max-width: 540px) { .content-card .article-affiliation { padding: .85rem; } .content-card .article-affiliation-product { grid-template-columns: minmax(0, 1fr); } }
