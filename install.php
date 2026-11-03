@@ -16,7 +16,7 @@ if ($preflight['ok']) {
     $application = require __DIR__ . '/bootstrap/app.php';
 
     if ($application->configuration()->isInstalled()) {
-        exit('<p>Portix 3 est déjà configuré. <a href="./">Ouvrir le site</a></p>');
+        exit('<p>P3 est déjà configuré. <a href="./">Ouvrir le site</a></p>');
     }
 
     if (empty($_SESSION['install_token'])) {
@@ -200,17 +200,17 @@ function installCheckRow(array $check): string
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Installation de Portix 3</title>
+<title>Installation de P3</title>
 <style>
 :root{color-scheme:light}body{font:16px/1.55 system-ui,sans-serif;max-width:52rem;margin:3rem auto;padding:0 1rem;color:#17202a;background:#fff}h1,h2{line-height:1.2}fieldset{border:1px solid #778493;border-radius:.6rem;margin:1rem 0;padding:1rem}label{display:block;margin:.8rem 0}input{display:block;width:100%;box-sizing:border-box;padding:.7rem;margin-top:.25rem;border:1px solid #657383;border-radius:.35rem;font:inherit}button,.button{display:inline-block;min-height:44px;box-sizing:border-box;padding:.7rem 1rem;border:1px solid #315f86;border-radius:.4rem;background:#e9f3fb;color:#173c5b;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}.error{background:#fdecec;color:#7a1616;border:1px solid #bd5656;padding:1rem;border-radius:.5rem}.success{background:#eaf7ed;color:#174d25;border:1px solid #5e946b;padding:1rem;border-radius:.5rem}.preflight{margin:1.5rem 0;padding:1rem;border:1px solid #aeb8c2;border-radius:.6rem;background:#f7f9fb}.check-list{list-style:none;padding:0;margin:0;display:grid;gap:.55rem}.check-list li{padding:.65rem .75rem;border-radius:.4rem;border:1px solid transparent}.check-list strong,.check-list span{display:block}.check-list span{font-size:.92rem;margin-top:.15rem}.check-ok{background:#edf8ef;color:#174d25;border-color:#82ad8b!important}.check-fail{background:#fdecec;color:#7a1616;border-color:#c87070!important}.blocked{font-weight:700;color:#7a1616}.actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem}@media(max-width:36rem){body{margin:1.5rem auto}.actions>*{width:100%;text-align:center}}
 </style>
 </head>
 <body>
-<h1>Installation de Portix 3</h1>
+<h1>Installation de P3</h1>
 
 <section class="preflight" aria-labelledby="environment-title">
 <h2 id="environment-title">Vérification de l’environnement</h2>
-<p>Portix 3 prépare automatiquement ses dossiers de travail et vérifie que PHP peut y créer puis supprimer un fichier.</p>
+<p>P3 prépare automatiquement ses dossiers de travail et vérifie que PHP peut y créer puis supprimer un fichier.</p>
 
 <h3>PHP</h3>
 <ul class="check-list">
@@ -235,11 +235,11 @@ function installCheckRow(array $check): string
 <div class="success" role="status">
 <p><strong>Installation terminée.</strong></p>
 <p>La base SQLite, la configuration et les dossiers d’écriture ont été contrôlés.</p>
-<p><a class="button" href="./accueil.html">Ouvrir Portix 3</a></p>
+<p><a class="button" href="./accueil.html">Ouvrir P3</a></p>
 </div>
 <?php elseif (!$preflight['ok']): ?>
 <p class="blocked">L’installation est bloquée tant que tous les prérequis indispensables ne sont pas validés.</p>
-<p>Si Portix 3 ne peut pas corriger automatiquement un dossier, donnez à l’utilisateur du serveur Web les droits d’écriture sur ce dossier puis relancez le contrôle.</p>
+<p>Si P3 ne peut pas corriger automatiquement un dossier, donnez à l’utilisateur du serveur Web les droits d’écriture sur ce dossier puis relancez le contrôle.</p>
 <div class="actions"><a class="button" href="./install.php">Réessayer les vérifications</a></div>
 <?php else: ?>
 <p>Cette procédure crée une installation neuve avec une base SQLite et un premier compte administrateur.</p>
@@ -248,7 +248,7 @@ function installCheckRow(array $check): string
 <fieldset>
 <legend>Site</legend>
 <label>Titre
-<input name="title" required maxlength="150" value="<?= installEscape($_POST['title'] ?? 'Portix 3') ?>">
+<input name="title" required maxlength="150" value="<?= installEscape($_POST['title'] ?? 'P3') ?>">
 </label>
 </fieldset>
 <fieldset>
@@ -270,7 +270,7 @@ function installCheckRow(array $check): string
 <input name="admin_password" type="password" minlength="12" required autocomplete="new-password">
 </label>
 </fieldset>
-<button type="submit">Installer Portix 3</button>
+<button type="submit">Installer P3</button>
 </form>
 <?php endif; ?>
 </body>
