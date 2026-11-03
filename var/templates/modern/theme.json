@@ -1,22 +1,22 @@
 {
-  "schema": 1,
-  "id": "modern",
-  "name": "Modern",
-  "version": "0.1.0",
-  "kind": "theme",
-  "contract": "1",
-  "p3_min": "0.8.1",
-  "p3_max": null,
-  "php_min": "8.2",
-  "requires": [
-    "shared"
-  ],
-  "variant_of": null,
-  "files": {
-    "index.tpl": "d2e31380c982e1c417648bef20e0a72ea4d16e782293bbc1542d84ebd27b4108",
-    "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
-    "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
-    "style.css": "1782716935647947f42269d88579923e7052d0886bdf6fb2db62266d3f56f7c5",
-    "style.min.css": "8306dbf04303ae10448eb56ed4419031d8181f90b427fdb7c46477d15b097dd9"
-  }
+    "schema": 1,
+    "id": "modern",
+    "name": "Modern",
+    "version": "0.1.0",
+    "kind": "theme",
+    "contract": "1",
+    "p3_min": "0.8.1",
+    "p3_max": null,
+    "php_min": "8.2",
+    "requires": [
+        "shared"
+    ],
+    "variant_of": null,
+    "files": {
+        "index.tpl": "d2e31380c982e1c417648bef20e0a72ea4d16e782293bbc1542d84ebd27b4108",
+        "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+        "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+        "style.css": "1782716935647947f42269d88579923e7052d0886bdf6fb2db62266d3f56f7c5",
+        "style.min.css": "2a06b001d1a2ea805e967e90293ad5cdc69e87ff9634cd6ac7135e9222d273b8"
+    }
 }

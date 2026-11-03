@@ -1,22 +1,22 @@
 {
-  "schema": 1,
-  "id": "terminal",
-  "name": "Terminal",
-  "version": "0.1.0",
-  "kind": "theme",
-  "contract": "1",
-  "p3_min": "0.8.1",
-  "p3_max": null,
-  "php_min": "8.2",
-  "requires": [
-    "shared"
-  ],
-  "variant_of": null,
-  "files": {
-    "index.tpl": "95f3fcca8dd11ed93d949f628985d9d4e96713ce1d9e4107efe89a5a168a9a8f",
-    "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
-    "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
-    "style.css": "b352cf11f685e79b154bd7acd7512de58606858f122e8461561f8f130842c40d",
-    "style.min.css": "8fe30efcb86ab522c50353e3b6d73bdcf5437ff482ca68dd853168ed41cc097a"
-  }
+    "schema": 1,
+    "id": "terminal",
+    "name": "Terminal",
+    "version": "0.1.0",
+    "kind": "theme",
+    "contract": "1",
+    "p3_min": "0.8.1",
+    "p3_max": null,
+    "php_min": "8.2",
+    "requires": [
+        "shared"
+    ],
+    "variant_of": null,
+    "files": {
+        "index.tpl": "95f3fcca8dd11ed93d949f628985d9d4e96713ce1d9e4107efe89a5a168a9a8f",
+        "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+        "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+        "style.css": "b352cf11f685e79b154bd7acd7512de58606858f122e8461561f8f130842c40d",
+        "style.min.css": "69a6abe7ae8b5df26ea3847ed23227e7a2f7b4f172859e1736bd8e7319a4ea8f"
+    }
 }

@@ -1,22 +1,22 @@
 {
-  "schema": 1,
-  "id": "brutal",
-  "name": "Brutal",
-  "version": "0.1.0",
-  "kind": "theme",
-  "contract": "1",
-  "p3_min": "0.8.1",
-  "p3_max": null,
-  "php_min": "8.2",
-  "requires": [
-    "shared"
-  ],
-  "variant_of": null,
-  "files": {
-    "index.tpl": "ee1214b1d83bb5f39b99e61fbdae2609a9d18160a43d60f7b5022e92fc8cac20",
-    "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
-    "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
-    "style.css": "ed6288063739b49be63cec022a75b3cbfa5624b233d67ec68fc56e0f03f244c9",
-    "style.min.css": "91b6d7653465bd4cc2d73fbe6de47bc17081e4c53295ab8afd6d6bd81ade6b97"
-  }
+    "schema": 1,
+    "id": "brutal",
+    "name": "Brutal",
+    "version": "0.1.0",
+    "kind": "theme",
+    "contract": "1",
+    "p3_min": "0.8.1",
+    "p3_max": null,
+    "php_min": "8.2",
+    "requires": [
+        "shared"
+    ],
+    "variant_of": null,
+    "files": {
+        "index.tpl": "ee1214b1d83bb5f39b99e61fbdae2609a9d18160a43d60f7b5022e92fc8cac20",
+        "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+        "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+        "style.css": "ed6288063739b49be63cec022a75b3cbfa5624b233d67ec68fc56e0f03f244c9",
+        "style.min.css": "3a0ba17a6d1b1a89ee21910c66488da1637fb22342231036fd12af7c5f8f3cc4"
+    }
 }

@@ -1,24 +1,24 @@
 {
-  "schema": 1,
-  "id": "valve",
-  "name": "Valve",
-  "version": "0.1.0",
-  "kind": "theme",
-  "contract": "1",
-  "p3_min": "0.8.1",
-  "p3_max": null,
-  "php_min": "8.2",
-  "requires": [
-    "shared"
-  ],
-  "variant_of": null,
-  "files": {
-    "assets/grille.svg": "5d727dc8848c9658692ff2f30bcad02fd55b1bc4ce6448ef15c00d77bb090888",
-    "assets/tolex.svg": "76d8b2532472425632ae04066c2f42ca34d4d249c9ede611af2a42b5889ca724",
-    "index.tpl": "88223b868fbb95f54cb7047ac705c41fc51a97b5b9400d2db035985b2b0b7da2",
-    "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
-    "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
-    "style.css": "ddb6ac92339a9edc66f270fb8118439d4eb39efcf6c48ad2b031c91a6b02b4b1",
-    "style.min.css": "e9fd87ee7584325f48366aba874152397392f797cee4a8d2247ee4170c7d4869"
-  }
+    "schema": 1,
+    "id": "valve",
+    "name": "Valve",
+    "version": "0.1.0",
+    "kind": "theme",
+    "contract": "1",
+    "p3_min": "0.8.1",
+    "p3_max": null,
+    "php_min": "8.2",
+    "requires": [
+        "shared"
+    ],
+    "variant_of": null,
+    "files": {
+        "assets/grille.svg": "5d727dc8848c9658692ff2f30bcad02fd55b1bc4ce6448ef15c00d77bb090888",
+        "assets/tolex.svg": "76d8b2532472425632ae04066c2f42ca34d4d249c9ede611af2a42b5889ca724",
+        "index.tpl": "88223b868fbb95f54cb7047ac705c41fc51a97b5b9400d2db035985b2b0b7da2",
+        "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+        "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+        "style.css": "ddb6ac92339a9edc66f270fb8118439d4eb39efcf6c48ad2b031c91a6b02b4b1",
+        "style.min.css": "22fc7c3a6f82661ccb2a3b9a9ab8944c2109c33c3063a492c0f520c0c514caae"
+    }
 }
