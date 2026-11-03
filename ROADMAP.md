@@ -11,6 +11,10 @@ Le paquet de base comprend le moteur, les composants indispensables et un thème
 - [x] Titre P3 proposé par l’installateur ([PR nº 2](https://github.com/portix1/P3/pull/2)).
 - [x] Nom SQLite saisi ou généré à l’installation. P3 conserve le chemin historique pour les sites existants ([PR nº 4](https://github.com/portix1/P3/pull/4)).
 
+- [x] Archive candidate 0.8.1 assemblée depuis `a9376da` et validée après extraction sous PHP 8.4.
+- [x] Installation de l’archive candidate confirmée sur le serveur de test.
+- [x] Restauration testée sur une copie de l’archive avec un nom SQLite personnalisé. Articles, identifiants, URL, compte et configuration ont été comparés avant et après.
+
 ### Ordre des prochains travaux
 
 1. **Préparer une archive candidate.** Définir les composants livrés et vérifier les ressources et leurs licences. Contrôler que l’archive ne contient ni base, ni configuration privée, ni médias d’une installation.
