@@ -5,7 +5,9 @@
 <div class="table-scroll"><table class="theme-inventory-table">
 <caption class="visually-hidden">{{ themes_inventory_title }}</caption>
 <thead><tr><th scope="col">{{ themes_name }}</th><th scope="col">{{ themes_version }}</th><th scope="col">{{ themes_type }}</th><th scope="col">{{ themes_compatibility }}</th><th scope="col">{{ themes_file_state }}</th><th scope="col">{{ themes_details }}</th></tr></thead>
-<tbody>{% for themerow in themerow %}<tr><td><strong>{{ themerow.name }}</strong><br /><small>{{ themerow.id }} {{ themerow.active }}</small></td><td>{{ themerow.version }}</td><td>{{ themerow.type }}</td><td>{{ themerow.compatibility }}</td><td>{{ themerow.files }}</td><td><details><summary title="{{ themes_details }}">{{ themes_details }}</summary><p>{{ themerow.details }}</p></details></td></tr>{% endfor %}</tbody>
+<tbody>{% for themerow in themerow %}<tr><td><strong>{{ themerow.name }}</strong><br /><small>{{ themerow.id }} {{ themerow.active }}</small></td><td>{{ themerow.version }}
+{% if themerow.update_url %}<br /><a href="{{ themerow.update_url }}">{{ extension_updates_download }} {{ themerow.update_version }}</a>{% endif %}
+</td><td>{{ themerow.type }}</td><td>{{ themerow.compatibility }}</td><td>{{ themerow.files }}</td><td><details><summary title="{{ themes_details }}">{{ themes_details }}</summary><p>{{ themerow.details }}</p></details></td></tr>{% endfor %}</tbody>
 </table></div>
 </section>
 

@@ -223,6 +223,23 @@ if ($canAccessAdmin && $route === 'Admin') {
                     $enabledModuleCount++;
                 }
             }
+            $updates = [];
+            $coreUpdate = '';
+            if ($isAdmin) {
+                $root = dirname(__DIR__);
+                $version = trim((string) file_get_contents($root . '/VERSION'));
+                $themes = (new \Portix\Theme\ThemeCatalog($root, $version))->all();
+                $updates = \Portix\Maintenance\ExtensionUpdates::dashboard($root, $modules, $themes);
+                $coreUpdate = \Portix\Maintenance\ExtensionUpdates::core($version);
+            }
+            foreach (['module', 'theme'] as $kind) {
+                $count = count($updates[$kind] ?? []);
+                $template->set('admin_' . $kind . '_updates', $count > 0
+                    ? sprintf($translator->text($count === 1 ? 'dashboard_update_one' : 'dashboard_update_many'), $count)
+                    : '');
+            }
+            $template->set('extension_updates_download', $translator->text('extension_updates_download'));
+            $template->set('admin_core_update', $coreUpdate);
             $template->set('admin_module_count', (string) $visibleModuleCount);
             $template->set('admin_enabled_module_count', (string) $enabledModuleCount);
             $template->set('admin_news_count', $adminNewsEnabled ? (string) $repositories->news()->countAll() : '0');

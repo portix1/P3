@@ -153,9 +153,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $template->setSlot('main', './var/admin/templates/modmgr.tpl');
+$template->set('extension_updates_download', $translator->text('extension_updates_download'));
 $template->set('modmgr_message', $message);
 
-foreach ($modulesDatabase->allOrdered() as $description) {
+$installedModules = $modulesDatabase->allOrdered();
+$updates = \Portix\Maintenance\ExtensionUpdates::dashboard(dirname(__DIR__), $installedModules, []);
+foreach ($installedModules as $description) {
     $modulePath = basename((string) $description['path']);
     $moduleDirectory = './var/modules/' . $modulePath;
     if (is_dir($moduleDirectory) && !is_file($moduleDirectory . '/AUTH')) {
@@ -172,6 +175,8 @@ foreach ($modulesDatabase->allOrdered() as $description) {
         $isConfigurable = !empty($description['enabled']) && is_file($moduleDirectory . '/config.php');
         $template->addRow('checkmod', array(
             'name' => $description['name'],
+            'update_url' => $updates['module'][$description['prefix']]['url'] ?? '',
+            'update_version' => $updates['module'][$description['prefix']]['version'] ?? '',
             'version' => $moduleVersion !== '' ? $moduleVersion : $translator->text('modules_version_missing'),
             'enabled' => $description['enabled'],
             'prefix' => $description['prefix'],

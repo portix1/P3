@@ -612,3 +612,6 @@ $_LANG['extension_updates_download'] = 'Download ZIP';
 $_LANG['extension_updates_none'] = 'No updates found for tracked extensions.';
 $_LANG['extension_updates_found'] = 'Updates available.';
 $_LANG['extension_updates_failed'] = 'The check failed. Reload the page and try again.';
+
+$_LANG['dashboard_update_one'] = '%d update available';
+$_LANG['dashboard_update_many'] = '%d updates available';

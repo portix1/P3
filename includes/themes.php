@@ -37,7 +37,9 @@ if (isset($_POST['themes_action'])) {
 }
 
 $template->setSlot('main', './var/admin/templates/themes.tpl');
+$template->set('extension_updates_download', $translator->text('extension_updates_download'));
 $template->set('confmessage', $configurationMessage);
+$updates = \Portix\Maintenance\ExtensionUpdates::dashboard(dirname(__DIR__), [], $themeInventory);
 foreach ($themeInventory as $entry) {
     $fileStatus = $translator->text('themes_not_measured');
     if ($entry['versioned']) {
@@ -51,6 +53,8 @@ foreach ($themeInventory as $entry) {
     if ($entry['kind'] === 'shared') { $details .= ' ; ' . $translator->text('themes_shared_help'); }
     $template->addRow('themerow', [
         'id' => $entry['id'], 'name' => $entry['name'],
+        'update_url' => $updates['theme'][$entry['id']]['url'] ?? '',
+        'update_version' => $updates['theme'][$entry['id']]['version'] ?? '',
         'version' => $entry['version'] !== '' ? $entry['version'] : $translator->text('themes_not_versioned'),
         'type' => $translator->text($entry['kind'] === 'shared' ? 'themes_shared' : ($entry['variant_of'] !== '' ? 'themes_variant' : 'themes_theme')),
         'compatibility' => $translator->text($entry['compatible'] === null ? 'themes_not_declared' : ($entry['compatible'] ? 'themes_compatible' : 'themes_incompatible')),

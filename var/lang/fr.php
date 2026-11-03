@@ -612,3 +612,6 @@ $_LANG['extension_updates_download'] = 'Télécharger le ZIP';
 $_LANG['extension_updates_none'] = 'Aucune mise à jour trouvée pour les extensions suivies.';
 $_LANG['extension_updates_found'] = 'Mises à jour disponibles.';
 $_LANG['extension_updates_failed'] = 'La vérification a échoué. Rechargez la page et réessayez.';
+
+$_LANG['dashboard_update_one'] = '%d mise à jour disponible';
+$_LANG['dashboard_update_many'] = '%d mises à jour disponibles';

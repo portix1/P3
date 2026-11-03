@@ -21,7 +21,7 @@
 
 <section class="admin-section">
 <h2>{{ modules_installed }}</h2>
-<div class="module-list">
+<div class="module-list" id="module-list">
 <div class="module-list-header" aria-hidden="true">
 <span>{{ modules_state_column }}</span>
 <span>{{ modules_module_column }}</span>
@@ -38,6 +38,7 @@
 <div class="module-identity">
 <strong>{{ checkmod.name }}</strong>
 <small class="module-version">{{ modules_version_label }} {{ checkmod.version }}</small>
+{% if checkmod.update_url %}<a href="{{ checkmod.update_url }}">{{ extension_updates_download }} {{ checkmod.update_version }}</a>{% endif %}
 </div>
 <div class="module-row-actions">
 <div class="module-action-slot module-action-state">
