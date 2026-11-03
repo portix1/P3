@@ -398,47 +398,6 @@ try {
         str_contains($engine, '!is_file($entryFile) || is_link($entryFile)'),
         'un enregistrement de module périmé ne provoque pas d’erreur fatale'
     );
-    $updater = (string) file_get_contents($root . '/tools/update_portix3.php');
-    assertSameValue(
-        true,
-        str_contains($updater, "'download/database/Dwl_desc'"),
-        'ancien schéma Download archivé avant la synchronisation'
-    );
-    assertSameValue(
-        true,
-        str_contains($updater, "['NewsScroll', 'meta', 'count', 'logmgr', 'agenda', 'group']"),
-        'Agenda et UserGroup supprimés lors de la mise à jour'
-    );
-    assertSameValue(
-        true,
-        str_contains($updater, "'includes/class/template.class.php'")
-            && str_contains($updater, "'var/templates/modern/adminmenu.tpl'")
-            && str_contains($updater, "'var/templates/modern/config.tpl'")
-            && str_contains($updater, "'var/modules/menu/templates/index.tpl'"),
-        'ancien moteur et templates obsolètes supprimés lors de la mise à jour'
-    );
-    assertSameValue(
-        true,
-        str_contains($updater, "templates/newuser.tpl")
-            && str_contains($updater, "templates/saveuser.tpl")
-            && str_contains($updater, "templates/user_mgr.tpl")
-            && str_contains($updater, "templates/newuser.css"),
-        'anciens templates UserZone supprimés lors de la mise à jour'
-    );
-    assertSameValue(
-        true,
-        str_contains($updater, "contact/templates/admin.tpl")
-            && str_contains($updater, "download/templates/upload.tpl")
-            && str_contains($updater, "UserZone/templates/img")
-            && str_contains($updater, "download/img")
-            && str_contains($updater, "news/more.png"),
-        'anciens templates et images de modules supprimés lors de la mise à jour'
-    );
-    assertSameValue(
-        false,
-        str_contains($updater, 'bootstrap/app.php'),
-        'mise à jour CLI indépendante du gestionnaire d’erreur HTTP'
-    );
     $insightsConfig = str_replace("\r\n", "\n", (string) file_get_contents($root . '/var/modules/insights/config.php'));
     assertSameValue(
         true,

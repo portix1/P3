@@ -1,0 +1,22 @@
+{
+    "schema": 1,
+    "id": "sidebar-left",
+    "name": "Sidebar gauche",
+    "version": "0.1.0",
+    "kind": "theme",
+    "contract": "1",
+    "p3_min": "0.8.1",
+    "p3_max": null,
+    "php_min": "8.2",
+    "requires": [
+        "shared"
+    ],
+    "variant_of": null,
+    "files": {
+        "index.tpl": "9cff687aa0365f6a33d32dd5b157062b6b351226dc9be0f5acaa8e54325947d7",
+        "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+        "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+        "style.css": "3f7d03ac5da5e6c0e04bd686576b7ccc32675e9b216b118d54eb3a4fe978c539",
+        "style.min.css": "ab2ae88616bcf32a8680dfd2c2f6427387e5aaaa11e0038b68ebd35ad46f38e8"
+    }
+}

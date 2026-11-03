@@ -60,18 +60,18 @@ try {
     assertSameValue(['contact_conversations', 'contact_messages'], $contactResult['tables'], 'schéma de la messagerie Contact');
     $insightsResult = $installer->installDirectory($root . '/var/modules/insights');
     assertSameValue(
-        ['analytics_audience_daily', 'analytics_daily', 'analytics_devices', 'analytics_pages', 'analytics_referrers', 'analytics_unique_visitors', 'analytics_visitor_days', 'analytics_visitors', 'application_logs', 'audit_logs'],
+        ['analytics_audience_daily', 'analytics_collection_daily', 'analytics_confirmed_daily', 'analytics_confirmed_visitors', 'analytics_daily', 'analytics_devices', 'analytics_pages', 'analytics_referrers', 'analytics_unique_visitors', 'analytics_visitor_days', 'analytics_visitors', 'application_logs', 'audit_logs'],
         $insightsResult['tables'],
         'schéma des statistiques et journaux'
     );
 
     $result = $installer->installDirectory($root . '/var/modules/articles');
-    assertSameValue(['article_categories', 'article_settings', 'articles'], $result['tables'], 'tables installées');
+    assertSameValue(['article_categories', 'article_reading_options', 'article_relations', 'article_series', 'article_series_parts', 'article_settings', 'articles'], $result['tables'], 'tables installées');
     assertTrue(tableExists($database->connection(), 'article_categories'), 'table des catégories');
     assertTrue(tableExists($database->connection(), 'article_settings'), 'table des réglages du menu');
     assertTrue(tableExists($database->connection(), 'articles'), 'table des articles');
     assertSameValue(
-        3,
+        count($result['tables']),
         (int) $database->connection()->query(
             "SELECT COUNT(*) FROM module_schema_tables WHERE module_prefix = 'articles'"
         )->fetchColumn(),

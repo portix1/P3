@@ -1,0 +1,23 @@
+{
+    "schema": 1,
+    "id": "signature",
+    "name": "Signature",
+    "version": "0.1.0",
+    "kind": "theme",
+    "contract": "1",
+    "p3_min": "0.8.1",
+    "p3_max": null,
+    "php_min": "8.2",
+    "requires": [
+        "shared"
+    ],
+    "variant_of": null,
+    "files": {
+        "assets/contour.svg": "be6c13f989769bb35bf7a4127aa595131155b14e24a5044fcdfed3d518a070d2",
+        "index.tpl": "a3272f03abdffd6dac0754236406a93aa639dc32c70164a90cc96e040d81f350",
+        "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+        "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+        "style.css": "abe8f805f96f5005b0590e943dba3492f8c5b2b981f1649d796a29beeb363114",
+        "style.min.css": "10d4425b7a94a18034f3aaae5a45ab625b4ea35d30011bc9ad38d38e596a873b"
+    }
+}

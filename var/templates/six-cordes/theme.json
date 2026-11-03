@@ -1,24 +1,24 @@
 {
-    "schema": 1,
-    "id": "six-cordes",
-    "name": "Six Cordes",
-    "version": "0.1.1",
-    "kind": "theme",
-    "contract": "1",
-    "p3_min": "0.8.1",
-    "p3_max": null,
-    "php_min": "8.2",
-    "requires": [
-        "shared"
-    ],
-    "variant_of": "univers-guitare",
-    "files": {
-        "assets/contour.svg": "be6c13f989769bb35bf7a4127aa595131155b14e24a5044fcdfed3d518a070d2",
-        "assets/guitar-header.webp": "3919f356c3fe352bf36bc3439003c3f3cf1a913bc0cd46eceaf87e498ab43b4b",
-        "index.tpl": "9a1c7edcb013fe1def2beabb6e555d0080763135299a6d7db552df35d4d42159",
-        "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
-        "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
-        "style.css": "585c1f1efba9ec448fdaa88a65d359d7d0e5b767cf7e8eb76f59255da7937ddc",
-        "style.min.css": "325f8de6d85a453d8139ab3dd6884db7dd6171daab54b7e2263f328ef43db999"
-    }
+  "schema": 1,
+  "id": "six-cordes",
+  "name": "Six Cordes",
+  "version": "0.1.1",
+  "kind": "theme",
+  "contract": "1",
+  "p3_min": "0.8.1",
+  "p3_max": null,
+  "php_min": "8.2",
+  "requires": [
+    "shared"
+  ],
+  "variant_of": "univers-guitare",
+  "files": {
+    "assets/contour.svg": "be6c13f989769bb35bf7a4127aa595131155b14e24a5044fcdfed3d518a070d2",
+    "assets/guitar-header.webp": "3919f356c3fe352bf36bc3439003c3f3cf1a913bc0cd46eceaf87e498ab43b4b",
+    "index.tpl": "db301ec00f7d63f0e62595c83961ffa124bd43ec30cf175934380a892e43a091",
+    "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+    "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+    "style.css": "4c9af9d496be67569cc5f85ee811e381a6c2d8accf9ccd2406c113b43d03da81",
+    "style.min.css": "cd777d5943246c65d3abaa22dcbf39790074827ab559552b66e9627ff5f96c0e"
+  }
 }

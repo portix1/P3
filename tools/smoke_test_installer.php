@@ -65,10 +65,10 @@ try {
     );
     foreach ([
         'Présentation',
-        'Installation de Portix 3',
-        'Administration de Portix 3',
-        'Guide du rédacteur de Portix 3',
-        'Portix 3 — Structure et fonctionnement',
+        'Installation de P3',
+        'Administration de P3',
+        'Guide du rédacteur de P3',
+        'P3 — Structure et fonctionnement',
         'Développer un module',
         'Développer un module avec l’aide d’une IA',
     ] as $expectedTitle) {
@@ -80,7 +80,7 @@ try {
         static fn (array $item): string => (string) ($item['title'] ?? ''),
         $content['news']
     );
-    foreach (['Félicitation !', 'Et maintenant ?'] as $expectedTitle) {
+    foreach (['Installation terminée', 'Et maintenant ?'] as $expectedTitle) {
         if (!in_array($expectedTitle, $newsTitles, true)) {
             throw new RuntimeException('Actualité initiale manquante : ' . $expectedTitle);
         }

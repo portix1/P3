@@ -1,0 +1,22 @@
+{
+    "schema": 1,
+    "id": "sidebar-right",
+    "name": "Sidebar droite",
+    "version": "0.1.0",
+    "kind": "theme",
+    "contract": "1",
+    "p3_min": "0.8.1",
+    "p3_max": null,
+    "php_min": "8.2",
+    "requires": [
+        "shared"
+    ],
+    "variant_of": null,
+    "files": {
+        "index.tpl": "7152f9100690605041ac900383411171a133431621911cbd60a52258fcb48d0f",
+        "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+        "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+        "style.css": "3fd1d4f2fd7d29ef4f77607a8a0d4fa4edc05c08692defac821137ea3f5c2f85",
+        "style.min.css": "94c6adaf7a403f545e6df6a165390648549768d03d137f5f6fe5a07466b5577c"
+    }
+}

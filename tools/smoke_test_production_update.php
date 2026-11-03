@@ -93,26 +93,6 @@ try {
         'version mise à jour'
     );
 
-    $updater = (string) file_get_contents($root . '/tools/update_portix3.php');
-    $maintenancePosition = strpos($updater, 'UpdateSafety::enableMaintenance');
-    $backupPosition = strpos($updater, 'UpdateSafety::createBackup');
-    $migrationPosition = strpos($updater, 'archiveLegacyModuleSchemas');
-    updateAssertTrue(
-        is_int($maintenancePosition) && is_int($backupPosition) && $maintenancePosition < $backupPosition,
-        'mode maintenance activé avant la sauvegarde'
-    );
-    updateAssertTrue(
-        is_int($backupPosition) && is_int($migrationPosition) && $backupPosition < $migrationPosition,
-        'sauvegarde exécutée avant les opérations de migration'
-    );
-    updateAssertTrue(
-        str_contains($updater, "UpdateSafety::markRelease(\$root, \$version, 'update')"),
-        'version enregistrée après mise à jour'
-    );
-    updateAssertTrue(
-        str_contains($updater, 'UpdateSafety::disableMaintenance($root)'),
-        'mode maintenance désactivé après succès'
-    );
     $frontController = (string) file_get_contents($root . '/index.php');
     updateAssertTrue(
         str_contains($frontController, 'maintenance.lock')

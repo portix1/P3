@@ -1,0 +1,22 @@
+{
+    "schema": 1,
+    "id": "editorial",
+    "name": "Editorial",
+    "version": "0.1.0",
+    "kind": "theme",
+    "contract": "1",
+    "p3_min": "0.8.1",
+    "p3_max": null,
+    "php_min": "8.2",
+    "requires": [
+        "shared"
+    ],
+    "variant_of": null,
+    "files": {
+        "index.tpl": "439bd8fec3ce41dcb666d6552665fe616dfed5ecde2f41d1a40ecbf550eff72f",
+        "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
+        "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
+        "style.css": "e96c5c51036d96ee4aef422cde2bd2df1c9bd9f6e8e6259555ef0904e79d5663",
+        "style.min.css": "b928d4ca9a5861b72adeda66ba02bd5f27488a2033cc0c4094f09f933a95efb5"
+    }
+}
