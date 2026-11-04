@@ -45,3 +45,14 @@ Le déploiement sur Univers Guitare suit son propre cycle.
 - [ ] Retours visuels sur le serveur de test de Marc.
 
 L’inventaire et la procédure de test figurent dans [UX-BACK-OFFICE.md](UX-BACK-OFFICE.md).
+
+## Back-office — règle validée le 4 novembre 2026
+
+L’organisation en trois pages Rédaction, Administration et Configuration est obligatoire pour les modules et plugins à venir. Voir AGENTS.md et UX-BACK-OFFICE.md.
+
+- [x] Tableau de bord limité à l’état du site et aux trois accès.
+- [x] Menu limité à l’espace courant, couleurs bleu, orange et violet.
+- [x] Thème actif affiché et liens de mise à jour conditionnels.
+- [x] Actualités réintégré malgré son contrôleur fourni par le moteur.
+- [x] Contrôle de toutes les entrées administrables livré avec la validation automatisée.
+- [ ] Retour visuel de Marc sur la nouvelle archive.

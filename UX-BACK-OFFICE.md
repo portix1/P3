@@ -1,6 +1,6 @@
 # Réorganisation du back-office
 
-Version de test 0.8.3-rc2.
+Version de test 0.8.3-rc3.
 
 Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont classées dans Rédaction, Administration et Configuration. Chaque entrée possède une icône et un libellé. Le classement indique un emplacement et respecte les autorisations existantes.
 
@@ -33,10 +33,18 @@ Les liens de mise à jour proposent actuellement les archives à télécharger. 
 
 ## Vérification sur le serveur de test
 
-Faire une sauvegarde de l’installation de test. Extraire le ZIP 0.8.3-rc2 à sa racine en remplaçant les fichiers applicatifs. L’archive ne contient pas de base ni de configuration privée.
+Faire une sauvegarde de l’installation de test. Extraire le ZIP 0.8.3-rc3 à sa racine en remplaçant les fichiers applicatifs. L’archive ne contient pas de base ni de configuration privée.
 
 Ouvrir Admin.html après connexion puis examiner les trois espaces. Tester l’enregistrement d’une page de configuration et contrôler que les réglages des autres pages sont conservés. Vérifier avec un compte rédacteur que seuls ses accès autorisés apparaissent.
 
 La documentation initiale de l’installateur est actualisée. Les articles documentaires déjà enregistrés dans une installation existante conservent leur contenu.
 
-Les trois boutons de l’en-tête mènent aux espaces du tableau de bord. Rédaction utilise le bleu et les deux espaces réservés aux administrateurs utilisent le rouge. Le bloc de comptage éditorial est retiré du haut du tableau de bord.
+Les trois boutons de l’en-tête ouvrent trois pages distinctes. Rédaction utilise le bleu, Administration l’orange et Configuration le violet. Le bloc de comptage éditorial est retiré du haut du tableau de bord.
+
+## Règle permanente
+
+Cette organisation est obligatoire pour toute création ou modification de module, de plugin ou du moteur. Elle est inscrite dans AGENTS.md et dans le guide de développement des modules. Le menu latéral est limité à l’espace courant. Le tableau de bord reste une page d’état et un carrefour vers les trois espaces.
+
+Le thème actif figure dans une carte d’état avec son nom en bleu. Les liens de mise à jour sont affichés uniquement si une version supérieure a été détectée. Une vérification indisponible doit être distinguée d’une absence de mise à jour.
+
+Actualités est administré par le contrôleur du moteur et ne possède pas de config.php. Ce cas est pris en charge et testé pour les administrateurs, les rédacteurs et les modules désactivés. Tous les modules administrables livrés sont contrôlés par tools/smoke_test_admin_navigation.php.

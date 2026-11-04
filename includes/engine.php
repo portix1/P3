@@ -234,6 +234,7 @@ if ($canAccessAdmin && $route === 'Admin') {
             }
             foreach (['module', 'theme'] as $kind) {
                 $count = count($updates[$kind] ?? []);
+                $template->set('admin_' . $kind . '_has_updates', $count > 0 ? '1' : '0');
                 $template->set('admin_' . $kind . '_updates', $count > 0
                     ? sprintf($translator->text($count === 1 ? 'dashboard_update_one' : 'dashboard_update_many'), $count)
                     : ($isAdmin ? $translator->text(isset($_SESSION['p3_update_catalogue']['json'])
@@ -249,8 +250,20 @@ if ($canAccessAdmin && $route === 'Admin') {
             $template->set('admin_enabled_module_count', (string) $enabledModuleCount);
             $template->set('admin_news_count', $adminNewsEnabled ? (string) $repositories->news()->countAll() : '0');
             $template->set('admin_published_news_count', $adminNewsEnabled ? (string) $repositories->news()->countPublished() : '0');
-            $template->set('admin_public_theme', basename((string) $CONFIG['template']));
+            $themeInfo = (new \Portix\Theme\ThemeCatalog(dirname(__DIR__), trim((string) file_get_contents(dirname(__DIR__) . '/VERSION'))))->inspect(basename((string) $CONFIG['template']));
+            $template->set('admin_public_theme', $themeInfo['name']);
             $template->setSlot('main', './var/admin/templates/dashboard.tpl');
+            break;
+
+        case 'writing':
+        case 'management':
+        case 'configuration':
+            if ($adminRoute !== 'writing' && !$isAdmin) {
+                http_response_code(403);
+                $template->setSlot('main', './var/admin/templates/access-denied.tpl');
+            } else {
+                $template->setSlot('main', './var/admin/templates/area.tpl');
+            }
             break;
 
         case 'news':
@@ -367,14 +380,30 @@ if ($route === 'Admin') {
     $adminSections = \Portix\Navigation\AdminNavigation::sections(
         dirname(__DIR__), $modules, $isAdmin, $isRedactor, $argument, $translator
     );
+    $activeArea = in_array($adminRoute, ['writing', 'management', 'configuration'], true) ? $adminRoute : '';
+    $activeEntry = '';
     foreach ($adminSections as $section => $entries) {
         foreach ($entries as $entry) {
             $template->addRow('ux_nav_' . $section, $entry);
             if ($entry['current'] === 'is-current') {
-                $template->set('admin_area_class', $section === 'writing' ? 'admin-area-content' : 'admin-area-config');
+                $activeArea = $section;
+                $activeEntry = $entry['name'];
             }
         }
         $template->set('ux_has_' . $section, $entries !== [] ? '1' : '0');
+    }
+    foreach (['writing', 'management', 'configuration'] as $section) {
+        $template->set('ux_show_' . $section, $activeArea === $section && $adminSections[$section] !== [] ? '1' : '0');
+        $template->set('ux_' . $section . '_current', $activeArea === $section ? 'is-current' : '');
+    }
+    $template->set('admin_area_class', $activeArea === '' ? 'admin-area-dashboard' : 'admin-area-' . $activeArea);
+    $template->set('ux_active_area', $activeArea);
+    $template->set('ux_active_label', $activeArea === '' ? '' : $translator->text('ux_' . $activeArea));
+    $template->set('ux_breadcrumb_leaf', $activeEntry);
+    if (in_array($adminRoute, ['writing', 'management', 'configuration'], true) && ($isAdmin || $adminRoute === 'writing')) {
+        $template->set('ux_area_title', $translator->text('ux_' . $adminRoute));
+        $template->set('ux_area_help', $translator->text('ux_' . $adminRoute . '_help'));
+        foreach ($adminSections[$adminRoute] as $entry) { $template->addRow('ux_entries', $entry); }
     }
     foreach (['writing', 'management', 'configuration', 'identity', 'appearance', 'seo', 'mail',
         'updates', 'navigation', 'overview_help', 'writing_help', 'management_help', 'configuration_help',

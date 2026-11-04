@@ -322,16 +322,16 @@ button:hover,
 input[type="submit"]:hover,
 .button:hover { background: var(--accent-dark); }
 
-.admin-area-content .admin-content button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable),
-.admin-area-content .admin-content input[type="submit"],
-.admin-area-content .admin-content .button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable) {
+.admin-area-writing .admin-content button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable),
+.admin-area-writing .admin-content input[type="submit"],
+.admin-area-writing .admin-content .button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable) {
     border-color: var(--content-line);
     color: var(--content-ink);
     background: var(--content-soft);
 }
-.admin-area-content .admin-content button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable):hover,
-.admin-area-content .admin-content input[type="submit"]:hover,
-.admin-area-content .admin-content .button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable):hover { background: #dceaff; }
+.admin-area-writing .admin-content button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable):hover,
+.admin-area-writing .admin-content input[type="submit"]:hover,
+.admin-area-writing .admin-content .button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable):hover { background: #dceaff; }
 .admin-area-config .admin-content button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable),
 .admin-area-config .admin-content input[type="submit"],
 .admin-area-config .admin-content .button:not(.button-quiet):not(.button-danger):not(.button-enable):not(.button-disable) {
@@ -945,3 +945,26 @@ input[type="submit"]:hover,
 .management-section[id] { scroll-margin-top: 1rem; }
 .admin-nav .action-content { border-color: var(--content-line); color: var(--content-ink); background: var(--content-soft); }
 .admin-nav .action-admin { border-color: var(--admin-line); color: var(--admin-ink); background: var(--admin-soft); }
+
+.admin-area-writing { --workspace-ink: #174b85; --workspace-line: #9dbde0; --workspace-soft: #edf5ff; }
+.admin-area-management { --workspace-ink: #834309; --workspace-line: #d8ac73; --workspace-soft: #fff4e6; }
+.admin-area-configuration { --workspace-ink: #63419a; --workspace-line: #b8a4d6; --workspace-soft: #f4effc; }
+.action-management { color: #834309; border-color: #d8ac73; background: #fff4e6; }
+.action-configuration { color: #63419a; border-color: #b8a4d6; background: #f4effc; }
+.action-management:hover, .action-management:focus-visible { color: #663000; background: #ffe5c2; }
+.action-configuration:hover, .action-configuration:focus-visible { color: #4c2a80; background: #e9ddfa; }
+.ux-area-shortcuts .is-current { outline: 2px solid currentColor; outline-offset: 2px; }
+.admin-nav a.workspace-link, .admin-nav a.workspace-link.is-current, .management-grid > .workspace-link { color: var(--workspace-ink); border-color: var(--workspace-line); background: var(--workspace-soft); }
+.admin-nav a.workspace-link.is-current { box-shadow: inset 3px 0 currentColor; }
+.admin-nav a.workspace-link:hover, .management-grid > .workspace-link:hover { filter: brightness(.96); }
+.admin-area-writing .page-heading h1, .admin-area-management .page-heading h1, .admin-area-configuration .page-heading h1 { color: var(--workspace-ink); }
+.admin-area-management .admin-content button:not(.button-danger):not(.button-enable):not(.button-disable):not(.button-quiet),
+.admin-area-configuration .admin-content button:not(.button-danger):not(.button-enable):not(.button-disable):not(.button-quiet) { color: var(--workspace-ink); border-color: var(--workspace-line); background: var(--workspace-soft); }
+.dashboard-grid .metric-value { color: var(--content-ink); }
+.ux-breadcrumb { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; font-size: .9rem; }
+.ux-breadcrumb a { color: inherit; }
+.admin-topbar { flex-wrap: wrap; }
+@media (max-width: 760px) {
+    .ux-area-shortcuts { order: 3; flex: 1 0 100%; }
+    .ux-area-shortcuts > a { flex: 1 1 auto; justify-content: center; }
+}

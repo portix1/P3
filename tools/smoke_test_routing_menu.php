@@ -170,7 +170,7 @@ try {
     assertSameValue(
         true,
         str_contains($navigationSource, 'Admin-diagnostics.html')
-            && str_contains($dashboardSource, 'ux_nav_management')
+            && str_contains($dashboardSource, 'Admin-management.html')
             && str_contains($adminLayoutSource, 'ux_nav_management'),
         'accès Diagnostics présent dans la navigation administrateur'
     );
@@ -196,8 +196,8 @@ try {
     assertSameValue(
         true,
         str_contains($navigationSource, 'Admin-users.html')
-            && str_contains($dashboardTemplate, 'ux_nav_writing')
-            && str_contains($dashboardTemplate, 'ux_nav_configuration'),
+            && str_contains($dashboardTemplate, 'Admin-writing.html')
+            && str_contains($dashboardTemplate, 'Admin-configuration.html'),
         'navigation administrative centralisée sur le tableau de bord'
     );
     assertSameValue(
@@ -453,10 +453,10 @@ try {
     assertSameValue(false, in_array('Admin-config-themes.html', array_column($sections['management'], 'url'), true), 'pas de doublon thèmes dans Administration');
     assertSameValue(false, str_contains($dashboardTemplate, 'admin_news_count'), 'pas de compteur éditorial en haut du tableau de bord');
     foreach (['writing', 'management', 'configuration'] as $area) {
-        assertSameValue(true, str_contains($administrationLayout, 'Admin.html#ux-' . $area), 'raccourci vers chaque espace');
-        assertSameValue(true, str_contains($dashboardTemplate, 'id="ux-' . $area . '"'), 'destination du raccourci');
+        assertSameValue(true, str_contains($administrationLayout, 'Admin-' . $area . '.html'), 'raccourci vers chaque espace');
+        assertSameValue(true, str_contains($dashboardTemplate, 'Admin-' . $area . '.html'), 'destination du raccourci');
     }
-    assertSameValue(true, str_contains($dashboardTemplate, 'action-content') && str_contains($dashboardTemplate, 'action-admin'), 'code couleur du tableau de bord');
+    assertSameValue(true, str_contains($dashboardTemplate, 'action-content') && str_contains($dashboardTemplate, 'action-management') && str_contains($dashboardTemplate, 'action-configuration'), 'code couleur du tableau de bord');
 
     $active = [];
     foreach ($sections as $section => $entries) {

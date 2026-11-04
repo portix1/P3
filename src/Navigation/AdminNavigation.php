@@ -27,7 +27,6 @@ final class AdminNavigation
         if ($isAdmin) {
             $add('management', 'ux_accounts', 'Admin-users.html', 'users');
             $add('management', 'ux_modules', 'Admin-modmgr.html', 'boxes');
-            $add('management', 'ux_updates', 'Admin-config-updates.html', 'download');
             $add('management', 'diagnostics_nav', 'Admin-diagnostics.html', 'activity');
             $add('configuration', 'ux_identity', 'Admin-config.html', 'settings', 'Admin-config');
             $add('configuration', 'ux_themes', 'Admin-config-themes.html', 'images');
@@ -50,7 +49,8 @@ final class AdminNavigation
                 continue;
             }
             $directory = $root . '/var/modules/' . $path;
-            if (empty($module['enabled']) || is_file($directory . '/AUTH') || !is_file($directory . '/config.php')) {
+            if (empty($module['enabled']) || is_file($directory . '/AUTH')
+                || ((string) $module['prefix'] !== 'news' && !is_file($directory . '/config.php'))) {
                 continue;
             }
             try {
@@ -58,7 +58,7 @@ final class AdminNavigation
             } catch (Throwable) {
                 continue;
             }
-            $access = $manifest['admin_access'];
+            $access = $manifest['prefix'] === 'news' ? 'editor' : $manifest['admin_access'];
             if ($access === 'none' || (!$isAdmin && $access !== 'editor')) {
                 continue;
             }

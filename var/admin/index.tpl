@@ -138,10 +138,10 @@
     </a>
     {% if can_access_admin == "1" %}
     <nav class="ux-area-shortcuts" aria-label="{{ ux_navigation }}">
-        <a class="button action-content" href="Admin.html#ux-writing" data-admin-icon="pencil">{{ ux_writing }}</a>
+        <a class="button action-content {{ ux_writing_current }}"{% if ux_writing_current == "is-current" %} aria-current="page"{% endif %} href="Admin-writing.html" data-admin-icon="pencil">{{ ux_writing }}</a>
         {% if is_admin == "1" %}
-        <a class="button action-admin" href="Admin.html#ux-management" data-admin-icon="users">{{ ux_management }}</a>
-        <a class="button action-admin" href="Admin.html#ux-configuration" data-admin-icon="settings">{{ ux_configuration }}</a>
+        <a class="button action-management {{ ux_management_current }}"{% if ux_management_current == "is-current" %} aria-current="page"{% endif %} href="Admin-management.html" data-admin-icon="users">{{ ux_management }}</a>
+        <a class="button action-configuration {{ ux_configuration_current }}"{% if ux_configuration_current == "is-current" %} aria-current="page"{% endif %} href="Admin-configuration.html" data-admin-icon="settings">{{ ux_configuration }}</a>
         {% endif %}
     </nav>
     {% endif %}
@@ -159,27 +159,27 @@
             <ul class="admin-nav">
                 <li><a class="{{ ux_home_current }}" href="Admin.html" data-admin-icon="layout-dashboard">{{ ui_dashboard }}</a></li>
             </ul>
-            {% if ux_has_writing == "1" %}
+            {% if ux_show_writing == "1" %}
             <p class="nav-heading">{{ ux_writing }}</p>
             <ul class="admin-nav">
                 {% for item in ux_nav_writing %}
-                <li><a class="{{ item.current }} action-content"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
+                <li><a class="{{ item.current }} workspace-link"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
-            {% if ux_has_management == "1" %}
+            {% if ux_show_management == "1" %}
             <p class="nav-heading">{{ ux_management }}</p>
             <ul class="admin-nav">
                 {% for item in ux_nav_management %}
-                <li><a class="{{ item.current }} action-admin"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
+                <li><a class="{{ item.current }} workspace-link"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
-            {% if ux_has_configuration == "1" %}
+            {% if ux_show_configuration == "1" %}
             <p class="nav-heading">{{ ux_configuration }}</p>
             <ul class="admin-nav">
                 {% for item in ux_nav_configuration %}
-                <li><a class="{{ item.current }} action-admin"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
+                <li><a class="{{ item.current }} workspace-link"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -194,6 +194,9 @@
     {% endif %}
 
     <main class="admin-content" id="admin-content" tabindex="-1">
+        {% if ux_active_area %}
+        <nav class="ux-breadcrumb" aria-label="{{ ui_breadcrumb }}"><a href="Admin.html">{{ ui_dashboard }}</a><span aria-hidden="true">›</span><a href="Admin-{{ ux_active_area }}.html">{{ ux_active_label }}</a>{% if ux_breadcrumb_leaf %}<span aria-hidden="true">›</span><span>{{ ux_breadcrumb_leaf }}</span>{% endif %}</nav>
+        {% endif %}
         {% slot main %}
     </main>
 </div>

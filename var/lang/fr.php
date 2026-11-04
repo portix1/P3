@@ -645,3 +645,5 @@ $_LANG['ux_use_theme'] = 'Utiliser ce thème';
 $_LANG['ux_settings_theme_help'] = 'Choisir le thème utilisé par le site public.';
 
 $_LANG['ux_settings_articles'] = 'Navigation des articles';
+
+$_LANG['ux_active_theme'] = 'Thème actif';

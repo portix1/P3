@@ -72,6 +72,10 @@ try {
     );
     $dynamicPlaceholders = array(
         'admin_module_updates', 'admin_theme_updates', 'admin_core_update', 'admin_core_status',
+        'admin_module_has_updates', 'admin_theme_has_updates', 'admin_public_theme',
+        'ux_show_writing', 'ux_show_management', 'ux_show_configuration',
+        'ux_writing_current', 'ux_management_current', 'ux_configuration_current',
+        'ux_active_area', 'ux_active_label', 'ux_breadcrumb_leaf', 'ux_area_title', 'ux_area_help',
         'extension_updates_status', 'ux_home_current',
         'ux_has_writing', 'ux_has_management', 'ux_has_configuration',
 
