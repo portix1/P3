@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""Check packaging boundaries on a temporary repository containing fake private data."""
+import contextlib
+import io
+from pathlib import Path
+import subprocess
+import tempfile
+import unittest
+from unittest.mock import patch
+import zipfile
+
+import build_distribution
+
+
+class DistributionTests(unittest.TestCase):
+    def test_runtime_data_excluded_and_application_included(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            files = {
+                'VERSION': '0.8.3-rc4\n', 'LICENSE': 'license', 'index.php': '<?php',
+                'install.php': '<?php', '.htaccess': 'routing', 'bootstrap/app.php': '<?php',
+                'src/Maintenance/UpdateSafety.php': '<?php',
+                'var/modules/safety/templates/rollback.tpl': '<form></form>',
+                'var/modules/articles/database/schema.sql': 'CREATE TABLE example (id INTEGER);',
+                'database/.htaccess': 'Require all denied',
+                'database/live.sqlite': 'fake private database',
+                'var/sys/config.json': 'fake private configuration',
+                'var/private/backup/manifest.json': 'fake backup',
+                'var/uploads/images/private.webp': 'fake media',
+                'sessions/sess_example': 'fake session', 'tmp/example.txt': 'fake runtime data',
+                '.github/workflows/ci.yml': 'workflow', 'patches/installer.php': '<?php',
+                'distribution/old.zip': 'old archive',
+            }
+            for name, content in files.items():
+                target = root / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(content)
+            subprocess.run(['git', 'init', '-q', str(root)], check=True, capture_output=True)
+            subprocess.run(['git', '-C', str(root), 'add', '.'], check=True, capture_output=True)
+            with patch.object(build_distribution, 'ROOT', root), contextlib.redirect_stdout(io.StringIO()):
+                build_distribution.build()
+            archive = root / 'dist/P3-0.8.3-rc4.zip'
+            with zipfile.ZipFile(archive) as package:
+                expected = {'P3/' + name for name in files if build_distribution.include(name)}
+                self.assertEqual(set(package.namelist()), expected)
+                self.assertIn('P3/var/modules/articles/database/schema.sql', package.namelist())
+                self.assertIn('P3/database/.htaccess', package.namelist())
+                self.assertNotIn('P3/database/live.sqlite', package.namelist())
+            self.assertTrue((root / 'dist/P3-0.8.3-rc4.sha256').read_text().endswith('  P3-0.8.3-rc4.zip\n'))
+            (root / 'VERSION').write_text('../invalid')
+            with patch.object(build_distribution, 'ROOT', root), self.assertRaises(RuntimeError):
+                build_distribution.build()
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2', '8.3', '8.4']
+        php: ['8.2', '8.3', '8.4', '8.5']
 
     steps:
       - name: Checkout
@@ -33,3 +33,35 @@ jobs:
 
       - name: Validate release
         run: php tools/validate_release.php
+
+  publish:
+    name: Distribution GitHub
+    if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Release P3 ')
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout validated source
+        uses: actions/checkout@v4
+
+      - name: Build distribution
+        run: |
+          python3 tools/test_distribution.py
+          python3 tools/build_distribution.py
+
+      - name: Publish distribution
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          version="$(cat VERSION)"
+          flags=()
+          if [[ "$version" == *-* ]]; then
+            flags+=(--prerelease)
+          fi
+          gh release create "v$version" \
+            "dist/P3-$version.zip" "dist/P3-$version.sha256" \
+            --target "$GITHUB_SHA" --title "P3 $version" \
+            --notes-file RELEASE-NOTES.md "${flags[@]}"
+

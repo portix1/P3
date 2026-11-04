@@ -1,6 +1,6 @@
 # Réorganisation du back-office
 
-Version de test 0.8.3-rc3.
+Version de test 0.8.3-rc4.
 
 Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont classées dans Rédaction, Administration et Configuration. Chaque entrée possède une icône et un libellé. Le classement indique un emplacement et respecte les autorisations existantes.
 
@@ -33,7 +33,7 @@ Les liens de mise à jour proposent actuellement les archives à télécharger. 
 
 ## Vérification sur le serveur de test
 
-Faire une sauvegarde de l’installation de test. Extraire le ZIP 0.8.3-rc3 à sa racine en remplaçant les fichiers applicatifs. L’archive ne contient pas de base ni de configuration privée.
+Faire une sauvegarde de l’installation de test. Extraire le ZIP 0.8.3-rc4 à sa racine en remplaçant les fichiers applicatifs. L’archive ne contient pas de base ni de configuration privée.
 
 Ouvrir Admin.html après connexion puis examiner les trois espaces. Tester l’enregistrement d’une page de configuration et contrôler que les réglages des autres pages sont conservés. Vérifier avec un compte rédacteur que seuls ses accès autorisés apparaissent.
 
