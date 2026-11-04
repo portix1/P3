@@ -17,7 +17,13 @@ if (isset($_POST['themes_action'])) {
             if (isset($_SESSION['theme_package_token'])) { $themePackages->cancel((string) $_SESSION['theme_package_token']); unset($_SESSION['theme_package_token']); }
             $plan = $themePackages->stage((string) $upload['tmp_name']);
             $_SESSION['theme_package_token'] = $plan['token'];
-            $configurationMessage = $translator->text('themes_analysis_done');
+            if ($plan['conflicts'] === []) {
+                $themePackages->install($plan['token']);
+                unset($_SESSION['theme_package_token']);
+                $configurationMessage = $translator->text('themes_install_done');
+            } else {
+                $configurationMessage = $translator->text('themes_analysis_done');
+            }
         } elseif (in_array($action, ['install', 'cancel'], true)) {
             $token = (string) ($_POST['theme_token'] ?? '');
             if (!isset($_SESSION['theme_package_token']) || !hash_equals((string) $_SESSION['theme_package_token'], $token)) { throw new RuntimeException($translator->text('themes_plan_invalid')); }

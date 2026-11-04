@@ -33,7 +33,7 @@ try {
         'DiagnosticAdminController',
         'Admin-diagnostics.html',
     ] as $marker) {
-        if (!str_contains($engine . $template . $dashboard, $marker)) {
+        if (!str_contains($engine . $template . $dashboard . file_get_contents($root . '/src/Navigation/AdminNavigation.php'), $marker)) {
             throw new RuntimeException('Intégration Diagnostics incomplète : ' . $marker);
         }
     }

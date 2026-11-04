@@ -618,3 +618,30 @@ $_LANG['dashboard_update_many'] = '%d updates available';
 
 $_LANG['dashboard_updates_none'] = 'No updates available';
 $_LANG['dashboard_updates_unavailable'] = 'Update check unavailable';
+
+$_LANG['ux_writing'] = 'Writing';
+$_LANG['ux_management'] = 'Administration';
+$_LANG['ux_configuration'] = 'Configuration';
+$_LANG['ux_identity'] = 'Site identity';
+$_LANG['ux_appearance'] = 'Site appearance';
+$_LANG['ux_seo'] = 'Search and sharing';
+$_LANG['ux_mail'] = 'Site email';
+$_LANG['ux_updates'] = 'Updates';
+$_LANG['ux_navigation'] = 'Navigation';
+$_LANG['ux_accounts'] = 'Accounts and permissions';
+$_LANG['ux_modules'] = 'Module management';
+$_LANG['ux_themes'] = 'Theme management';
+$_LANG['ux_settings_contact'] = 'Contact form settings';
+$_LANG['ux_settings_affiliation'] = 'Affiliation settings';
+$_LANG['ux_settings_insights'] = 'Statistics settings';
+$_LANG['ux_settings_safety'] = 'Content retention';
+$_LANG['ux_overview_help'] = 'Access content, management tools and site settings.';
+$_LANG['ux_writing_help'] = 'Create, organise and publish content.';
+$_LANG['ux_management_help'] = 'Manage accounts and monitor and maintain the site.';
+$_LANG['ux_configuration_help'] = 'Set up the site and its modules.';
+$_LANG['ux_settings_saved'] = 'Settings saved.';
+$_LANG['ux_install_theme'] = 'Install theme';
+$_LANG['ux_use_theme'] = 'Use this theme';
+$_LANG['ux_settings_theme_help'] = 'Choose the theme used by the public site.';
+
+$_LANG['ux_settings_articles'] = 'Article navigation';

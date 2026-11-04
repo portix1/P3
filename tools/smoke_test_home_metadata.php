@@ -43,7 +43,9 @@ try {
     $sameName->configureHomePage('Test');
     homeCheck($sameName->documentTitle() === 'Test', 'pas de répétition du nom du site');
 
-    // Exercise the existing general configuration form, including writes and errors.
+    $user = new class { public function isAdmin(): bool { return true; } };
+
+    // Exercise the dedicated SEO settings page, including writes and errors.
     $tmp = sys_get_temp_dir() . '/p3-home-config-' . bin2hex(random_bytes(6));
     mkdir($tmp . '/var/sys', 0770, true);
     $configuration = SiteConfiguration::load($tmp);
@@ -55,7 +57,8 @@ try {
     $basePost = ['langage' => 'fr', 'templ' => 'modern', 'defpage' => 'news.html', 'conftitle' => 'Test', 'site_url' => 'https://example.test', 'site_description' => 'Description générale.', 'csrf_token' => 'home-test-token'];
     foreach (['valid', 'missing', 'too-long-title', 'too-long-description', 'csrf', 'clear'] as $case) {
         $CONFIG = $configuration->all();
-        $template = new Template($root . '/var/admin/templates/config.tpl');
+        $argument = ['Admin', 'config', 'seo'];
+        $template = new Template($root . '/var/admin/templates/config-seo.tpl');
         foreach ($_LANG as $key => $value) { $template->set($key, $value); }
         $template->set('csrf_token', 'home-test-token');
         $_SERVER['REQUEST_METHOD'] = 'POST';

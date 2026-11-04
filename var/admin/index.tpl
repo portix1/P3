@@ -147,29 +147,30 @@
     {% if can_access_admin == "1" %}
     <aside class="admin-sidebar" id="admin-sidebar" aria-label="{{ ui_admin_navigation }}">
         <nav>
-            <p class="nav-heading">{{ dashboard_content_eyebrow }}</p>
             <ul class="admin-nav">
-                <li><a class="{{ admin_home_current }}"{% if admin_home_current == "is-current" %} aria-current="page"{% endif %} href="Admin.html" data-admin-icon="layout-dashboard">{{ ui_dashboard }}</a></li>
-                {% if admin_news_enabled == "1" %}
-                <li><a class="{{ admin_news_current }}"{% if admin_news_current == "is-current" %} aria-current="page"{% endif %} href="Admin-news.html" data-admin-icon="newspaper">{{ ui_news }}</a></li>
-                {% endif %}
-                {% for contentmodules in contentmodules %}
-                <li><a class="{{ contentmodules.current }}"{% if contentmodules.current == "is-current" %} aria-current="page"{% endif %} href="Admin-{{ contentmodules.prefix }}.html" data-admin-icon="{{ contentmodules.icon }}">{{ contentmodules.name }}</a></li>
-                {% endfor %}
-                {% for admincontentmodules in admincontentmodules %}
-                <li><a class="{{ admincontentmodules.current }}"{% if admincontentmodules.current == "is-current" %} aria-current="page"{% endif %} href="Admin-{{ admincontentmodules.prefix }}.html" data-admin-icon="{{ admincontentmodules.icon }}">{{ admincontentmodules.name }}</a></li>
+                <li><a class="{{ ux_home_current }}" href="Admin.html" data-admin-icon="layout-dashboard">{{ ui_dashboard }}</a></li>
+            </ul>
+            {% if ux_has_writing == "1" %}
+            <p class="nav-heading">{{ ux_writing }}</p>
+            <ul class="admin-nav">
+                {% for item in ux_nav_writing %}
+                <li><a class="{{ item.current }}"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
-
-            {% if is_admin == "1" %}
-            <p class="nav-heading">{{ dashboard_admin_eyebrow }}</p>
+            {% endif %}
+            {% if ux_has_management == "1" %}
+            <p class="nav-heading">{{ ux_management }}</p>
             <ul class="admin-nav">
-                <li><a class="{{ admin_config_current }}"{% if admin_config_current == "is-current" %} aria-current="page"{% endif %} href="Admin-config.html" data-admin-icon="settings">{{ ui_general_configuration }}</a></li>
-                <li><a class="{{ admin_users_current }}"{% if admin_users_current == "is-current" %} aria-current="page"{% endif %} href="Admin-users.html" data-admin-icon="users">{{ ui_users }}</a></li>
-                <li><a class="{{ admin_modules_current }}"{% if admin_modules_current == "is-current" %} aria-current="page"{% endif %} href="Admin-modmgr.html" data-admin-icon="boxes">{{ ui_module_management }}</a></li>
-                <li><a class="{{ admin_diagnostics_current }}"{% if admin_diagnostics_current == "is-current" %} aria-current="page"{% endif %} href="Admin-diagnostics.html" data-admin-icon="activity">{{ diagnostics_nav }}</a></li>
-                {% for modulesadmin in modulesadmin %}
-                <li><a class="{{ modulesadmin.current }}"{% if modulesadmin.current == "is-current" %} aria-current="page"{% endif %} href="Admin-{{ modulesadmin.prefix }}.html" data-admin-icon="{{ modulesadmin.icon }}">{{ modulesadmin.name }}</a></li>
+                {% for item in ux_nav_management %}
+                <li><a class="{{ item.current }}"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if ux_has_configuration == "1" %}
+            <p class="nav-heading">{{ ux_configuration }}</p>
+            <ul class="admin-nav">
+                {% for item in ux_nav_configuration %}
+                <li><a class="{{ item.current }}"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}

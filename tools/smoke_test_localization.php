@@ -66,11 +66,15 @@ try {
     }
 
     $prefixes = array(
-        'ui_', 'error_', 'page_', 'back_', 'admin_', 'config_', 'dashboard_',
+        'ui_', 'error_', 'page_', 'back_', 'admin_', 'config_', 'dashboard_', 'ux_',
         'modules_', 'news_', 'articles_', 'menu_', 'users_', 'security_', 'editor_', 'login_',
         'profile_', 'contact_', 'downloads_', 'insights_', 'meta_',
     );
     $dynamicPlaceholders = array(
+        'admin_module_updates', 'admin_theme_updates', 'admin_core_update', 'admin_core_status',
+        'extension_updates_status', 'ux_home_current',
+        'ux_has_writing', 'ux_has_management', 'ux_has_configuration',
+
         'admin_area_class', 'admin_home_current', 'admin_news_current', 'admin_users_current', 'admin_config_current',
         'admin_modules_current', 'admin_diagnostics_current', 'admin_module_count', 'admin_enabled_module_count',
         'admin_news_count', 'admin_published_news_count', 'diagnostics_message', 'diagnostics_mode', 'diagnostics_has_result', 'diagnostics_total', 'diagnostics_pass', 'diagnostics_fail', 'diagnostics_report', 'diagnostics_last_summary', 'news_total', 'news_published',

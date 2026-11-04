@@ -1,4 +1,4 @@
-<header class="page-heading"><h1>{{ themes_manage }}</h1><a href="Admin-config.html">{{ themes_back_config }}</a></header>
+<header class="page-heading"><h1>{{ themes_manage }}</h1><a class="button" data-admin-icon="images" href="Admin-config-appearance.html">{{ ux_appearance }}</a></header>
 {% if confmessage %}<p role="status">{{ confmessage }}</p>{% endif %}
 <section class="admin-section" aria-labelledby="theme-inventory-title">
 <h2 id="theme-inventory-title">{{ themes_inventory_title }}</h2><p>{{ themes_inventory_help }}</p>
@@ -16,7 +16,7 @@
 <form method="post" action="Admin-config-themes.html" enctype="multipart/form-data" class="settings-form">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input type="hidden" name="themes_action" value="analyse" />
 <label><span>{{ themes_zip_label }}</span><input type="file" name="theme_archive" accept=".zip,application/zip" required /><small>{{ themes_zip_help }}</small></label>
-<button type="submit" title="{{ themes_analyse }}">{{ themes_analyse }}</button>
+<button type="submit" title="{{ ux_install_theme }}">{{ ux_install_theme }}</button>
 </form>
 {% if themes_have_plan == "1" %}
 <h3>{{ themes_plan_name }} — {{ themes_plan_version }}</h3><p>{{ themes_previous }} : {{ themes_plan_previous }}</p>

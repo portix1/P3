@@ -300,7 +300,12 @@ if ($canAccessAdmin && $route === 'Admin') {
 
         case 'config':
             if ($isAdmin) {
-                include ($argument[2] ?? '') === 'themes' ? './includes/themes.php' : './includes/config.php';
+                $configView = (string) ($argument[2] ?? '');
+                include match ($configView) {
+                    'themes' => './includes/themes.php',
+                    'updates' => './includes/updates.php',
+                    default => './includes/config.php',
+                };
             } else {
                 http_response_code(403);
                 $template->setSlot('main', './var/admin/templates/not-found.tpl');
@@ -358,35 +363,25 @@ if ($canAccessAdmin && $route === 'Admin') {
     }
 }
 
-foreach ($modules as $currentModule) {
-    if (!empty($currentModule['enabled'])
-        && is_file('./var/modules/' . basename((string) $currentModule['path']) . '/config.php')) {
-        $adminAccess = $moduleAdminAccess($currentModule);
-        if ($adminAccess === 'editor' && $canAccessAdmin) {
-            $template->addRow('contentmodules', array(
-                'name' => trim((string) $currentModule['name']),
-                'prefix' => trim((string) $currentModule['prefix']),
-                'icon' => trim((string) $currentModule['prefix']) === 'affiliation' ? 'dollar-sign' : '',
-                'current' => $route === 'Admin'
-                    && $adminRoute === trim((string) $currentModule['prefix'])
-                    ? 'is-current'
-                    : '',
-            ));
-        } elseif ($isAdmin && $adminAccess === 'admin') {
-            $targetCollection = trim((string) $currentModule['prefix']) === 'dwl'
-                ? 'admincontentmodules'
-                : 'modulesadmin';
-            $template->addRow($targetCollection, array(
-                'name' => trim((string) $currentModule['name']),
-                'prefix' => trim((string) $currentModule['prefix']),
-                'icon' => trim((string) $currentModule['prefix']) === 'affiliation' ? 'dollar-sign' : '',
-                'current' => $route === 'Admin'
-                    && $adminRoute === trim((string) $currentModule['prefix'])
-                    ? 'is-current'
-                    : '',
-            ));
+if ($route === 'Admin') {
+    $adminSections = \Portix\Navigation\AdminNavigation::sections(
+        dirname(__DIR__), $modules, $isAdmin, $isRedactor, $argument, $translator
+    );
+    foreach ($adminSections as $section => $entries) {
+        foreach ($entries as $entry) {
+            $template->addRow('ux_nav_' . $section, $entry);
+            if ($entry['current'] === 'is-current') {
+                $template->set('admin_area_class', $section === 'writing' ? 'admin-area-content' : 'admin-area-config');
+            }
         }
+        $template->set('ux_has_' . $section, $entries !== [] ? '1' : '0');
     }
+    foreach (['writing', 'management', 'configuration', 'identity', 'appearance', 'seo', 'mail',
+        'updates', 'navigation', 'overview_help', 'writing_help', 'management_help', 'configuration_help',
+        'settings_saved', 'install_theme', 'use_theme', 'settings_theme_help'] as $key) {
+        $template->set('ux_' . $key, $translator->text('ux_' . $key));
+    }
+    $template->set('ux_home_current', $adminRoute === '' ? 'is-current' : '');
 }
 
 if ($route === '__not_found') {

@@ -1,43 +1,37 @@
 <?php
 PortixSecurity::requireRole($user, 'admin');
+$configSection = (string) ($argument[2] ?? 'identity');
+if (!in_array($configSection, ['identity', 'seo', 'mail', 'appearance'], true)) {
+    http_response_code(404);
+    $template->setSlot('main', './var/admin/templates/not-found.tpl');
+    return;
+}
+if (isset($_POST['ux_section'])) {
+    if ($_POST['ux_section'] !== $configSection) {
+        http_response_code(400);
+        $template->setSlot('main', './var/admin/templates/not-found.tpl');
+        return;
+    }
+    $sectionFields = [
+        'identity' => ['conftitle', 'site_url', 'site_description', 'langage', 'defpage'],
+        'seo' => ['seo_home_title', 'seo_home_description', 'seo_default_author', 'seo_publisher_name', 'seo_publisher_logo', 'seo_default_image'],
+        'mail' => ['mail_sender_name', 'mail_sender_email'],
+        'appearance' => ['templ'],
+    ];
+    $fieldConfig = [
+        'conftitle' => 'title', 'langage' => 'lang', 'defpage' => 'defaultpage', 'templ' => 'template',
+    ];
+    foreach (array_merge(...array_values($sectionFields)) as $field) {
+        if (!in_array($field, $sectionFields[$configSection], true)) {
+            $_POST[$field] = (string) ($CONFIG[$fieldConfig[$field] ?? $field] ?? '');
+        }
+    }
+}
+
 $themeCatalog = new \Portix\Theme\ThemeCatalog(dirname(__DIR__), trim((string) file_get_contents(dirname(__DIR__) . '/VERSION')));
 $themeInventory = $themeCatalog->all();
 $themeById = [];
 foreach ($themeInventory as $themeEntry) { $themeById[$themeEntry['id']] = $themeEntry; }
-$updateStatus = '';
-if (isset($_POST['check_extension_updates'])) {
-    try {
-        PortixSecurity::requirePostWithCsrf();
-        $catalogue = \Portix\Maintenance\ExtensionUpdates::fetchCatalogue();
-        $installed = ['module' => [], 'theme' => $themeById];
-        foreach ($repositories->modules()->allOrdered() as $module) {
-            $path = basename((string) $module['path']);
-            $manifestFile = dirname(__DIR__) . '/var/modules/' . $path . '/desc.xml';
-            if (!is_readable($manifestFile)) {
-                continue;
-            }
-            try {
-                $manifest = \Portix\Module\ModuleManifest::fromXml($manifestFile, $path);
-                $installed['module'][$manifest['prefix']] = $manifest;
-            } catch (RuntimeException) {
-                continue;
-            }
-        }
-        $updates = \Portix\Maintenance\ExtensionUpdates::available($catalogue, $installed);
-        foreach ($updates as $update) {
-            $template->addRow('extensionupdate', $update);
-        }
-        $updateStatus = $updates === [] ? 'extension_updates_none' : 'extension_updates_found';
-    } catch (RuntimeException | JsonException) {
-        $updateStatus = 'extension_updates_failed';
-    }
-}
-$template->set('extension_updates_status', $updateStatus === '' ? '' : $translator->text($updateStatus));
-foreach (['heading', 'check', 'download'] as $label) {
-    $key = 'extension_updates_' . $label;
-    $template->set($key, $translator->text($key));
-}
-
 $languages = array();
 foreach (glob('./var/lang/*.php') as $languageFile) {
     $languages[] = basename($languageFile, '.php');
@@ -142,7 +136,7 @@ if (isset($_POST['langage'])) {
     }
 }
 
-$template->setSlot('main', './var/admin/templates/config.tpl');
+$template->setSlot('main', './var/admin/templates/config-' . $configSection . '.tpl');
 $template->set('confmessage', $configurationMessage);
 
 foreach ($languages as $language) {

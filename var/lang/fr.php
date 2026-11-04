@@ -618,3 +618,30 @@ $_LANG['dashboard_update_many'] = '%d mises à jour disponibles';
 
 $_LANG['dashboard_updates_none'] = 'Aucune mise à jour disponible';
 $_LANG['dashboard_updates_unavailable'] = 'Vérification indisponible';
+
+$_LANG['ux_writing'] = 'Rédaction';
+$_LANG['ux_management'] = 'Administration';
+$_LANG['ux_configuration'] = 'Configuration';
+$_LANG['ux_identity'] = 'Identité du site';
+$_LANG['ux_appearance'] = 'Apparence du site';
+$_LANG['ux_seo'] = 'Référencement et partages';
+$_LANG['ux_mail'] = 'Messagerie du site';
+$_LANG['ux_updates'] = 'Mises à jour';
+$_LANG['ux_navigation'] = 'Navigation';
+$_LANG['ux_accounts'] = 'Comptes et droits';
+$_LANG['ux_modules'] = 'Gestion des modules';
+$_LANG['ux_themes'] = 'Gestion des thèmes';
+$_LANG['ux_settings_contact'] = 'Réglages du formulaire Contact';
+$_LANG['ux_settings_affiliation'] = 'Réglages de l’affiliation';
+$_LANG['ux_settings_insights'] = 'Réglages des statistiques';
+$_LANG['ux_settings_safety'] = 'Conservation des contenus';
+$_LANG['ux_overview_help'] = 'Accédez aux contenus, aux outils de gestion et aux réglages du site.';
+$_LANG['ux_writing_help'] = 'Créer, organiser et publier les contenus.';
+$_LANG['ux_management_help'] = 'Gérer les comptes et assurer le suivi et la maintenance du site.';
+$_LANG['ux_configuration_help'] = 'Définir les paramètres du site et de ses modules.';
+$_LANG['ux_settings_saved'] = 'Réglages enregistrés.';
+$_LANG['ux_install_theme'] = 'Installer le thème';
+$_LANG['ux_use_theme'] = 'Utiliser ce thème';
+$_LANG['ux_settings_theme_help'] = 'Choisir le thème utilisé par le site public.';
+
+$_LANG['ux_settings_articles'] = 'Navigation des articles';

@@ -166,10 +166,12 @@ try {
     }
     $adminLayoutSource = (string) file_get_contents($root . '/var/admin/index.tpl');
     $dashboardSource = (string) file_get_contents($root . '/var/admin/templates/dashboard.tpl');
+    $navigationSource = (string) file_get_contents($root . '/src/Navigation/AdminNavigation.php');
     assertSameValue(
         true,
-        str_contains($adminLayoutSource, 'Admin-diagnostics.html')
-            && str_contains($dashboardSource, 'Admin-diagnostics.html'),
+        str_contains($navigationSource, 'Admin-diagnostics.html')
+            && str_contains($dashboardSource, 'ux_nav_management')
+            && str_contains($adminLayoutSource, 'ux_nav_management'),
         'accès Diagnostics présent dans la navigation administrateur'
     );
 
@@ -193,9 +195,9 @@ try {
     );
     assertSameValue(
         true,
-        str_contains($dashboardTemplate, 'href="Admin-users.html"')
-            && str_contains($dashboardTemplate, 'id="content-management"')
-            && str_contains($dashboardTemplate, 'id="administration"'),
+        str_contains($navigationSource, 'Admin-users.html')
+            && str_contains($dashboardTemplate, 'ux_nav_writing')
+            && str_contains($dashboardTemplate, 'ux_nav_configuration'),
         'navigation administrative centralisée sur le tableau de bord'
     );
     assertSameValue(
@@ -435,6 +437,31 @@ try {
         throw new RuntimeException('La normalisation du chemin d’image a échoué.');
     }
 
+    $installedModules = [];
+    foreach (glob($root . '/var/modules/*/desc.xml') ?: [] as $file) {
+        $manifest = \Portix\Module\ModuleManifest::fromXml($file, basename(dirname($file)));
+        $installedModules[] = $manifest;
+    }
+    $_LANG = [];
+    require $root . '/var/lang/fr.php';
+    $uxTranslator = new \Portix\Support\Translator($_LANG);
+    $sections = \Portix\Navigation\AdminNavigation::sections(
+        $root, $installedModules, true, false, ['Admin', 'contact', 'settings'], $uxTranslator
+    );
+    assertSameValue(['writing', 'management', 'configuration'], array_keys($sections), 'trois espaces');
+    $active = [];
+    foreach ($sections as $section => $entries) {
+        foreach ($entries as $entry) {
+            assertSameValue(false, $entry['icon'] === '', 'icône de navigation');
+            if ($entry['current'] === 'is-current') { $active[] = [$section, $entry['url']]; }
+        }
+    }
+    assertSameValue([['configuration', 'Admin-contact-settings.html']], $active, 'réglages Contact classés dans Configuration');
+    $editorSections = \Portix\Navigation\AdminNavigation::sections($root, $installedModules, false, true, ['Admin'], $uxTranslator);
+    assertSameValue([], $editorSections['management'], 'administration absente pour un rédacteur');
+    assertSameValue([], $editorSections['configuration'], 'configuration absente pour un rédacteur');
+    $anonymousSections = \Portix\Navigation\AdminNavigation::sections($root, $installedModules, false, false, ['Admin'], $uxTranslator);
+    assertSameValue(['writing'=>[], 'management'=>[], 'configuration'=>[]], $anonymousSections, 'navigation privée');
     echo "Routeur éditorial, ordre du menu et images : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR, 'Test routeur/menu : ECHEC - ' . $error->getMessage() . "\n");

@@ -33,3 +33,15 @@ Après validation du paquet de base :
 3. Ajouter la détection et l’installation des mises à jour depuis l’administration.
 
 Le déploiement sur Univers Guitare suit son propre cycle.
+
+## Réorganisation UX du back-office
+
+- [x] Inventaire des fonctions par module et classement commun au menu et au tableau de bord.
+- [x] Trois espaces Rédaction, Administration et Configuration, avec icônes et droits existants.
+- [x] Pages séparées pour identité, apparence, référencement et messagerie.
+- [x] Réglages des modules actifs accessibles dans Configuration.
+- [x] Installation directe des thèmes après validation sans conflit.
+- [x] Parcours HTTP vérifiés sous PHP 8.2 et 8.4 sur une installation de test.
+- [ ] Retours visuels sur le serveur de test de Marc.
+
+L’inventaire et la procédure de test figurent dans [UX-BACK-OFFICE.md](UX-BACK-OFFICE.md).

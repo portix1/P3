@@ -14,7 +14,7 @@ try {
     $contactAdmin = (string) file_get_contents($root . '/var/modules/contact/config.php');
     $contactSettings = (string) file_get_contents($root . '/var/modules/contact/templates/settings.tpl');
     $passwordReset = (string) file_get_contents($root . '/var/modules/UserZone/index.php');
-    $generalSettings = (string) file_get_contents($root . '/var/admin/templates/config.tpl');
+    $generalSettings = (string) file_get_contents($root . '/var/admin/templates/config-mail.tpl');
 
     mailAssertTrue(
         str_contains($contactPublic, "\$CONFIG['mail_sender_email']")
@@ -46,7 +46,7 @@ try {
             && str_contains($generalSettings, 'name="mail_sender_email"')
             && str_contains($generalSettings, '{{ config_mail_sender_name }}')
             && str_contains($generalSettings, '{{ config_mail_sender_email }}'),
-        'les champs d’expéditeur système sont présents dans Configuration générale'
+        'les champs d’expéditeur système sont présents dans Configuration / Messagerie du site'
     );
 
     echo "Expéditeur e-mail système unifié : OK\n";
