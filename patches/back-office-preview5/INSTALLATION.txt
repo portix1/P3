@@ -1,0 +1,33 @@
+Correctif du back-office pour P3 0.8.01-beta1-preview5
+
+1. Faire une sauvegarde habituelle du site et de sa base.
+2. Décompresser ce ZIP sur son ordinateur.
+3. Transférer Admin-back-office.php et le dossier tools/backoffice-production
+   à la racine du site de production, près de index.php.
+   Ces fichiers préparent le correctif. Le transfert ne remplace aucun fichier applicatif.
+4. Se connecter comme administrateur sur le site.
+5. Ouvrir https://www.universguitare.be/Admin-back-office.php
+6. Cliquer sur « Appliquer la réorganisation du back-office ».
+7. Ouvrir le tableau de bord et vérifier les trois espaces et Actualités.
+   Actualités est proposé uniquement si le module est activé.
+8. En cas de besoin, revenir sur Admin-back-office.php et cliquer sur
+   « Restaurer les fichiers précédents ».
+
+Le correctif contrôle la version et les classes dont il dépend. Il refuse une
+structure inconnue avant le remplacement. Les modifications extérieures aux
+zones reconnues sont conservées. Les fichiers précédents sont sauvegardés sous
+var/private/backoffice-production. Un incident pendant le remplacement déclenche
+une restauration automatique. Après une interruption du processus PHP, le script
+propose la restauration. Une modification ultérieure d’un fichier concerné bloque
+sa restauration pour éviter de l’écraser.
+
+La version du moteur reste 0.8.01-beta1-preview5. Le correctif ne remplace pas
+.htaccess, la base SQLite, la configuration du site, le contenu des articles,
+les médias, l’éditeur ou les thèmes publics.
+
+Après vérification, retirer Admin-back-office.php et tools/backoffice-production
+du serveur. Conserver le ZIP localement pour pouvoir remettre ces fichiers
+d’assistance si une restauration devient nécessaire.
+
+Si le contrôle signale un fichier différent, ne pas copier de force les fichiers
+de la version publique. Conserver le message pour adapter le correctif à ce fichier.
