@@ -1,5 +1,6 @@
-<header class="page-heading"><h1>{{ themes_manage }}</h1><a class="button" data-admin-icon="images" href="Admin-config-appearance.html">{{ ux_appearance }}</a></header>
+<header class="page-heading"><p class="eyebrow">{{ ux_configuration }}</p><h1>{{ ux_themes }}</h1></header>
 {% if confmessage %}<p role="status">{{ confmessage }}</p>{% endif %}
+{% include "var/admin/templates/config-appearance.tpl" %}
 <section class="admin-section" aria-labelledby="theme-inventory-title">
 <h2 id="theme-inventory-title">{{ themes_inventory_title }}</h2><p>{{ themes_inventory_help }}</p>
 <div class="table-scroll"><table class="theme-inventory-table">

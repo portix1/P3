@@ -1,6 +1,6 @@
 # Réorganisation du back-office
 
-Version de test 0.8.3-rc1.
+Version de test 0.8.3-rc2.
 
 Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont classées dans Rédaction, Administration et Configuration. Chaque entrée possède une icône et un libellé. Le classement indique un emplacement et respecte les autorisations existantes.
 
@@ -19,7 +19,7 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 | Protection des contenus | — | Corbeille, révisions et points de restauration | Durées de conservation |
 | Recherche | — | État et reconstruction de l’index | — |
 | Authentification interne | — | Service interne sans entrée de menu | — |
-| Thèmes | — | Import, validation, installation et restauration | Choix du thème public |
+| Thèmes | — | Alerte de mise à jour dans les cartes du tableau de bord | Choix du thème public, import, validation, installation et restauration |
 
 Les fonctions d’un module désactivé ne sont pas ajoutées au menu. Les composants installés restent consultables dans Gestion des modules. Pour une extension tierce inconnue de l’inventaire, le classement utilise son accès déclaré. Les extensions accessibles aux rédacteurs figurent dans Rédaction, les autres dans Administration.
 
@@ -33,8 +33,10 @@ Les liens de mise à jour proposent actuellement les archives à télécharger. 
 
 ## Vérification sur le serveur de test
 
-Faire une sauvegarde de l’installation de test. Extraire le ZIP 0.8.3-rc1 à sa racine en remplaçant les fichiers applicatifs. L’archive ne contient pas de base ni de configuration privée.
+Faire une sauvegarde de l’installation de test. Extraire le ZIP 0.8.3-rc2 à sa racine en remplaçant les fichiers applicatifs. L’archive ne contient pas de base ni de configuration privée.
 
 Ouvrir Admin.html après connexion puis examiner les trois espaces. Tester l’enregistrement d’une page de configuration et contrôler que les réglages des autres pages sont conservés. Vérifier avec un compte rédacteur que seuls ses accès autorisés apparaissent.
 
 La documentation initiale de l’installateur est actualisée. Les articles documentaires déjà enregistrés dans une installation existante conservent leur contenu.
+
+Les trois boutons de l’en-tête mènent aux espaces du tableau de bord. Rédaction utilise le bleu et les deux espaces réservés aux administrateurs utilisent le rouge. Le bloc de comptage éditorial est retiré du haut du tableau de bord.

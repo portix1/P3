@@ -5,13 +5,6 @@
 </header>
 
 <section class="dashboard-grid" aria-label="{{ dashboard_site_status }}">
-    {% if admin_news_enabled == "1" %}
-    <article class="metric-card">
-        <span class="metric-value">{{ admin_news_count }}</span>
-        <h2>{{ dashboard_news_count }}</h2>
-        <p>{{ admin_published_news_count }} {{ dashboard_published_count }}</p>
-    </article>
-    {% endif %}
     <article class="metric-card">
         <span class="metric-value">{{ admin_enabled_module_count }}</span>
         <h2>{{ dashboard_active_modules }}</h2>
@@ -34,42 +27,42 @@
 </section>
 
 {% if ux_has_writing == "1" %}
-<section class="management-section" aria-labelledby="ux-writing-title">
+<section class="management-section management-content" id="ux-writing" aria-labelledby="ux-writing-title">
     <div class="management-heading">
         <h2 id="ux-writing-title">{{ ux_writing }}</h2>
         <p>{{ ux_writing_help }}</p>
     </div>
     <div class="management-grid">
         {% for item in ux_nav_writing %}
-        <a class="management-card" href="{{ item.url }}" data-admin-icon="{{ item.icon }}"><strong>{{ item.name }}</strong></a>
+        <a class="management-card action-content" href="{{ item.url }}" data-admin-icon="{{ item.icon }}"><strong>{{ item.name }}</strong></a>
         {% endfor %}
     </div>
 </section>
 {% endif %}
 
 {% if ux_has_management == "1" %}
-<section class="management-section" aria-labelledby="ux-management-title">
+<section class="management-section management-admin" id="ux-management" aria-labelledby="ux-management-title">
     <div class="management-heading">
         <h2 id="ux-management-title">{{ ux_management }}</h2>
         <p>{{ ux_management_help }}</p>
     </div>
     <div class="management-grid">
         {% for item in ux_nav_management %}
-        <a class="management-card" href="{{ item.url }}" data-admin-icon="{{ item.icon }}"><strong>{{ item.name }}</strong></a>
+        <a class="management-card action-admin" href="{{ item.url }}" data-admin-icon="{{ item.icon }}"><strong>{{ item.name }}</strong></a>
         {% endfor %}
     </div>
 </section>
 {% endif %}
 
 {% if ux_has_configuration == "1" %}
-<section class="management-section" aria-labelledby="ux-configuration-title">
+<section class="management-section management-admin" id="ux-configuration" aria-labelledby="ux-configuration-title">
     <div class="management-heading">
         <h2 id="ux-configuration-title">{{ ux_configuration }}</h2>
         <p>{{ ux_configuration_help }}</p>
     </div>
     <div class="management-grid">
         {% for item in ux_nav_configuration %}
-        <a class="management-card" href="{{ item.url }}" data-admin-icon="{{ item.icon }}"><strong>{{ item.name }}</strong></a>
+        <a class="management-card action-admin" href="{{ item.url }}" data-admin-icon="{{ item.icon }}"><strong>{{ item.name }}</strong></a>
         {% endfor %}
     </div>
 </section>

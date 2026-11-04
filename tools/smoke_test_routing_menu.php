@@ -449,6 +449,15 @@ try {
         $root, $installedModules, true, false, ['Admin', 'contact', 'settings'], $uxTranslator
     );
     assertSameValue(['writing', 'management', 'configuration'], array_keys($sections), 'trois espaces');
+    assertSameValue(true, in_array('Admin-config-themes.html', array_column($sections['configuration'], 'url'), true), 'thèmes dans Configuration');
+    assertSameValue(false, in_array('Admin-config-themes.html', array_column($sections['management'], 'url'), true), 'pas de doublon thèmes dans Administration');
+    assertSameValue(false, str_contains($dashboardTemplate, 'admin_news_count'), 'pas de compteur éditorial en haut du tableau de bord');
+    foreach (['writing', 'management', 'configuration'] as $area) {
+        assertSameValue(true, str_contains($administrationLayout, 'Admin.html#ux-' . $area), 'raccourci vers chaque espace');
+        assertSameValue(true, str_contains($dashboardTemplate, 'id="ux-' . $area . '"'), 'destination du raccourci');
+    }
+    assertSameValue(true, str_contains($dashboardTemplate, 'action-content') && str_contains($dashboardTemplate, 'action-admin'), 'code couleur du tableau de bord');
+
     $active = [];
     foreach ($sections as $section => $entries) {
         foreach ($entries as $entry) {

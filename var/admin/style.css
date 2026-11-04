@@ -938,3 +938,10 @@ input[type="submit"]:hover,
 /* Keep the theme inventory legible inside its horizontal scroll region. */
 .admin-content .theme-inventory-table { min-width: 44rem; }
 .theme-inventory-table th, .theme-inventory-table td { overflow-wrap: normal; }
+
+.ux-area-shortcuts { display: flex; flex-wrap: wrap; gap: .5rem; }
+.management-content > .management-heading h2 { color: var(--content-ink); }
+.management-admin > .management-heading h2 { color: var(--admin-ink); }
+.management-section[id] { scroll-margin-top: 1rem; }
+.admin-nav .action-content { border-color: var(--content-line); color: var(--content-ink); background: var(--content-soft); }
+.admin-nav .action-admin { border-color: var(--admin-line); color: var(--admin-ink); background: var(--admin-soft); }

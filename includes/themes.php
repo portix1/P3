@@ -1,8 +1,13 @@
 <?php
 PortixSecurity::requireRole($user, 'admin');
+$originalThemeArguments = $argument ?? [];
+$argument[2] = 'appearance';
+require __DIR__ . '/config.php';
+$argument = $originalThemeArguments;
+$appearanceMessage = $configurationMessage;
 $themeCatalog = new \Portix\Theme\ThemeCatalog(dirname(__DIR__), trim((string) file_get_contents(dirname(__DIR__) . '/VERSION')));
 $themeInventory = $themeCatalog->all();
-$configurationMessage = (string) ($_SESSION['themes_flash'] ?? '');
+$configurationMessage = (string) ($_SESSION['themes_flash'] ?? $appearanceMessage);
 unset($_SESSION['themes_flash']);
 $themePackages = null;
 try { $themePackages = new \Portix\Theme\ThemePackageManager(dirname(__DIR__), trim((string) file_get_contents(dirname(__DIR__) . '/VERSION'))); } catch (Throwable $error) { $configurationMessage = $translator->exception($error); }

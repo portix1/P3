@@ -136,6 +136,15 @@
         <span class="admin-brand-mark" aria-hidden="true">P<sup>3</sup></span>
         <span><strong>P3</strong><small>{{ ui_admin_site }} {{ title }}</small></span>
     </a>
+    {% if can_access_admin == "1" %}
+    <nav class="ux-area-shortcuts" aria-label="{{ ux_navigation }}">
+        <a class="button action-content" href="Admin.html#ux-writing" data-admin-icon="pencil">{{ ux_writing }}</a>
+        {% if is_admin == "1" %}
+        <a class="button action-admin" href="Admin.html#ux-management" data-admin-icon="users">{{ ux_management }}</a>
+        <a class="button action-admin" href="Admin.html#ux-configuration" data-admin-icon="settings">{{ ux_configuration }}</a>
+        {% endif %}
+    </nav>
+    {% endif %}
     <nav class="topbar-actions" aria-label="{{ ui_admin_navigation }}">
         <button class="button admin-nav-toggle" type="button" aria-controls="admin-sidebar" aria-expanded="false" data-admin-icon="menu">{{ ui_menu }}</button>
         <a class="button button-quiet" href="{{ base_url }}/" data-admin-icon="external-link">{{ ui_view_site }}</a>
@@ -154,7 +163,7 @@
             <p class="nav-heading">{{ ux_writing }}</p>
             <ul class="admin-nav">
                 {% for item in ux_nav_writing %}
-                <li><a class="{{ item.current }}"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
+                <li><a class="{{ item.current }} action-content"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -162,7 +171,7 @@
             <p class="nav-heading">{{ ux_management }}</p>
             <ul class="admin-nav">
                 {% for item in ux_nav_management %}
-                <li><a class="{{ item.current }}"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
+                <li><a class="{{ item.current }} action-admin"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -170,7 +179,7 @@
             <p class="nav-heading">{{ ux_configuration }}</p>
             <ul class="admin-nav">
                 {% for item in ux_nav_configuration %}
-                <li><a class="{{ item.current }}"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
+                <li><a class="{{ item.current }} action-admin"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
