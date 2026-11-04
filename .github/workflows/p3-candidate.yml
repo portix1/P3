@@ -1,0 +1,111 @@
+name: P3 archive candidate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/p3-candidate.yml
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, dom, gd, iconv, fileinfo, mbstring, zip
+          coverage: none
+      - name: Assembler et contrôler le contenu
+        shell: bash
+        run: |
+          git archive --format=tar HEAD > "$RUNNER_TEMP/p3-source.tar"
+          python3 - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path, PurePosixPath
+          import re
+          import subprocess
+          import tarfile
+          import zipfile
+
+          temporary = Path(os.environ['RUNNER_TEMP'])
+          stage = temporary / 'p3-candidate'
+          out = temporary / 'p3-artifacts'
+          out.mkdir()
+          stage.mkdir()
+          roots = {'bootstrap', 'database', 'includes', 'sessions', 'src', 'tmp', 'tools', 'var'}
+          root_files = {'.htaccess', 'AUTHORS', 'ASSET-PROVENANCE.md', 'COPYING', 'LICENSE',
+                        'README.md', 'ROADMAP.md', 'THIRD-PARTY-NOTICES.txt', 'VERSION',
+                        'favicon.ico', 'favicon.svg', 'index.php', 'install.php', 'robots.txt', 'web.config'}
+          runtime_var = {'admin', 'editor', 'lang', 'modules', 'private', 'sys', 'templates', 'uploads'}
+          private = ('database/', 'sessions/', 'tmp/', 'var/private/', 'var/sys/', 'var/uploads/')
+          protected = {'.gitkeep', '.htaccess', 'web.config'}
+          with tarfile.open(temporary / 'p3-source.tar') as source:
+              for member in source:
+                  path = PurePosixPath(member.name)
+                  if path.is_absolute() or '..' in path.parts:
+                      raise ValueError('Chemin hors archive')
+                  if member.isdir():
+                      continue
+                  if path.parts[0] not in roots and str(path) not in root_files:
+                      continue
+                  if path.parts[0] == 'var' and (len(path.parts) < 2 or path.parts[1] not in runtime_var):
+                      continue
+                  if str(path).startswith(private) and path.name not in protected:
+                      raise ValueError(f'Donnée d’installation suivie dans Git : {path}')
+                  if re.search(r'\.(?:sqlite3?|db)(?:-(?:wal|shm|journal))?$', path.name, re.I):
+                      raise ValueError(f'Base présente : {path}')
+                  if not member.isfile():
+                      raise ValueError(f'Entrée non régulière : {path}')
+                  target = stage.joinpath(*path.parts)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  with source.extractfile(member) as stream:
+                      target.write_bytes(stream.read())
+          required = ['LICENSE', 'VERSION', 'index.php', 'install.php', '.htaccess',
+                      'database/.htaccess', 'src/Core/Bootstrap.php', 'var/templates/modern/index.tpl',
+                      'var/modules/UserZone/AUTH', 'tools/validate_release.php']
+          for relative in required:
+              if not (stage / relative).is_file():
+                  raise ValueError(f'Fichier indispensable absent : {relative}')
+          version = (stage / 'VERSION').read_text().strip()
+          if not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:-[a-zA-Z0-9.-]+)?', version):
+              raise ValueError('Version invalide')
+          commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          archive = out / f'P3-{version}-candidat-{commit[:7]}.zip'
+          files = sorted(p for p in stage.rglob('*') if p.is_file())
+          with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as bundle:
+              for path in files:
+                  bundle.write(path, path.relative_to(stage).as_posix())
+          with zipfile.ZipFile(archive) as bundle:
+              if bundle.testzip() is not None:
+                  raise ValueError('Archive corrompue')
+              bundle.extractall(temporary / 'p3-candidate-check')
+          checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
+          (out / 'SHA256SUMS.txt').write_text(f'{checksum}  {archive.name}\n')
+          notices = [p.relative_to(stage).as_posix() for p in files
+                     if re.search(r'licen[cs]e|copying|provenance|notice|ofl', p.name, re.I)]
+          assets = [p.relative_to(stage).as_posix() for p in files
+                    if p.suffix.lower() in {'.webp', '.png', '.jpg', '.jpeg', '.svg', '.ico', '.woff', '.woff2', '.ttf'}]
+          report = ['P3 — archive candidate privée', f'Source : {commit}', f'Fichiers : {len(files)}',
+                    f'Taille : {archive.stat().st_size} octets', '', 'Notices présentes :', *notices,
+                    '', 'Inventaire des images et polices :', *assets, '',
+                    'La provenance et les droits des ressources doivent être confirmés avant publication.']
+          (out / 'INVENTAIRE.txt').write_text('\n'.join(report) + '\n', encoding='utf-8')
+          print('\n'.join(report[:4]))
+          PY
+      - name: Valider le contenu extrait
+        run: php "$RUNNER_TEMP/p3-candidate-check/tools/validate_release.php"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P3-archive-candidate
+          path: ${{ runner.temp }}/p3-artifacts/
+          if-no-files-found: error
+          retention-days: 30
