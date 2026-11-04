@@ -83,8 +83,9 @@ final class BackofficeProductionPatch
         } else {
             $after = $source;
             foreach ($operation['hunks'] as $hunk) {
-                $old = $hunk['before'];
-                $new = $hunk['after'];
+                // Match in the same LF format as $source, including archived CRLF hunks.
+                $old = str_replace("\r\n", "\n", $hunk['before']);
+                $new = str_replace("\r\n", "\n", $hunk['after']);
                 if ($new !== '' && substr_count($after, $new) === 1) {
                     continue;
                 } elseif ($old !== '' && substr_count($after, $old) === 1) {
@@ -266,3 +267,4 @@ final class BackofficeProductionPatch
         } finally { flock($lock, LOCK_UN); fclose($lock); }
     }
 }
+

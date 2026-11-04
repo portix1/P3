@@ -34,7 +34,12 @@ $_LANG = array_merge($_LANG, [
     'safety_point' => 'Point de restauration',
     'safety_previous_version' => 'Version sauvegardée',
     'safety_restore_point' => 'Restaurer ce point',
+    'safety_delete_point' => 'Supprimer ce point',
+    'safety_confirm_delete_point' => 'Confirmez la suppression définitive de ce point de restauration.',
+    'safety_point_deleted' => 'Point de restauration supprimé définitivement.',
+    'safety_delete_point_warning' => 'La suppression efface uniquement le point choisi et libère son espace disque. Le site actuel et les autres points sont conservés. Aucune suppression automatique n’est effectuée.',
     'safety_restore_point_warning' => 'Cette opération restaure les fichiers applicatifs, la base, la configuration et les médias de ce point. Un point de secours de l’état actuel est créé avant restauration.',
     'safety_point_restored' => 'Point de restauration appliqué. Rechargez l’administration.',
     'safety_rollback_help' => 'Créez un point complet avant de copier une mise à jour manuelle. Les sauvegardes automatiques historiques, qui ne contiennent que les données, ne sont pas proposées ici comme rollback complet.',
 ]);
+

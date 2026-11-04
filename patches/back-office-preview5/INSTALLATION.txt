@@ -1,5 +1,10 @@
 Correctif du back-office pour P3 0.8.01-beta1-preview5
 
+Révision 1.0.1 — correction du refus sur insights/templates/nav.tpl.
+Si le paquet 1.0.0 a été refusé, remplacer les fichiers d’assistance par ceux
+de ce ZIP, recharger Admin-back-office.php, puis appliquer le correctif.
+Le refus du contrôle n’a pas remplacé les fichiers du site.
+
 1. Faire une sauvegarde habituelle du site et de sa base.
 2. Décompresser ce ZIP sur son ordinateur.
 3. Transférer Admin-back-office.php et le dossier tools/backoffice-production
@@ -31,3 +36,4 @@ d’assistance si une restauration devient nécessaire.
 
 Si le contrôle signale un fichier différent, ne pas copier de force les fichiers
 de la version publique. Conserver le message pour adapter le correctif à ce fichier.
+

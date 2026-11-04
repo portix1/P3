@@ -29,8 +29,12 @@ if (isset($_POST['safety_action'])) {
             UpdateSafety::createRollbackPoint(dirname(__DIR__,3)); $message=$translator->text('safety_point_created');
         } elseif ($action==='restore_point') {
             UpdateSafety::restoreRollbackPoint(dirname(__DIR__,3),(string)($_POST['name'] ?? '')); $message=$translator->text('safety_point_restored');
+        } elseif ($action==='delete_point') {
+            if (($_POST['confirm_delete_point'] ?? '') !== 'yes') { throw new RuntimeException('safety_confirm_delete_point'); }
+            UpdateSafety::deleteRollbackPoint(dirname(__DIR__,3),(string)($_POST['name'] ?? '')); $message=$translator->text('safety_point_deleted');
         }
-        $logger->audit($user->pseudo(),'safety.'.$action,'safety',[],$requestId);
+        $logger->audit($user->pseudo(),'safety.'.$action,'safety',
+            in_array($action,['create_point','restore_point','delete_point'],true) ? ['point'=>(string)($_POST['name'] ?? '')] : [],$requestId);
     } catch (Throwable $error) { $message=$translator->exception($error); }
 }
 foreach(['trash','revisions','rollback','settings'] as $tab) $template->set('safety_'.$tab.'_current',$view===$tab || ($tab==='trash'&&$view==='') ? 'is-current':'');
@@ -47,3 +51,4 @@ if ($view==='rollback') {
     $template->setSlot('main','var/modules/safety/templates/rollback.tpl'); $rows=UpdateSafety::listRollbackPoints(dirname(__DIR__,3)); $template->set('safety_has_points',$rows?'1':'0'); foreach($rows as $r) $template->addRow('rollbackrow',['name'=>$r['name'],'version'=>$r['version'],'date'=>$r['date']]); return;
 }
 $template->setSlot('main','var/modules/safety/templates/trash.tpl'); $rows=$safety->trash(); $template->set('safety_has_trash',$rows?'1':'0'); foreach($rows as $r) $template->addRow('trashrow',['id'=>(string)$r['id'],'type'=>$typeLabel((string)$r['content_type']),'title'=>(string)$r['title'],'date'=>(string)$r['deleted_at'],'actor'=>(string)$r['deleted_by']]);
+

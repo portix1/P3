@@ -34,7 +34,12 @@ $_LANG = array_merge($_LANG, [
     'safety_point' => 'safety_point',
     'safety_previous_version' => 'safety_previous_version',
     'safety_restore_point' => 'Restore this point',
+    'safety_delete_point' => 'Delete this point',
+    'safety_confirm_delete_point' => 'Confirm permanent deletion of this restore point.',
+    'safety_point_deleted' => 'Restore point permanently deleted.',
+    'safety_delete_point_warning' => 'Deletion removes only the selected point and frees its disk space. The live site and other points are kept. No points are deleted automatically.',
     'safety_restore_point_warning' => 'safety_restore_point_warning',
     'safety_point_restored' => 'safety_point_restored',
     'safety_rollback_help' => 'safety_rollback_help',
 ]);
+

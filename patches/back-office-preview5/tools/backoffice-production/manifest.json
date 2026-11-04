@@ -1,5 +1,5 @@
 {
-  "patch": "backoffice-preview5-1",
+  "patch": "backoffice-preview5-1.0.1",
   "version": "0.8.01-beta1-preview5",
   "files": {
     "includes/engine.php": {
