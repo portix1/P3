@@ -1,4 +1,4 @@
-# Accueil 1.0.4
+# Accueil 1.0.5
 
 Module générique de composition de la page d’accueil, sans catégorie ni domaine imposé.
 
@@ -47,3 +47,7 @@ Les statistiques historiques restent intactes. Le taux de clic n’alimente pas 
 Les zones et le fichier de réglages sont conservés. Les tables de mesure de la 1.0.0 (`home_metrics`, `home_events`, `home_cache`) sont migrées transactionnellement uniquement lorsqu’elles appartiennent au module dans le registre du schéma. Les compteurs et déduplications sont recopiés, puis les anciennes tables propres au module sont remplacées par les nouvelles ; le cache de tirage est renouvelé. Un conflit annule la migration plutôt que de perdre une mesure. Les statistiques historiques du site ne sont pas modifiées.
 
 Licence : GPL-3.0-or-later ; voir LICENSE dans le ZIP du module.
+
+## Accès HTTP aux miniatures
+
+Les noms des dérivés utilisent 32 caractères hexadécimaux suivis de `.webp`, conformément à la protection Apache héritée de `var/uploads/images/.htaccess`. Les anciennes versions utilisaient `mini256-` suivi de 64 caractères et recevaient une réponse 403. Après mise à jour, recharger l’accueil génère automatiquement les nouvelles copies autorisées ; aucun changement de `.htaccess`, aucune suppression des originaux ou des anciennes copies n’est nécessaire.

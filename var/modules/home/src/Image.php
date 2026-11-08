@@ -24,10 +24,13 @@ final class Image
         if ($info[0]<=256 && $info[1]<=256) { return $path; }
         if (!function_exists('imagewebp')) { return $path; }
         $hash=hash_file('sha256',$file); if (!is_string($hash)) { return ''; }
+        // The uploads FilesMatch policy permits 32 hexadecimal characters.
+        // Include the derivative size in the digest to avoid serving older large copies.
+        $thumbnailName=substr(hash('sha256','home-mini256:'.$hash),0,32).'.webp';
         $directory=$root.'/var/uploads/images/home-thumbs';
         if (is_link($directory)) { return ''; }
         if (!is_dir($directory) && !@mkdir($directory,0755,true) && !is_dir($directory)) { return $path; }
-        $target=$directory.'/mini256-'.$hash.'.webp';
+        $target=$directory.'/'.$thumbnailName;
         if (!is_file($target)) {
             $bytes=file_get_contents($file); $source=$bytes!==false ? @imagecreatefromstring($bytes) : false;
             if ($source===false) { return ''; }
@@ -41,6 +44,6 @@ final class Image
             if (!$ok || !@rename($temporary,$target)) { @unlink($temporary); return $path; }
             @chmod($target,0644);
         }
-        return 'var/uploads/images/home-thumbs/mini256-'.$hash.'.webp';
+        return 'var/uploads/images/home-thumbs/'.$thumbnailName;
     }
 }

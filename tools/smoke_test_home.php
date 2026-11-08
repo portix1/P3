@@ -77,6 +77,11 @@ try {
     $img=imagecreatetruecolor(1600,800); imagewebp($img,$temp.'/var/uploads/images/test.webp'); imagedestroy($img);
     $thumb=Image::thumbnail($temp,'var/uploads/images/test.webp');
     homeCheck(str_starts_with($thumb,'var/uploads/images/home-thumbs/'),'Local thumbnail generated');
+    $imageRules=(string)file_get_contents($root.'/var/uploads/images/.htaccess');
+    homeCheck((bool)preg_match('/<FilesMatch "([^"]+)"/',$imageRules,$denyPattern),'Read actual public image allowlist');
+    homeCheck(preg_match('~'.$denyPattern[1].'~',basename($thumb))===0,'Generated thumbnail allowed by inherited Apache image policy');
+    homeCheck(preg_match('~'.$denyPattern[1].'~','mini256-'.str_repeat('a',64).'.webp')===1,'Previous thumbnail naming reproduced the production denial');
+    homeCheck(preg_match('~'.$denyPattern[1].'~','payload.php')===1,'Executable file names remain denied');
     $dimensions=getimagesize($temp.'/'.$thumb);
     homeCheck($dimensions[0]===256 && $dimensions[1]===128,'Thumbnail preserves proportions');
     $before=hash_file('sha256',$temp.'/var/uploads/images/test.webp');

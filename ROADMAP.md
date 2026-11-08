@@ -81,3 +81,7 @@ Zones sur deux ou trois colonnes selon la largeur disponible sur ordinateur, une
 ## Accueil 1.0.4 — miniatures et habillage
 
 Images compactes hautes de trois lignes de texte, alignées à gauche avec habillage réel puis retour du texte sur toute la largeur. Miniatures WebP 256 px maximum sans modifier les originaux. Format commun sur ordinateur/mobile, images d’articles/catégories et texte libre.
+
+## Accueil 1.0.5 — miniatures refusées en production
+
+Corriger les noms des miniatures pour respecter la liste autorisée du .htaccess des images : 32 caractères hexadécimaux et extension WebP. Ne pas assouplir les protections Apache. Régénération automatique à la consultation, sans modifier les originaux.

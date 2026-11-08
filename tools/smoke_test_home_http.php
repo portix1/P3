@@ -78,7 +78,7 @@ try {
     $upload=static function(string $bytes,string $csrf)use($request,$auth):array {
         $boundary='p3'.bin2hex(random_bytes(12));$body='';
         foreach (['module_action'=>'upload','csrf_token'=>$csrf] as $key=>$value) { $body.='--'.$boundary."\r\nContent-Disposition: form-data; name=\"".$key."\"\r\n\r\n".$value."\r\n"; }
-        $body.='--'.$boundary."\r\nContent-Disposition: form-data; name=\"userfile\"; filename=\"P3-Accueil-1.0.4.zip\"\r\nContent-Type: application/zip\r\n\r\n".$bytes."\r\n--".$boundary."--\r\n";
+        $body.='--'.$boundary."\r\nContent-Disposition: form-data; name=\"userfile\"; filename=\"P3-Accueil-1.0.5.zip\"\r\nContent-Type: application/zip\r\n\r\n".$bytes."\r\n--".$boundary."--\r\n";
         return $request('/Admin-modmgr.html','POST',$body,['Content-Type: multipart/form-data; boundary='.$boundary,$auth[1]]);
     };
     $archive=$makeZip('home-install.zip');
@@ -98,7 +98,7 @@ try {
     $check($installed[0]===200,'Native ZIP reinstall completed');
     $check($db->connection()->query("SELECT enabled FROM modules WHERE prefix='home'")->fetchColumn()==1,'Native reinstall preserves activation');
     $check(count($home->sections(true))===$zoneCount,'Native ZIP reinstall preserves editorial zones');
-    $check(trim((string)file_get_contents($fixture.'/var/modules/home/MODULE-VERSION'))==='1.0.4','Correct module package installed');
+    $check(trim((string)file_get_contents($fixture.'/var/modules/home/MODULE-VERSION'))==='1.0.5','Correct module package installed');
     $manifestHash=hash_file('sha256',$fixture.'/var/modules/home/desc.xml');
     $rejected=$upload($makeZip('home-incompatible.zip',true),$token[1]??'');
     $check(str_contains($rejected[1],'99.0.0') && hash_file('sha256',$fixture.'/var/modules/home/desc.xml')===$manifestHash,'Incompatible package rejected before replacing the installed module');
