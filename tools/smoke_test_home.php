@@ -18,6 +18,17 @@ $temp=sys_get_temp_dir().'/p3-home-'.bin2hex(random_bytes(6));
 mkdir($temp,0770,true);
 $db=new Database($temp.'/site.sqlite');
 try {
+    $upgradeDb=new Database($temp.'/upgrade.sqlite');
+    $upgradeConfig=\Portix\Configuration\SiteConfiguration::load($temp);
+    $upgradeApp=new \Portix\Core\Application($root,\Portix\Http\Request::fromGlobals(),$upgradeConfig,$upgradeDb);
+    $upgradeApp->migrate();
+    homeCheck((int)$upgradeDb->connection()->query("SELECT enabled FROM modules WHERE prefix='home'")->fetchColumn()===0,'Upgrade registers home disabled without claiming legacy routes');
+    homeCheck($upgradeConfig->get('defaultpage')==='news','Upgrade preserves the configured landing page');
+    $upgradeDb->connection()->exec("UPDATE modules SET enabled=1 WHERE prefix='home'");
+    $upgradeApp=new \Portix\Core\Application($root,\Portix\Http\Request::fromGlobals(),$upgradeConfig,$upgradeDb);
+    $upgradeApp->migrate();
+    homeCheck((int)$upgradeDb->connection()->query("SELECT enabled FROM modules WHERE prefix='home'")->fetchColumn()===1,'Explicit activation survives subsequent migrations');
+    $upgradeApp=null;$upgradeDb->close();
     (new Migrator($db))->migrate();
     $installer=new ModuleInstaller($db,new ModuleRepository($db->connection()));
     foreach (['articles','home','insights','affiliation','news'] as $module) { $installer->installDirectory($root.'/var/modules/'.$module); }

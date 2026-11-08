@@ -4,7 +4,7 @@ Module générique de composition de la page d’accueil, sans catégorie ni dom
 
 ## Mise en route
 
-Le module est enregistré lors de la mise à jour du moteur ; les installations neuves le découvrent avec les autres composants. Son activation ne change pas la page d’accueil existante. Dans **Rédaction → Accueil**, ajouter les zones et leur position. Dans **Configuration → Réglages de l’accueil**, régler le tirage et activer éventuellement sa mesure. Choisir ensuite `home.html` comme page d’accueil dans **Configuration → Identité**. La racine et ses métadonnées restent gérées par P3.
+Le module est enregistré désactivé lors de la mise à jour du moteur, afin de ne pas réserver silencieusement des routes home ou home-* déjà utilisées. Activez-le dans la gestion des modules après vérification de ces éventuels conflits. Les installations neuves le découvrent avec les autres composants. Son activation ne change pas la page d’accueil existante. Dans **Rédaction → Accueil**, ajouter les zones et leur position. Dans **Configuration → Réglages de l’accueil**, régler le tirage et activer éventuellement sa mesure. Choisir ensuite `home.html` comme page d’accueil dans **Configuration → Identité**. La racine et ses métadonnées restent gérées par P3.
 
 Les rédacteurs et administrateurs composent les zones ; seuls les administrateurs changent les réglages et consultent **Administration → Résultats de l’accueil**. Les écritures exigent POST et un jeton CSRF ; la suppression exige aussi une confirmation.
 
