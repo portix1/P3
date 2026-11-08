@@ -73,3 +73,7 @@ Le socle 0.8.4 apporte des déclarations génériques de navigation, d’actions
 ## Migration production — 8 novembre 2026
 
 Cible demandée : 0.8.4-rc4 depuis 0.8.01-beta1-preview5. Archive réelle reçue (223 articles). Reprendre impérativement les correctifs canoniques absents de la branche de développement ; préserver configuration, base et thèmes de production. Livrer une mise à niveau complète, sans installation neuve ni changement automatique de la cible d’accueil.
+
+## Accueil 1.0.3 — disposition demandée
+
+Zones sur deux ou trois colonnes selon la largeur disponible sur ordinateur, une seule sur mobile. Texte libre en pleine largeur ; ordre et compositions préservés. Aucun titre général au-dessus des zones. Mise à jour autonome du module, sans modification du moteur ou du thème.

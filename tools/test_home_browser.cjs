@@ -17,7 +17,8 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
     assert.equal(response.status(), 200);
     await page.locator('.home-zone').first().waitFor();
     assert((await page.locator('.home-zone').count()) >= 2);
-    for (const width of [1280, 375, 320]) {
+    assert.equal(await page.locator('.p3-home h1').count(), 0, 'No general title above home zones');
+    for (const width of [1280, 1920, 375, 320]) {
       await page.setViewportSize({width, height: 900});
       await page.waitForTimeout(150);
       if (process.env.HOME_SCREENSHOT_DIR) {
@@ -25,6 +26,29 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         await page.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, `home-${width}.png`), fullPage:true});
       }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
+      const grid = await page.locator('.home-zones').evaluate(node => {
+        const zones = [...node.querySelectorAll(':scope > .home-zone:not(.home-kind-text)')];
+        return {columns:getComputedStyle(node).gridTemplateColumns.split(' ').length,
+          boxes:zones.slice(0,3).map(zone => ({x:zone.getBoundingClientRect().x,y:zone.getBoundingClientRect().y})),
+          width:node.getBoundingClientRect().width};
+      });
+      if (width <= 640) {
+        assert.equal(grid.columns, 1, `Single mobile column at ${width}`);
+        assert(Math.abs(grid.boxes[0].x-grid.boxes[1].x)<1, 'Mobile zones align in one column');
+        assert(grid.boxes[1].y>grid.boxes[0].y, 'Mobile zones retain reading order');
+      } else {
+        assert(grid.columns>=2 && grid.columns<=3, `${width}: two or three desktop columns (content width ${grid.width})`);
+        assert(grid.boxes[1].x>grid.boxes[0].x, 'Desktop zones sit next to one another');
+        assert(Math.abs(grid.boxes[1].y-grid.boxes[0].y)<1, 'First desktop row aligns');
+      }
+    }
+    await page.setViewportSize({width:1920,height:900});
+    for (const [contentWidth,expected] of [[700,2],[1040,3]]) {
+      const previous = await page.locator('.p3-home').getAttribute('style');
+      await page.locator('.p3-home').evaluate((node,width) => {node.style.width=width+'px';node.style.maxWidth='none';},contentWidth);
+      await page.waitForTimeout(50);
+      assert.equal(await page.locator('.home-zones').evaluate(node => getComputedStyle(node).gridTemplateColumns.split(' ').length),expected, `${contentWidth}px content: ${expected} columns`);
+      await page.locator('.p3-home').evaluate((node,style) => {if(style===null)node.removeAttribute('style');else node.setAttribute('style',style);},previous);
     }
     await page.waitForTimeout(1500);
     assert.equal((await context.cookies()).some(cookie => cookie.name === 'PHPSESSID'), false, 'Measurement must not create a PHP session');

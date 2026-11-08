@@ -21,7 +21,7 @@ final class Renderer
         foreach ($sections as $section) {
             $sid=(int)$section['id']; $layout=$section['layout'];
             $title=$section['title'] ?: ($categoryMap[$section['category_id']]['name']??'');
-            $html.='<section class="home-zone home-layout-'.$layout.'" aria-label="'.$e($title).'">';
+            $html.='<section class="home-zone home-layout-'.$layout.' home-kind-'.$e($section['kind']).'" aria-label="'.$e($title).'">';
             if ($title!=='') { $html.='<h2>'.$e($title).'</h2>'; }
             if ($section['kind']==='text') {
                 $html.='<div class="home-free-text">'.nl2br($e($section['body'])).'</div></section>'; continue;

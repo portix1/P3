@@ -34,6 +34,7 @@ try {
     }
 
     documentationRequires($articles, 'installation', ['Mettre à jour un site existant', 'maintenance.lock']);
+    documentationRequires($articles, 'administration-de-portix-3', ['Disposition de l’accueil', 'deux ou trois colonnes', 'une seule colonne sur mobile']);
 
     if (count($categories) !== 3) {
         throw new RuntimeException('Le contenu initial doit distribuer 3 catégories.');
