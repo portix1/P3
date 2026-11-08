@@ -89,3 +89,21 @@ Corriger les noms des miniatures pour respecter la liste autorisée du .htaccess
 ## Accueil 1.0.6 — hauteur prioritaire des miniatures
 
 Corriger la boîte carrée : image haute de trois lignes de texte avec largeur automatique selon ses proportions, sans limite à 35 % de la colonne. Habillage à gauche conservé. Vérifier portrait, paysage et carré.
+
+## Prochains travaux — décisions du 8 novembre 2026
+
+### Demandes validées, à développer
+
+- [ ] **Bloc « Derniers articles »** : proposer les trois publications les plus récentes, titre, court extrait et miniature facultative. Ordre chronologique de publication, sans tirage aléatoire, sans inclure les brouillons ou publications futures. Aucun texte d’annonce à rédiger et aucune dépendance au module Actualités. Conserver les autres sélections semi-aléatoires ; masquer le bloc s’il ne contient rien de publiable.
+- [ ] **Classement plus logique du back-office** : thèmes, choix et installation dans Configuration ; composition et gestion de l’accueil dans Administration, et non dans Rédaction ; réglages techniques de l’accueil dans Configuration. Cette cible remplace le classement de la composition d’Accueil 1.0.x en Rédaction. Examiner les autres fonctions une par une et corriger les incohérences du menu, des cartes et des liens directs. Distinguer classement et permissions : les droits actuels ne changent pas du seul fait de cette décision de roadmap ; leur cohérence devra être examinée lors de l’implémentation. Actualiser alors AGENTS.md, UX-BACK-OFFICE.md, les déclarations des modules, guides et tests.
+- [ ] **Sélecteur visuel de médiathèque** : bouton de choix avec miniatures, recherche et aperçu pour les images associées aux zones ; réutiliser le média sans duplication. Cette demande déjà enregistrée dans Drive reste à développer.
+
+### Suggestions à examiner, non encore validées
+
+- [ ] **Hiérarchie visuelle de l’accueil** : moins de blocs identiques ; alterner article développé, groupes de liens et zones plus larges, dans une composition stable inspirée du principe de découverte de Wikipédia. Conserver le tirage semi-aléatoire que Marc juge utile.
+- [ ] **Aperçu avant publication de la composition** : vérifier les zones et leur rendu ordinateur/mobile avant de modifier la page publique. Ne pas confondre consultation de l’accueil actuel et prévisualisation de changements non publiés.
+- [ ] **Ordre des zones par glisser-déposer**, avec commandes clavier équivalentes, pour éviter de saisir manuellement des numéros.
+- [ ] **Explications des zones vides dans la gestion** : distinguer zone désactivée, catégorie sans contenu publiable et module source désactivé ; conserver une page publique sans blocs vides ni messages techniques.
+- [ ] **Évaluation de la circulation depuis l’accueil** : utiliser le rapport d’expositions et de clics existant avant de modifier la pondération. Prévoir un volume de données suffisant ; ne pas changer le tirage sur quelques clics seulement. Ce point rejoint la phase d’ajustement déjà prévue.
+
+Statut : planification uniquement ; aucune de ces évolutions n’est livrée par cette mise à jour de roadmap. Ne pas ajouter de « méta-news » pour alimenter artificiellement l’accueil.
