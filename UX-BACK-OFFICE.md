@@ -55,3 +55,7 @@ Actualités est administré par le contrôleur du moteur et ne possède pas de c
 Dans Administration → Protection des contenus → Rollback, la version affichée provient du fichier VERSION inclus dans chaque point. Les anciens points sans ce fichier utilisent leur manifeste. Les nouveaux points enregistrent la version du code sauvegardé, même après une mise à jour manuelle qui a laissé un ancien suivi release.json.
 
 Chaque point dispose de « Supprimer ce point ». La suppression exige une confirmation explicite et un formulaire administrateur protégé contre les requêtes CSRF. Elle efface uniquement le point sélectionné ; le site et les autres points restent conservés. Il n’y a aucune purge automatique. Création, restauration et suppression sont verrouillées pour éviter leur exécution simultanée. Une restauration remet le suivi de version en accord avec le code restauré.
+
+## Module Accueil
+
+Rédaction → Accueil (`Admin-home.html`, administrateurs et rédacteurs) compose les zones, leurs images et leur ordre. Configuration → Réglages de l’accueil (`Admin-home-settings.html`, administrateurs) règle le tirage et la mesure facultative. Administration → Résultats de l’accueil (`Admin-home-report.html`, administrateurs) consulte les compteurs. Les entrées sont centralisées dans AdminNavigation ; elles disparaissent quand le module est désactivé. Le raccordement à la racine utilise le choix existant de page d’accueil dans Configuration → Identité. Aucun écran séparé ne modifie les autorisations existantes.

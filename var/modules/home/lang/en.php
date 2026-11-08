@@ -1,0 +1,21 @@
+<?php
+$_LANG += [
+'home_title'=>'Home','home_empty'=>'No content to display yet.','home_all'=>'Explore category','home_series_start'=>'Start the series',
+'home_disclosure'=>'Some links are affiliate links. A purchase may earn a commission at no extra cost to you.',
+'home_admin'=>'Compose home page','home_settings'=>'Home settings','home_report'=>'Home results',
+'home_help'=>'Compose sections, choose their order and layout. Empty sections and disabled source modules are hidden.',
+'home_saved'=>'Changes saved.','home_invalid'=>'Invalid content type or layout.','home_category_required'=>'Choose an existing category.',
+'home_invalid_image'=>'Choose a JPEG, PNG or WebP image under var/uploads/images.','home_limit'=>'Up to 30 home sections.',
+'home_title_field'=>'Section title','home_kind'=>'Content','home_articles'=>'Articles','home_news'=>'Recent news','home_affiliation'=>'Affiliate products','home_text'=>'Free text',
+'home_category'=>'Category','home_layout'=>'Layout','home_feature'=>'Featured article','home_category_layout'=>'Illustrated category','home_cards'=>'Illustrated articles','home_text_layout'=>'Text selection',
+'home_count'=>'Number of items (1–6)','home_image'=>'Category / section image','home_image_help'=>'Shared image for an illustrated category; fallback image for the first item in illustrated layouts. Article images remain independent.',
+'home_alt'=>'Image description','home_body'=>'Free text (plain text, without HTML)','home_order'=>'Position','home_enabled'=>'Enabled section',
+'home_descendants'=>'Include visible subcategories','home_weighted'=>'Use recent article views','home_save'=>'Save','home_delete'=>'Delete section','home_delete_confirm'=>'I confirm deletion of this section',
+'home_new'=>'New section','home_preview'=>'View home page','home_days'=>'View period (7–90 days)','home_exploration'=>'Uniform random share (20–100%)','home_refresh'=>'Refresh (5–1,440 minutes)',
+'home_tracking'=>'Measure visible article cards and clicks',
+'home_settings_help'=>'Affiliate products always use uniform selection. Without active analytics, articles use uniform selection too. Additional measurement requires an enabled Statistics module with collection enabled. Signed-in staff, DNT and recognized bots are excluded.',
+'home_install_help'=>'To use this page at the site root, choose home.html as the home page in Configuration → Identity. Enabling this module does not replace the existing home page.',
+'home_report_help'=>'Last 28 days. A card is visible after 800 ms with half its area in view. Clicks and views are deduplicated per page load, without a persistent identifier. These observations do not certify human traffic. Small samples cannot reliably rank articles.',
+'home_views'=>'Observed home page loads','home_converted'=>'Page loads with an article click','home_visible'=>'Visible cards','home_clicks'=>'Clicks','home_rate'=>'Clicks / visible cards','home_slot'=>'Section / article / position','home_no_metrics'=>'No measurements yet.',
+'home_upload'=>'Add an image to the media library','home_no_image'=>'No image','home_error'=>'Unable to save this change.',
+];

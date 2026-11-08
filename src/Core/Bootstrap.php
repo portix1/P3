@@ -54,6 +54,12 @@ final class Bootstrap
 
     private static function requestNeedsSession(Request $request): bool
     {
+        // Public home metrics do not create a session or a new tracking cookie.
+        // An existing session is still loaded so staff remain excluded.
+        if ($request->routeName() === 'home-events'
+            && empty($_COOKIE[session_name()])) {
+            return false;
+        }
         if (!in_array($request->method(), ['GET', 'HEAD'], true)) {
             return true;
         }

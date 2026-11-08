@@ -46,6 +46,8 @@ $tests = [
     'smoke_test_database.php',
     'smoke_test_routing_menu.php',
     'smoke_test_admin_navigation.php',
+    'smoke_test_home.php',
+    'smoke_test_home_http.php',
     'smoke_test_html_sanitizer.php',
     'smoke_test_public_css.php',
     'smoke_test_template.php',

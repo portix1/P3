@@ -1,0 +1,7 @@
+entry_key; text; notnull; ; ; ; primary; ;
+day; date; notnull; ; ; index; ; ;
+section_id; numeric; notnull; 0; ; ; ; ;
+article_id; numeric; notnull; 0; ; ; ; ;
+position; numeric; notnull; 0; ; ; ; ;
+visible; numeric; notnull; 0; ; ; ; ;
+clicks; numeric; notnull; 0; ; ; ; ;

@@ -35,14 +35,14 @@ final class AdminNavigation
         }
 
         $places = [
-            'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
+            'home' => ['writing', 'house'], 'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
             'media' => ['writing', 'images'], 'menu' => ['writing', 'menu'],
             'footer' => ['writing', 'panel-bottom'], 'dwl' => ['writing', 'download'],
             'affiliation' => ['writing', 'dollar-sign'], 'contact' => ['management', 'mail'],
             'insights' => ['management', 'chart-bar'], 'search' => ['management', 'search'],
             'safety' => ['management', 'triangle-alert'],
         ];
-        $settings = ['contact', 'affiliation', 'insights', 'safety'];
+        $settings = ['contact', 'affiliation', 'insights', 'safety', 'home'];
         foreach ($modules as $module) {
             $path = (string) $module['path'];
             if ($path !== basename($path) || $path === '.' || $path === '..') {
@@ -69,6 +69,9 @@ final class AdminNavigation
                 $section = 'writing';
             }
             $add($section, $manifest['name'], 'Admin-' . $prefix . '.html', $icon);
+            if ($isAdmin && $prefix === 'home') {
+                $add('management', 'ux_home_report', 'Admin-home-report.html', 'chart-bar');
+            }
             if ($isAdmin && $prefix === 'articles') {
                 $add('configuration', 'ux_settings_articles', 'Admin-articles-menu.html', 'menu');
             }

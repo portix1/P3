@@ -43,6 +43,9 @@ try {
         throw new RuntimeException('Le contenu initial doit distribuer 2 actualités.');
     }
 
+    documentationRequires($articles, 'administration-de-portix-3', ['Composer la page d’accueil', 'home.html', 'Résultats de l’accueil', 'hasard pur']);
+    documentationRequires($articles, 'guide-du-redacteur-portix-3', ['Préparer les zones de l’accueil']);
+
     documentationRequires($articles, 'presentation', [
         '<h2>P3</h2>',
         'PHP 8.2',

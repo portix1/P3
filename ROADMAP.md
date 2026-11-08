@@ -56,3 +56,12 @@ L’organisation en trois pages Rédaction, Administration et Configuration est 
 - [x] Actualités réintégré malgré son contrôleur fourni par le moteur.
 - [x] Contrôle de toutes les entrées administrables livré avec la validation automatisée.
 - [ ] Retour visuel de Marc sur la nouvelle archive.
+
+## Accueil — priorité P1, conception validée le 8 novembre 2026
+
+- [x] Maquette à compositions variées, images par article ou zone de catégorie, nombre variable de catégories.
+- [x] Première implémentation du module, tirage pondéré, cache commun, mesures facultatives de visibilité et de clic.
+- [ ] Validation visuelle du module intégré par Marc avant production.
+- [ ] Ajustement des poids après constitution de données exploitables.
+
+Voir `var/modules/home/README.md` pour les limites et les réglages. L’ajout d’images dans les fiches Affiliation reste séparé.

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modules><Name>Accueil</Name><Version>1.0.0</Version><Prefix>home</Prefix><Type>module</Type><Priority>80</Priority><DefLang>fr</DefLang><Path>home</Path><Enabled>1</Enabled><AdminAccess>editor</AdminAccess><SchemaFormat>desc-csv</SchemaFormat></modules>

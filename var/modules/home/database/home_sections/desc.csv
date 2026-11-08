@@ -1,0 +1,13 @@
+id; numeric; notnull; ; ; ; primary; ;
+kind; text; notnull; articles; ; ; ; ;
+title; text; notnull; ; ; ; ; ;
+category_id; numeric; notnull; 0; ; ; ; ;
+layout; text; notnull; feature; ; ; ; ;
+image_path; text; notnull; ; ; ; ; ;
+image_alt; text; notnull; ; ; ; ; ;
+body; text; notnull; ; ; ; ; ;
+item_count; numeric; notnull; 2; ; ; ; ;
+descendants; bool; notnull; 1; ; ; ; ;
+weighted; bool; notnull; 1; ; ; ; ;
+position; numeric; notnull; 0; ; index; ; ;
+enabled; bool; notnull; 1; ; ; ; ;

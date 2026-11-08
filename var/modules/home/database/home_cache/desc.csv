@@ -1,0 +1,3 @@
+entry_key; text; notnull; ; ; ; primary; ;
+payload; text; notnull; ; ; ; ; ;
+expires_at; numeric; notnull; 0; ; ; ; ;

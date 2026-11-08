@@ -34,6 +34,26 @@ jobs:
       - name: Validate release
         run: php tools/validate_release.php
 
+  home-browser:
+    name: Accueil — navigateur et HTTP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, dom, gd, iconv, fileinfo, mbstring, zip
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Validate home page in an isolated installation
+        run: php tools/smoke_test_home_http.php --browser
+
   publish:
     name: Distribution GitHub
     if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Release P3 ')

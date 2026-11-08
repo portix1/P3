@@ -42,6 +42,13 @@ try {
     navigationCheck(in_array('Admin-news.html', array_column($editor['writing'], 'url'), true), 'Actualités doit rester accessible aux rédacteurs');
     navigationCheck($editor['management'] === [] && $editor['configuration'] === [], 'Espaces réservés masqués au rédacteur');
 
+    navigationCheck(in_array('Admin-home.html', array_column($editor['writing'], 'url'), true), 'Accueil accessible en Rédaction');
+    navigationCheck(in_array('Admin-home-settings.html', array_column($sections['configuration'], 'url'), true), 'Réglages Accueil en Configuration');
+    navigationCheck(in_array('Admin-home-report.html', array_column($sections['management'], 'url'), true), 'Résultats Accueil en Administration');
+    $homeDisabled = array_map(static function (array $module): array { if ($module['prefix'] === 'home') { $module['enabled'] = false; } return $module; }, $modules);
+    $homeHidden = AdminNavigation::sections($root, $homeDisabled, true, false, ['Admin'], $translator);
+    foreach ($homeHidden as $entries) { foreach ($entries as $entry) { navigationCheck(!str_starts_with($entry['url'], 'Admin-home'), 'Accueil désactivé masqué dans tous les espaces'); } }
+
     $disabled = array_map(static function (array $module): array {
         if ($module['prefix'] === 'news') { $module['enabled'] = false; }
         return $module;

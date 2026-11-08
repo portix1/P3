@@ -1,0 +1,2 @@
+entry_key; text; notnull; ; ; ; primary; ;
+expires_at; numeric; notnull; 0; ; index; ; ;

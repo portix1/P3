@@ -83,6 +83,18 @@ final class Application
                 });
             }
         }
+        // Add the bundled home module without replacing any existing page or content.
+        $homeDirectory = $this->root . '/var/modules/home';
+        if (is_file($homeDirectory . '/desc.xml')) {
+            $moduleRepository = new \Portix\Repository\ModuleRepository($this->database->connection());
+            if ($moduleRepository->findByPrefix('home') === null) {
+                $manifest = \Portix\Module\ModuleManifest::fromXml($homeDirectory . '/desc.xml', 'home');
+                $this->database->transaction(function () use ($homeDirectory, $manifest, $moduleRepository): void {
+                    (new \Portix\Module\ModuleSchemaInstaller($this->database))->install('home', $homeDirectory . '/database');
+                    $moduleRepository->synchronizeDefinition($manifest);
+                });
+            }
+        }
         $this->migrated = true;
     }
 
