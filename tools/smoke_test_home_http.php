@@ -34,6 +34,11 @@ try {
     foreach (['Image','HomeRepository'] as $class) { require_once $source.'/var/modules/home/src/'.$class.'.php'; }
     $home=new PortixModule\Home\HomeRepository($db->connection());
     foreach ($home->categories() as $i=>$category) { $home->save(['kind'=>'articles','category_id'=>$category['id'],'layout'=>['feature','category','cards'][$i%3],'title'=>$category['name'],'enabled'=>1,'descendants'=>1,'weighted'=>1,'item_count'=>2,'position'=>$i],0); }
+    // A real local raster exercises both article and category imagery.
+    @mkdir($fixture.'/var/uploads/images',0770,true);
+    copy($fixture.'/var/templates/six-cordes/assets/guitar-header.webp',$fixture.'/var/uploads/images/home-test.webp');
+    $db->connection()->exec("UPDATE articles SET featured_image='var/uploads/images/home-test.webp' WHERE id=(SELECT MIN(id) FROM articles)");
+    $db->connection()->exec("UPDATE home_sections SET image_path='var/uploads/images/home-test.webp',image_alt='Test category image' WHERE id=(SELECT MIN(id) FROM home_sections WHERE layout='category')");
     PortixSettings::write('home',['days'=>28,'exploration'=>50,'refresh_minutes'=>60,'tracking'=>true,'secret'=>str_repeat('x',64)],$fixture);
     PortixSettings::write('insights',['mode'=>'minimal'],$fixture);
     file_put_contents($fixture.'/router.php', '<?php $p=parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH); if($p!=="/" && is_file(__DIR__.$p)) { return false; } require __DIR__."/index.php";');

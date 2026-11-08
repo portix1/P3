@@ -52,7 +52,16 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Validate home page in an isolated installation
+        env:
+          HOME_SCREENSHOT_DIR: home-browser-previews
         run: php tools/smoke_test_home_http.php --browser
+      - name: Keep browser previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-browser-previews
+          path: home-browser-previews/*.png
+          if-no-files-found: ignore
 
   publish:
     name: Distribution GitHub

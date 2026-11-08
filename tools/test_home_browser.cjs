@@ -1,12 +1,15 @@
 // Run against a disposable seeded installation, never production.
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const visitorOptions = {userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36'};
 const base = process.env.HOME_TEST_URL;
 if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new Error('HOME_TEST_URL must identify a disposable localhost installation');
 (async () => {
   const browser = await chromium.launch({headless: true, executablePath: process.env.CHROMIUM_EXECUTABLE, args: ['--no-sandbox']});
   try {
-    const context = await browser.newContext();
+    const context = await browser.newContext(visitorOptions);
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -16,6 +19,11 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
     assert((await page.locator('.home-zone').count()) >= 2);
     for (const width of [1280, 375, 320]) {
       await page.setViewportSize({width, height: 900});
+      await page.waitForTimeout(150);
+      if (process.env.HOME_SCREENSHOT_DIR) {
+        fs.mkdirSync(process.env.HOME_SCREENSHOT_DIR, {recursive:true});
+        await page.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, `home-${width}.png`), fullPage:true});
+      }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
     }
     await page.waitForTimeout(1500);
@@ -23,6 +31,7 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
     const direct = await page.locator('[data-home-slot] h3 a').first().getAttribute('href');
     assert(!direct.includes('home-events'), 'Article links remain direct');
     const ticket = await page.locator('[data-home-page]').getAttribute('data-home-ticket');
+    assert(ticket.length > 64, 'Human-like visitor receives a measurement ticket');
     const invalid = await context.request.post(base + '/home-events.html', {data: {ticket: ticket + 'bad', page: 'a'.repeat(32), events: [{kind: 'page'}]}});
     assert.equal(invalid.status(), 422);
     const methods = await context.request.get(base + '/home-events.html');
@@ -35,7 +44,7 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
     assert.deepEqual(errors, []);
     await context.close();
     for (const actor of ['editor', 'admin']) {
-      const ctx = await browser.newContext(); const tab = await ctx.newPage();
+      const ctx = await browser.newContext(visitorOptions); const tab = await ctx.newPage();
       await tab.goto(base + '/login.html');
       const csrf = await tab.locator('input[name="csrf_token"]').first().inputValue();
       await ctx.request.post(base + '/login.html', {form: {pseudo: actor, pass: 'test-home-password', csrf_token: csrf}});
