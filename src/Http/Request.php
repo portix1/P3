@@ -47,6 +47,22 @@ final class Request
         return !empty($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off';
     }
 
+    /**
+     * Schéma public pour les seules URL et redirections. Le proxy peut terminer
+     * TLS avant PHP ; ce résultat ne sert jamais à autoriser une opération.
+     */
+    public function publicScheme(): string
+    {
+        if ($this->isSecure() || (string) ($this->server['SERVER_PORT'] ?? '') === '443') {
+            return 'https';
+        }
+        // Les reverse proxies sont censés réécrire cet en-tête, et non le relayer
+        // tel quel depuis le client. Sans proxy fiable, HTTPS doit être annoncé par
+        // le serveur et la redirection de schéma configurée au niveau du vhost.
+        $forwarded = strtolower(trim((string) ($this->server['HTTP_X_FORWARDED_PROTO'] ?? '')));
+        return $forwarded === 'https' ? 'https' : 'http';
+    }
+
     public function isFrontPage(): bool
     {
         $path = $this->path() === '/' ? '' : rtrim($this->path(), '/');

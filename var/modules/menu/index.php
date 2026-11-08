@@ -1,8 +1,12 @@
 <?php
 $showAccessibilityPage = ($argument[0] ?? '') === 'menu' && ($argument[1] ?? '') === 'waa';
+$preferredSiteUrl = \Portix\Seo\PublicUrl::resolve((string) ($CONFIG['site_url'] ?? ''), $request);
 foreach ($repositories->menu()->allOrdered() as $res) {
     $menuName = (string) $res['name'];
-    $menuLink = (string) $res['url'];
+    $menuLink = \Portix\Seo\PublicUrl::canonicalizeInternal(
+        (string) $res['url'],
+        $preferredSiteUrl
+    );
     $menuDescription = (string) $res['description'];
     if ($showAccessibilityPage) {
         $template->addRow('menusimple', [

@@ -2,12 +2,12 @@
 declare(strict_types=1);
 $homeRoot=dirname(__DIR__,3);
 if (!defined(\Portix\Module\ModuleManifest::class.'::EXTENSION_CONTRACT')
-    || version_compare(trim((string)file_get_contents($homeRoot.'/VERSION')),'0.8.4','<')) {
+    || version_compare(trim((string)file_get_contents($homeRoot.'/VERSION')),'0.8.4-rc4','<')) {
     http_response_code(503);
     $pageMetadata->noIndex();
     $message=($CONFIG['lang']??'fr')==='en'
-        ? 'This module requires P3 0.8.4 or later. Update the module extension core first.'
-        : 'Ce module nécessite P3 0.8.4 ou plus récent. Installez d’abord le socle compatible.';
+        ? 'This module requires P3 0.8.4-rc4 or later. Update the module extension core first.'
+        : 'Ce module nécessite P3 0.8.4-rc4 ou plus récent. Installez d’abord le socle compatible.';
     $template->set('home_admin_html',\Portix\View\Html::trusted('<p>'.htmlspecialchars($message,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8').'</p>'));
     $template->setSlot('main',__DIR__.'/templates/admin.tpl');
     return false;

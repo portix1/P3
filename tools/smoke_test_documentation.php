@@ -33,6 +33,8 @@ try {
         $articles[$slug] = (string) ($article['body'] ?? '');
     }
 
+    documentationRequires($articles, 'installation', ['Mettre à jour un site existant', 'maintenance.lock']);
+
     if (count($categories) !== 3) {
         throw new RuntimeException('Le contenu initial doit distribuer 3 catégories.');
     }

@@ -1,12 +1,7 @@
 <?php
 require_once './var/modules/news/feedcreator.class.php';
 
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host = isset($_SERVER['HTTP_HOST']) ? (string) $_SERVER['HTTP_HOST'] : 'localhost';
-$script = isset($_SERVER['SCRIPT_NAME']) ? (string) $_SERVER['SCRIPT_NAME'] : '/index.php';
-$basePath = str_replace('\\', '/', dirname($script));
-$basePath = $basePath === '/' || $basePath === '.' ? '' : rtrim($basePath, '/');
-$siteUrl = $scheme . '://' . $host . $basePath;
+$siteUrl = \Portix\Seo\PublicUrl::resolve((string) ($CONFIG['site_url'] ?? ''), $request);
 
 $rss = new UniversalFeedCreator();
 $rss->title = (string) $CONFIG['title'];

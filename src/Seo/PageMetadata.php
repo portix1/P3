@@ -284,7 +284,9 @@ final class PageMetadata
             return '';
         }
         if (preg_match('#^https?://#i', $value) === 1) {
-            return filter_var($value, FILTER_VALIDATE_URL) !== false ? $value : '';
+            return filter_var($value, FILTER_VALIDATE_URL) !== false
+                ? PublicUrl::canonicalizeInternal($value, $this->siteUrl)
+                : '';
         }
         if (preg_match('#^[a-z][a-z0-9+.-]*:#i', $value) === 1 || str_starts_with($value, '//')) {
             return '';
@@ -296,7 +298,7 @@ final class PageMetadata
     {
         $path = trim($path);
         if (preg_match('#^https?://#i', $path) === 1) {
-            return $path;
+            return PublicUrl::canonicalizeInternal($path, $this->siteUrl);
         }
         return $this->siteUrl === '' ? $path : rtrim($this->siteUrl, '/') . '/' . ltrim($path, '/');
     }

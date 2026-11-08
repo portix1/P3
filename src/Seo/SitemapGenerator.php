@@ -115,16 +115,10 @@ final class SitemapGenerator
         }
         $path = (string) ($parts['path'] ?? '');
         if (isset($parts['scheme']) || isset($parts['host'])) {
-            $candidateOrigin = strtolower((string) ($parts['scheme'] ?? '')) . '://'
-                . strtolower((string) ($parts['host'] ?? ''))
-                . (isset($parts['port']) ? ':' . (int) $parts['port'] : '');
-            $baseParts = parse_url($baseUrl);
-            $baseOrigin = strtolower((string) ($baseParts['scheme'] ?? '')) . '://'
-                . strtolower((string) ($baseParts['host'] ?? ''))
-                . (isset($baseParts['port']) ? ':' . (int) $baseParts['port'] : '');
-            if ($candidateOrigin !== $baseOrigin) {
+            if (!PublicUrl::isInternalAbsolute($candidate, $baseUrl)) {
                 return null;
             }
+            $baseParts = parse_url($baseUrl);
             $basePath = rtrim((string) ($baseParts['path'] ?? ''), '/');
             if ($basePath !== '') {
                 if ($path !== $basePath && !str_starts_with($path, $basePath . '/')) {

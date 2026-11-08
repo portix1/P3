@@ -1,10 +1,10 @@
-# Accueil 1.0.1
+# Accueil 1.0.2
 
 Module générique de composition de la page d’accueil, sans catégorie ni domaine imposé.
 
 ## Mise en route
 
-Ce ZIP est installé par **Administration → Gestion des modules → Installer un module**, sur **P3 0.8.4 ou plus récent**. La 0.8.3-rc4 ne possède pas les déclarations génériques nécessaires aux trois espaces et aux actions publiques sans session : mettre d’abord le moteur à niveau avec le socle compatible, une seule fois. Le module ne copie ni fichier moteur, ni traduction globale, ni thème. Il est livré désactivé ; vérifier les éventuelles URL existantes `home` et `home-*`, puis l’activer. Une réinstallation conserve son état actif/inactif et les données existantes.
+Ce ZIP est installé par **Administration → Gestion des modules → Installer un module**, sur **P3 0.8.4-rc4 ou plus récent**. La 0.8.3-rc4 ne possède pas les déclarations génériques nécessaires aux trois espaces et aux actions publiques sans session : mettre d’abord le moteur à niveau avec le socle compatible, une seule fois. Le module ne copie ni fichier moteur, ni traduction globale, ni thème. Il est livré désactivé ; vérifier les éventuelles URL existantes `home` et `home-*`, puis l’activer. Une réinstallation conserve son état actif/inactif et les données existantes.
 
 Dans **Rédaction → Accueil**, ajouter les zones et leur position. Dans **Configuration → Réglages de l’accueil**, régler le tirage et activer éventuellement sa mesure. Choisir ensuite `home.html` comme page d’accueil dans **Configuration → Identité**. La racine et ses métadonnées restent gérées par P3. L’installation du ZIP ne change pas cette cible.
 

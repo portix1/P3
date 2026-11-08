@@ -39,6 +39,20 @@ try {
     if ($shortLength === false || $shortLength > 171 || !str_ends_with($short, '…')) {
         throw new RuntimeException('Troncature SEO autour de 170 caractères invalide.');
     }
+    $server = $_SERVER;
+    $_SERVER = ['SCRIPT_NAME'=>'/index.php', 'REQUEST_URI'=>'/article.html?x=1', 'HTTP_HOST'=>'universguitare.be', 'HTTP_X_FORWARDED_PROTO'=>'https'];
+    $request = \Portix\Http\Request::fromGlobals();
+    if (\Portix\Seo\PublicUrl::redirectLocation('https://www.universguitare.be', $request) !== 'https://www.universguitare.be/article.html?x=1') {
+        throw new RuntimeException('La redirection canonique de production est perdue.');
+    }
+    $_SERVER['HTTP_HOST']='www.universguitare.be';
+    if (\Portix\Seo\PublicUrl::redirectLocation('https://www.universguitare.be', \Portix\Http\Request::fromGlobals()) !== null) {
+        throw new RuntimeException('Boucle canonique derrière le proxy HTTPS.');
+    }
+    if (\Portix\Seo\PublicUrl::canonicalizeInternal('http://universguitare.be/article.html#partie', 'https://www.universguitare.be') !== 'https://www.universguitare.be/article.html#partie') {
+        throw new RuntimeException('Normalisation des liens internes de production perdue.');
+    }
+    $_SERVER=$server;
     echo "Canonical, descriptions et image sociale SEO : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR, 'Test SEO : ÉCHEC - ' . $error->getMessage() . "\n");

@@ -1,3 +1,7 @@
+# P3 0.8.4-rc4
+
+Mise à niveau depuis la production preview5 : reprise des correctifs canoniques déjà installés, contrat générique des modules et Accueil 1.0.2 compatible avec cette candidate. Le paquet de mise à jour de production conserve le thème actif, les données et les réglages ; il est distinct de la distribution neuve.
+
 # P3 0.8.4 — socle générique pour les modules
 
 Version préparée pour validation, sans déploiement automatique.

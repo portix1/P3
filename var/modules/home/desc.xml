@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <modules>
-<Name>Accueil</Name><Version>1.0.1</Version><Prefix>home</Prefix><Type>module</Type>
+<Name>Accueil</Name><Version>1.0.2</Version><Prefix>home</Prefix><Type>module</Type>
 <Priority>80</Priority><DefLang>fr</DefLang><Path>home</Path><Enabled>0</Enabled>
 <AdminAccess>editor</AdminAccess><SchemaFormat>desc-csv</SchemaFormat>
-<MinimumP3>0.8.4</MinimumP3>
+<MinimumP3>0.8.4-rc4</MinimumP3>
 <AdminNavigation>
  <Item area="writing" action="" role="editor" icon="house" label="home_admin" />
  <Item area="configuration" action="settings" role="admin" icon="settings" label="home_settings" />

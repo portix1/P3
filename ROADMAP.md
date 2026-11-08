@@ -69,3 +69,7 @@ Voir `var/modules/home/README.md` pour les limites et les réglages. L’ajout d
 ## Distribution modulaire — correction du découpage
 
 Le socle 0.8.4 apporte des déclarations génériques de navigation, d’actions publiques sans session anonyme et de version minimale. Il ne connaît pas le module Accueil. Accueil 1.0.1 est distribué séparément sous forme d’un ZIP installable : styles, écrans, tirage, mesures et migration de ses anciennes tables sont contenus dans le module. La 0.8.3-rc4 doit recevoir le socle compatible une seule fois. L’archive complète de test 2713cd56 est remplacée pour les nouveaux essais par cette séparation.
+
+## Migration production — 8 novembre 2026
+
+Cible demandée : 0.8.4-rc4 depuis 0.8.01-beta1-preview5. Archive réelle reçue (223 articles). Reprendre impérativement les correctifs canoniques absents de la branche de développement ; préserver configuration, base et thèmes de production. Livrer une mise à niveau complète, sans installation neuve ni changement automatique de la cible d’accueil.

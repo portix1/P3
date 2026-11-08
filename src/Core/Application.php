@@ -39,6 +39,17 @@ final class Application
                 return;
             }
 
+            $redirect = PublicUrl::redirectLocation(
+                (string) $this->configuration->get('site_url', ''),
+                $this->request
+            );
+            if ($redirect !== null) {
+                http_response_code(in_array($this->request->method(), ['GET', 'HEAD'], true) ? 301 : 308);
+                header('Location: ' . $redirect);
+                header('Cache-Control: no-store');
+                return;
+            }
+
             $this->migrate();
             \Portix\Media\MediaBridge::configure($this->database->connection(), $this->root, !in_array($this->request->method(), ['GET', 'HEAD'], true));
             \PortixSecurity::configureRateLimiter($this->database->connection());
@@ -173,7 +184,7 @@ final class Application
         $pageMetadata = new PageMetadata(
             (string) $CONFIG['title'],
             (string) ($CONFIG['site_description'] ?? ''),
-            (string) ($CONFIG['site_url'] ?? ''),
+            PublicUrl::resolve((string) ($CONFIG['site_url'] ?? ''), $this->request),
             (string) ($CONFIG['seo_default_author'] ?? ''),
             (string) ($CONFIG['seo_publisher_name'] ?? ''),
             (string) ($CONFIG['seo_publisher_logo'] ?? ''),
