@@ -1,3 +1,15 @@
+# P3 0.8.4 — socle générique pour les modules
+
+Version préparée pour validation, sans déploiement automatique.
+
+- Les modules peuvent déclarer leurs écrans dans les trois espaces du back-office, avec rôle, icône et traduction.
+- Ils peuvent déclarer des actions publiques POST sans création d’une session anonyme ; les sessions déjà présentes restent chargées.
+- Le gestionnaire vérifie la version minimale avant remplacement des fichiers et conserve l’état actif/inactif lors d’une réinstallation.
+- L’accueil est distribué séparément en ZIP (Accueil 1.0.1), avec ses styles et mesures propres ; le socle ne contient aucune intégration spécifique à ce module.
+- Aucun thème, média, contenu ou choix de page d’accueil n’est modifié par l’installation d’un ZIP de module.
+
+## Notes historiques
+
 # P3 0.8.3-rc4
 
 Version de test complète du moteur, des modules et des thèmes. La version stable 0.8.1 reste disponible séparément.

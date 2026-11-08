@@ -8,6 +8,7 @@ use RuntimeException;
 
 final class ModuleManifest
 {
+    public const EXTENSION_CONTRACT = 1;
     /** @return array{name:string,prefix:string,type:string,priority:int,default_language:string,enabled:bool,path:string,admin_access:string,schema_format:string,version:string,public_navigation:string,public_route_resolver:string,public_sitemap:string} */
     public static function fromXml(string $file, string $expectedPath): array
     {
@@ -46,6 +47,9 @@ final class ModuleManifest
             'public_navigation' => $value('PublicNavigation'),
             'public_route_resolver' => $value('PublicRouteResolver'),
             'public_sitemap' => $value('PublicSitemap'),
+            'minimum_p3' => $value('MinimumP3'),
+            'admin_navigation' => self::navigation($document),
+            'sessionless_post_actions' => self::sessionlessActions($value('SessionlessPostActions')),
         ];
 
         if ($manifest['name'] === ''
@@ -55,6 +59,7 @@ final class ModuleManifest
             || !in_array($manifest['admin_access'], ['none', 'editor', 'admin'], true)
             || !in_array($manifest['schema_format'], ['none', 'desc-csv'], true)
             || ($manifest['version'] !== '' && preg_match('/^[0-9]+(?:\.[0-9]+){0,3}(?:[-+][A-Za-z0-9.-]+)?$/', $manifest['version']) !== 1)
+            || ($manifest['minimum_p3'] !== '' && preg_match('/^[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?$/D', $manifest['minimum_p3']) !== 1)
             || ($manifest['public_navigation'] !== ''
                 && preg_match('/^[A-Za-z0-9_-]+\.php$/', $manifest['public_navigation']) !== 1)
             || ($manifest['public_route_resolver'] !== ''
@@ -68,5 +73,46 @@ final class ModuleManifest
         $manifest['priority'] = max(0, $manifest['priority']);
 
         return $manifest;
+    }
+    /** Version requirements are checked before installation mutates files or tables. */
+    public static function assertCompatible(array $manifest, string $version): void
+    {
+        if (($manifest['minimum_p3'] ?? '') !== '' && version_compare($version, $manifest['minimum_p3'], '<')) {
+            throw new RuntimeException('P3 >= ' . $manifest['minimum_p3'] . ' requis pour ce module.');
+        }
+    }
+
+    private static function sessionlessActions(string $value): array
+    {
+        if ($value === '') { return []; }
+        $actions = array_map('trim', explode(',', $value));
+        if (count($actions) > 8) { throw new RuntimeException('modules_manifest_invalid'); }
+        foreach ($actions as $action) {
+            if (preg_match('/^[a-z][a-z0-9_]{0,31}$/D', $action) !== 1) { throw new RuntimeException('modules_manifest_invalid'); }
+        }
+        return array_values(array_unique($actions));
+    }
+
+    private static function navigation(DOMDocument $document): array
+    {
+        $xpath = new \DOMXPath($document);
+        $nodes = $xpath->query('/modules/AdminNavigation/Item');
+        if ($nodes === false || $nodes->length > 20) { throw new RuntimeException('modules_manifest_invalid'); }
+        $items = []; $seen = [];
+        foreach ($nodes as $node) {
+            $item = [];
+            foreach (['area', 'action', 'role', 'icon', 'label'] as $attribute) { $item[$attribute] = $node->getAttribute($attribute); }
+            if (!in_array($item['area'], ['writing', 'management', 'configuration'], true)
+                || !in_array($item['role'], ['editor', 'admin'], true)
+                || ($item['role'] === 'editor' && $item['area'] !== 'writing')
+                || preg_match('/^(?:[a-z][a-z0-9_]*(?:-[a-z0-9_]+)*)?$/D', $item['action']) !== 1
+                || strlen($item['action']) > 80
+                || preg_match('/^[a-z][a-z0-9-]{0,40}$/D', $item['icon']) !== 1
+                || preg_match('/^[a-z][a-z0-9_]{0,80}$/D', $item['label']) !== 1
+                || isset($seen[$item['action']])) { throw new RuntimeException('modules_manifest_invalid'); }
+            $seen[$item['action']] = true;
+            $items[] = $item;
+        }
+        return $items;
     }
 }

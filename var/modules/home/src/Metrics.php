@@ -37,7 +37,7 @@ final class Metrics
             foreach ($rows as $row) {
                 // Deduplication is short lived, scoped to this page load, and stores no persistent browser ID.
                 $dedup=hash_hmac('sha256',$page.'|'.$ticket.'|'.$row['kind'].'|'.$row['section'].'|'.$row['article'].'|'.$row['position'],$this->secret);
-                $q=$this->pdo->prepare('INSERT OR IGNORE INTO home_events(entry_key,expires_at) VALUES(?,?)');
+                $q=$this->pdo->prepare('INSERT OR IGNORE INTO analytics_home_events(entry_key,expires_at) VALUES(?,?)');
                 $q->execute([$dedup,$now+172800]);
                 if ($q->rowCount()===0) { continue; }
                 $this->increment($row,$now);
@@ -53,12 +53,12 @@ final class Metrics
     private function increment(array $row,int $now): void
     {
         $day=gmdate('Y-m-d',$now);
-        $q=$this->pdo->prepare('INSERT INTO home_metrics(entry_key,day,section_id,article_id,position,visible,clicks) VALUES(?,?,?,?,?,?,?) ON CONFLICT(entry_key) DO UPDATE SET visible=visible+excluded.visible,clicks=clicks+excluded.clicks');
+        $q=$this->pdo->prepare('INSERT INTO analytics_home_metrics(entry_key,day,section_id,article_id,position,visible,clicks) VALUES(?,?,?,?,?,?,?) ON CONFLICT(entry_key) DO UPDATE SET visible=visible+excluded.visible,clicks=clicks+excluded.clicks');
         $q->execute([implode('|',[$day,$row['section'],$row['article'],$row['position']]),$day,$row['section'],$row['article'],$row['position'],$row['kind']==='click'?0:1,$row['kind']==='click'?1:0]);
     }
     public function report(int $days=28): array
     {
-        $q=$this->pdo->prepare('SELECT section_id,article_id,position,SUM(visible) AS visible,SUM(clicks) AS clicks FROM home_metrics WHERE day>=? GROUP BY section_id,article_id,position ORDER BY section_id,clicks DESC');
+        $q=$this->pdo->prepare('SELECT section_id,article_id,position,SUM(visible) AS visible,SUM(clicks) AS clicks FROM analytics_home_metrics WHERE day>=? GROUP BY section_id,article_id,position ORDER BY section_id,clicks DESC');
         $q->execute([gmdate('Y-m-d',time()-($days-1)*86400)]);
         return $q->fetchAll(PDO::FETCH_ASSOC);
     }

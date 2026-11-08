@@ -27,7 +27,7 @@ final class Bootstrap
         ini_set('log_errors', '1');
 
         $request = Request::fromGlobals();
-        if (self::requestNeedsSession($request)) {
+        if (self::requestNeedsSession($request, $root)) {
             self::startSession($root, $request);
         }
 
@@ -52,12 +52,10 @@ final class Bootstrap
         }
     }
 
-    private static function requestNeedsSession(Request $request): bool
+    private static function requestNeedsSession(Request $request, string $root): bool
     {
-        // Public home metrics do not create a session or a new tracking cookie.
-        // An existing session is still loaded so staff remain excluded.
-        if ($request->routeName() === 'home-events'
-            && empty($_COOKIE[session_name()])) {
+        // Only an explicitly declared public action may skip anonymous session creation.
+        if (empty($_COOKIE[session_name()]) && \Portix\Module\PublicSessionPolicy::allows($request, $root)) {
             return false;
         }
         if (!in_array($request->method(), ['GET', 'HEAD'], true)) {

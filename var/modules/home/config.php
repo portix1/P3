@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require __DIR__.'/boot.php';
+if ((require __DIR__.'/boot.php') === false) { return; }
 use PortixModule\Home\Renderer;
 
 if (!$user->isAdmin() && !$user->isRedactor()) { http_response_code(403); throw new RuntimeException('Accès refusé.'); }

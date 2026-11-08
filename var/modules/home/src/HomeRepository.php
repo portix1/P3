@@ -69,7 +69,7 @@ final class HomeRepository
         $this->clearCache();
     }
 
-    public function clearCache(): void { $this->pdo->exec('DELETE FROM home_cache'); }
+    public function clearCache(): void { $this->pdo->exec('DELETE FROM analytics_home_cache'); }
 
     /** Refresh the common draw, not a per-visitor profile. Revalidate content on every render. */
     public function selection(array $settings, int $now): array
@@ -85,17 +85,17 @@ final class HomeRepository
         }
         // Content is always reloaded below, so withdrawals and image edits never wait for the draw.
         $key = hash('sha256',json_encode([$sections,$active,$settings['days'],$settings['exploration'],$settings['refresh_minutes'],$insights['mode'],$stamp]));
-        $q = $this->pdo->prepare('SELECT payload FROM home_cache WHERE entry_key=? AND expires_at>?');
+        $q = $this->pdo->prepare('SELECT payload FROM analytics_home_cache WHERE entry_key=? AND expires_at>?');
         $q->execute([$key,$now]);
         $raw = $q->fetchColumn();
         $draw = is_string($raw) ? json_decode($raw,true) : null;
         if (!is_array($draw)) {
             $draw = $this->draw($sections,$settings,$now,($insights['mode'] ?? 'off') !== 'off');
-            $q = $this->pdo->prepare('INSERT INTO home_cache(entry_key,payload,expires_at) VALUES (?,?,?) ON CONFLICT(entry_key) DO UPDATE SET payload=excluded.payload,expires_at=excluded.expires_at');
+            $q = $this->pdo->prepare('INSERT INTO analytics_home_cache(entry_key,payload,expires_at) VALUES (?,?,?) ON CONFLICT(entry_key) DO UPDATE SET payload=excluded.payload,expires_at=excluded.expires_at');
             $q->execute([$key,json_encode($draw,JSON_THROW_ON_ERROR),$now+60*$settings['refresh_minutes']]);
-            $this->pdo->prepare('DELETE FROM home_cache WHERE expires_at<?')->execute([$now]);
-            $this->pdo->prepare('DELETE FROM home_events WHERE expires_at<?')->execute([$now]);
-            $this->pdo->prepare('DELETE FROM home_metrics WHERE day<?')->execute([gmdate('Y-m-d',$now-90*86400)]);
+            $this->pdo->prepare('DELETE FROM analytics_home_cache WHERE expires_at<?')->execute([$now]);
+            $this->pdo->prepare('DELETE FROM analytics_home_events WHERE expires_at<?')->execute([$now]);
+            $this->pdo->prepare('DELETE FROM analytics_home_metrics WHERE day<?')->execute([gmdate('Y-m-d',$now-90*86400)]);
         }
         $result = [];
         $used = [];

@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require __DIR__.'/boot.php';
+if ((require __DIR__.'/boot.php') === false) { return; }
 use PortixModule\Home\Renderer;
 
 $homeStaff=$user->isAdmin() || $user->isRedactor();
@@ -38,6 +38,8 @@ if (count($argument)>1 || !in_array($request->method(),['GET','HEAD'],true)) {
 }
 $pageMetadata->define($translator->text('home_title'),'', 'home.html');
 $template->setSlot('main',__DIR__.'/templates/index.tpl');
+$homeCss=(string)file_get_contents(__DIR__.'/assets/public.css');
+$template->set('home_style_html',\Portix\View\Html::trusted('<style>'.$homeCss.'</style>'));
 $template->set('home_title',$translator->text('home_title'));
 $template->set('home_empty',$translator->text('home_empty'));
 $homeSections=$homeRepository->selection($homeSettings,time());

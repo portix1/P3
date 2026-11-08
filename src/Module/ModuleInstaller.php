@@ -26,6 +26,7 @@ final class ModuleInstaller
             throw new RuntimeException('modules_manifest_missing');
         }
         $manifest = ModuleManifest::fromXml($manifestFile, $rootFolder);
+        ModuleManifest::assertCompatible($manifest, trim((string) file_get_contents(dirname(__DIR__, 2) . '/VERSION')));
         $schemaDirectory = $moduleDirectory . '/database';
         if (is_dir($schemaDirectory) && $manifest['schema_format'] !== 'desc-csv') {
             throw new RuntimeException('modules_schema_format_required');
@@ -39,6 +40,8 @@ final class ModuleInstaller
                 (string) $manifest['prefix'],
                 $schemaDirectory
             );
+            $existing = $this->modules->findByPrefix((string) $manifest['prefix']);
+            if ($existing !== null) { $manifest['enabled'] = (bool) $existing['enabled']; }
             $this->modules->upsert($manifest);
             return ['module' => $manifest, 'tables' => $tables];
         });

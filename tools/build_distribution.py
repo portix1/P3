@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build an installation ZIP from tracked source files, excluding runtime data."""
+import argparse
 import hashlib
 import os
 from pathlib import Path
@@ -20,12 +21,15 @@ def include(name):
     return not name.startswith(RUNTIME) or Path(name).name in PLACEHOLDERS
 
 
-def build():
+def build(excluded_modules=()):
     version = (ROOT / 'VERSION').read_text().strip()
     if not re.fullmatch(r'\d+\.\d+\.\d+(?:-[A-Za-z0-9][A-Za-z0-9.-]*)?', version):
         raise RuntimeError('Invalid VERSION')
     tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')
-    paths = sorted(name for name in tracked if name and include(name))
+    for module in excluded_modules:
+        if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,62}', module) or not (ROOT / 'var/modules' / module / 'desc.xml').is_file():
+            raise RuntimeError('Unknown module exclusion')
+    paths = sorted(name for name in tracked if name and include(name) and not any(name.startswith('var/modules/' + module + '/') for module in excluded_modules))
     required = {'VERSION', 'LICENSE', 'index.php', 'install.php', '.htaccess', 'bootstrap/app.php',
                 'src/Maintenance/UpdateSafety.php', 'var/modules/safety/templates/rollback.tpl'}
     if not required.issubset(paths):
@@ -55,4 +59,6 @@ def build():
 
 
 if __name__ == '__main__':
-    build()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--exclude-module', action='append', default=[])
+    build(parser.parse_args().exclude_module)

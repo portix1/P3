@@ -43,7 +43,7 @@ final class MediaUsage
                     throw new RuntimeException('Table non analysable.');
                 }
                 if (preg_match('/^(sqlite_|media_|analytics_)/', $table)
-                    || in_array($table, ['application_logs', 'audit_logs', 'rate_limits', 'password_reset_tokens', 'schema_migrations', 'module_schema_tables', 'home_events', 'home_metrics', 'home_cache'], true)) {
+                    || in_array($table, ['application_logs', 'audit_logs', 'rate_limits', 'password_reset_tokens', 'schema_migrations', 'module_schema_tables'], true)) {
                     continue;
                 }
                 $statement = $this->pdo->query('SELECT * FROM "' . $table . '"');

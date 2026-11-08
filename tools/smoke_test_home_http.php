@@ -5,7 +5,7 @@ $source=dirname(__DIR__);
 require $source.'/bootstrap/autoload.php';require $source.'/includes/class/settings.class.php';
 $fixture=sys_get_temp_dir().'/p3-home-http-'.bin2hex(random_bytes(6));
 mkdir($fixture,0770,true);
-$skip=['.git','database','sessions','tmp','dist','var/private','var/sys','var/uploads','var/cache'];
+$skip=['.git','database','sessions','tmp','dist','var/private','var/sys','var/uploads','var/cache','var/modules/home'];
 $copy=static function(string $from,string $to,string $relative='')use(&$copy,$skip):void {
     foreach (scandir($from)?:[] as $name) {
         if ($name==='.' || $name==='..') { continue; }
@@ -33,13 +33,6 @@ try {
     $config->update(['database_file'=>'home-test.sqlite','defaultpage'=>'home','template'=>'six-cordes-ux-clair','title'=>'Home test','debug'=>true]);
     foreach (['Image','HomeRepository'] as $class) { require_once $source.'/var/modules/home/src/'.$class.'.php'; }
     $home=new PortixModule\Home\HomeRepository($db->connection());
-    foreach ($home->categories() as $i=>$category) { $home->save(['kind'=>'articles','category_id'=>$category['id'],'layout'=>['feature','category','cards'][$i%3],'title'=>$category['name'],'enabled'=>1,'descendants'=>1,'weighted'=>1,'item_count'=>2,'position'=>$i],0); }
-    // A real local raster exercises both article and category imagery.
-    @mkdir($fixture.'/var/uploads/images',0770,true);
-    copy($fixture.'/var/templates/six-cordes/assets/guitar-header.webp',$fixture.'/var/uploads/images/home-test.webp');
-    $db->connection()->exec("UPDATE articles SET featured_image='var/uploads/images/home-test.webp' WHERE id=(SELECT MIN(id) FROM articles)");
-    $db->connection()->exec("UPDATE home_sections SET image_path='var/uploads/images/home-test.webp',image_alt='Test category image' WHERE id=(SELECT MIN(id) FROM home_sections WHERE layout='category')");
-    PortixSettings::write('home',['days'=>28,'exploration'=>50,'refresh_minutes'=>60,'tracking'=>true,'secret'=>str_repeat('x',64)],$fixture);
     PortixSettings::write('insights',['mode'=>'minimal'],$fixture);
     file_put_contents($fixture.'/router.php', '<?php $p=parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH); if($p!=="/" && is_file(__DIR__.$p)) { return false; } require __DIR__."/index.php";');
     $socket=stream_socket_server('tcp://127.0.0.1:0',$errno,$error);
@@ -57,6 +50,60 @@ try {
     };
     for ($attempt=0;$attempt<40;$attempt++) { $response=$request('/');if ($response[0]!==0) { break; }usleep(100000); }
     $check=static function(bool $value,string $message):void { if (!$value) { throw new RuntimeException($message); } };
+    // Exercise the actual ZIP upload screen, not a file-copy substitute.
+    $login=$request('/login.html');
+    preg_match('/PHPSESSID=([^;]+)/',implode("\n",$login[2]),$cookie);
+    preg_match('/name="csrf_token" value="([^"]+)"/',$login[1],$token);
+    $auth=['Content-Type: application/x-www-form-urlencoded','Cookie: PHPSESSID='.($cookie[1]??'')];
+    $logged=$request('/login.html','POST',http_build_query(['pseudo'=>'admin','pass'=>'test-home-password','csrf_token'=>$token[1]??'']),$auth);
+    if (preg_match('/PHPSESSID=([^;]+)/',implode("\n",$logged[2]),$cookie)) { $auth[1]='Cookie: PHPSESSID='.$cookie[1]; }
+    $screen=$request('/Admin-modmgr.html','GET','',$auth);
+    preg_match('/name="csrf_token" value="([^"]+)"/',$screen[1],$token);
+    $check(!is_dir($fixture.'/var/modules/home'),'Core fixture starts without Home');
+    $snapshots=[];
+    foreach (['VERSION','src/Core/Application.php','src/Core/Bootstrap.php','src/Module/ModuleManifest.php','src/Navigation/AdminNavigation.php','var/editor/portix-content.css'] as $name) { $snapshots[$name]=hash_file('sha256',$fixture.'/'.$name); }
+    foreach (glob($fixture.'/var/templates/*/style.min.css')?:[] as $file) { $snapshots[substr($file,strlen($fixture)+1)]=hash_file('sha256',$file); }
+    $makeZip=static function(string $name,bool $incompatible=false)use($source,$fixture):string {
+        $file=$fixture.'/tmp/'.$name; $zip=new ZipArchive();$zip->open($file,ZipArchive::CREATE|ZipArchive::OVERWRITE);
+        $dir=$source.'/var/modules/home';
+        $it=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir,FilesystemIterator::SKIP_DOTS));
+        foreach ($it as $item) { if (!$item->isFile() || $item->isLink()) { continue; }
+            $relative=substr($item->getPathname(),strlen($dir)+1);
+            $bytes=(string)file_get_contents($item->getPathname());
+            if ($incompatible && $relative==='desc.xml') { $bytes=str_replace('<MinimumP3>0.8.4</MinimumP3>','<MinimumP3>99.0.0</MinimumP3>',$bytes); }
+            $zip->addFromString('home/'.$relative,$bytes);
+        }
+        $zip->close();return (string)file_get_contents($file);
+    };
+    $upload=static function(string $bytes,string $csrf)use($request,$auth):array {
+        $boundary='p3'.bin2hex(random_bytes(12));$body='';
+        foreach (['module_action'=>'upload','csrf_token'=>$csrf] as $key=>$value) { $body.='--'.$boundary."\r\nContent-Disposition: form-data; name=\"".$key."\"\r\n\r\n".$value."\r\n"; }
+        $body.='--'.$boundary."\r\nContent-Disposition: form-data; name=\"userfile\"; filename=\"P3-Accueil-1.0.1.zip\"\r\nContent-Type: application/zip\r\n\r\n".$bytes."\r\n--".$boundary."--\r\n";
+        return $request('/Admin-modmgr.html','POST',$body,['Content-Type: multipart/form-data; boundary='.$boundary,$auth[1]]);
+    };
+    $archive=$makeZip('home-install.zip');
+    $installed=$upload($archive,$token[1]??'');
+    $check($installed[0]===200,'Native module ZIP upload completed');
+    $check($db->connection()->query("SELECT enabled FROM modules WHERE prefix='home'")->fetchColumn()==0,'Fresh installation leaves activation explicit');
+    $db->connection()->exec("UPDATE modules SET enabled=1 WHERE prefix='home'");
+    foreach ($home->categories() as $i=>$category) { $home->save(['kind'=>'articles','category_id'=>$category['id'],'layout'=>['feature','category','cards'][$i%3],'title'=>$category['name'],'enabled'=>1,'descendants'=>1,'weighted'=>1,'item_count'=>2,'position'=>$i],0); }
+    // A real local raster exercises both article and category imagery.
+    @mkdir($fixture.'/var/uploads/images',0770,true);
+    copy($fixture.'/var/templates/six-cordes/assets/guitar-header.webp',$fixture.'/var/uploads/images/home-test.webp');
+    $db->connection()->exec("UPDATE articles SET featured_image='var/uploads/images/home-test.webp' WHERE id=(SELECT MIN(id) FROM articles)");
+    $db->connection()->exec("UPDATE home_sections SET image_path='var/uploads/images/home-test.webp',image_alt='Test category image' WHERE id=(SELECT MIN(id) FROM home_sections WHERE layout='category')");
+    PortixSettings::write('home',['days'=>28,'exploration'=>50,'refresh_minutes'=>60,'tracking'=>true,'secret'=>str_repeat('x',64)],$fixture);
+    $zoneCount=count($home->sections(true));
+    $installed=$upload($archive,$token[1]??'');
+    $check($installed[0]===200,'Native ZIP reinstall completed');
+    $check($db->connection()->query("SELECT enabled FROM modules WHERE prefix='home'")->fetchColumn()==1,'Native reinstall preserves activation');
+    $check(count($home->sections(true))===$zoneCount,'Native ZIP reinstall preserves editorial zones');
+    $check(trim((string)file_get_contents($fixture.'/var/modules/home/MODULE-VERSION'))==='1.0.1','Correct module package installed');
+    $manifestHash=hash_file('sha256',$fixture.'/var/modules/home/desc.xml');
+    $rejected=$upload($makeZip('home-incompatible.zip',true),$token[1]??'');
+    $check(str_contains($rejected[1],'99.0.0') && hash_file('sha256',$fixture.'/var/modules/home/desc.xml')===$manifestHash,'Incompatible package rejected before replacing the installed module');
+    foreach ($snapshots as $name=>$hash) { $check(hash_file('sha256',$fixture.'/'.$name)===$hash,'Installing ZIP leaves engine and theme unchanged: '.$name); }
+    $response=$request('/');
     $check($response[0]===200 && str_contains($response[1],'data-home-slot'),'Public home renders');
     $check(!preg_grep('/^Set-Cookie:/i',$response[2]),'Initial measurement does not require a cookie');
     preg_match('/data-home-ticket="([^"]+)"/',$response[1],$match);$ticket=html_entity_decode($match[1]??'',ENT_QUOTES);
@@ -66,7 +113,7 @@ try {
     $check($post[0]===204,'Same-origin event accepted including a nondefault port');
     $check(!preg_grep('/^Set-Cookie:/i',$post[2]),'Telemetry creates no session cookie');
     $request('/home-events.html','POST',json_encode($event),['Content-Type: application/json']);
-    $check((int)$db->connection()->query('SELECT SUM(clicks) FROM home_metrics WHERE section_id>0')->fetchColumn()===1,'HTTP replay deduplicated');
+    $check((int)$db->connection()->query('SELECT SUM(clicks) FROM analytics_home_metrics WHERE section_id>0')->fetchColumn()===1,'HTTP replay deduplicated');
     $bad=$event;$bad['ticket'].='bad';
     $check($request('/home-events.html','POST',json_encode($bad),['Content-Type: application/json'])[0]===422,'Bad signature rejected');
     $check($request('/home-events.html')[0]===405,'GET event refused');

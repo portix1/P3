@@ -106,7 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!is_file($descriptionFile)) {
                     throw new RuntimeException('modules_manifest_missing');
                 }
-                ModuleManifest::fromXml($descriptionFile, $rootFolder);
+                $stagedManifest = ModuleManifest::fromXml($descriptionFile, $rootFolder);
+                ModuleManifest::assertCompatible($stagedManifest, trim((string) file_get_contents('./VERSION')));
                 $moduleDirectory = './var/modules/' . $rootFolder;
                 if (is_link($moduleDirectory)) {
                     throw new RuntimeException('modules_unsafe_target');

@@ -46,8 +46,7 @@ $tests = [
     'smoke_test_database.php',
     'smoke_test_routing_menu.php',
     'smoke_test_admin_navigation.php',
-    'smoke_test_home.php',
-    'smoke_test_home_http.php',
+    'smoke_test_module_extensions.php',
     'smoke_test_html_sanitizer.php',
     'smoke_test_public_css.php',
     'smoke_test_template.php',
@@ -80,6 +79,8 @@ $tests = [
 ];
 
 if (is_file($root . '/var/modules/media/src/MediaManager.php')) { $tests[] = 'smoke_test_media.php'; }
+
+if (is_file($root . '/var/modules/home/desc.xml')) { $tests[] = 'smoke_test_home.php'; $tests[] = 'smoke_test_home_http.php'; }
 
 foreach ($tests as $test) {
     releaseRunPhp($root, $test);

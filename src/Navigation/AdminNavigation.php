@@ -9,7 +9,7 @@ use Throwable;
 
 final class AdminNavigation
 {
-    public static function sections(string $root, array $modules, bool $isAdmin, bool $isRedactor, array $arguments, Translator $translator): array
+    public static function sections(string $root, array $modules, bool $isAdmin, bool $isRedactor, array $arguments, Translator $translator, string $language = 'fr'): array
     {
         $sections = ['writing' => [], 'management' => [], 'configuration' => []];
         if (!$isAdmin && !$isRedactor) {
@@ -35,14 +35,14 @@ final class AdminNavigation
         }
 
         $places = [
-            'home' => ['writing', 'house'], 'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
+            'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
             'media' => ['writing', 'images'], 'menu' => ['writing', 'menu'],
             'footer' => ['writing', 'panel-bottom'], 'dwl' => ['writing', 'download'],
             'affiliation' => ['writing', 'dollar-sign'], 'contact' => ['management', 'mail'],
             'insights' => ['management', 'chart-bar'], 'search' => ['management', 'search'],
             'safety' => ['management', 'triangle-alert'],
         ];
-        $settings = ['contact', 'affiliation', 'insights', 'safety', 'home'];
+        $settings = ['contact', 'affiliation', 'insights', 'safety'];
         foreach ($modules as $module) {
             $path = (string) $module['path'];
             if ($path !== basename($path) || $path === '.' || $path === '..') {
@@ -63,15 +63,28 @@ final class AdminNavigation
                 continue;
             }
             $prefix = $manifest['prefix'];
+            if ($manifest['admin_navigation'] !== []) {
+                $moduleMessages = (static function (string $directory, string $language, string $fallback): array {
+                    $_LANG = [];
+                    $file = $directory . '/lang/' . basename($language) . '.php';
+                    if (!is_file($file)) { $file = $directory . '/lang/' . basename($fallback) . '.php'; }
+                    if (is_file($file) && !is_link($file)) { include $file; }
+                    return $_LANG;
+                })($directory, $language, $manifest['default_language']);
+                $moduleTranslator = new Translator($moduleMessages);
+                foreach ($manifest['admin_navigation'] as $item) {
+                    if (!$isAdmin && $item['role'] !== 'editor') { continue; }
+                    $url = 'Admin-' . $prefix . ($item['action'] !== '' ? '-' . $item['action'] : '') . '.html';
+                    $add($item['area'], $moduleTranslator->text($item['label'], $translator->text($item['label'], $manifest['name'])), $url, $item['icon']);
+                }
+                continue;
+            }
             [$section, $icon] = $places[$prefix] ?? [$access === 'editor' ? 'writing' : 'management', 'boxes'];
             // Existing editor permissions continue to expose the Contact inbox.
             if (!$isAdmin && $section === 'management') {
                 $section = 'writing';
             }
             $add($section, $manifest['name'], 'Admin-' . $prefix . '.html', $icon);
-            if ($isAdmin && $prefix === 'home') {
-                $add('management', 'ux_home_report', 'Admin-home-report.html', 'chart-bar');
-            }
             if ($isAdmin && $prefix === 'articles') {
                 $add('configuration', 'ux_settings_articles', 'Admin-articles-menu.html', 'menu');
             }

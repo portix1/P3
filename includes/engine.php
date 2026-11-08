@@ -378,7 +378,7 @@ if ($canAccessAdmin && $route === 'Admin') {
 
 if ($route === 'Admin') {
     $adminSections = \Portix\Navigation\AdminNavigation::sections(
-        dirname(__DIR__), $modules, $isAdmin, $isRedactor, $argument, $translator
+        dirname(__DIR__), $modules, $isAdmin, $isRedactor, $argument, $translator, (string) $CONFIG['lang']
     );
     $activeArea = in_array($adminRoute, ['writing', 'management', 'configuration'], true) ? $adminRoute : '';
     $activeEntry = '';

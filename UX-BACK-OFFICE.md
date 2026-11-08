@@ -59,3 +59,7 @@ Chaque point dispose de « Supprimer ce point ». La suppression exige une confi
 ## Module Accueil
 
 Rédaction → Accueil (`Admin-home.html`, administrateurs et rédacteurs) compose les zones, leurs images et leur ordre. Configuration → Réglages de l’accueil (`Admin-home-settings.html`, administrateurs) règle le tirage et la mesure facultative. Administration → Résultats de l’accueil (`Admin-home-report.html`, administrateurs) consulte les compteurs. Les entrées sont centralisées dans AdminNavigation ; elles disparaissent quand le module est désactivé. Le raccordement à la racine utilise le choix existant de page d’accueil dans Configuration → Identité. Aucun écran séparé ne modifie les autorisations existantes.
+
+## Déclarations des modules — socle 0.8.4
+
+Les nouveaux modules déclarent leurs contributions dans `desc.xml`, bloc `AdminNavigation`. `AdminNavigation.php` les lit et réutilise le même inventaire dans les pages d’espace et le menu. Le module peut fournir plusieurs actions, chacune avec espace, rôle, icône et clé de traduction ; ses contrôleurs restent responsables des permissions. Une fonction accessible aux rédacteurs appartient à Rédaction. Les fonctions réservées aux administrateurs peuvent être en Administration ou Configuration. Les modules sans déclaration conservent leur classement historique. Aucun classement particulier à Accueil n’est requis dans le moteur.

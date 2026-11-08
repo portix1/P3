@@ -22,18 +22,27 @@ try {
     $upgradeConfig=\Portix\Configuration\SiteConfiguration::load($temp);
     $upgradeApp=new \Portix\Core\Application($root,\Portix\Http\Request::fromGlobals(),$upgradeConfig,$upgradeDb);
     $upgradeApp->migrate();
-    homeCheck((int)$upgradeDb->connection()->query("SELECT enabled FROM modules WHERE prefix='home'")->fetchColumn()===0,'Upgrade registers home disabled without claiming legacy routes');
-    homeCheck($upgradeConfig->get('defaultpage')==='news','Upgrade preserves the configured landing page');
-    $upgradeDb->connection()->exec("UPDATE modules SET enabled=1 WHERE prefix='home'");
-    $upgradeApp=new \Portix\Core\Application($root,\Portix\Http\Request::fromGlobals(),$upgradeConfig,$upgradeDb);
-    $upgradeApp->migrate();
-    homeCheck((int)$upgradeDb->connection()->query("SELECT enabled FROM modules WHERE prefix='home'")->fetchColumn()===1,'Explicit activation survives subsequent migrations');
+    homeCheck($upgradeDb->connection()->query("SELECT enabled FROM modules WHERE prefix='home'")->fetchColumn()===false,'Core does not register or install optional home module');
+    homeCheck($upgradeConfig->get('defaultpage')==='news','Core preserves the landing page');
     $upgradeApp=null;$upgradeDb->close();
     (new Migrator($db))->migrate();
     $installer=new ModuleInstaller($db,new ModuleRepository($db->connection()));
     foreach (['articles','home','insights','affiliation','news'] as $module) { $installer->installDirectory($root.'/var/modules/'.$module); }
     $installer->installDirectory($root.'/var/modules/home');
     $pdo=$db->connection();
+    // The first development ZIP used table names without the analytics convention.
+    foreach (['analytics_home_metrics'=>'home_metrics','analytics_home_events'=>'home_events','analytics_home_cache'=>'home_cache'] as $new=>$old) {
+        $pdo->exec('ALTER TABLE '.$new.' RENAME TO '.$old);
+        $pdo->prepare('UPDATE module_schema_tables SET table_name=? WHERE table_name=?')->execute([$old,$new]);
+    }
+    $pdo->prepare('INSERT INTO home_metrics(entry_key,day,section_id,article_id,position,visible,clicks) VALUES(?,?,999,999,1,7,0)')->execute(['legacy-counter',gmdate('Y-m-d')]);
+    $pdo->prepare('INSERT INTO home_events(entry_key,expires_at) VALUES(?,?)')->execute(['legacy-dedup',time()+3600]);
+    $database=$db;
+    require $root.'/var/modules/home/boot.php';
+    homeCheck((int)$pdo->query("SELECT visible FROM analytics_home_metrics WHERE entry_key='legacy-counter'")->fetchColumn()===7,'Legacy module counters migrated without loss');
+    homeCheck((bool)$pdo->query("SELECT 1 FROM analytics_home_events WHERE entry_key='legacy-dedup'")->fetchColumn(),'Legacy deduplication preserved');
+    homeCheck(!$homeRepository->installed('home_metrics'),'Owned legacy tables replaced after transaction');
+    $pdo->exec("DELETE FROM analytics_home_metrics WHERE entry_key='legacy-counter'");
     $repository=new HomeRepository($pdo); $now=time();
     for ($i=1;$i<=8;$i++) {
         $q=$pdo->prepare('INSERT INTO article_categories(id,name,slug,parent_id,position,is_visible,description) VALUES(?,?,?,?,0,1,?)');
@@ -78,9 +87,9 @@ try {
     $ticket=$metrics->ticket(['1-0'=>[1,1,1],'2-0'=>[2,2,1]],$now);
     $event=['ticket'=>$ticket,'page'=>str_repeat('a',32),'events'=>[['kind'=>'page'],['kind'=>'visible','slot'=>'1-0'],['kind'=>'click','slot'=>'1-0'],['kind'=>'click','slot'=>'2-0']]];
     $metrics->accept($event,$now); $metrics->accept($event,$now);
-    $global=$pdo->query('SELECT * FROM home_metrics WHERE section_id=0')->fetch();
+    $global=$pdo->query('SELECT * FROM analytics_home_metrics WHERE section_id=0')->fetch();
     homeCheck((int)$global['visible']===1 && (int)$global['clicks']===1,'Page loads and converted loads counted once');
-    homeCheck((int)$pdo->query('SELECT SUM(clicks) FROM home_metrics WHERE section_id>0')->fetchColumn()===2,'Clicks deduplicated per card');
+    homeCheck((int)$pdo->query('SELECT SUM(clicks) FROM analytics_home_metrics WHERE section_id>0')->fetchColumn()===2,'Clicks deduplicated per card');
     foreach ([array_replace($event,['ticket'=>$ticket.'bad']),array_replace($event,['events'=>[['kind'=>'click','slot'=>'fake']]])] as $bad) {
         $rejected=false; try { $metrics->accept($bad,$now); } catch (InvalidArgumentException) { $rejected=true; }
         homeCheck($rejected,'Forged ticket or arbitrary slot rejected');

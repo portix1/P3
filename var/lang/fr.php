@@ -647,6 +647,3 @@ $_LANG['ux_settings_theme_help'] = 'Choisir le thème utilisé par le site publi
 $_LANG['ux_settings_articles'] = 'Navigation des articles';
 
 $_LANG['ux_active_theme'] = 'Thème actif';
-
-$_LANG['ux_home_report'] = 'Résultats de l’accueil';
-$_LANG['ux_settings_home'] = 'Réglages de l’accueil';

@@ -65,3 +65,7 @@ L’organisation en trois pages Rédaction, Administration et Configuration est 
 - [ ] Ajustement des poids après constitution de données exploitables.
 
 Voir `var/modules/home/README.md` pour les limites et les réglages. L’ajout d’images dans les fiches Affiliation reste séparé.
+
+## Distribution modulaire — correction du découpage
+
+Le socle 0.8.4 apporte des déclarations génériques de navigation, d’actions publiques sans session anonyme et de version minimale. Il ne connaît pas le module Accueil. Accueil 1.0.1 est distribué séparément sous forme d’un ZIP installable : styles, écrans, tirage, mesures et migration de ses anciennes tables sont contenus dans le module. La 0.8.3-rc4 doit recevoir le socle compatible une seule fois. L’archive complète de test 2713cd56 est remplacée pour les nouveaux essais par cette séparation.
