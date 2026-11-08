@@ -26,6 +26,31 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         await page.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, `home-${width}.png`), fullPage:true});
       }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
+      const thumbnail = await page.locator('.home-thumbnail').first().evaluate(node => {
+        const box=node.getBoundingClientRect();
+        return {height:box.height,lineHeight:parseFloat(getComputedStyle(node).lineHeight),float:getComputedStyle(node).cssFloat,fit:getComputedStyle(node.querySelector('img')).objectFit};
+      });
+      assert.equal(thumbnail.float, 'left', 'Thumbnail floats left');
+      assert(Math.abs(thumbnail.height-thumbnail.lineHeight*3)<1, `Thumbnail height follows three text lines at ${width}`);
+      assert.equal(thumbnail.fit, 'contain', 'Image proportions preserved');
+      const wraps = await page.locator('.home-items').first().evaluate(node => {
+        const probe=document.createElement('article');probe.className='home-item';
+        const thumb=document.createElement('span');thumb.className='home-thumbnail';
+        const image=document.createElement('img');image.src=document.querySelector('.home-thumbnail img').src;thumb.append(image);
+        const paragraph=document.createElement('p');paragraph.textContent='Readable text flows beside the picture then returns below it. '.repeat(15);
+        probe.append(thumb,paragraph);node.append(probe);
+        try {
+          const bounds=probe.getBoundingClientRect(), picture=thumb.getBoundingClientRect();
+          const range=document.createRange();range.setStart(paragraph.firstChild,0);range.setEnd(paragraph.firstChild,1);const first=range.getBoundingClientRect();
+          let below=false;
+          for(let i=0;i<paragraph.textContent.length;i++) {
+            range.setStart(paragraph.firstChild,i);range.setEnd(paragraph.firstChild,i+1);const box=range.getBoundingClientRect();
+            if(box.y>=picture.bottom && Math.abs(box.x-bounds.x)<2){below=true;break;}
+          }
+          return first.x>=picture.right && Math.abs(picture.x-bounds.x)<1 && below;
+        } finally {probe.remove();}
+      });
+      assert(wraps, `Text wraps beside and below the left thumbnail at ${width}`);
       const grid = await page.locator('.home-zones').evaluate(node => {
         const zones = [...node.querySelectorAll(':scope > .home-zone:not(.home-kind-text)')];
         return {columns:getComputedStyle(node).gridTemplateColumns.split(' ').length,

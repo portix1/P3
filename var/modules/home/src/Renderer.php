@@ -23,11 +23,12 @@ final class Renderer
             $title=$section['title'] ?: ($categoryMap[$section['category_id']]['name']??'');
             $html.='<section class="home-zone home-layout-'.$layout.' home-kind-'.$e($section['kind']).'" aria-label="'.$e($title).'">';
             if ($title!=='') { $html.='<h2>'.$e($title).'</h2>'; }
-            if ($section['kind']==='text') {
-                $html.='<div class="home-free-text">'.nl2br($e($section['body'])).'</div></section>'; continue;
-            }
             $categoryImage=Image::thumbnail($root,$section['image_path']);
-            if ($layout==='category' && $categoryImage!=='') { $html.='<div class="home-category-image">'.self::image($categoryImage,$section['image_alt']).'</div>'; }
+            if ($section['kind']==='text') {
+                $html.='<div class="home-free-text">';
+                if ($categoryImage!=='') { $html.='<span class="home-thumbnail">'.self::image($categoryImage,$section['image_alt']).'</span>'; }
+                $html.=nl2br($e($section['body'])).'</div></section>'; continue;
+            }
             if ($section['kind']==='affiliation') {
                 $disclosure=\PortixSettings::read('affiliation',['disclosure'=>$labels['home_disclosure']]);
                 $html.='<p class="home-disclosure">'.$e((string)$disclosure['disclosure']).'</p>';
@@ -38,14 +39,14 @@ final class Renderer
                 $track=$section['kind']==='articles';
                 if ($track) { $slots[$slot]=[$sid,(int)$item['id'],$i+1]; }
                 $image='';
-                if ($layout!=='text' && $layout!=='category') {
-                    $image=Image::thumbnail($root,(string)($item['image']??''));
+                if ($layout!=='text') {
+                    $image=$layout==='category' && $i===0 && $categoryImage!=='' ? $categoryImage : Image::thumbnail($root,(string)($item['image']??''));
                     if ($image==='' && $i===0) { $image=$categoryImage; }
                 }
                 $attr=$track?' data-home-slot="'.$slot.'"':'';
                 $external=$section['kind']==='affiliation'?' target="_blank" rel="sponsored nofollow noopener"':'';
                 $html.='<article class="home-item'.($image!==''?' home-has-image':'').'"'.$attr.'>';
-                if ($image!=='') { $html.='<a href="'.$e($item['url']).'"'.$external.'>'.self::image($image,'').'</a>'; }
+                if ($image!=='') { $html.='<a class="home-thumbnail" href="'.$e($item['url']).'" aria-label="'.$e($item['title']).'"'.$external.'>'.self::image($image,$image===$categoryImage?$section['image_alt']:'').'</a>'; }
                 $html.='<div class="home-item-copy"><h3><a href="'.$e($item['url']).'"'.$external.'>'.$e($item['title']).'</a></h3>';
                 $text=trim((string)($item['summary']??'')) ?: (string)($item['body']??'');
                 $html.='<p>'.$e(self::excerpt($text)).'</p>';

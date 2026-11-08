@@ -77,3 +77,7 @@ Cible demandée : 0.8.4-rc4 depuis 0.8.01-beta1-preview5. Archive réelle reçue
 ## Accueil 1.0.3 — disposition demandée
 
 Zones sur deux ou trois colonnes selon la largeur disponible sur ordinateur, une seule sur mobile. Texte libre en pleine largeur ; ordre et compositions préservés. Aucun titre général au-dessus des zones. Mise à jour autonome du module, sans modification du moteur ou du thème.
+
+## Accueil 1.0.4 — miniatures et habillage
+
+Images compactes hautes de trois lignes de texte, alignées à gauche avec habillage réel puis retour du texte sur toute la largeur. Miniatures WebP 256 px maximum sans modifier les originaux. Format commun sur ordinateur/mobile, images d’articles/catégories et texte libre.

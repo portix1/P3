@@ -21,17 +21,17 @@ final class Image
         $size=filesize($file); $info=@getimagesize($file);
         if (!$info || !$size || $size>8388608 || $info[0]*$info[1]>16000000
             || !in_array($info['mime'],['image/webp','image/png','image/jpeg'],true)) { return ''; }
-        if ($info[0]<=640 && $info[1]<=420) { return $path; }
+        if ($info[0]<=256 && $info[1]<=256) { return $path; }
         if (!function_exists('imagewebp')) { return $path; }
         $hash=hash_file('sha256',$file); if (!is_string($hash)) { return ''; }
         $directory=$root.'/var/uploads/images/home-thumbs';
         if (is_link($directory)) { return ''; }
         if (!is_dir($directory) && !@mkdir($directory,0755,true) && !is_dir($directory)) { return $path; }
-        $target=$directory.'/'.$hash.'.webp';
+        $target=$directory.'/mini256-'.$hash.'.webp';
         if (!is_file($target)) {
             $bytes=file_get_contents($file); $source=$bytes!==false ? @imagecreatefromstring($bytes) : false;
             if ($source===false) { return ''; }
-            $scale=min(640/$info[0],420/$info[1],1);
+            $scale=min(256/$info[0],256/$info[1],1);
             $w=max(1,(int)round($info[0]*$scale)); $h=max(1,(int)round($info[1]*$scale));
             $image=imagecreatetruecolor($w,$h); imagealphablending($image,false); imagesavealpha($image,true);
             imagefill($image,0,0,imagecolorallocatealpha($image,0,0,0,127));
@@ -41,6 +41,6 @@ final class Image
             if (!$ok || !@rename($temporary,$target)) { @unlink($temporary); return $path; }
             @chmod($target,0644);
         }
-        return 'var/uploads/images/home-thumbs/'.$hash.'.webp';
+        return 'var/uploads/images/home-thumbs/mini256-'.$hash.'.webp';
     }
 }

@@ -78,7 +78,7 @@ try {
     $thumb=Image::thumbnail($temp,'var/uploads/images/test.webp');
     homeCheck(str_starts_with($thumb,'var/uploads/images/home-thumbs/'),'Local thumbnail generated');
     $dimensions=getimagesize($temp.'/'.$thumb);
-    homeCheck($dimensions[0]===640 && $dimensions[1]===320,'Thumbnail preserves proportions');
+    homeCheck($dimensions[0]===256 && $dimensions[1]===128,'Thumbnail preserves proportions');
     $before=hash_file('sha256',$temp.'/var/uploads/images/test.webp');
     Image::thumbnail($temp,'var/uploads/images/test.webp');
     homeCheck($before===hash_file('sha256',$temp.'/var/uploads/images/test.webp'),'Original untouched');
