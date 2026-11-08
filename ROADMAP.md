@@ -85,3 +85,7 @@ Images compactes hautes de trois lignes de texte, alignées à gauche avec habil
 ## Accueil 1.0.5 — miniatures refusées en production
 
 Corriger les noms des miniatures pour respecter la liste autorisée du .htaccess des images : 32 caractères hexadécimaux et extension WebP. Ne pas assouplir les protections Apache. Régénération automatique à la consultation, sans modifier les originaux.
+
+## Accueil 1.0.6 — hauteur prioritaire des miniatures
+
+Corriger la boîte carrée : image haute de trois lignes de texte avec largeur automatique selon ses proportions, sans limite à 35 % de la colonne. Habillage à gauche conservé. Vérifier portrait, paysage et carré.

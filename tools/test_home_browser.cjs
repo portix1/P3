@@ -26,13 +26,15 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         await page.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, `home-${width}.png`), fullPage:true});
       }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
+      await page.locator('.home-thumbnail img').first().evaluate(image => image.decode());
       const thumbnail = await page.locator('.home-thumbnail').first().evaluate(node => {
         const box=node.getBoundingClientRect();
-        return {height:box.height,lineHeight:parseFloat(getComputedStyle(node).lineHeight),float:getComputedStyle(node).cssFloat,fit:getComputedStyle(node.querySelector('img')).objectFit};
+        return {height:box.height,lineHeight:parseFloat(getComputedStyle(node).lineHeight),float:getComputedStyle(node).cssFloat,fit:getComputedStyle(node.querySelector('img')).objectFit,ratio:box.width/box.height,naturalRatio:node.querySelector('img').naturalWidth/node.querySelector('img').naturalHeight};
       });
       assert.equal(thumbnail.float, 'left', 'Thumbnail floats left');
       assert(Math.abs(thumbnail.height-thumbnail.lineHeight*3)<1, `Thumbnail height follows three text lines at ${width}`);
       assert.equal(thumbnail.fit, 'contain', 'Image proportions preserved');
+      assert(Math.abs(thumbnail.ratio-thumbnail.naturalRatio)<.025, 'Thumbnail width follows its natural aspect ratio, not a square box');
       const wraps = await page.locator('.home-items').first().evaluate(node => {
         const probe=document.createElement('article');probe.className='home-item';
         const thumb=document.createElement('span');thumb.className='home-thumbnail';
@@ -66,6 +68,18 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         assert(grid.boxes[1].x>grid.boxes[0].x, 'Desktop zones sit next to one another');
         assert(Math.abs(grid.boxes[1].y-grid.boxes[0].y)<1, 'First desktop row aligns');
       }
+    }
+    for (const [imageWidth,imageHeight] of [[200,100],[100,200],[100,100]]) {
+      const dimensions=await page.locator('.home-items').first().evaluate(async (node,size) => {
+        const item=document.createElement('article');item.className='home-item';
+        const frame=document.createElement('span');frame.className='home-thumbnail';
+        const image=document.createElement('img');image.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${size[0]}" height="${size[1]}"></svg>`);
+        frame.append(image);item.append(frame);node.append(item);
+        try {await image.decode();const box=image.getBoundingClientRect();return {width:box.width,height:box.height,line:parseFloat(getComputedStyle(image).lineHeight)};}
+        finally {item.remove();}
+      },[imageWidth,imageHeight]);
+      assert(Math.abs(dimensions.height-3*dimensions.line)<1, 'Height follows three lines for portrait, landscape and square images');
+      assert(Math.abs(dimensions.width/dimensions.height-imageWidth/imageHeight)<.025, 'Natural image ratio sets thumbnail width');
     }
     await page.setViewportSize({width:1920,height:900});
     for (const [contentWidth,expected] of [[700,2],[1040,3]]) {
