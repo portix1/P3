@@ -5,7 +5,7 @@
   "version": "0.1.8",
   "kind": "theme",
   "contract": "1",
-  "p3_min": "0.8.1",
+  "p3_min": "0.8.0",
   "p3_max": null,
   "php_min": "8.2",
   "requires": [
@@ -26,6 +26,6 @@
     "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
     "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
     "style.css": "8e297946e0951d9272d323161a94cc74e5d6d73411b005ba1b90ea2f19f71650",
-    "style.min.css": "1114a2327335d3968bba7d63a0a1c7b23208076d0fba1155477e0ce740110d35"
+    "style.min.css": "26c7473d577c3a685edfba6eda5322b1abd6c787a83d27d52634576a8cf71552"
   }
 }
