@@ -1420,3 +1420,32 @@ body.theme-six-cordes .portix-callout > :last-child {
     break-inside: avoid;
   }
 }
+
+/* Six Cordes UX Clair 0.1.8 — largeur, couleurs et espacement. */
+body.theme-six-cordes.theme-six-cordes-clair {
+  background: #FCF9F3;
+}
+body.theme-six-cordes.theme-six-cordes-clair .site-shell {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+body.theme-six-cordes.theme-six-cordes-clair .six-cordes-top-navigation {
+  background: #8A8A88;
+}
+body.theme-six-cordes.theme-six-cordes-clair .six-cordes-top-navigation > ul > .navigation-item > .navigation-link-row > a,
+body.theme-six-cordes.theme-six-cordes-clair .six-cordes-top-navigation > ul > .navigation-item > .navigation-link-row > .submenu-toggle {
+  color: #111111;
+}
+body.theme-six-cordes.theme-six-cordes-clair .page-layout {
+  column-gap: 18px;
+  padding-top: 16px;
+  padding-bottom: 0;
+}
+body.theme-six-cordes.theme-six-cordes-clair .site-footer.six-cordes-footer {
+  margin-top: 0;
+}
+@media screen and (max-width: 900px), screen and (hover: none) and (pointer: coarse) {
+  body.theme-six-cordes.theme-six-cordes-clair .site-shell { width: 100%; margin: 0; }
+  body.theme-six-cordes.theme-six-cordes-clair .page-layout { gap: 5px; padding-top: 5px; padding-bottom: 0; }
+}
