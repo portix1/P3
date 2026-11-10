@@ -1449,3 +1449,9 @@ body.theme-six-cordes.theme-six-cordes-clair .site-footer.six-cordes-footer {
   body.theme-six-cordes.theme-six-cordes-clair .site-shell { width: 100%; margin: 0; }
   body.theme-six-cordes.theme-six-cordes-clair .page-layout { gap: 5px; padding-top: 5px; padding-bottom: 0; }
 }
+
+/* Aucun espacement superflu au-dessus du pied de page. */
+body.theme-six-cordes.theme-six-cordes-clair .site-footer.six-cordes-footer { padding-top: 0; }
+@media screen and (max-width: 900px), screen and (hover: none) and (pointer: coarse) {
+  body.theme-six-cordes.theme-six-cordes-clair .site-footer.six-cordes-footer { padding-top: 0 !important; }
+}
