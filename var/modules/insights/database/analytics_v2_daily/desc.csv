@@ -1,0 +1,4 @@
+day; date; notnull; ; unique; index; primary; ;
+secret; text; null; ; ; ; ; ;
+views; numeric; notnull; 0; ; ; ; ;
+visitors; numeric; notnull; 0; ; ; ; ;

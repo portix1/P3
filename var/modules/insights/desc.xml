@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <modules>
     <Name>Statistiques et journaux</Name>
-	<Version>1.0.3</Version>
+	<Version>2.0.0</Version>
     <Prefix>insights</Prefix>
     <Type>plugin</Type>
     <Priority>8</Priority>
@@ -9,5 +9,6 @@
     <Path>insights</Path>
     <Enabled>1</Enabled>
     <AdminAccess>admin</AdminAccess>
+    <MinimumP3>0.8.4-rc4</MinimumP3>
     <SchemaFormat>desc-csv</SchemaFormat>
 </modules>

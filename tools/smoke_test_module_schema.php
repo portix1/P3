@@ -60,7 +60,7 @@ try {
     assertSameValue(['contact_conversations', 'contact_messages'], $contactResult['tables'], 'schéma de la messagerie Contact');
     $insightsResult = $installer->installDirectory($root . '/var/modules/insights');
     assertSameValue(
-        ['analytics_audience_daily', 'analytics_collection_daily', 'analytics_confirmed_daily', 'analytics_confirmed_visitors', 'analytics_daily', 'analytics_devices', 'analytics_pages', 'analytics_referrers', 'analytics_unique_visitors', 'analytics_visitor_days', 'analytics_visitors', 'application_logs', 'audit_logs'],
+        ['analytics_audience_daily', 'analytics_collection_daily', 'analytics_confirmed_daily', 'analytics_confirmed_visitors', 'analytics_daily', 'analytics_devices', 'analytics_pages', 'analytics_referrers', 'analytics_unique_visitors', 'analytics_v2_counts', 'analytics_v2_daily', 'analytics_v2_seen', 'analytics_visitor_days', 'analytics_visitors', 'application_logs', 'audit_logs'],
         $insightsResult['tables'],
         'schéma des statistiques et journaux'
     );

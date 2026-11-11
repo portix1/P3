@@ -139,6 +139,29 @@ try {
         $staffHome=$request('/','GET','',$headers);
         $check(!str_contains($staffHome[1],'home/assets/home.js'),'Staff measurement excluded');
     }
+    PortixSettings::write('insights', ['mode' => 'daily'], $fixture);
+    $slug = $db->connection()->query("SELECT slug FROM articles WHERE status = 'published' ORDER BY id LIMIT 1")->fetchColumn();
+    $articleUrl = '/' . $slug . '.html';
+    $visitor = ['User-Agent: Firefox test visitor', 'Referer: https://example.test/path?private=1'];
+    $first = $request('/', 'GET', '', $visitor);
+    $check($first[0] === 200 && !preg_grep('/^Set-Cookie:/i', $first[2]), 'Daily fingerprint sets no cookie');
+    $check($request($articleUrl, 'GET', '', $visitor)[0] === 200, 'Public article is measurable');
+    $request($articleUrl, 'GET', '', ['User-Agent: Googlebot']);
+    $request($articleUrl, 'GET', '', [...$visitor, 'DNT: 1']);
+    $request('/does-not-exist-test.html', 'GET', '', $visitor);
+    $request($articleUrl, 'HEAD', '', $visitor);
+    $request($articleUrl, 'GET', '', [...$visitor, ...$auth]);
+    $check((int) $db->connection()->query('SELECT SUM(views) FROM analytics_v2_daily')->fetchColumn() === 2, 'Only valid anonymous views counted');
+    $check((int) $db->connection()->query('SELECT SUM(visitors) FROM analytics_v2_daily')->fetchColumn() === 1, 'Same-day return deduplicated');
+    $check($db->connection()->query("SELECT dimension FROM analytics_v2_counts WHERE kind = 'entry'")->fetchColumn() === '/', 'First entry preserved');
+    $check($db->connection()->query("SELECT dimension FROM analytics_v2_counts WHERE kind = 'article'")->fetchColumn() === $slug, 'Canonical article slug measured');
+    $check($db->connection()->query("SELECT dimension FROM analytics_v2_counts WHERE kind = 'referrer'")->fetchColumn() === 'example.test', 'Referrer stored as host only');
+    $dashboard = $request('/Admin-insights.html', 'GET', '', $auth);
+    $check($dashboard[0] === 200 && str_contains($dashboard[1], 'Pages par visiteur journalier estimé') && str_contains($dashboard[1], '2,00'), 'New dashboard displays the daily ratio');
+    $csv = $request('/Admin-insights-export.html', 'GET', '', $auth);
+    $check($csv[0] === 200 && str_contains($csv[1], 'visiteurs_journaliers_estimes') && str_contains($csv[1], ';2;1'), 'CSV exports only daily aggregates');
+    echo "Statistiques HTTP : empreinte quotidienne, exclusions, article, entrée, référent et export vérifiés.\n";
+
     if (in_array('--browser',$argv,true)) {
         putenv('HOME_TEST_URL='.$base);
         passthru('node '.escapeshellarg($source.'/tools/test_home_browser.cjs'),$exit);

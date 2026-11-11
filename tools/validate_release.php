@@ -42,6 +42,7 @@ if (!function_exists('imagewebp')) {
 echo "Environnement PHP : OK\n";
 
 $tests = [
+    '../var/modules/insights/tests/smoke_test_daily_audience.php',
     'check_php_syntax.php',
     'smoke_test_database.php',
     'smoke_test_routing_menu.php',

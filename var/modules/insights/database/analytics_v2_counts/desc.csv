@@ -1,0 +1,6 @@
+entry_key; text; notnull; ; unique; index; primary; ;
+day; date; notnull; ; ; index; ; ;
+kind; text; notnull; ; ; index; ; ;
+dimension; text; notnull; ; ; ; ; ;
+title; text; notnull; ; ; ; ; ;
+total; numeric; notnull; 0; ; ; ; ;
