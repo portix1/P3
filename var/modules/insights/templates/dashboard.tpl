@@ -15,6 +15,7 @@
     <button type="submit">{{ insights_apply }}</button>
     <a href="Admin-insights-export.html?days={{ insights_days }}">{{ insights_export_csv }}</a>
 </form>
+{% if insights_has_data == "1" %}
 <section class="admin-section">
     <dl>
         <dt>{{ insights_page_views_label }}</dt><dd>{{ insights_page_views }}</dd>
@@ -51,3 +52,6 @@
         <tbody>{% for insightreferrer in insightreferrer %}<tr><td>{{ insightreferrer.name }}</td><td>{{ insightreferrer.total }}</td></tr>{% endfor %}</tbody>
     </table>
 </section>
+{% else %}
+<p>{{ insights_no_data }}</p>
+{% endif %}

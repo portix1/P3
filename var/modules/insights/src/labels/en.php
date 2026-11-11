@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 return [
+    'insights_no_data' => 'No measurements for this period.',
     'insights_title' => 'Statistics and logs',
     'insights_observability' => 'Audience and observability',
     'insights_navigation' => 'Statistics and logs navigation',

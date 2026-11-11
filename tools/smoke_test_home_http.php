@@ -139,6 +139,8 @@ try {
         $staffHome=$request('/','GET','',$headers);
         $check(!str_contains($staffHome[1],'home/assets/home.js'),'Staff measurement excluded');
     }
+    $empty = $request('/Admin-insights.html', 'GET', '', $auth);
+    $check($empty[0] === 200 && str_contains($empty[1], 'Aucune mesure sur cette période.'), 'Empty dashboard is readable');
     PortixSettings::write('insights', ['mode' => 'daily'], $fixture);
     $slug = $db->connection()->query("SELECT slug FROM articles WHERE status = 'published' ORDER BY id LIMIT 1")->fetchColumn();
     $articleUrl = '/' . $slug . '.html';

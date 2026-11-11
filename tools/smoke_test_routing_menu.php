@@ -400,13 +400,6 @@ try {
         str_contains($engine, '!is_file($entryFile) || is_link($entryFile)'),
         'un enregistrement de module périmé ne provoque pas d’erreur fatale'
     );
-    $insightsConfig = str_replace("\r\n", "\n", (string) file_get_contents($root . '/var/modules/insights/config.php'));
-    assertSameValue(
-        true,
-        str_contains($insightsConfig, "max(array_merge(\n    [1],"),
-        'graphique Insights compatible avec une période vide'
-    );
-
     $database = new Database($temporaryRoot . '/database/portix2.sqlite');
     (new Migrator($database))->migrate();
     $repositories = new RepositoryRegistry($database);

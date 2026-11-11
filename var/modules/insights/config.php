@@ -118,6 +118,7 @@ if ($view === 'export') {
 }
 
 $template->setSlot('main', 'var/modules/insights/templates/dashboard.tpl');
+$template->set('insights_has_data', $daily === [] ? '0' : '1');
 $template->set('insights_days', (string) $days);
 foreach ([7, 30, 90, 365] as $period) {
     $template->set('insights_period_' . $period . '_selected', $days === $period ? 'selected' : '');

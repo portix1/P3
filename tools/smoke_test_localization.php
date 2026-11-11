@@ -134,7 +134,7 @@ try {
         'insights_analytics_days', 'insights_application_days', 'insights_audit_current',
         'insights_audit_days', 'insights_bots', 'insights_dashboard_current',
         'insights_measurement_note', 'insights_legacy_note', 'insights_days', 'insights_has_visits', 'insights_logs_current',
-        'insights_message', 'insights_collection_status', 'insights_notice', 'insights_mode_daily', 'insights_mode_estimated', 'insights_mode_minimal', 'insights_mode_off',
+        'insights_message', 'insights_collection_status', 'insights_notice', 'insights_has_data', 'insights_mode_daily', 'insights_mode_estimated', 'insights_mode_minimal', 'insights_mode_off',
         'insights_page_views', 'insights_settings_current', 'insights_visits',
         'insights_unique_visitors', 'insights_new_visitors', 'insights_returning_visitors',
         'insights_pages_per_visitor', 'insights_avg_unique_day', 'insights_avg_views_day',
