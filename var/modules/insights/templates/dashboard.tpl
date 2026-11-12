@@ -24,14 +24,23 @@
     </dl>
     <p>{{ insights_ratio_help }}</p>
 </section>
+<link rel="stylesheet" href="var/modules/insights/assets/daily-chart.css?v=2.0.2" />
 <section class="admin-section insights-wide">
-    <h2>{{ insights_evolution }}</h2>
-    <ul class="insights-chart" aria-label="{{ insights_page_views_label }}">
+    <h2 id="insights-daily-evolution">{{ insights_evolution }}</h2>
+    <ul class="insights-daily-legend">
+        <li><span class="insights-key-views" aria-hidden="true"></span>{{ insights_page_views_label }}</li>
+        <li><span class="insights-key-visitors" aria-hidden="true"></span>{{ insights_visits_label }}</li>
+    </ul>
+    <ul class="insights-chart" aria-labelledby="insights-daily-evolution">
         {% for insightday in insightday %}
-        <li class="insights-bar-row">
+        <li class="insights-daily-row">
             <time datetime="{{ insightday.day }}">{{ insightday.day }}</time>
-            <progress max="{{ insightday.chart_max }}" value="{{ insightday.views }}" aria-label="{{ insights_page_views_label }} · {{ insightday.day }}">{{ insightday.views }}</progress>
-            <strong>{{ insightday.views }}</strong>
+            <div class="insights-daily-pair">
+                <progress class="insights-daily-views" max="{{ insightday.chart_max }}" value="{{ insightday.views }}" aria-label="{{ insights_page_views_label }} · {{ insightday.day }}">{{ insightday.views }}</progress>
+                <strong aria-hidden="true">{{ insightday.views }}</strong>
+                <progress class="insights-daily-visitors" max="{{ insightday.chart_max }}" value="{{ insightday.visitors }}" aria-label="{{ insights_visits_label }} · {{ insightday.day }}">{{ insightday.visitors }}</progress>
+                <strong aria-hidden="true">{{ insightday.visitors }}</strong>
+            </div>
         </li>
         {% endfor %}
     </ul>

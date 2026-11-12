@@ -131,7 +131,7 @@ $template->set('insights_pages_per_visitor', $visitors > 0 ? number_format($view
 $template->set('insights_collection_status', $translator->text(
     $settings['mode'] === 'daily' ? 'insights_collecting' : 'insights_collection_off'
 ));
-$chartMax = max([1, ...array_column($daily, 'views')]);
+$chartMax = max([1, ...array_column($daily, 'views'), ...array_column($daily, 'visitors')]);
 foreach ($daily as $row) {
     $template->addRow('insightday', [
         'day' => $row['day'],

@@ -3,8 +3,9 @@
 Le tableau de bord affiche les pages vues, les visiteurs journaliers estimés,
 les pages par visiteur journalier estimé, les articles consultés, les pages
 d’entrée et les domaines référents de la première visite de chaque jour UTC.
-Le graphe « Évolution quotidienne » montre les pages vues sur la période
-sélectionnée. Le détail par jour donne aussi les visiteurs estimés.
+Le graphe « Évolution quotidienne » juxtapose les pages vues et les
+visiteurs journaliers estimés sur une échelle commune. Les nombres sont
+affichés à côté des barres et dans le détail par jour.
 Un retour le même jour compte une fois dans l’estimation des visiteurs.
 Chaque requête publique admissible ajoute une page vue. Le ratio divise les
 pages vues par la somme des visiteurs journaliers estimés sur la période.

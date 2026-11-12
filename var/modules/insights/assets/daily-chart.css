@@ -1,0 +1,81 @@
+.insights-daily-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.25rem;
+    padding: 0;
+    list-style: none;
+}
+
+.insights-daily-legend li {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.insights-daily-legend span {
+    width: .85rem;
+    height: .85rem;
+    border-radius: .15rem;
+}
+
+.insights-daily-views,
+.insights-key-views {
+    --insights-bar-color: #225fad;
+}
+
+.insights-daily-visitors,
+.insights-key-visitors {
+    --insights-bar-color: #a64b13;
+}
+
+.insights-daily-legend span {
+    background: var(--insights-bar-color);
+}
+
+.insights-daily-row {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    align-items: center;
+    gap: .75rem;
+}
+
+.insights-daily-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 4.5rem;
+    column-gap: .75rem;
+    align-items: stretch;
+}
+
+.insights-daily-pair progress {
+    appearance: none;
+    width: 100%;
+    height: 100%;
+    min-height: .85rem;
+    border: 0;
+    background: var(--surface-soft, #e9edf3);
+    accent-color: var(--insights-bar-color);
+}
+
+.insights-daily-pair progress::-webkit-progress-bar {
+    background: var(--surface-soft, #e9edf3);
+}
+
+.insights-daily-pair progress::-webkit-progress-value {
+    background: var(--insights-bar-color);
+}
+
+.insights-daily-pair progress::-moz-progress-bar {
+    background: var(--insights-bar-color);
+}
+
+.insights-daily-pair strong {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 580px) {
+    .insights-daily-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: .25rem;
+    }
+}
