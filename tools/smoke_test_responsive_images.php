@@ -70,6 +70,7 @@ try {
     responsiveCheck(!$items[0]->hasAttribute('loading'), 'première image non différée');
     responsiveCheck($items[1]->getAttribute('loading') === 'lazy', 'deuxième image différée');
     responsiveCheck(str_contains($items[1]->getAttribute('sizes'), '33vw'), 'taille de figure 33 % prise en compte');
+    responsiveCheck(str_contains($items[1]->getAttribute('srcset'), '/var/uploads/images/responsive/'), 'URL absolue conservée pour les dérivés');
     responsiveCheck(!$items[2]->hasAttribute('srcset') && $items[2]->getAttribute('width') === '48', 'petite icône non agrandie');
     responsiveCheck(!$items[3]->hasAttribute('srcset') && !$items[3]->hasAttribute('loading'), 'image externe non modifiée');
     responsiveCheck(!$items[4]->hasAttribute('srcset'), 'traversée de chemin ignorée');
