@@ -1,6 +1,6 @@
 <header class="page-heading"><p class="eyebrow">{{ ux_configuration }}</p><h1>{{ ux_themes }}</h1></header>
 {% if confmessage %}<p role="status">{{ confmessage }}</p>{% endif %}
-{% if extension_updates_warning %}<p role="alert" class="status-message">{{ extension_updates_warning }}</p>{% endif %}
+{% if extension_updates_warning %}<p role="alert" class="error-box">{{ extension_updates_warning }}</p>{% endif %}
 {% include "var/admin/templates/config-appearance.tpl" %}
 <section class="admin-section" aria-labelledby="theme-inventory-title">
 <h2 id="theme-inventory-title">{{ themes_inventory_title }}</h2><p>{{ themes_inventory_help }}</p>
