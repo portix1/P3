@@ -1,4 +1,4 @@
-# Portix3 Search 1.0.4
+# Portix3 Search 1.0.5
 
 Module de recherche autonome pour Portix3 0.7.05.
 
@@ -29,7 +29,7 @@ Module de recherche autonome pour Portix3 0.7.05.
 
 ## Installation
 
-Installer `P3-module-recherche-1.0.4.zip` depuis l’administration des modules,
+Installer `P3-search-1.0.5.zip` depuis l’administration des modules,
 y compris pour mettre à jour une version 1.0.0 ou 1.0.1 déjà installée.
 
 Cette mise à jour modifie uniquement le dossier `var/modules/search/`.

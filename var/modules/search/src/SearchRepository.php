@@ -50,16 +50,9 @@ final class SearchRepository
      */
     public function sync(bool $force = false): array
     {
-        $documents = $this->collectDocuments();
-        $articleCount = 0;
-        $newsCount = 0;
-        foreach ($documents as $document) {
-            if ($document['kind'] === 'article') {
-                $articleCount++;
-            } elseif ($document['kind'] === 'news') {
-                $newsCount++;
-            }
-        }
+        $state = $this->sourceState();
+        $articleCount = $state['articles'];
+        $newsCount = $state['news'];
 
         if (!$this->fts5Available()) {
             return [
@@ -71,12 +64,12 @@ final class SearchRepository
             ];
         }
 
-        $fingerprint = $this->sourceFingerprint();
+        $fingerprint = $state['fingerprint'];
         $pdo = $this->indexConnection();
         $storedFingerprint = (string) ($this->metaValue('source_fingerprint') ?? '');
         $indexedCount = (int) $pdo->query('SELECT COUNT(*) FROM search_fts')->fetchColumn();
 
-        if (!$force && $storedFingerprint === $fingerprint && $indexedCount === count($documents)) {
+        if (!$force && $storedFingerprint === $fingerprint && $indexedCount === $articleCount + $newsCount) {
             return [
                 'mode' => 'fts5',
                 'indexed' => $indexedCount,
@@ -86,6 +79,7 @@ final class SearchRepository
             ];
         }
 
+        $documents = $this->collectDocuments();
         $pdo->beginTransaction();
         try {
             $pdo->exec('DELETE FROM search_fts');
@@ -292,19 +286,14 @@ final class SearchRepository
     /** @return array{mode:string,indexed:int,articles:int,news:int,last_sync:string} */
     public function stats(): array
     {
-        $documents = $this->collectDocuments();
-        $articles = 0;
-        $news = 0;
-        foreach ($documents as $document) {
-            $document['kind'] === 'article' ? $articles++ : $news++;
-        }
+        $state = $this->sourceState();
 
         if (!$this->fts5Available()) {
             return [
                 'mode' => 'fallback',
                 'indexed' => 0,
-                'articles' => $articles,
-                'news' => $news,
+                'articles' => $state['articles'],
+                'news' => $state['news'],
                 'last_sync' => '',
             ];
         }
@@ -312,8 +301,8 @@ final class SearchRepository
         return [
             'mode' => 'fts5',
             'indexed' => (int) $this->indexConnection()->query('SELECT COUNT(*) FROM search_fts')->fetchColumn(),
-            'articles' => $articles,
-            'news' => $news,
+            'articles' => $state['articles'],
+            'news' => $state['news'],
             'last_sync' => (string) ($this->metaValue('last_sync') ?? ''),
         ];
     }
@@ -371,18 +360,22 @@ final class SearchRepository
         return $documents;
     }
 
-    private function sourceFingerprint(): string
+    /** @return array{fingerprint:string,articles:int,news:int} */
+    private function sourceState(): array
     {
         // Reconstruire aussi les index 1.0.1 pour conserver les frontières
         // entre blocs HTML utilisées par les liens vers le texte.
         $parts = ['text_format' => 'block-text-1'];
+        $counts = [];
         foreach (['articles', 'news'] as $table) {
             $statement = $this->sourcePdo->query(
                 'SELECT COUNT(*) AS item_count, COALESCE(MAX(id), 0) AS max_id, '
-                . "COALESCE(MAX(updated_at), '') AS max_updated "
+                . "COALESCE(MAX(updated_at), '') AS max_updated, "
+                . "COUNT(CASE WHEN trim(slug, char(9,10,11,13,32)) <> '' THEN 1 END) AS indexable_count "
                 . 'FROM ' . $table . " WHERE status = 'published'"
             );
             $row = $statement->fetch(PDO::FETCH_ASSOC) ?: [];
+            $counts[$table] = (int) ($row['indexable_count'] ?? 0);
             $parts[$table] = [
                 'count' => (int) ($row['item_count'] ?? 0),
                 'max_id' => (int) ($row['max_id'] ?? 0),
@@ -390,7 +383,9 @@ final class SearchRepository
             ];
         }
 
-        return hash('sha256', json_encode($parts, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '');
+        return $counts + [
+            'fingerprint' => hash('sha256', json_encode($parts, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: ''),
+        ];
     }
 
     private function indexConnection(): PDO

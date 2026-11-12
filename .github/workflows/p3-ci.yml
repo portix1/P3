@@ -34,6 +34,9 @@ jobs:
       - name: Validate release
         run: php tools/validate_release.php
 
+      - name: Validate public search index reuse
+        run: php var/modules/search/tests/smoke_test_text_fragments.php
+
   home-browser:
     name: Accueil — navigateur et HTTP
     runs-on: ubuntu-24.04

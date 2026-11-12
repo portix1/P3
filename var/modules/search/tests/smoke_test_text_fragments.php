@@ -10,7 +10,17 @@ if (!extension_loaded('pdo_sqlite') || !extension_loaded('mbstring')) {
     exit(2);
 }
 
-$source = new PDO('sqlite::memory:', null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+$source = new class('sqlite::memory:', null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]) extends PDO {
+    public bool $rejectBodyReads = false;
+
+    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false
+    {
+        if ($this->rejectBodyReads && preg_match('/\bbody\b/i', $query)) {
+            throw new RuntimeException('Lecture du texte intégral malgré un index à jour.');
+        }
+        return $fetchMode === null ? parent::query($query) : parent::query($query, $fetchMode, ...$fetchModeArgs);
+    }
+};
 $source->exec('CREATE TABLE article_categories (id INTEGER PRIMARY KEY, name TEXT)');
 $source->exec('CREATE TABLE articles ('
     . 'id INTEGER PRIMARY KEY, category_id INTEGER, title TEXT, slug TEXT, '
@@ -87,12 +97,23 @@ try {
     $repository = new SearchRepository($source, $index);
     $sync = $repository->sync(true);
     if ($sync['mode'] === 'fts5') {
+        $source->rejectBodyReads = true;
+        $unchanged = $repository->sync();
+        $check(!$unchanged['reindexed'] && $unchanged['indexed'] === $sync['indexed'], 'Index valide réutilisé.');
+        $check($repository->stats()['articles'] === $sync['articles'], 'Comptage sans lecture des articles.');
         $result = $findResult($repository, 'reg', 'chevalet');
         $text = $fragment($result);
         $check(str_contains($text, 'réglages'), 'Le préfixe doit cibler le mot complet avec son accent.');
         $check(str_contains('Sur une guitare, les réglages d’action corrigent le confort de jeu.', $text),
             'Le passage ne correspond pas au texte affiché.');
         $check(mb_strlen($text) > mb_strlen('réglages'), 'Le lien doit inclure du contexte.');
+    }
+
+    $source->rejectBodyReads = false;
+    $source->exec("UPDATE articles SET body=body || '<p>termeactualise</p>', updated_at='2026-10-03T06:00:00Z' WHERE id=1");
+    if ($sync['mode'] === 'fts5') {
+        $check($repository->sync()['reindexed'], 'Index reconstruit après modification.');
+        $check($findResult($repository, 'termeactualise', 'chevalet')['slug'] === 'chevalet', 'Texte actualisé indexé.');
     }
 
     foreach (['fts5', 'fallback'] as $mode) {
