@@ -63,9 +63,7 @@ final class DiagnosticRunner
         $this->checkThemes($rows);
 
         if ($mode === 'full') {
-            $this->checkTemplates($rows);
-            $this->checkDocumentation($rows);
-            $this->checkServerRules($rows);
+            $this->checkTemplates($rows);            $this->checkServerRules($rows);
             $this->checkStaticAssets($rows);
         }
 
@@ -175,25 +173,6 @@ final class DiagnosticRunner
             $count > 0 && $errors === [],
             $errors === [] ? $count . ' template(s) valides' : 'Erreur : ' . implode(', ', $errors)
         );
-    }
-
-    /** @param list<array<string,string>> $rows */
-    private function checkDocumentation(array &$rows): void
-    {
-        $file = $this->root . '/src/Installation/default-content.json';
-        try {
-            $content = json_decode((string) file_get_contents($file), true, 128, JSON_THROW_ON_ERROR);
-            $articles = is_array($content['articles'] ?? null) ? $content['articles'] : [];
-            $this->add(
-                $rows,
-                'documentation',
-                'Documentation initiale',
-                count($articles) >= 8,
-                count($articles) . ' article(s) documentaire(s)'
-            );
-        } catch (Throwable) {
-            $this->add($rows, 'documentation', 'Documentation initiale', false, 'default-content.json invalide');
-        }
     }
 
     /** @param list<array<string,string>> $rows */

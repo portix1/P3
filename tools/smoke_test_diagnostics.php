@@ -45,7 +45,13 @@ try {
         throw new RuntimeException('Le diagnostic Web ne doit pas lancer de commande système.');
     }
 
-    echo "Diagnostics admin : intégration, liste fermée et sécurité statique OK\n";
+    if (str_contains($source, 'checkDocumentation') || str_contains($template, 'diagnostics_full_help')) {
+        throw new RuntimeException('Le diagnostic complet ne doit ni contrôler la documentation initiale ni afficher une aide ambiguë.');
+    }
+    if (!str_contains((string) file_get_contents($root . '/var/lang/fr.php'), 'Suite de tests complète')) {
+        throw new RuntimeException('Libellé du diagnostic complet manquant.');
+    }
+    echo "Diagnostics admin : intégration, liste fermée, libellé et sécurité statique OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR, 'Test diagnostics : ÉCHEC - ' . $error->getMessage() . "\n");
     exit(1);

@@ -43,9 +43,7 @@
         <form method="post" action="Admin-diagnostics.html">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
             <input type="hidden" name="diagnostic_mode" value="full" />
-            <button class="button" type="submit">{{ diagnostics_run_full }}</button>
-            <p>{{ diagnostics_full_help }}</p>
-        </form>
+            <button class="button" type="submit">{{ diagnostics_run_full }}</button>        </form>
     </div>
 </section>
 
