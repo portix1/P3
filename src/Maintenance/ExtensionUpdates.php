@@ -104,11 +104,11 @@ final class ExtensionUpdates
                 continue;
             }
             if ($package['kind'] !== $kind) {
-                throw new RuntimeException('Catalogue package type mismatch');
+                throw new RuntimeException('extension_updates_package_type_mismatch');
             }
             $actual = hash_file('sha256', $archive);
             if (!is_string($actual) || !hash_equals($package['sha256'], $actual)) {
-                throw new RuntimeException('Catalogue ZIP SHA-256 mismatch');
+                throw new RuntimeException('extension_updates_checksum_failed');
             }
             return true;
         }
