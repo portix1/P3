@@ -3,3 +3,5 @@
 @container(min-width:38rem){.p3-home .home-zones{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @container(min-width:60rem){.p3-home .home-zones{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:640px){.p3-home .home-zones{grid-template-columns:minmax(0,1fr);gap:1.6rem}}
+/* Stable editorial hierarchy: featured lead, lighter secondary links, illustrated groups. */
+.p3-home .home-layout-feature .home-item:first-child h3{font-size:1.35em;line-height:1.3}.p3-home .home-layout-feature .home-item{border:0;padding:0}.p3-home .home-layout-feature .home-item+.home-item{padding-top:.8rem;border-top:1px solid color-mix(in srgb,currentColor 16%,transparent)}.p3-home .home-layout-text .home-items{gap:.7rem}.p3-home .home-layout-text .home-item h3{font-size:1em}.p3-home .home-layout-text .home-item p{font-size:.95em}.p3-home .home-layout-category>h2{padding-bottom:.5rem;border-bottom:2px solid color-mix(in srgb,currentColor 25%,transparent)}.p3-home .home-kind-latest>h2{font-size:1.15em}.p3-home .home-kind-latest .home-items{gap:1rem}

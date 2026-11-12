@@ -11,6 +11,38 @@ $message='';
 if ($request->method()==='POST') {
     if (!\PortixSecurity::csrfIsValid()) { http_response_code(403); $template->setSlot('main','./var/admin/templates/access-denied.tpl'); return; }
     try {
+        if ($homeView==='' && in_array($_POST['home_action']??'', ['preview','publish'],true)) {
+            $preview=($_POST['home_action']==='preview');
+            header('Content-Type: application/json; charset=UTF-8'); header('Cache-Control: no-store');
+            try {
+                $draft=json_decode((string)($_POST['sections']??''),true,32,JSON_THROW_ON_ERROR);
+                if (!is_array($draft) || count($draft)>30) { throw new InvalidArgumentException('home_invalid'); }
+                $existing=array_map('intval',array_column($homeRepository->sections(true),'id'));
+                $seen=[];
+                $database->connection()->beginTransaction();
+                foreach ($draft as $position=>$zone) {
+                    if (!is_array($zone)) { throw new InvalidArgumentException('home_invalid'); }
+                    $zoneId=(int)($zone['id']??0);
+                    if ($zoneId>0 && (!in_array($zoneId,$existing,true) || isset($seen[$zoneId]))) { throw new InvalidArgumentException('home_invalid'); }
+                    $seen[$zoneId]=true; $zone['position']=$position*10;
+                    $homeRepository->save($zone,$zoneId);
+                }
+                if (array_diff($existing,array_keys($seen))!==[]) { throw new InvalidArgumentException('home_invalid'); }
+                $selection=$homeRepository->selection($homeSettings,time(),true);
+                [$rendered]=Renderer::render($selection,$homeRoot,[
+                    'home_all'=>$t('home_all'),'home_latest'=>$t('home_latest'),
+                    'home_series_start'=>$t('home_series_start'),'home_disclosure'=>$t('home_disclosure')
+                ],$homeRepository->categories());
+                if ($preview) { $database->connection()->rollBack(); } else { $database->connection()->commit(); }
+                $css=(string)file_get_contents(__DIR__.'/assets/public.css');
+                $document='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:16px/1.5 system-ui;margin:24px;color:#222;background:#fff}a{color:#245b80}'.$css.'</style></head><body><main class="p3-home"><div class="home-zones">'.($rendered?:'<p>'.$e($t('home_empty')).'</p>').'</div></main></body></html>';
+                echo json_encode(['ok'=>true,'html'=>$document],JSON_THROW_ON_ERROR);
+            } catch (Throwable $error) {
+                if ($database->connection()->inTransaction()) { $database->connection()->rollBack(); }
+                http_response_code(422); echo json_encode(['ok'=>false,'error'=>$t('home_error')]);
+            }
+            exit;
+        }
         if ($homeView==='settings') {
             $data=\PortixModule\Home\Settings::normalize($_POST);
             $data['secret']=strlen($homeSettings['secret'])>=32?$homeSettings['secret']:bin2hex(random_bytes(32));
@@ -77,6 +109,7 @@ if ($homeView==='settings') {
     if ($rows===[]) { $html.='<p>'.$e($t('home_no_metrics')).'</p>'; }
 } else {
     $sections=$homeRepository->sections(true);
+    $shown=array_map('intval',array_column($homeRepository->selection($homeSettings,time(),true),'id'));
     $sections[]=['id'=>0,'title'=>'','kind'=>'articles','layout'=>'feature','category_id'=>0,'image_path'=>'','image_alt'=>'','body'=>'','item_count'=>2,'descendants'=>1,'weighted'=>1,'position'=>count($sections)*10,'enabled'=>1];
     $cats=['0'=>'—']; foreach ($homeRepository->categories() as $cat) { $cats[(string)$cat['id']]=$cat['name']; }
     $images=[''=>$t('home_no_image')];
@@ -84,17 +117,19 @@ if ($homeView==='settings') {
         if (\PortixModule\Home\Image::path($image['public_path'])!=='') { $images[$image['public_path']]=$image['original_name']; }
     } }
     $html.='<p>'.$e($t('home_install_help')).'</p>';
+    $html.='<div class="home-editor" data-home-editor><div class="home-editor-actions"><button type="button" data-home-preview>'.$e($t('home_draft_preview')).'</button><button type="button" data-home-publish>'.$e($t('home_publish')).'</button><span role="status" data-home-feedback></span></div><div data-home-sections>';
     foreach ($sections as $section) {
         $id=(int)$section['id'];
         if ($section['image_path']!=='' && !isset($images[$section['image_path']])) { $images[$section['image_path']]=$section['image_path']; }
-        $html.='<details'.($id===0?' open':'').'><summary>'.$e($id===0?$t('home_new'):($section['title']?:'#'.$id)).'</summary><form method="post" action="Admin-home.html" enctype="multipart/form-data">'.$csrf.'<input type="hidden" name="id" value="'.$id.'"><div class="form-grid">';
+        $html.='<details data-home-section="'.$id.'"'.($id===0?' open':'').'><summary>'.$e($id===0?$t('home_new'):($section['title']?:'#'.$id)).'</summary><div class="home-zone-tools">'.($id>0?'<button type="button" data-home-up title="'.$e($t('home_up')).'">'.$e($t('home_up')).'</button><button type="button" data-home-down title="'.$e($t('home_down')).'">'.$e($t('home_down')).'</button><span draggable="true" data-home-drag title="'.$e($t('home_drag')).'">↕</span><p>'.$e($t($homeRepository->status($section,time(),$shown))).'</p>':'').'</div><form method="post" action="Admin-home.html" enctype="multipart/form-data">'.$csrf.'<input type="hidden" name="id" value="'.$id.'"><div class="form-grid">';
         $html.=$input('home_title_field','title',$section['title'],'text','maxlength="160"');
-        $html.=$select('home_kind','kind',['articles'=>$t('home_articles'),'news'=>$t('home_news'),'affiliation'=>$t('home_affiliation'),'text'=>$t('home_text')],$section['kind']);
+        $html.=$select('home_kind','kind',['articles'=>$t('home_articles'),'latest'=>$t('home_latest'),'news'=>$t('home_news'),'affiliation'=>$t('home_affiliation'),'text'=>$t('home_text')],$section['kind']);
         $html.=$select('home_category','category_id',$cats,(string)$section['category_id']);
         $html.=$select('home_layout','layout',['feature'=>$t('home_feature'),'category'=>$t('home_category_layout'),'cards'=>$t('home_cards'),'text'=>$t('home_text_layout')],$section['layout']);
         $html.=$input('home_count','item_count',(string)$section['item_count'],'number','min="1" max="6" required');
         $html.=$input('home_order','position',(string)$section['position'],'number','min="0" max="10000" required');
         $html.=$select('home_image','image_path',$images,$section['image_path']);
+        $html.='<div class="home-image-controls"><img data-home-image-preview alt=""'.($section['image_path']!==''?' src="'.$e($section['image_path']).'"':' hidden').'><button type="button" data-home-pick>'.$e($t('home_pick')).'</button><button type="button" data-home-clear>'.$e($t('home_remove_image')).'</button></div>';
         if (\Portix\Media\MediaBridge::active()) { $html.='<label>'.$e($t('home_upload')).'<input type="file" name="home_image" accept="image/jpeg,image/png,image/webp"></label>'; }
         $html.=$input('home_alt','image_alt',$section['image_alt'],'text','maxlength="300"');
         $html.='<p>'.$e($t('home_image_help')).'</p><label class="form-grid-wide">'.$e($t('home_body')).'<textarea name="body" maxlength="10000" rows="4">'.$e($section['body']).'</textarea></label>';
@@ -103,6 +138,7 @@ if ($homeView==='settings') {
         if ($id>0) { $html.='<p>'.$check('home_delete_confirm','confirm_delete',false).'<button name="home_action" value="delete" title="'.$e($t('home_delete')).'">'.$e($t('home_delete')).'</button></p>'; }
         $html.='</form></details>';
     }
+    $html.='</div></div><script src="var/modules/home/assets/admin.js?v=1.1.0" defer></script><link rel="stylesheet" href="var/modules/home/assets/admin.css?v=1.1.0">';
 }
 $template->set('home_admin_html',\Portix\View\Html::trusted($html));
 $template->setSlot('main',__DIR__.'/templates/admin.tpl');

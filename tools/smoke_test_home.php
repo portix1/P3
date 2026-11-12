@@ -58,6 +58,25 @@ try {
     $ids=[]; foreach ($draw as $section) { foreach ($section['items'] as $item) { $ids[]=$item['id']; } }
     homeCheck(count($ids)===count(array_unique($ids)) && count($ids)===8,'All article IDs drawn once');
     homeCheck($repository->selection($settings,$now)===$draw,'Draw stable between cache refreshes');
+    // Latest publications are chronological, deduplicated and refreshed despite the draw cache.
+    $repository->save(['kind'=>'latest','layout'=>'cards','title'=>'Latest','enabled'=>1,'item_count'=>3,'position'=>99],0);
+    $latestId=(int)$pdo->lastInsertId();
+    $latest=$repository->selection($settings,$now);
+    $latestZone=array_values(array_filter($latest,static fn($zone)=>$zone['kind']==='latest'))[0];
+    homeCheck(array_column($latestZone['items'],'id')===[8,7,6],'Latest uses publication date with deterministic ID tie-break');
+    $latestIds=[]; foreach ($latest as $zone) { foreach ($zone['items'] as $item) { $latestIds[]=$item['id']; } }
+    homeCheck(count($latestIds)===count(array_unique($latestIds)),'Latest articles never duplicate random articles');
+    $pdo->exec("UPDATE articles SET published_at='2099-01-01' WHERE id=8");
+    $latest=$repository->selection($settings,$now);
+    $latestZone=array_values(array_filter($latest,static fn($zone)=>$zone['kind']==='latest'))[0];
+    homeCheck(array_column($latestZone['items'],'id')===[7,6,5],'Future publication removed without waiting for cache expiry');
+    $pdo->exec("UPDATE articles SET published_at='2000-01-01' WHERE id=8");
+    $pdo->exec('DELETE FROM home_sections WHERE id='.$latestId); $repository->clearCache();
+    $draw=$repository->selection($settings,$now);
+    $ids=[]; foreach ($draw as $section) { foreach ($section['items'] as $item) { $ids[]=$item['id']; } }
+    $cacheBefore=$pdo->query('SELECT * FROM analytics_home_cache')->fetchAll();
+    $repository->selection($settings,$now,true);
+    homeCheck($pdo->query('SELECT * FROM analytics_home_cache')->fetchAll()===$cacheBefore,'Preview does not replace or prune public draw cache');
     $pdo->exec("UPDATE articles SET summary='',body='<p>Updated excerpt</p>' WHERE id=1");
     $cachedSelection=$repository->selection($settings,$now);
     $cachedItems=array_column(array_merge(...array_column($cachedSelection,'items')),null,'id');

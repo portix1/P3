@@ -37,7 +37,7 @@ final class HomeRepository
     {
         $kind = (string) ($data['kind'] ?? '');
         $layout = (string) ($data['layout'] ?? '');
-        if (!in_array($kind, ['articles','news','affiliation','text'], true)
+        if (!in_array($kind, ['articles','latest','news','affiliation','text'], true)
             || !in_array($layout, ['feature','category','cards','text'], true)) {
             throw new InvalidArgumentException('home_invalid');
         }
@@ -69,10 +69,20 @@ final class HomeRepository
         $this->clearCache();
     }
 
+    public function status(array $section, int $now, array $shown): string
+    {
+        if (!$section['enabled']) { return 'home_status_disabled'; }
+        if ($section['kind']==='text') { return trim($section['body'])===''?'home_status_text':'home_status_ready'; }
+        $module=$section['kind']==='latest'?'articles':$section['kind'];
+        if (!$this->enabled($module)) { return 'home_status_module'; }
+        if ($this->candidates($section,$now)===[]) { return 'home_status_empty'; }
+        return in_array((int)$section['id'],$shown,true)?'home_status_ready':'home_status_duplicate';
+    }
+
     public function clearCache(): void { $this->pdo->exec('DELETE FROM analytics_home_cache'); }
 
     /** Refresh the common draw, not a per-visitor profile. Revalidate content on every render. */
-    public function selection(array $settings, int $now): array
+    public function selection(array $settings, int $now, bool $preview = false): array
     {
         $sections = $this->sections();
         $active = $this->pdo->query('SELECT prefix,enabled FROM modules')->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -87,16 +97,26 @@ final class HomeRepository
         $key = hash('sha256',json_encode([$sections,$active,$settings['days'],$settings['exploration'],$settings['refresh_minutes'],$insights['mode'],$stamp]));
         $q = $this->pdo->prepare('SELECT payload FROM analytics_home_cache WHERE entry_key=? AND expires_at>?');
         $q->execute([$key,$now]);
-        $raw = $q->fetchColumn();
+        $raw = $preview ? false : $q->fetchColumn();
         $draw = is_string($raw) ? json_decode($raw,true) : null;
         if (!is_array($draw)) {
             $draw = $this->draw($sections,$settings,$now,($insights['mode'] ?? 'off') !== 'off');
+            if (!$preview) {
             $q = $this->pdo->prepare('INSERT INTO analytics_home_cache(entry_key,payload,expires_at) VALUES (?,?,?) ON CONFLICT(entry_key) DO UPDATE SET payload=excluded.payload,expires_at=excluded.expires_at');
             $q->execute([$key,json_encode($draw,JSON_THROW_ON_ERROR),$now+60*$settings['refresh_minutes']]);
             $this->pdo->prepare('DELETE FROM analytics_home_cache WHERE expires_at<?')->execute([$now]);
             $this->pdo->prepare('DELETE FROM analytics_home_events WHERE expires_at<?')->execute([$now]);
             $this->pdo->prepare('DELETE FROM analytics_home_metrics WHERE day<?')->execute([gmdate('Y-m-d',$now-90*86400)]);
         }
+        }
+        $used = [];
+        foreach ($sections as $section) {
+            if ($section['kind']!=='latest') { continue; }
+            $fresh=array_values(array_filter($this->candidates($section,$now),static fn($item)=>!isset($used['articles:'.$item['id']])));
+            $draw[(string)$section['id']]=array_column(array_slice($fresh,0,(int)$section['item_count']),'id');
+            foreach ($draw[(string)$section['id']] as $id) { $used['articles:'.$id]=(int)$section['id']; }
+        }
+        $reserved=$used;
         $result = [];
         $used = [];
         $slots = 0;
@@ -107,9 +127,10 @@ final class HomeRepository
             $chosen = [];
             foreach ($ids as $id) {
                 if ($slots >= 60) { break; }
-                if (isset($byId[$id]) && !isset($used[$section['kind'].':'.$id])) {
+                if ($section['kind']==='articles' && isset($reserved['articles:'.$id])) { continue; }
+                if (isset($byId[$id]) && !isset($used[($section['kind']==='latest'?'articles':$section['kind']).':'.$id])) {
                     $chosen[] = $byId[$id];
-                    $used[$section['kind'].':'.$id] = true;
+                    $used[($section['kind']==='latest'?'articles':$section['kind']).':'.$id] = true;
                     $slots++;
                 }
             }
@@ -137,8 +158,9 @@ final class HomeRepository
             }
         }
         $draw = []; $used = [];
+        usort($sections, static fn ($a,$b) => ($b['kind']==='latest') <=> ($a['kind']==='latest'));
         foreach ($sections as $section) {
-            $items = array_values(array_filter($this->candidates($section,$now),static fn ($item) => !isset($used[$section['kind'].':'.$item['id']])));
+            $items = array_values(array_filter($this->candidates($section,$now),static fn ($item) => !isset($used[($section['kind']==='latest'?'articles':$section['kind']).':'.$item['id']])));
             $draw[(string) $section['id']] = [];
             while ($items !== [] && count($draw[(string) $section['id']]) < (int) $section['item_count']) {
                 $popular = array_map(static fn ($item) => log(1+($scores[$item['slug'] ?? ''] ?? 0)),$items);
@@ -147,9 +169,10 @@ final class HomeRepository
                 $weights = array_map(static fn ($p) => $mix/$n + (1-$mix)*($sum>0?$p/$sum:0),$popular);
                 $random = random_int(0,PHP_INT_MAX-1)/PHP_INT_MAX; $index = $n-1;
                 foreach ($weights as $i=>$weight) { $random -= $weight; if ($random<=0) { $index=$i; break; } }
+                if ($section['kind']==='latest') { $index=0; }
                 $item = $items[$index];
                 $draw[(string) $section['id']][] = (int) $item['id'];
-                $used[$section['kind'].':'.$item['id']] = true;
+                $used[($section['kind']==='latest'?'articles':$section['kind']).':'.$item['id']] = true;
                 array_splice($items,$index,1);
             }
         }
@@ -158,12 +181,14 @@ final class HomeRepository
 
     private function candidates(array $section, int $now, ?array $selectedIds = null): array
     {
-        if ($section['kind'] === 'articles') {
+        if (in_array($section['kind'], ['articles','latest'], true)) {
             if (!$this->enabled('articles') || !$this->installed('articles')) { return []; }
             $categories = $this->categories(); $allowed = [(int) $section['category_id']];
             $visible = array_column($categories,'is_visible','id');
-            if (empty($visible[$allowed[0]])) { return []; }
-            if ($section['descendants']) {
+            if ($section['kind']==='latest') { $allowed=array_map('intval',array_keys(array_filter($visible))); }
+            if ($allowed===[]) { return []; }
+            if ($section['kind']!=='latest' && empty($visible[$allowed[0]])) { return []; }
+            if ($section['kind']!=='latest' && $section['descendants']) {
                 do { $before=count($allowed); foreach ($categories as $cat) {
                     if ($cat['is_visible'] && in_array((int) $cat['parent_id'],$allowed,true) && !in_array((int) $cat['id'],$allowed,true)) { $allowed[]=(int) $cat['id']; }
                 } } while (count($allowed)>$before);
@@ -178,7 +203,7 @@ final class HomeRepository
                 $sql .= ' AND id IN (' . implode(',', array_fill(0, count($selectedIds), '?')) . ')';
                 array_push($parameters, ...$selectedIds);
             }
-            $q = $this->pdo->prepare($sql . ' ORDER BY id');
+            $q = $this->pdo->prepare($sql . ($section['kind']==='latest' ? " ORDER BY datetime(COALESCE(NULLIF(published_at,''),created_at)) DESC,id DESC" : ' ORDER BY id'));
             $q->execute($parameters);
             $items = $q->fetchAll(PDO::FETCH_ASSOC);
             if ($selectedIds === null || $items === []) {

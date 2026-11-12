@@ -94,19 +94,19 @@ Corriger la boîte carrée : image haute de trois lignes de texte avec largeur a
 
 ### Demandes validées, à développer
 
-- [ ] **Bloc « Derniers articles »** : proposer les trois publications les plus récentes, titre, court extrait et miniature facultative. Ordre chronologique de publication, sans tirage aléatoire, sans inclure les brouillons ou publications futures. Aucun texte d’annonce à rédiger et aucune dépendance au module Actualités. Conserver les autres sélections semi-aléatoires ; masquer le bloc s’il ne contient rien de publiable.
+- [x] **Bloc « Derniers articles »** : proposer les trois publications les plus récentes, titre, court extrait et miniature facultative. Ordre chronologique de publication, sans tirage aléatoire, sans inclure les brouillons ou publications futures. Aucun texte d’annonce à rédiger et aucune dépendance au module Actualités. Conserver les autres sélections semi-aléatoires ; masquer le bloc s’il ne contient rien de publiable.
 - [x] **Séparation des trois espaces et des rôles (12 novembre 2026)** : Rédaction ne donne accès qu’au contenu éditorial ; Administration regroupe les opérations courantes (menus principal et de bas de page) ; Configuration les interventions rares qui définissent le site (composition de l’accueil, thèmes, modules, diagnostics). Les rédacteurs ne peuvent modifier la structure du site. Les correctifs #17 et #18 sont intégrés à main et livrés. Les tests PHP 8.2 à 8.5, HTTP et Chromium ont réussi. Marc confirme le 12 novembre la résolution du blocage de déploiement et le regroupement dans Configuration.
-- [ ] **Sélecteur visuel de médiathèque** : bouton de choix avec miniatures, recherche et aperçu pour les images associées aux zones ; réutiliser le média sans duplication. Cette demande déjà enregistrée dans Drive reste à développer.
+- [x] **Sélecteur visuel de médiathèque** : bouton de choix avec miniatures, recherche et aperçu pour les images associées aux zones ; réutiliser le média sans duplication. Livré dans Accueil 1.1.0, avec réutilisation des médias existants.
 
-### Suggestions à examiner, non encore validées
+### Évolutions de l’accueil retenues le 12 novembre 2026
 
-- [ ] **Hiérarchie visuelle de l’accueil** : moins de blocs identiques ; alterner article développé, groupes de liens et zones plus larges, dans une composition stable inspirée du principe de découverte de Wikipédia. Conserver le tirage semi-aléatoire que Marc juge utile.
-- [ ] **Aperçu avant publication de la composition** : vérifier les zones et leur rendu ordinateur/mobile avant de modifier la page publique. Ne pas confondre consultation de l’accueil actuel et prévisualisation de changements non publiés.
-- [ ] **Ordre des zones par glisser-déposer**, avec commandes clavier équivalentes, pour éviter de saisir manuellement des numéros.
-- [ ] **Explications des zones vides dans la gestion** : distinguer zone désactivée, catégorie sans contenu publiable et module source désactivé ; conserver une page publique sans blocs vides ni messages techniques.
+- [x] **Hiérarchie visuelle de l’accueil** : moins de blocs identiques ; alterner article développé, groupes de liens et zones plus larges, dans une composition stable inspirée du principe de découverte de Wikipédia. Conserver le tirage semi-aléatoire que Marc juge utile.
+- [x] **Aperçu avant publication de la composition** : vérifier les zones et leur rendu ordinateur/mobile avant de modifier la page publique. Ne pas confondre consultation de l’accueil actuel et prévisualisation de changements non publiés.
+- [x] **Ordre des zones par glisser-déposer**, avec commandes clavier équivalentes, pour éviter de saisir manuellement des numéros.
+- [x] **Explications des zones vides dans la gestion** : distinguer zone désactivée, catégorie sans contenu publiable et module source désactivé ; conserver une page publique sans blocs vides ni messages techniques.
 - [ ] **Évaluation de la circulation depuis l’accueil** : utiliser le rapport d’expositions et de clics existant avant de modifier la pondération. Prévoir un volume de données suffisant ; ne pas changer le tirage sur quelques clics seulement. Ce point rejoint la phase d’ajustement déjà prévue.
 
-Statut : séparation des espaces livrée ; les autres demandes et propositions ci-dessus conservent leur statut propre. Ne pas ajouter de « méta-news » pour alimenter artificiellement l’accueil.
+Statut : séparation des espaces et fonctions de composition Accueil 1.1.0 livrées. L’évaluation des mesures et l’ajustement de la pondération restent ouverts. Ne pas ajouter de « méta-news » pour alimenter artificiellement l’accueil.
 
 ## Regroupement dans Configuration — validation du 12 novembre 2026
 
@@ -115,3 +115,9 @@ Statut : séparation des espaces livrée ; les autres demandes et propositions c
 - [x] Résolution confirmée par Marc sur Univers Guitare le 12 novembre 2026. Une ancienne file d’attente FileZilla réenvoyait les fichiers locaux et écrasait les fichiers corrigés. Aucun patch supplémentaire n’est nécessaire pour cet incident.
 
 Avant tout nouvel envoi FTP, supprimer les anciens transferts en attente et vérifier que la copie locale contient les correctifs courants. La fermeture de FileZilla ne vaut pas confirmation de suppression de sa file. Cette validation concerne le regroupement dans Configuration, pas une recette exhaustive de tous les écrans du back-office.
+
+## Accueil 1.1.0 — livraison du 12 novembre 2026
+
+Marc demande de terminer les travaux d’accueil, y compris les propositions de composition, d’aperçu, de réorganisation des zones et d’explication des zones vides. Accueil 1.1.0 regroupe ces fonctions, les derniers articles et le sélecteur visuel de médiathèque. La validation automatisée et la livraison sont suivies dans la [proposition #19](https://github.com/portix1/P3/pull/19). L’aperçu utilise les styles du module sans l’habillage du thème. La validation visuelle sur le site de Marc reste à effectuer après import du ZIP. La pondération reste inchangée tant qu’aucune analyse des mesures réelles ne justifie un ajustement.
+
+Marc confirme également que les en-têtes de tableaux illisibles sont corrigés. Ce point est clôturé.

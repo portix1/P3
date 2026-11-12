@@ -43,7 +43,7 @@ $template->set('home_style_html',\Portix\View\Html::trusted('<style>'.$homeCss.'
 $template->set('home_empty',$translator->text('home_empty'));
 $homeSections=$homeRepository->selection($homeSettings,time());
 [$homeHtml,$homeSlots]=Renderer::render($homeSections,$homeRoot,[
-    'home_all'=>$translator->text('home_all'), 'home_series_start'=>$translator->text('home_series_start'), 'home_disclosure'=>$translator->text('home_disclosure'),
+    'home_latest'=>$translator->text('home_latest'), 'home_all'=>$translator->text('home_all'), 'home_series_start'=>$translator->text('home_series_start'), 'home_disclosure'=>$translator->text('home_disclosure'),
 ],$homeRepository->categories());
 $template->set('home_html',\Portix\View\Html::trusted($homeHtml));
 $template->set('home_has_content',$homeHtml!==''?'1':'0');

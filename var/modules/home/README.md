@@ -51,3 +51,19 @@ Licence : GPL-3.0-or-later ; voir LICENSE dans le ZIP du module.
 ## Accès HTTP aux miniatures
 
 Les noms des dérivés utilisent 32 caractères hexadécimaux suivis de `.webp`, conformément à la protection Apache héritée de `var/uploads/images/.htaccess`. Les anciennes versions utilisaient `mini256-` suivi de 64 caractères et recevaient une réponse 403. Après mise à jour, recharger l’accueil génère automatiquement les nouvelles copies autorisées ; aucun changement de `.htaccess`, aucune suppression des originaux ou des anciennes copies n’est nécessaire.
+
+## Accueil 1.1.0 — composition et aperçu
+
+Dans Configuration → Composer l’accueil, le type « Derniers articles » propose par défaut trois publications, classées par date décroissante (ID décroissant en cas d’égalité). Sans date de publication, la date de création sert de repli. Brouillons, dates futures et catégories invisibles sont exclus. Ces articles sont réservés avant les sélections aléatoires pour éviter les doublons, quelle que soit la position du bloc. La vérification chronologique est refaite à chaque rendu PHP, sous réserve du cache HTTP existant.
+
+Le bouton « Choisir dans la médiathèque » affiche les images et permet une recherche. Le choix réutilise le média, sans duplication. Retirer l’image enlève uniquement son association à la zone. Le téléversement existant reste disponible par l’enregistrement de la zone.
+
+Monter, Descendre ou la poignée de déplacement réordonnent les zones dans le formulaire. « Enregistrer toute la composition » applique ensemble les champs et l’ordre. La position numérique reste disponible sans JavaScript. Les indications de zones vides concernent la composition enregistrée et ne sont jamais affichées aux visiteurs.
+
+« Prévisualiser les modifications » affiche la composition non publiée, aux largeurs ordinateur, tablette ou téléphone. L’aperçu utilise les styles du module, sans l’habillage du thème actif. Il ne modifie ni zones, ni réglages, ni cache de tirage et ne collecte aucune statistique. Les fichiers nouvellement choisis pour téléversement doivent être enregistrés dans leur zone avant cet aperçu. La sélection aléatoire peut varier lors de la publication.
+
+Les compositions distinguent désormais plus nettement le premier article, les liens textuels et les catégories illustrées. Les colonnes, l’absence de titre général et les miniatures hautes de trois lignes sont conservées. Le module n’impose aucune catégorie ni aucun thème.
+
+La pondération reste fondée sur les vues du module Statistiques. Les expositions et clics d’accueil sont complémentaires et ne recomptent pas les visiteurs. L’ajustement des poids attend l’analyse de données réelles suffisantes.
+
+Importer P3-home-1.1.0.zip dans Configuration → Gestion des modules, sans désinstallation. Compatible P3 0.8.4-rc4, aucune migration de schéma ni patch moteur requis. Sauvegarder les zones et les fichiers avant mise à jour. Un retour à 1.0.8 nécessite de désactiver ou supprimer les zones « Derniers articles », type absent de cette ancienne version.
