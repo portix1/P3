@@ -13,7 +13,7 @@
 </section>
 
 <section class="admin-section" aria-labelledby="theme-install-title">
-<h2 id="theme-install-title">{{ themes_install_title }}</h2><p>{{ themes_install_help }}</p>
+<h2 id="theme-install-title">{{ themes_install_title }}</h2><p>{{ themes_install_help }}</p><p>{{ extension_updates_upload_help }}</p>
 <form method="post" action="Admin-config-themes.html" enctype="multipart/form-data" class="settings-form">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input type="hidden" name="themes_action" value="analyse" />
 <label><span>{{ themes_zip_label }}</span><input type="file" name="theme_archive" accept=".zip,application/zip" required /><small>{{ themes_zip_help }}</small></label>

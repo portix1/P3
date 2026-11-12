@@ -20,14 +20,23 @@ if (isset($_POST['themes_action'])) {
             $upload = $_FILES['theme_archive'] ?? null;
             if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file((string) ($upload['tmp_name'] ?? ''))) { throw new RuntimeException($translator->text('themes_upload_invalid')); }
             if (isset($_SESSION['theme_package_token'])) { $themePackages->cancel((string) $_SESSION['theme_package_token']); unset($_SESSION['theme_package_token']); }
+            $catalogueVerified = \Portix\Maintenance\ExtensionUpdates::verifyUploadedArchive(
+                'theme', (string) $upload['name'], (string) $upload['tmp_name']
+            );
             $plan = $themePackages->stage((string) $upload['tmp_name']);
             $_SESSION['theme_package_token'] = $plan['token'];
+            $_SESSION['theme_catalogue_verified'] = $catalogueVerified;
             if ($plan['conflicts'] === []) {
                 $themePackages->install($plan['token']);
                 unset($_SESSION['theme_package_token']);
-                $configurationMessage = $translator->text('themes_install_done');
+                $configurationMessage = $translator->text('themes_install_done') . ' '
+                    . $translator->text($catalogueVerified
+                        ? 'extension_updates_verified' : 'extension_updates_manual_unverified');
+                unset($_SESSION['theme_catalogue_verified']);
             } else {
-                $configurationMessage = $translator->text('themes_analysis_done');
+                $configurationMessage = $translator->text('themes_analysis_done') . ' '
+                    . $translator->text($catalogueVerified
+                        ? 'extension_updates_verified' : 'extension_updates_manual_unverified');
             }
         } elseif (in_array($action, ['install', 'cancel'], true)) {
             $token = (string) ($_POST['theme_token'] ?? '');
@@ -35,9 +44,11 @@ if (isset($_POST['themes_action'])) {
             if ($action === 'install') {
                 if (($_POST['themes_confirm'] ?? '') !== 'yes') { throw new RuntimeException($translator->text('themes_confirmation_required')); }
                 $themePackages->install($token);
-                $configurationMessage = $translator->text('themes_install_done');
+                $configurationMessage = $translator->text('themes_install_done') . ' '
+                    . $translator->text(!empty($_SESSION['theme_catalogue_verified'])
+                        ? 'extension_updates_verified' : 'extension_updates_manual_unverified');
             } else { $themePackages->cancel($token); $configurationMessage = $translator->text('themes_cancel_done'); }
-            unset($_SESSION['theme_package_token']);
+            unset($_SESSION['theme_package_token'], $_SESSION['theme_catalogue_verified']);
         } elseif ($action === 'restore') {
             if (($_POST['themes_confirm'] ?? '') !== 'yes') { throw new RuntimeException($translator->text('themes_confirmation_required')); }
             $themePackages->restore((string) ($_POST['backup_token'] ?? ''));

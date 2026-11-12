@@ -81,16 +81,91 @@ final class ExtensionUpdates
         return $cached['version'] !== '' && version_compare($cached['version'], $installed, '>') ? $cached['version'] : '';
     }
 
-    public static function available(string $json, array $installed): array
+    /**
+     * A matching catalogue ZIP is checked before staging. Other archives remain
+     * manual imports and are never represented as verified packages.
+     * This checks integrity against the current catalogue, not authenticity.
+     */
+    public static function verifyUploadedArchive(
+        string $kind,
+        string $filename,
+        string $archive,
+        ?string $catalogueJson = null
+    ): bool {
+        if (!in_array($kind, ['module', 'theme'], true) || !is_file($archive)) {
+            throw new RuntimeException('Invalid extension archive');
+        }
+        $catalogueJson ??= self::catalogueForUpload();
+        if ($catalogueJson === null) {
+            return false;
+        }
+        foreach (self::packages($catalogueJson) as $package) {
+            if ($package['file'] !== $filename) {
+                continue;
+            }
+            if ($package['kind'] !== $kind) {
+                throw new RuntimeException('extension_updates_package_type_mismatch');
+            }
+            $actual = hash_file('sha256', $archive);
+            if (!is_string($actual) || !hash_equals($package['sha256'], $actual)) {
+                throw new RuntimeException('extension_updates_checksum_failed');
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static function catalogueForUpload(): ?string
+    {
+        $cached = $_SESSION['p3_update_catalogue'] ?? [];
+        if (($cached['expires'] ?? 0) > time() && is_string($cached['json'] ?? null)) {
+            return $cached['json'];
+        }
+        try {
+            $json = self::fetchCatalogue();
+            self::packages($json);
+            $_SESSION['p3_update_catalogue'] = ['json' => $json, 'expires' => time() + 300];
+            return $json;
+        } catch (RuntimeException | \JsonException) {
+            return null;
+        }
+    }
+
+    /** @return list<array<string, mixed>> */
+    private static function packages(string $json): array
     {
         $catalogue = json_decode($json, true, 32, JSON_THROW_ON_ERROR);
         if (($catalogue['schema'] ?? null) !== 1 || !is_array($catalogue['packages'] ?? null)
             || !array_is_list($catalogue['packages'])) {
             throw new RuntimeException('Invalid extension catalogue');
         }
-
-        $updates = [];
+        $seen = [];
         foreach ($catalogue['packages'] as $package) {
+            if (!is_array($package)) {
+                throw new RuntimeException('Invalid extension catalogue entry');
+            }
+            $kind = $package['kind'] ?? null;
+            $id = $package['id'] ?? null;
+            $version = $package['version'] ?? null;
+            $file = $package['file'] ?? null;
+            $sha256 = $package['sha256'] ?? null;
+            if (!in_array($kind, ['module', 'theme'], true)
+                || !is_string($id) || !preg_match('/\A[A-Za-z0-9_-]+\z/', $id)
+                || !is_string($version) || !preg_match('/\A[0-9]+(?:\.[0-9]+){1,3}(?:[-+][A-Za-z0-9.-]+)?\z/', $version)
+                || !is_string($file) || !preg_match('/\A[A-Za-z0-9][A-Za-z0-9._-]*\.zip\z/', $file)
+                || !is_string($sha256) || !preg_match('/\A[a-f0-9]{64}\z/D', $sha256)
+                || isset($seen[$file])) {
+                throw new RuntimeException('Invalid extension catalogue entry');
+            }
+            $seen[$file] = true;
+        }
+        return $catalogue['packages'];
+    }
+
+    public static function available(string $json, array $installed): array
+    {
+        $updates = [];
+        foreach (self::packages($json) as $package) {
             $kind = $package['kind'] ?? null;
             $id = $package['id'] ?? null;
             $version = $package['version'] ?? null;
@@ -115,6 +190,7 @@ final class ExtensionUpdates
                 'name' => $local['name'],
                 'installed' => $local['version'],
                 'version' => $version,
+                'sha256' => $package['sha256'],
                 'url' => self::BASE_URL . rawurlencode($file),
             ];
         }

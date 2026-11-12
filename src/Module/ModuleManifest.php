@@ -82,6 +82,22 @@ final class ModuleManifest
         }
     }
 
+    /** Prevent an accidental downgrade or replacement by a different module. */
+    public static function assertUpgrade(array $candidate, array $installed): void
+    {
+        foreach (['prefix', 'path', 'type'] as $identity) {
+            if (($candidate[$identity] ?? '') !== ($installed[$identity] ?? '')) {
+                throw new RuntimeException('modules_identity_mismatch');
+            }
+        }
+        $previous = (string) ($installed['version'] ?? '');
+        $next = (string) ($candidate['version'] ?? '');
+        if ($previous !== '' && ($next === '' || version_compare($next, $previous, '<'))) {
+            throw new RuntimeException('modules_downgrade_denied');
+        }
+        // An equal version is allowed for a repair/reinstall of the same module.
+    }
+
     private static function sessionlessActions(string $value): array
     {
         if ($value === '') { return []; }

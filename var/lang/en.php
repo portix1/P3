@@ -645,3 +645,13 @@ $_LANG['ux_settings_theme_help'] = 'Choose the theme used by the public site.';
 $_LANG['ux_settings_articles'] = 'Article navigation';
 
 $_LANG['ux_active_theme'] = 'Active theme';
+
+$_LANG['extension_updates_upload_help'] = 'P3 catalogue ZIPs are checked against SHA-256 before extraction. Other files are unverified manual imports: use trusted sources only.';
+$_LANG['extension_updates_verified'] = 'SHA-256 matches the catalogue.';
+$_LANG['extension_updates_manual_unverified'] = 'Manual import: archive not verified against the catalogue.';
+$_LANG['modules_downgrade_denied'] = 'The proposed version is older than the installed version. Replacement refused.';
+$_LANG['modules_identity_mismatch'] = 'The ZIP does not match the identity of the installed module.';
+$_LANG['modules_installed_manifest_missing'] = 'The installed module has no valid manifest: automatic replacement refused.';
+
+$_LANG['extension_updates_checksum_failed'] = 'SHA-256 mismatch: archive rejected before installation.';
+$_LANG['extension_updates_package_type_mismatch'] = 'The catalogue declares this ZIP for a different extension type.';

@@ -93,10 +93,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException($translator->text('modules_move_failed'));
             }
 
+            $catalogueVerified = false;
             $stagingDirectory = './tmp/module-stage-' . bin2hex(random_bytes(12));
             $backupDirectory = '';
             $moduleDirectory = '';
             try {
+                $catalogueVerified = \Portix\Maintenance\ExtensionUpdates::verifyUploadedArchive(
+                    'module', (string) $_FILES['userfile']['name'], $temporaryArchive
+                );
                 if (!mkdir($stagingDirectory, 0770, true)) {
                     throw new RuntimeException('modules_temp_failed');
                 }
@@ -113,6 +117,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new RuntimeException('modules_unsafe_target');
                 }
                 if (is_dir($moduleDirectory)) {
+                    $currentManifestFile = $moduleDirectory . '/desc.xml';
+                    if (!is_file($currentManifestFile)) {
+                        throw new RuntimeException('modules_installed_manifest_missing');
+                    }
+                    $currentManifest = ModuleManifest::fromXml($currentManifestFile, $rootFolder);
+                    ModuleManifest::assertUpgrade($stagedManifest, $currentManifest);
                     $backupDirectory = './tmp/module-backup-' . bin2hex(random_bytes(12));
                     if (!rename($moduleDirectory, $backupDirectory)) {
                         throw new RuntimeException('modules_backup_failed');
@@ -138,7 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $removeModuleTree($backupDirectory);
                     $backupDirectory = '';
                 }
-                $message = $translator->text('modules_installed_success');
+                $message = $translator->text('modules_installed_success') . ' '
+                    . $translator->text($catalogueVerified
+                        ? 'extension_updates_verified' : 'extension_updates_manual_unverified');
             } finally {
                 if (is_file($temporaryArchive)) {
                     unlink($temporaryArchive);
