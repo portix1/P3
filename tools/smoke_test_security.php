@@ -51,20 +51,33 @@ try {
         throw new RuntimeException('La valeur JSON relue ne correspond pas.');
     }
 
-    $stage = 'protection HTTP des schémas de modules';
+    $stage = 'règles HTTP actives (Apache et IIS)';
     $projectRoot = dirname(__DIR__);
-    foreach (array('.htaccess', 'web.config') as $serverRules) {
-        $rules = (string) file_get_contents($projectRoot . DIRECTORY_SEPARATOR . $serverRules);
-        if (!str_contains($rules, 'var/modules/[^/]+/database')) {
-            throw new RuntimeException('Protection absente dans ' . $serverRules . '.');
-        }
+    $apacheRules = (string) file_get_contents($projectRoot . '/.htaccess');
+    $iisRules = (string) file_get_contents($projectRoot . '/web.config');
+    $protection = \Portix\Diagnostics\ServerProtectionRules::inspect($apacheRules, $iisRules);
+    if (!$protection['apache'] || !$protection['iis']) {
+        throw new RuntimeException('Protections source HTTP incomplètes, inactives ou mal ordonnées.');
     }
 
-    $stage = '404 P3 pour les URL PHP inconnues';
-    $apacheRules = (string) file_get_contents($projectRoot . '/.htaccess');
-    if (!str_contains($apacheRules, 'RewriteRule ^.*\\.(?:phar|phtml|php[0-9]?)$ index.php [L,QSA,NC]')
-        || str_contains($apacheRules, 'RewriteRule ^.*\\.(?:phar|phtml|php[0-9]?)$ - [F,L,NC]')) {
-        throw new RuntimeException('Les URL PHP inconnues ne sont pas routées vers la 404 P3.');
+    // Régression : une directive commentée ou un faux saut de ligne ne peut pas être validé.
+    $phpRule = 'RewriteRule ^.*\.(?:phar|phtml|php[0-9]?)$ index.php [L,QSA,NC]';
+    $commentedRule = str_replace($phpRule, '# ' . $phpRule, $apacheRules);
+    if (\Portix\Diagnostics\ServerProtectionRules::inspect($commentedRule, $iisRules)['apache']) {
+        throw new RuntimeException('Une règle PHP commentée est acceptée par le test.');
+    }
+    $fakeNewline = str_replace('# Le fichier demandé n\'est jamais exécuté.',
+        '# Le fichier demandé n\'est jamais exécuté.\n', $apacheRules);
+    if (\Portix\Diagnostics\ServerProtectionRules::inspect($fakeNewline, $iisRules)['apache']) {
+        throw new RuntimeException('Un faux retour à la ligne Apache est accepté par le test.');
+    }
+    $withoutPatches = str_replace('|patches', '', $apacheRules);
+    $withoutTests = str_replace('(?:database|tests)', 'database', $apacheRules);
+    $iisWithoutTests = str_replace('(database|tests)', 'database', $iisRules);
+    if (\Portix\Diagnostics\ServerProtectionRules::inspect($withoutPatches, $iisRules)['apache']
+        || \Portix\Diagnostics\ServerProtectionRules::inspect($withoutTests, $iisRules)['apache']
+        || \Portix\Diagnostics\ServerProtectionRules::inspect($apacheRules, $iisWithoutTests)['iis']) {
+        throw new RuntimeException('Une protection manquante des chemins privés est acceptée.');
     }
 
     $stage = 'accès administrateur au gestionnaire de téléchargements';
