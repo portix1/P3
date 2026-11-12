@@ -655,3 +655,4 @@ $_LANG['modules_installed_manifest_missing'] = 'Le module existant ne possède p
 
 $_LANG['extension_updates_checksum_failed'] = 'Empreinte SHA-256 incorrecte : archive refusée avant installation.';
 $_LANG['extension_updates_package_type_mismatch'] = 'Ce ZIP est déclaré pour un autre type d’extension dans le catalogue.';
+$_LANG['extension_updates_catalogue_untrusted'] = 'Le catalogue des mises à jour ne correspond pas à la publication vérifiée. Aucune mise à jour officielle n’est proposée.';

@@ -7,7 +7,11 @@ use RuntimeException;
 
 final class ExtensionUpdates
 {
-    private const BASE_URL = 'https://raw.githubusercontent.com/portix1/P3/main/distribution/';
+    // Trust anchor: audited Git commit and SHA-256 of its complete catalogue.
+    // Advance both together only when publishing a reviewed distribution.
+    private const TRUSTED_REF = '2b571d17b2c3563e5590c12eee37a7e2fd8c7d8f';
+    private const TRUSTED_CATALOGUE_SHA256 = 'f4ab561d81a118cbfa6cbd361e2b37de71c07001ba2fe087df13044ca1b92f28';
+    private const BASE_URL = 'https://raw.githubusercontent.com/portix1/P3/' . self::TRUSTED_REF . '/distribution/';
     private const MAX_BYTES = 131072;
 
     public static function fetchCatalogue(): string
@@ -18,25 +22,53 @@ final class ExtensionUpdates
         ]]);
         $json = @file_get_contents(self::BASE_URL . 'catalogue.json', false, $context, 0, self::MAX_BYTES + 1);
         if ($json === false || strlen($json) > self::MAX_BYTES) {
-            throw new RuntimeException('Extension catalogue unavailable');
+            throw new RuntimeException('extension_updates_failed');
         }
+        self::assertTrustedCatalogue($json);
         return $json;
+    }
+
+    /** A catalogue fetched or cached from elsewhere cannot control official ZIP URLs. */
+    public static function assertTrustedCatalogue(string $json): void
+    {
+        if (strlen($json) > self::MAX_BYTES
+            || !hash_equals(self::TRUSTED_CATALOGUE_SHA256, hash('sha256', $json))) {
+            throw new RuntimeException('extension_updates_catalogue_untrusted');
+        }
+        self::packages($json);
+    }
+
+    /** Empty means a successfully verified catalogue, not a missing update. */
+    public static function catalogueError(): string
+    {
+        $error = $_SESSION['p3_update_catalogue']['error'] ?? '';
+        return in_array($error, ['extension_updates_failed', 'extension_updates_catalogue_untrusted'], true)
+            ? $error : '';
     }
 
     public static function dashboard(string $root, array $modules, array $themes): array
     {
         $cached = $_SESSION['p3_update_catalogue'] ?? [];
+        if (is_string($cached['json'] ?? null)) {
+            try {
+                self::assertTrustedCatalogue($cached['json']);
+            } catch (RuntimeException | \JsonException) {
+                // Discard a catalogue cached by an older build or altered in session.
+                $cached = [];
+            }
+        }
         if (($cached['expires'] ?? 0) <= time()) {
             try {
                 $json = self::fetchCatalogue();
-                self::available($json, []);
-                $cached = ['json' => $json, 'expires' => time() + 300];
-            } catch (RuntimeException | \JsonException) {
-                $cached = ['json' => null, 'expires' => time() + 60];
+                $cached = ['json' => $json, 'expires' => time() + 300, 'error' => ''];
+            } catch (RuntimeException | \JsonException $error) {
+                $code = $error->getMessage() === 'extension_updates_catalogue_untrusted'
+                    ? 'extension_updates_catalogue_untrusted' : 'extension_updates_failed';
+                $cached = ['json' => null, 'expires' => time() + 60, 'error' => $code];
             }
             $_SESSION['p3_update_catalogue'] = $cached;
         }
-        if ($cached['json'] === null) {
+        if (!is_string($cached['json'] ?? null)) {
             return [];
         }
 
@@ -119,14 +151,23 @@ final class ExtensionUpdates
     {
         $cached = $_SESSION['p3_update_catalogue'] ?? [];
         if (($cached['expires'] ?? 0) > time() && is_string($cached['json'] ?? null)) {
-            return $cached['json'];
+            try {
+                self::assertTrustedCatalogue($cached['json']);
+                return $cached['json'];
+            } catch (RuntimeException | \JsonException) {
+                // Never trust stale or tampered cached data for archive verification.
+            }
         }
         try {
             $json = self::fetchCatalogue();
-            self::packages($json);
-            $_SESSION['p3_update_catalogue'] = ['json' => $json, 'expires' => time() + 300];
+            $_SESSION['p3_update_catalogue'] = ['json' => $json, 'expires' => time() + 300, 'error' => ''];
             return $json;
-        } catch (RuntimeException | \JsonException) {
+        } catch (RuntimeException | \JsonException $error) {
+            $_SESSION['p3_update_catalogue'] = [
+                'json' => null, 'expires' => time() + 60,
+                'error' => $error->getMessage() === 'extension_updates_catalogue_untrusted'
+                    ? 'extension_updates_catalogue_untrusted' : 'extension_updates_failed',
+            ];
             return null;
         }
     }

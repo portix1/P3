@@ -655,3 +655,4 @@ $_LANG['modules_installed_manifest_missing'] = 'The installed module has no vali
 
 $_LANG['extension_updates_checksum_failed'] = 'SHA-256 mismatch: archive rejected before installation.';
 $_LANG['extension_updates_package_type_mismatch'] = 'The catalogue declares this ZIP for a different extension type.';
+$_LANG['extension_updates_catalogue_untrusted'] = 'The extension catalogue does not match the trusted published version. No official update is offered.';
