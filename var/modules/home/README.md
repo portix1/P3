@@ -1,4 +1,4 @@
-# Accueil 1.0.6
+# Accueil 1.0.7
 
 Module générique de composition de la page d’accueil, sans catégorie ni domaine imposé.
 
@@ -8,7 +8,7 @@ Ce ZIP est installé par **Configuration → Gestion des modules → Installer u
 
 Dans **Configuration → Composer l’accueil**, ajouter les zones et leur position. Dans **Configuration → Réglages de l’accueil**, régler le tirage et activer éventuellement sa mesure. Choisir ensuite `home.html` comme page d’accueil dans **Configuration → Identité**. La racine et ses métadonnées restent gérées par P3. L’installation du ZIP ne change pas cette cible.
 
-Les rédacteurs et administrateurs composent les zones ; seuls les administrateurs changent les réglages et consultent **Configuration → Résultats de l’accueil**. Les écritures exigent POST et un jeton CSRF ; la suppression exige aussi une confirmation.
+Seuls les administrateurs composent les zones, modifient les réglages et consultent **Configuration → Résultats de l’accueil**. Les rédacteurs ne disposent d’aucun accès à ces opérations, y compris par requête directe. Les écritures exigent POST et un jeton CSRF ; la suppression exige aussi une confirmation.
 
 ## Zones et images
 

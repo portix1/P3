@@ -5,20 +5,20 @@
 Cette organisation s’applique à toute création ou modification du moteur, d’un module ou d’un plugin. Une évolution ne doit pas réintroduire un écran mélangé ou une navigation indépendante.
 
 - Le tableau de bord présente l’état du moteur, des modules et du thème actif, puis dirige vers trois pages distinctes.
-- Rédaction regroupe les fonctions éditoriales et utilise le bleu.
-- Administration regroupe les comptes, les droits et la maintenance et utilise l’orange.
-- Configuration regroupe les paramètres du site et des composants et utilise le violet.
+- Rédaction regroupe uniquement les fonctions éditoriales et utilise le bleu. Le rôle Rédacteur ne donne accès qu’aux contenus autorisés.
+- Administration regroupe la gestion courante du site, dont les menus principal et de bas de page, les comptes et les droits. Elle utilise l’orange et est réservée aux administrateurs.
+- Configuration regroupe les interventions rares qui définissent le site : composition de l’accueil, identité, thèmes, modules, diagnostics et réglages techniques. Elle utilise le violet et est réservée aux administrateurs.
 - Les thèmes, leur choix et leur installation appartiennent à Configuration.
 - Le menu latéral est limité à l’espace ouvert. Les trois accès d’espace restent disponibles selon les droits.
 - Chaque entrée possède un libellé et une icône. La couleur accompagne les libellés.
 - Les cartes d’état utilisent une présentation commune et une valeur principale en bleu. Un lien de mise à jour apparaît uniquement lorsqu’une version plus récente existe. Une erreur de vérification ne doit jamais être assimilée à une absence de mise à jour.
 - Les fonctions d’un même module peuvent appartenir à des espaces différents. Le classement se fait par fonction.
 - Les contributions sont centralisées dans src/Navigation/AdminNavigation.php et réutilisées par les pages d’espace et le menu. Un contrôleur fourni par le moteur, comme Actualités, doit rester visible même sans config.php dans son module.
-- Le classement ne modifie pas les autorisations. Les contrôles de rôle et de formulaire doivent être appliqués côté serveur.
+- Le rôle Rédacteur ne peut jamais modifier la structure du site : menus, accueil, catégories et arborescence, séries et ordre, modules ou thèmes. Les contrôles de rôle et de formulaire doivent interdire les opérations structurelles côté serveur, y compris par URL directe, POST ou API.
 
 ## Vérification et documentation
 
-Toute modification de navigation doit vérifier administrateur, rédacteur et visiteur, module actif et désactivé, et liens directs vers les contrôleurs concernés. Exécuter tools/smoke_test_admin_navigation.php et les tests touchés.
+Toute modification de navigation doit vérifier administrateur, rédacteur et visiteur, module actif et désactivé, ainsi que les refus d’accès direct GET/POST/API aux opérations structurelles pour le rédacteur. Exécuter tools/smoke_test_admin_navigation.php et les tests touchés.
 
 Actualiser UX-BACK-OFFICE.md et la documentation fonctionnelle concernée dans src/Installation/default-content.json lorsqu’un parcours change. Le guide de développement des modules doit conserver ces règles pour les nouveaux composants.
 

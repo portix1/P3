@@ -2,17 +2,17 @@
 
 Version de test 0.8.3-rc4.
 
-Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont classées dans Rédaction, Administration et Configuration. Chaque entrée possède une icône et un libellé. Le classement indique un emplacement et respecte les autorisations existantes.
+Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont classées dans Rédaction, Administration et Configuration. Chaque entrée possède une icône et un libellé. Rédaction est réservée aux opérations sur le contenu ; Administration regroupe la gestion courante et Configuration les choix durables qui définissent le site. Les deux derniers espaces sont réservés aux administrateurs.
 
 | Composant | Rédaction | Administration | Configuration |
 | --- | --- | --- | --- |
-| Moteur | — | Comptes et droits, diagnostics | Identité, gestion des modules, référencement, messagerie, apparence |
-| Articles | Articles, catégories, séries, ordre de lecture | — | Navigation des articles |
+| Moteur | — | Comptes et droits | Identité, gestion des modules, diagnostics, référencement, messagerie, apparence |
+| Articles | Édition et publication des articles | Catégories, séries et ordre de lecture (administrateurs) | Navigation des articles |
 | Actualités | Rédaction et publication | — | — |
 | Médiathèque | Fichiers, images, insertion et gestion des médias | — | — |
-| Menu principal | Organisation des liens | — | — |
-| Menu de bas de page | — | — | Organisation des liens |
-| Accueil | — | — | Composition pour les rédacteurs et administrateurs, réglages et résultats pour les administrateurs |
+| Menu principal | — | Organisation des liens | — |
+| Menu de bas de page | — | Organisation des liens | — |
+| Accueil | — | — | Composition, réglages et résultats pour les administrateurs seulement |
 | Téléchargements | Fichiers et catégories | — | — |
 | Contact | Messagerie pour les rédacteurs disposant déjà de cet accès | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
 | Affiliation | Produits, offres et partenaires, accès administrateur conservé | — | Paramètres de présentation |
@@ -22,7 +22,7 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 | Authentification interne | — | Service interne sans entrée de menu | — |
 | Thèmes | — | Alerte de mise à jour dans les cartes du tableau de bord | Choix du thème public, import, validation, installation et restauration |
 
-Les fonctions d’un module désactivé ne sont pas ajoutées au menu. Les composants installés restent consultables dans Gestion des modules. Pour une extension tierce inconnue de l’inventaire, le classement utilise son accès déclaré. Les extensions accessibles aux rédacteurs figurent dans Rédaction, les autres dans Administration.
+Les fonctions d’un module désactivé ne sont pas ajoutées au menu. Les composants installés restent consultables dans Gestion des modules. Pour une extension tierce inconnue de l’inventaire, le classement utilise son accès déclaré. Les actions éditoriales autorisées aux rédacteurs figurent dans Rédaction ; les opérations courantes dans Administration et les interventions durables dans Configuration. Le rôle Rédacteur ne confère aucun droit de modifier la structure du site.
 
 ## Formulaires et parcours
 
@@ -61,8 +61,8 @@ Chaque point dispose de « Supprimer ce point ». La suppression exige une confi
 
 ## Module Accueil
 
-Configuration → Composer l’accueil (`Admin-home.html`, administrateurs et rédacteurs) compose les zones, leurs images et leur ordre. Configuration → Réglages de l’accueil (`Admin-home-settings.html`, administrateurs) règle le tirage et la mesure facultative. Configuration → Résultats de l’accueil (`Admin-home-report.html`, administrateurs) consulte les compteurs. Les entrées sont centralisées dans AdminNavigation ; elles disparaissent quand le module est désactivé. Le raccordement à la racine utilise le choix existant de page d’accueil dans Configuration → Identité. Aucun écran séparé ne modifie les autorisations existantes.
+Configuration → Composer l’accueil (`Admin-home.html`, administrateurs seulement) compose les zones, leurs images et leur ordre. Configuration → Réglages de l’accueil (`Admin-home-settings.html`, administrateurs) règle le tirage et la mesure facultative. Configuration → Résultats de l’accueil (`Admin-home-report.html`, administrateurs) consulte les compteurs. Les entrées sont centralisées dans AdminNavigation ; elles disparaissent quand le module est désactivé. Le raccordement à la racine utilise le choix existant de page d’accueil dans Configuration → Identité. Les écrans de composition, de réglages et de résultats sont interdits aux rédacteurs, y compris par accès direct.
 
 ## Déclarations des modules — socle 0.8.4
 
-Les nouveaux modules déclarent leurs contributions dans `desc.xml`, bloc `AdminNavigation`. `AdminNavigation.php` les lit et réutilise le même inventaire dans les pages d’espace et le menu. Le module peut fournir plusieurs actions, chacune avec espace, rôle, icône et clé de traduction ; ses contrôleurs restent responsables des permissions. Une fonction accessible aux rédacteurs peut figurer dans Rédaction ou dans Configuration, selon son usage. Dans Configuration, les rédacteurs voient uniquement leurs écrans autorisés. Les fonctions réservées aux administrateurs peuvent être en Administration ou Configuration. Les modules sans déclaration conservent leur classement historique. Aucun classement particulier à Accueil n’est requis dans le moteur.
+Les nouveaux modules déclarent leurs contributions dans `desc.xml`, bloc `AdminNavigation`. `AdminNavigation.php` les lit et réutilise le même inventaire dans les pages d’espace et le menu. Le module peut fournir plusieurs actions, chacune avec espace, rôle, icône et clé de traduction ; ses contrôleurs doivent vérifier les permissions côté serveur, sans se fier au masquage des menus. Une action accessible aux rédacteurs doit appartenir à Rédaction ; les déclarations donnant le rôle editor à une action Administration ou Configuration sont refusées. Les fonctions structurelles nécessitent toujours le rôle administrateur. Les fonctions réservées aux administrateurs peuvent être en Administration ou Configuration. Les modules sans déclaration conservent leur classement historique. Aucun classement particulier à Accueil n’est requis dans le moteur.
