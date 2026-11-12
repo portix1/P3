@@ -82,6 +82,7 @@ $tests = [
 
 if (is_file($root . '/var/modules/media/src/MediaManager.php')) { $tests[] = 'smoke_test_media.php'; }
 $tests[] = 'smoke_test_responsive_images.php';
+$tests[] = 'smoke_test_mobile_theme_assets.php';
 
 if (is_file($root . '/var/modules/home/desc.xml')) { $tests[] = 'smoke_test_home.php'; $tests[] = 'smoke_test_home_http.php'; }
 
