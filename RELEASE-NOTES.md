@@ -1,64 +1,34 @@
-# P3 0.8.4-rc4
+# P3 0.9.0 — version stable
 
-Version candidate publique du CMS P3. La distribution complète comprend le moteur, les modules et les thèmes.
+**Publication : 12 novembre 2026.** Cette version stabilise le moteur P3 après la série 0.8.4-rc4 et les correctifs validés en production sur Univers Guitare. Elle remplace la 0.8.1 comme dernière version stable.
 
-- **Articles 1.4.8** — L’éditeur, la liste d’administration et le menu public évitent de charger le texte des articles lorsque seuls les titres et les liens sont nécessaires.
-- **Accueil 1.0.7** — Zones configurables, tirage pondéré et miniatures. Seuls les textes des cartes affichées sont chargés pour préparer les extraits.
-- **Recherche 1.0.5** — Un index FTS5 à jour est réutilisé directement pour les recherches avec résultats.
-- **Actualités** — Les listes et le flux RSS chargent uniquement les champs affichés.
-- **Affiliation 1.1.3** — Les offres affichées sur une page d’article sont chargées en une seule requête.
-- **Statistiques 2.0.3** — Comptage journalier avec empreinte côté serveur, graphique quotidien à deux barres et écritures groupées.
+## Changements depuis P3 0.8.1
 
-## Installation
+- **Back-office :** séparation explicite des espaces Rédaction (contenus), Administration (gestion courante) et Configuration (structure et interventions rares). Gestion des modules, thèmes, diagnostics et paramètres techniques organisée dans Configuration ; contrôle des droits des rédacteurs.
+- **Moteur et modules :** accueil configurable (Accueil 1.1.0), Articles 1.4.8, Menu principal 1.0.1, Recherche 1.0.5, Statistiques 2.0.3 et optimisations des lectures de données. L'état des modules installés reste distinct des fichiers distribués.
+- **Sécurité HTTP :** règles empêchant l'accès direct aux répertoires internes, aux outils et aux tests, et routage des URL PHP non publiques. Les adaptations de l'hébergement LWS doivent être conservées lors de la mise à jour.
+- **Mises à jour d'extensions :** contrôle SHA-256 des ZIP référencés dans le catalogue, refus des rétrogradations ou changements d'identité de module, signalement des imports manuels non vérifiés. Le catalogue officiel et ses archives sont référencés par un commit Git figé dont l'empreinte de catalogue est intégrée dans le moteur.
+- **Lecture et performance mobile :** variantes WebP 400/800/1200 px et `srcset/sizes` pour les illustrations des articles, chargement différé et dimensions intrinsèques, figures 25/33/50 % lisibles sur téléphone, lignes de lecture plafonnées sur tablette, en-tête mobile compact, recherche repliable et polices locales préchargées. Les personnalisations du thème ne sont pas écrasées par les correctifs ciblés.
 
-Pour une installation neuve, décompresser `P3-0.8.4-rc4.zip`, transférer le contenu du dossier `P3` à la racine du site et ouvrir `install.php`. PHP 8.2 ou plus récent et PDO SQLite sont requis. Le fichier SHA-256 permet de vérifier le ZIP.
+## Installation et migration
 
-Pour un site existant, tester la mise à jour sur une copie. Conserver la base SQLite, les médias, la configuration et les adaptations du serveur. La publication GitHub ne déploie aucun site.
+La distribution complète contient le moteur, les modules et les thèmes de référence. Elle **n'inclut pas** les bases SQLite en exploitation, sessions, sauvegardes, fichiers confidentiels, médias importés et données générées.
 
-## Validation
+- **Installation neuve :** décompresser `P3-0.9.0.zip`, transférer le contenu du dossier `P3` sur le serveur, puis ouvrir `install.php`. Prérequis : PHP 8.2 ou ultérieur, PDO SQLite et extensions nécessaires, dont GD/WebP.
+- **Installation existante :** faire une sauvegarde de la base SQLite et des fichiers personnalisés ; comparer les fichiers avec la distribution, puis essayer la mise à jour sur une copie. **Ne pas synchroniser avec suppression** : cela pourrait effacer des médias ou des fichiers propres au site.
+- **Univers Guitare :** les correctifs successifs de P3 0.8.4-rc4 ayant déjà été transférés et validés, la mise à jour du numéro affiché doit rester distincte d'une réinstallation complète. Ne pas remplacer le `.htaccess` adapté à LWS, le thème actif personnalisé, les données ou le module Accueil configuré.
 
-Tests automatisés sous PHP 8.2, 8.3, 8.4 et 8.5, dont installation, recherche, comptage et rendu HTTP. Le test Chromium couvre l’accueil. La version stable publiée reste la 0.8.1.
-
-# P3 0.8.4 — socle générique pour les modules
-
-Version préparée pour validation, sans déploiement automatique.
-
-- Les modules peuvent déclarer leurs écrans dans les trois espaces du back-office, avec rôle, icône et traduction.
-- Ils peuvent déclarer des actions publiques POST sans création d’une session anonyme ; les sessions déjà présentes restent chargées.
-- Le gestionnaire vérifie la version minimale avant remplacement des fichiers et conserve l’état actif/inactif lors d’une réinstallation.
-- L’accueil est distribué séparément en ZIP (Accueil 1.0.1), avec ses styles et mesures propres ; le socle ne contient aucune intégration spécifique à ce module.
-- Aucun thème, média, contenu ou choix de page d’accueil n’est modifié par l’installation d’un ZIP de module.
-
-## Notes historiques
-
-# P3 0.8.3-rc4
-
-Version de test complète du moteur, des modules et des thèmes. La version stable 0.8.1 reste disponible séparément.
-
-## Back-office
-
-Le tableau de bord présente l’état du site et dirige vers trois espaces distincts : Rédaction en bleu, Administration en orange et Configuration en violet. Le menu latéral suit l’espace ouvert. Les thèmes et les paramètres des modules se trouvent dans Configuration. Actualités reste accessible lorsqu’il est activé.
-
-## Points de restauration
-
-- Les nouveaux points enregistrent la version du code sauvegardé, même si une mise à jour manuelle a laissé un ancien fichier de suivi.
-- Les points existants affichent la version de leur propre fichier VERSION, sans modifier leurs archives. Leur manifeste reste utilisé si ce fichier est absent.
-- Chaque point peut être supprimé individuellement dans Administration → Protection des contenus → Rollback, après confirmation explicite.
-- La suppression conserve le site actuel et les autres points. Aucune purge automatique n’est activée.
-- Création, restauration et suppression partagent un verrou. Une restauration remet le suivi de version en accord avec le code restauré.
-
-Le refus LF/CRLF du correctif séparé de back-office est également corrigé dans les sources du dépôt. Cette distribution complète n’utilise pas ce correctif.
-
-## Installation et mise à jour
-
-Télécharger **P3-0.8.3-rc4.zip**, puis extraire le dossier P3. L’archive contient les fichiers applicatifs et les protections des dossiers de données, sans base SQLite, configuration privée, sauvegardes ni médias importés.
-
-Pour une installation neuve, transférer le contenu du dossier P3 à la racine du site puis ouvrir install.php. Pour mettre à jour une installation existante, sauvegarder le site et sa base puis copier les fichiers applicatifs à sa racine. Conserver la base, la configuration et les données déjà présentes ; ne pas utiliser une synchronisation qui efface les fichiers absents de l’archive et ne pas relancer l’installation.
-
-La publication sur GitHub ne modifie aucun site existant. Cette version doit être essayée sur une copie avant son installation en production. Le fichier SHA-256 permet de vérifier le téléchargement.
-
-Lors d’une mise à jour, conserver les adaptations propres au serveur et au domaine dans .htaccess et web.config ; comparer ces fichiers avant de les remplacer.
+La publication sur GitHub ne déploie rien automatiquement sur un site existant. Le fichier `P3-0.9.0.sha256` permet de contrôler l'intégrité de l'archive complète.
 
 ## Vérifications
 
-La publication est conditionnée à la validation automatisée sous PHP 8.2, 8.3, 8.4 et 8.5. Les tests des points de restauration couvrent la version sauvegardée, les anciennes métadonnées, une restauration complète avec nom SQLite personnalisé, le point de secours, la suppression ciblée, les droits administrateur, POST, CSRF, la confirmation et les modèles français et anglais.
+La validation de publication est réalisée sur PHP 8.2, 8.3, 8.4 et 8.5, avec tests des modules, routage, sécurité, installation, médias, moteur de templates, et tests Chromium de l'accueil et du rendu mobile à plusieurs largeurs.
+
+## Limites connues et suites
+
+- Le catalogue est **figé et vérifié par SHA-256**, mais n'emploie pas de signature externe : l'authenticité repose sur les références embarquées dans le code installé. Une nouvelle publication d'extensions exige de réviser ces références dans une version ultérieure du moteur.
+- Les variantes WebP des articles sont générées progressivement. Une génération anticipée dès l'ajout ou le remplacement d'un média reste au programme.
+- Les scores LCP et CLS publiés pour Univers Guitare proviennent d'essais de laboratoire, non de statistiques terrain. Une campagne répétée reste à réaliser.
+- La version stable n'implique pas que tous les éléments de la feuille de route éditoriale, SEO ou ergonomique soient terminés.
+
+**Historique de la série 0.8 :** `docs/releases/notes-0.8-series.md`.
