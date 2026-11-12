@@ -102,6 +102,27 @@ try {
             && str_contains($clairImages[1]->getAttribute('sizes'), '(max-width: 640px) min(94vw, 432px)'),
         'les petites figures élargies demandent une résolution mobile suffisante'
     );
+    $versionedTheme = ResponsiveImages::enhance($html, $root, 'six-cordes-ux-clair-v018');
+    $versionedImages = responsiveImages($versionedTheme);
+    responsiveCheck(
+        str_contains($versionedImages[0]->getAttribute('sizes'), '(max-width: 640px) min(94vw, 432px)')
+            && str_contains($versionedImages[1]->getAttribute('sizes'), '(max-width: 640px) min(94vw, 432px)'),
+        'thème Six Cordes versionné : sizes responsive'
+    );
+    responsiveCheck(
+        str_contains($versionedImages[0]->getAttribute('class'), 'p3-mobile-figure-expand')
+            && str_contains($versionedImages[1]->getAttribute('class'), 'p3-mobile-figure-expand')
+            && !str_contains($versionedImages[2]->getAttribute('class'), 'p3-mobile-figure-expand'),
+        'seules les grandes illustrations de figures reçoivent une largeur mobile forcée'
+    );
+    $smallFigure = ResponsiveImages::enhance(
+        '<figure class="portix-image-figure portix-image-size-25"><img src="var/uploads/images/' . $icon . '"></figure>',
+        $root, 'six-cordes-ux-clair-v018'
+    );
+    responsiveCheck(
+        !str_contains(responsiveImages($smallFigure)[0]->getAttribute('class'), 'p3-mobile-figure-expand'),
+        'les petites icônes ne sont jamais agrandies'
+    );
     $otherTheme = ResponsiveImages::enhance($html, $root, 'another-theme');
     responsiveCheck(
         str_contains(responsiveImages($otherTheme)[0]->getAttribute('sizes'), '(max-width: 640px) 25vw'),
