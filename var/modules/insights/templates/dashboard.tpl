@@ -24,12 +24,25 @@
     </dl>
     <p>{{ insights_ratio_help }}</p>
 </section>
-<section class="admin-section table-scroll">
-    <table>
-        <caption>{{ insights_evolution }}</caption>
+<section class="admin-section insights-wide">
+    <h2>{{ insights_evolution }}</h2>
+    <ul class="insights-chart" aria-label="{{ insights_page_views_label }}">
+        {% for insightday in insightday %}
+        <li class="insights-bar-row">
+            <time datetime="{{ insightday.day }}">{{ insightday.day }}</time>
+            <progress max="{{ insightday.chart_max }}" value="{{ insightday.views }}" aria-label="{{ insights_page_views_label }} · {{ insightday.day }}">{{ insightday.views }}</progress>
+            <strong>{{ insightday.views }}</strong>
+        </li>
+        {% endfor %}
+    </ul>
+    <details class="table-scroll">
+        <summary>{{ insights_daily_details }}</summary>
+        <table>
+            <caption class="visually-hidden">{{ insights_daily_details }}</caption>
         <thead><tr><th scope="col">{{ insights_date }}</th><th scope="col">{{ insights_page_views_label }}</th><th scope="col">{{ insights_visits_label }}</th></tr></thead>
         <tbody>{% for insightday in insightday %}<tr><td>{{ insightday.day }}</td><td>{{ insightday.views }}</td><td>{{ insightday.visitors }}</td></tr>{% endfor %}</tbody>
-    </table>
+        </table>
+    </details>
 </section>
 <section class="admin-section table-scroll">
     <table>

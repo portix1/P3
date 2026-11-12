@@ -160,6 +160,7 @@ try {
     $check($db->connection()->query("SELECT dimension FROM analytics_v2_counts WHERE kind = 'referrer'")->fetchColumn() === 'example.test', 'Referrer stored as host only');
     $dashboard = $request('/Admin-insights.html', 'GET', '', $auth);
     $check($dashboard[0] === 200 && str_contains($dashboard[1], 'Pages par visiteur journalier estimé') && str_contains($dashboard[1], '2,00'), 'New dashboard displays the daily ratio');
+    $check(str_contains($dashboard[1], 'class="insights-chart"') && str_contains($dashboard[1], '<progress max="2" value="2"'), 'Daily chart displays measured views on a common scale');
     $csv = $request('/Admin-insights-export.html', 'GET', '', $auth);
     $check($csv[0] === 200 && str_contains($csv[1], 'visiteurs_journaliers_estimes') && str_contains($csv[1], ';2;1'), 'CSV exports only daily aggregates');
     echo "Statistiques HTTP : empreinte quotidienne, exclusions, article, entrée, référent et export vérifiés.\n";

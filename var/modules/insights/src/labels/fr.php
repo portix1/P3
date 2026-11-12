@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 return [
+    'insights_daily_details' => 'Détail par jour',
     'insights_no_data' => 'Aucune mesure sur cette période.',
     'insights_title' => 'Statistiques et journaux',
     'insights_observability' => 'Audience et observabilité',
