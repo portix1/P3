@@ -1,0 +1,35 @@
+name: Audit mobile public — mesures de production (ponctuel)
+
+on:
+  push:
+    branches:
+      - audit/mobile-production-metrics-20261112
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  measure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Measure three public pages sequentially
+        run: node tools/measure_production_mobile.mjs
+      - name: Upload measurements and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-production-metrics-20261112
+          path: audit-mobile-production/*
+          if-no-files-found: warn
