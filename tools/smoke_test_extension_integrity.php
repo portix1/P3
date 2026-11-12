@@ -112,6 +112,40 @@ try {
             'Usurpation : ' . $key
         );
     }
+    // The trust anchor must match the exact released bytes and ZIPs in the repository.
+    $root = dirname(__DIR__);
+    $published = (string) file_get_contents($root . '/distribution/catalogue.json');
+    ExtensionUpdates::assertTrustedCatalogue($published);
+    integrityRefuses(
+        static fn () => ExtensionUpdates::assertTrustedCatalogue($published . ' '),
+        'Catalogue altered without a signed-off code change'
+    );
+    $manifest = json_decode($published, true, 32, JSON_THROW_ON_ERROR);
+    foreach ($manifest['packages'] as $package) {
+        $zip = $root . '/distribution/' . $package['file'];
+        integrityCheck(is_file($zip), 'ZIP officiel introuvable : ' . $package['file']);
+        integrityCheck(
+            hash_equals($package['sha256'], (string) hash_file('sha256', $zip)),
+            'Empreinte du ZIP officiel différente du catalogue : ' . $package['file']
+        );
+        integrityCheck(
+            ExtensionUpdates::verifyUploadedArchive($package['kind'], $package['file'], $zip, $published),
+            'Contrôle du paquet officiel refusé : ' . $package['file']
+        );
+    }
+    $official = ExtensionUpdates::available($published, [
+        'module' => ['articles' => ['version' => '1.4.0', 'name' => 'Articles']],
+        'theme' => ['six-cordes-ux-clair' => ['version' => '0.1.0', 'name' => 'Six Cordes']],
+    ]);
+    integrityCheck(count($official) === 2, 'Catalogue publié doit contenir deux mises à jour');
+    foreach ($official as $row) {
+        integrityCheck(
+            str_contains($row['url'], '/2b571d17b2c3563e5590c12eee37a7e2fd8c7d8f/distribution/')
+                && !str_contains($row['url'], '/main/'),
+            'Le lien du ZIP ne pointe pas sur le commit figé.'
+        );
+    }
+    echo "Catalogue figé, empreinte du manifeste et empreintes des ZIP publiés : OK\n";
     echo "Catalogue SHA-256, intégrité des archives et refus de rétrogradation des modules : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR, 'Test intégrité extensions : ÉCHEC - ' . $error->getMessage() . "\n");
