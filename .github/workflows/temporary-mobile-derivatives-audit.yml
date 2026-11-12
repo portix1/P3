@@ -1,0 +1,36 @@
+name: Audit mobile — variantes et CLS au défilement
+
+on:
+  push:
+    branches:
+      - audit/mobile-derivatives-followup-20261112
+
+permissions:
+  contents: read
+
+jobs:
+  followup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Generate already configured image derivatives safely
+        run: node tools/warm_mobile_images.mjs
+      - name: Re-measure illustrated page and layout shifts
+        run: node tools/measure_production_mobile.mjs
+      - name: Keep follow-up results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-followup-derivatives
+          path: audit-mobile-followup/*
+          if-no-files-found: warn
