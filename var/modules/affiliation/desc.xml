@@ -2,7 +2,7 @@
 <modules>
     <Name>Affiliation</Name>
     <Prefix>affiliation</Prefix>
-    <Version>1.1.2</Version>
+    <Version>1.1.3</Version>
     <Type>plugin</Type>
     <Priority>9</Priority>
     <DefLang>fr</DefLang>

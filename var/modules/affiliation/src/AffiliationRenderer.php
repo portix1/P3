@@ -34,11 +34,8 @@ final class AffiliationRenderer
                 'max_products' => 4,
             ]);
 
-            $products = array_slice(
-                $repo->productsForArticle($articleId),
-                0,
-                max(1, min(12, (int) ($settings['max_products'] ?? 4)))
-            );
+            $limit = max(1, min(12, (int) ($settings['max_products'] ?? 4)));
+            $products = $repo->productsForArticle($articleId, $limit);
             $products = array_values(array_filter(
                 $products,
                 static fn (array $product): bool => ($product['offers'] ?? []) !== []

@@ -211,12 +211,39 @@ final class AffiliationRepository
     public function deleteOffer(int $id): void { $st=$this->pdo->prepare('DELETE FROM affiliate_offers WHERE id=:id');$st->execute(['id'=>$id]); }
 
     /** @return list<array<string,mixed>> */
-    public function productsForArticle(int $articleId): array
+    public function productsForArticle(int $articleId, ?int $limit = null): array
     {
-        $st=$this->pdo->prepare('SELECT p.* FROM affiliate_article_products ap JOIN affiliate_products p ON p.id=ap.product_id WHERE ap.article_id=:article AND p.enabled=1 ORDER BY ap.position,p.position,p.id');
-        $st->execute(['article'=>$articleId]); $products=$st->fetchAll();
-        $offer=$this->pdo->prepare('SELECT o.*,r.name partner_name FROM affiliate_offers o JOIN affiliate_partners r ON r.id=o.partner_id WHERE o.product_id=:product AND o.enabled=1 AND r.enabled=1 ORDER BY o.position,r.position,o.id');
-        foreach($products as &$product){$offer->execute(['product'=>$product['id']]);$product['offers']=$offer->fetchAll();}
-        unset($product); return $products;
+        $selection = ' FROM affiliate_article_products ap '
+            . 'JOIN affiliate_products p ON p.id=ap.product_id '
+            . 'WHERE ap.article_id=:article AND p.enabled=1 ORDER BY ap.position,p.position,p.id'
+            . ($limit === null ? '' : ' LIMIT :limit');
+        $parameters = ['article' => $articleId];
+        if ($limit !== null) {
+            $parameters['limit'] = max(0, $limit);
+        }
+
+        $statement = $this->pdo->prepare('SELECT p.*' . $selection);
+        $statement->execute($parameters);
+        $products = $statement->fetchAll();
+        if ($products === []) {
+            return [];
+        }
+
+        $statement = $this->pdo->prepare(
+            'SELECT o.*, r.name AS partner_name FROM affiliate_offers o '
+            . 'JOIN affiliate_partners r ON r.id=o.partner_id '
+            . 'WHERE o.enabled=1 AND r.enabled=1 AND o.product_id IN (SELECT p.id' . $selection . ') '
+            . 'ORDER BY o.product_id,o.position,r.position,o.id'
+        );
+        $statement->execute($parameters);
+        $offersByProduct = [];
+        foreach ($statement as $offer) {
+            $offersByProduct[(int) $offer['product_id']][] = $offer;
+        }
+        foreach ($products as &$product) {
+            $product['offers'] = $offersByProduct[(int) $product['id']] ?? [];
+        }
+        unset($product);
+        return $products;
     }
 }
