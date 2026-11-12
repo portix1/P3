@@ -21,29 +21,22 @@ final class ArticleNavigation
             return;
         }
 
-        $categories = $this->articles->visibleCategories();
-        if ($categories === []) {
-            return;
-        }
-
-        $byId = [];
-        $children = [];
-        foreach ($categories as $category) {
-            $id = (int) $category['id'];
-            $byId[$id] = $category;
-            $parentId = $category['parent_id'] === null ? 0 : (int) $category['parent_id'];
-            $children[$parentId][] = $id;
-        }
-
-        $activeRoot = $this->activeRootId($arguments, $byId);
-        foreach ($children[0] ?? [] as $rootId) {
-            $root = $byId[$rootId];
-            $outline = $this->articles->publicOutline($rootId);
-            $submenu = $this->renderContents($outline['items'] ?? [], $settings['show_articles']);
+        $outline = $this->articles->publicOutline(includeArticles: $settings['show_articles']);
+        $roots = array_values(array_filter($outline['items'], static fn (array $item): bool => $item['type'] === 'category'));
+        usort($roots, static fn (array $a, array $b): int =>
+            ($a['position'] <=> $b['position'])
+            ?: strcasecmp($a['label'], $b['label'])
+            ?: ($a['id'] <=> $b['id'])
+        );
+        $activeCategory = $this->activeCategoryId($arguments);
+        foreach ($roots as $item) {
+            $root = $item['category'];
+            $rootId = $item['id'];
+            $submenu = $this->renderContents($item['items'], $settings['show_articles']);
             $template->addRow('navigation', [
                 'name' => (string) $root['name'],
                 'link' => 'articles-categorie-' . (string) $root['slug'] . '.html',
-                'current' => $activeRoot === $rootId ? 'is-current' : '',
+                'current' => $activeCategory !== null && $this->containsCategory($item, $activeCategory) ? 'is-current' : '',
                 'item_class' => $submenu !== '' ? 'has-submenu' : '',
                 'has_submenu' => $submenu !== '' ? '1' : '0',
                 'submenu_id' => 'articles-submenu-' . $rootId,
@@ -51,7 +44,7 @@ final class ArticleNavigation
                     $this->translator->text('articles_menu_toggle'),
                     (string) $root['name']
                 ),
-                'has_header_submenu' => count(array_filter($outline['items'] ?? [], static fn (array $item): bool => ($item['type'] ?? '') === 'category')) > 0 ? '1' : '0',
+                'has_header_submenu' => count(array_filter($item['items'], static fn (array $item): bool => ($item['type'] ?? '') === 'category')) > 0 ? '1' : '0',
                 'submenu' => $submenu === '' ? '' : \Portix\View\Html::trusted(
                     '<ul class="navigation-submenu" id="articles-submenu-' . $rootId . '">'
                     . $submenu . '</ul>'
@@ -106,8 +99,8 @@ final class ArticleNavigation
         return $html;
     }
 
-    /** @param array<int, array<string, mixed>> $byId */
-    private function activeRootId(array $arguments, array $byId): ?int
+    /** @param list<string> $arguments */
+    private function activeCategoryId(array $arguments): ?int
     {
         if (($arguments[0] ?? '') !== 'articles') {
             return null;
@@ -119,25 +112,25 @@ final class ArticleNavigation
             $category = $this->articles->findCategoryBySlug($slug);
             $categoryId = $category === null ? null : (int) $category['id'];
         } elseif ($action === 'page' && $slug !== '') {
-            $article = $this->articles->findPublishedBySlug($slug);
-            $categoryId = $article === null || $article['category_id'] === null
-                ? null
-                : (int) $article['category_id'];
+            $categoryId = $this->articles->publishedCategoryIdBySlug($slug);
         }
-        if ($categoryId === null || !isset($byId[$categoryId])) {
-            return null;
-        }
+        return $categoryId;
+    }
 
-        $visited = [];
-        while (isset($byId[$categoryId]) && !isset($visited[$categoryId])) {
-            $visited[$categoryId] = true;
-            $parentId = $byId[$categoryId]['parent_id'];
-            if ($parentId === null || !isset($byId[(int) $parentId])) {
-                return $categoryId;
-            }
-            $categoryId = (int) $parentId;
+    private function containsCategory(array $item, int $categoryId): bool
+    {
+        if ($item['type'] !== 'category') {
+            return false;
         }
-        return null;
+        if ($item['id'] === $categoryId) {
+            return true;
+        }
+        foreach ($item['items'] as $child) {
+            if ($this->containsCategory($child, $categoryId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function escape(string $value): string

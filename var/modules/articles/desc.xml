@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <modules>
     <Name>Articles</Name>
-	<Version>1.4.7</Version>
+	<Version>1.4.8</Version>
     <Prefix>articles</Prefix>
     <Type>module</Type>
     <Priority>5</Priority>

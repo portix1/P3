@@ -84,9 +84,9 @@ final class ArticleRepository
      * @param bool $includeHidden Autorise la consultation directe d’une branche retirée de la navigation.
      * @return list<array<string, mixed>>
      */
-    public function published(?int $categoryId = null, bool $includeHidden = false): array
+    public function published(?int $categoryId = null, bool $includeHidden = false, bool $includeBodies = true): array
     {
-        $items = $this->publicMixedItems($categoryId, $includeHidden);
+        $items = $this->publicMixedItems($categoryId, $includeHidden, true, $includeBodies);
         $ordered = [];
         $walk = function (array $nodes) use (&$walk, &$ordered): void {
             foreach ($nodes as $node) {
@@ -108,9 +108,17 @@ final class ArticleRepository
      *
      * @return array{items:list<array<string,mixed>>}
      */
-    public function publicOutline(?int $categoryId = null, bool $includeHidden = false): array
+    public function publicOutline(?int $categoryId = null, bool $includeHidden = false, bool $includeArticles = true): array
     {
-        return ['items' => $this->publicMixedItems($categoryId, $includeHidden)];
+        return ['items' => $this->publicMixedItems($categoryId, $includeHidden, $includeArticles, false)];
+    }
+
+    public function publishedCategoryIdBySlug(string $slug): ?int
+    {
+        $statement = $this->pdo->prepare("SELECT category_id FROM articles WHERE slug = ? AND status = 'published'");
+        $statement->execute([strtolower($slug)]);
+        $categoryId = $statement->fetchColumn();
+        return $categoryId === false || $categoryId === null ? null : (int) $categoryId;
     }
 
     /** @return list<array<string, mixed>> */
@@ -492,11 +500,12 @@ final class ArticleRepository
             throw new RuntimeException('articles_invalid_navigation_mode');
         }
 
-        $article = $this->find($articleId);
-        if ($article === null || (string) $article['status'] !== 'published' || $article['category_id'] === null) {
+        $category = $this->pdo->prepare("SELECT category_id FROM articles WHERE id = ? AND status = 'published'");
+        $category->execute([$articleId]);
+        $categoryId = (int) $category->fetchColumn();
+        if ($categoryId < 1) {
             return $empty;
         }
-        $categoryId = (int) $article['category_id'];
         if ($mode === 'category') {
             $statement = $this->pdo->prepare(
                 "SELECT id, title, slug FROM articles WHERE status = 'published' AND category_id = :category_id "
@@ -516,7 +525,7 @@ final class ArticleRepository
                     }
                 }
             }
-            $ordered = $rootId === null ? [] : $this->published($rootId, $includeHidden);
+            $ordered = $rootId === null ? [] : $this->published($rootId, $includeHidden, false);
         }
 
         foreach ($ordered as $index => $candidate) {
@@ -642,7 +651,7 @@ final class ArticleRepository
     }
 
     /** @return list<array<string, mixed>> */
-    private function publicMixedItems(?int $categoryId, bool $includeHidden): array
+    private function publicMixedItems(?int $categoryId, bool $includeHidden, bool $includeArticles, bool $includeBodies): array
     {
         $categories = $this->categories();
         $byId = [];
@@ -679,19 +688,24 @@ final class ArticleRepository
             $children[$parent][] = $category;
         }
 
-        $statement = $this->pdo->query(
-            'SELECT article.*, category.name AS category_name, category.slug AS category_slug '
-            . 'FROM articles article LEFT JOIN article_categories category ON category.id = article.category_id '
-            . "WHERE article.status = 'published' "
-            . 'ORDER BY article.position, article.title COLLATE NOCASE, article.id'
-        );
         $articles = [];
-        foreach ($statement->fetchAll() as $article) {
-            $parent = $article['category_id'] === null ? 0 : (int) $article['category_id'];
-            if (!$includeHidden && $parent !== 0 && !$isVisible($parent)) {
-                continue;
+        if ($includeArticles) {
+            $columns = $includeBodies
+                ? 'article.*, category.name AS category_name, category.slug AS category_slug'
+                : 'article.id, article.category_id, article.position, article.title, article.slug';
+            $join = $includeBodies ? 'LEFT JOIN article_categories category ON category.id = article.category_id ' : '';
+            $statement = $this->pdo->query(
+                'SELECT ' . $columns . ' FROM articles article ' . $join
+                . "WHERE article.status = 'published' "
+                . 'ORDER BY article.position, article.title COLLATE NOCASE, article.id'
+            );
+            foreach ($statement as $article) {
+                $parent = $article['category_id'] === null ? 0 : (int) $article['category_id'];
+                if (!$includeHidden && $parent !== 0 && !$isVisible($parent)) {
+                    continue;
+                }
+                $articles[$parent][] = $article;
             }
-            $articles[$parent][] = $article;
         }
 
         $sortMixed = static function (array &$items, bool $categoriesFirst): void {
