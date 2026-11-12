@@ -57,7 +57,7 @@ try {
     $auth=['Content-Type: application/x-www-form-urlencoded','Cookie: PHPSESSID='.($cookie[1]??'')];
     $logged=$request('/login.html','POST',http_build_query(['pseudo'=>'admin','pass'=>'test-home-password','csrf_token'=>$token[1]??'']),$auth);
     if (preg_match('/PHPSESSID=([^;]+)/',implode("\n",$logged[2]),$cookie)) { $auth[1]='Cookie: PHPSESSID='.$cookie[1]; }
-    $screen=$request('/Admin-modmgr.html','GET','',$auth);
+    $screen=$request('/Admin-config-modules.html','GET','',$auth);
     preg_match('/name="csrf_token" value="([^"]+)"/',$screen[1],$token);
     $check(!is_dir($fixture.'/var/modules/home'),'Core fixture starts without Home');
     $snapshots=[];
@@ -80,7 +80,7 @@ try {
         $boundary='p3'.bin2hex(random_bytes(12));$body='';
         foreach (['module_action'=>'upload','csrf_token'=>$csrf] as $key=>$value) { $body.='--'.$boundary."\r\nContent-Disposition: form-data; name=\"".$key."\"\r\n\r\n".$value."\r\n"; }
         $body.='--'.$boundary."\r\nContent-Disposition: form-data; name=\"userfile\"; filename=\"P3-Accueil-".$homeVersion.".zip\"\r\nContent-Type: application/zip\r\n\r\n".$bytes."\r\n--".$boundary."--\r\n";
-        return $request('/Admin-modmgr.html','POST',$body,['Content-Type: multipart/form-data; boundary='.$boundary,$auth[1]]);
+        return $request('/Admin-config-modules.html','POST',$body,['Content-Type: multipart/form-data; boundary='.$boundary,$auth[1]]);
     };
     $archive=$makeZip('home-install.zip');
     $installed=$upload($archive,$token[1]??'');
@@ -134,7 +134,17 @@ try {
         $check($management[0]===($actor==='admin'?200:403), 'Only administrators enter Administration');
         $check(str_contains($management[1],'Admin-menu.html')===($actor==='admin'), 'Main menu only appears in Administration for administrators');
         $check(str_contains($management[1],'Admin-footer.html')===($actor==='admin'), 'Footer menu only appears in Administration for administrators');
-        $check($request('/Admin-modmgr.html','GET','',$headers)[0]===($actor==='admin'?200:403),'Module manager permissions unchanged');
+        foreach (['Admin-config-modules.html', 'Admin-diagnostics.html', 'Admin-safety.html'] as $entry) {
+            $check(str_contains($configArea[1], 'href="' . $entry . '"') === ($actor === 'admin'), 'Configuration entry: '.$entry);
+            $check(!str_contains($management[1], 'href="' . $entry . '"'), 'Entry absent from Administration: '.$entry);
+        }
+        foreach (['Admin-config-modules.html', 'Admin-modmgr.html'] as $managerRoute) {
+            $manager = $request('/'.$managerRoute, 'GET', '', $headers);
+            $check($manager[0]===($actor==='admin'?200:403), 'Module manager permissions: '.$managerRoute);
+            if ($actor === 'admin') {
+                $check(str_contains($manager[1], 'action="Admin-config-modules.html"'), 'Module forms use the Configuration route');
+            }
+        }
         foreach (['menu','footer'] as $structural) {
             $check($request('/Admin-'.$structural.'.html','GET','',$headers)[0]===($actor==='admin'?200:403), 'Structural menu GET restricted to administrators');
             if ($actor==='editor') {

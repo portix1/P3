@@ -10,7 +10,7 @@
 
 <section class="admin-section">
 <h2>{{ modules_install }}</h2>
-<form enctype="multipart/form-data" action="Admin-modmgr.html" method="post" class="upload-form">
+<form enctype="multipart/form-data" action="Admin-config-modules.html" method="post" class="upload-form">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
 <input type="hidden" name="module_action" value="upload" />
 <input type="hidden" name="MAX_FILE_SIZE" value="5242880" />
@@ -42,7 +42,7 @@
 </div>
 <div class="module-row-actions">
 <div class="module-action-slot module-action-state">
-<form action="Admin-modmgr.html" method="post" class="inline-action">
+<form action="Admin-config-modules.html" method="post" class="inline-action">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
 <input type="hidden" name="module_action" value="{{ checkmod.action }}" />
 <input type="hidden" name="prefix" value="{{ checkmod.prefix }}" />
@@ -51,7 +51,7 @@
 </div>
 <div class="module-action-slot module-action-uninstall">
 {% if checkmod.uninstallable == "1" %}
-<form action="Admin-modmgr.html" method="post" class="inline-action" data-confirm-message="{{ modules_uninstall_confirm }}">
+<form action="Admin-config-modules.html" method="post" class="inline-action" data-confirm-message="{{ modules_uninstall_confirm }}">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
 <input type="hidden" name="module_action" value="uninstall" />
 <input type="hidden" name="prefix" value="{{ checkmod.prefix }}" />

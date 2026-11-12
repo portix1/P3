@@ -40,9 +40,11 @@ try {
     }
 
     $moduleManager = AdminNavigation::sections($root, $modules, true, false, ['Admin', 'modmgr'], $translator);
-    $managerEntry = array_values(array_filter($moduleManager['configuration'], static fn (array $item): bool => $item['url'] === 'Admin-modmgr.html'));
+    $managerEntry = array_values(array_filter($moduleManager['configuration'], static fn (array $item): bool => $item['url'] === 'Admin-config-modules.html'));
     navigationCheck(count($managerEntry) === 1 && $managerEntry[0]['current'] === 'is-current', 'Gestion des modules active dans Configuration');
-    navigationCheck(!in_array('Admin-modmgr.html', array_column($moduleManager['management'], 'url'), true), 'Gestion des modules absente d’Administration');
+    navigationCheck(!in_array('Admin-modmgr.html', array_column($moduleManager['management'], 'url'), true), 'Ancienne adresse de gestion des modules absente d’Administration');
+    navigationCheck(!in_array('Admin-config-modules.html', array_column($moduleManager['management'], 'url'), true), 'Gestion des modules absente d’Administration');
+    navigationCheck(in_array('Admin-safety.html', array_column($moduleManager['configuration'], 'url'), true), 'Protection des contenus dans Configuration');
 
     $news = array_values(array_filter($sections['writing'], static fn (array $item): bool => $item['url'] === 'Admin-news.html'));
     navigationCheck(count($news) === 1 && $news[0]['current'] === 'is-current', 'Actualités doit être présent et actif en Rédaction');

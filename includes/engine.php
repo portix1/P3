@@ -315,6 +315,7 @@ if ($canAccessAdmin && $route === 'Admin') {
             if ($isAdmin) {
                 $configView = (string) ($argument[2] ?? '');
                 include match ($configView) {
+                    'modules' => './includes/modmgr.php',
                     'themes' => './includes/themes.php',
                     'updates' => './includes/updates.php',
                     default => './includes/config.php',

@@ -17,7 +17,7 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 | Contact | Messagerie pour les rédacteurs disposant déjà de cet accès | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
 | Affiliation | Produits, offres et partenaires, accès administrateur conservé | — | Paramètres de présentation |
 | Statistiques | — | Audience, journaux applicatifs, journal d’audit | Mode de mesure et rétention |
-| Protection des contenus | — | Corbeille, révisions et points de restauration | Durées de conservation |
+| Protection des contenus | — | — | Corbeille, révisions, points de restauration et durées de conservation |
 | Recherche | — | État et reconstruction de l’index | — |
 | Authentification interne | — | Service interne sans entrée de menu | — |
 | Thèmes | — | Alerte de mise à jour dans les cartes du tableau de bord | Choix du thème public, import, validation, installation et restauration |
@@ -55,7 +55,7 @@ Actualités est administré par le contrôleur du moteur et ne possède pas de c
 
 ## Points de restauration
 
-Dans Administration → Protection des contenus → Rollback, la version affichée provient du fichier VERSION inclus dans chaque point. Les anciens points sans ce fichier utilisent leur manifeste. Les nouveaux points enregistrent la version du code sauvegardé, même après une mise à jour manuelle qui a laissé un ancien suivi release.json.
+Dans Configuration → Protection des contenus → Rollback, la version affichée provient du fichier VERSION inclus dans chaque point. Les anciens points sans ce fichier utilisent leur manifeste. Les nouveaux points enregistrent la version du code sauvegardé, même après une mise à jour manuelle qui a laissé un ancien suivi release.json.
 
 Chaque point dispose de « Supprimer ce point ». La suppression exige une confirmation explicite et un formulaire administrateur protégé contre les requêtes CSRF. Elle efface uniquement le point sélectionné ; le site et les autres points restent conservés. Il n’y a aucune purge automatique. Création, restauration et suppression sont verrouillées pour éviter leur exécution simultanée. Une restauration remet le suivi de version en accord avec le code restauré.
 
