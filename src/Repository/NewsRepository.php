@@ -7,6 +7,9 @@ use PDO;
 
 final class NewsRepository
 {
+    private const PUBLIC_LIST_FIELDS = 'n.id, n.title, n.slug, n.intro, n.published_at';
+    private const ADMIN_LIST_FIELDS = 'n.id, n.title, n.slug, n.created_by, n.status, n.published_at, n.updated_at';
+
     public function __construct(private readonly PDO $pdo)
     {
     }
@@ -39,7 +42,7 @@ final class NewsRepository
             return [];
         }
         return $this->pdo->query(
-            "SELECT n.*, 1 AS is_pinned FROM news n "
+            'SELECT ' . self::PUBLIC_LIST_FIELDS . ', 1 AS is_pinned FROM news n '
             . "INNER JOIN news_pins p ON p.news_id = n.id "
             . "WHERE n.status = 'published' "
             . "ORDER BY p.pinned_at DESC, n.published_at DESC, n.id DESC"
@@ -54,7 +57,7 @@ final class NewsRepository
             $where .= " AND NOT EXISTS (SELECT 1 FROM news_pins p WHERE p.news_id = n.id)";
         }
         $statement = $this->pdo->prepare(
-            "SELECT n.*, 0 AS is_pinned FROM news n WHERE " . $where
+            'SELECT ' . self::PUBLIC_LIST_FIELDS . ', 0 AS is_pinned FROM news n WHERE ' . $where
             . ' ORDER BY n.published_at DESC, n.id DESC LIMIT :limit OFFSET :offset'
         );
         $statement->bindValue(':limit', max(1, $limit), PDO::PARAM_INT);
@@ -68,11 +71,11 @@ final class NewsRepository
     {
         if (!$this->pinTableExists()) {
             return $this->pdo->query(
-                'SELECT n.*, 0 AS is_pinned FROM news n ORDER BY n.updated_at DESC, n.id DESC'
+                'SELECT ' . self::ADMIN_LIST_FIELDS . ', 0 AS is_pinned FROM news n ORDER BY n.updated_at DESC, n.id DESC'
             )->fetchAll();
         }
         return $this->pdo->query(
-            'SELECT n.*, CASE WHEN p.news_id IS NULL THEN 0 ELSE 1 END AS is_pinned '
+            'SELECT ' . self::ADMIN_LIST_FIELDS . ', CASE WHEN p.news_id IS NULL THEN 0 ELSE 1 END AS is_pinned '
             . 'FROM news n LEFT JOIN news_pins p ON p.news_id = n.id '
             . 'ORDER BY is_pinned DESC, n.updated_at DESC, n.id DESC'
         )->fetchAll();
