@@ -4,15 +4,17 @@ RewriteEngine On
 # Les données, réglages, journaux, outils et fichiers transférés ne sont
 # jamais servis directement par Apache. Les contrôleurs PHP autorisés les
 # diffusent après validation.
-RewriteRule ^(?:bootstrap|src|includes|database|sessions|tmp|tools|download)(?:/|$) - [F,L,NC]
+RewriteRule ^(?:bootstrap|src|includes|database|sessions|tmp|tools|download|patches)(?:/|$) - [F,L,NC]
 RewriteRule ^var/(?:sys|private)(?:/|$) - [F,L,NC]
-RewriteRule ^var/modules/[^/]+/database(?:/|$) - [F,L,NC]
+RewriteRule ^var/modules/[^/]+/(?:database|tests)(?:/|$) - [F,L,NC]
 
 # Seuls les contrôleurs PHP publics connus sont exécutables.
 RewriteRule ^(?:index|install)\.php$ - [L]
 RewriteRule ^var/modules/download/download\.php$ - [L]
 
-# Toute autre URL PHP est envoyée au routeur P3 : elle produit une vraie 404 thémée.\n# Le fichier demandé n'est jamais exécuté.\nRewriteRule ^.*\.(?:phar|phtml|php[0-9]?)$ index.php [L,QSA,NC]
+# Toute autre URL PHP est envoyée au routeur P3 : elle produit une vraie 404 thémée.
+# Le fichier demandé n'est jamais exécuté.
+RewriteRule ^.*\.(?:phar|phtml|php[0-9]?)$ index.php [L,QSA,NC]
 
 
 # Ces deux réponses restent dynamiques même si un ancien fichier physique est
