@@ -264,6 +264,15 @@ a:hover { text-decoration-thickness: 2px; }
 .form-grid-wide { grid-column: 1 / -1; }
 label { display: grid; gap: .38rem; font-weight: 700; }
 label small { color: var(--muted); font-weight: 400; }
+label:where(:has(> input[type="checkbox"]):not(.checkbox-label, .role-option)) {
+    display: flex;
+    align-items: baseline;
+    gap: .5rem;
+}
+label:where(:has(> input[type="checkbox"]):not(.checkbox-label, .role-option)) > input[type="checkbox"] {
+    flex: none;
+    margin: 0;
+}
 
 input,
 select,

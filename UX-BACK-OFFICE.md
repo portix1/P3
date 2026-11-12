@@ -26,6 +26,8 @@ Les fonctions d’un module désactivé ne sont pas ajoutées au menu. Les compo
 
 ## Formulaires et parcours
 
+Les cases à cocher sont placées à gauche de leur libellé. Les libellés longs restent lisibles sur plusieurs lignes.
+
 Les pages Identité, Référencement, Messagerie et Apparence enregistrent leurs propres champs. Les anciens liens Admin-config.html et Admin-config-themes.html restent valides. Les paramètres des modules possèdent leur entrée dans Configuration. La gestion des modules se trouve dans Configuration. Les alertes de mise à jour restent accessibles depuis le tableau de bord.
 
 L’import d’un thème contrôlé et sans conflit déclenche son installation directement. Un conflit avec une personnalisation bloque l’installation et liste les fichiers. Le thème public est choisi séparément depuis Apparence du site. Les protections de sauvegarde, de restauration, de rôle et de formulaire sont conservées.
@@ -59,8 +61,8 @@ Chaque point dispose de « Supprimer ce point ». La suppression exige une confi
 
 ## Module Accueil
 
-Rédaction → Accueil (`Admin-home.html`, administrateurs et rédacteurs) compose les zones, leurs images et leur ordre. Configuration → Réglages de l’accueil (`Admin-home-settings.html`, administrateurs) règle le tirage et la mesure facultative. Administration → Résultats de l’accueil (`Admin-home-report.html`, administrateurs) consulte les compteurs. Les entrées sont centralisées dans AdminNavigation ; elles disparaissent quand le module est désactivé. Le raccordement à la racine utilise le choix existant de page d’accueil dans Configuration → Identité. Aucun écran séparé ne modifie les autorisations existantes.
+Configuration → Composer l’accueil (`Admin-home.html`, administrateurs et rédacteurs) compose les zones, leurs images et leur ordre. Configuration → Réglages de l’accueil (`Admin-home-settings.html`, administrateurs) règle le tirage et la mesure facultative. Configuration → Résultats de l’accueil (`Admin-home-report.html`, administrateurs) consulte les compteurs. Les entrées sont centralisées dans AdminNavigation ; elles disparaissent quand le module est désactivé. Le raccordement à la racine utilise le choix existant de page d’accueil dans Configuration → Identité. Aucun écran séparé ne modifie les autorisations existantes.
 
 ## Déclarations des modules — socle 0.8.4
 
-Les nouveaux modules déclarent leurs contributions dans `desc.xml`, bloc `AdminNavigation`. `AdminNavigation.php` les lit et réutilise le même inventaire dans les pages d’espace et le menu. Le module peut fournir plusieurs actions, chacune avec espace, rôle, icône et clé de traduction ; ses contrôleurs restent responsables des permissions. Une fonction accessible aux rédacteurs appartient à Rédaction. Les fonctions réservées aux administrateurs peuvent être en Administration ou Configuration. Les modules sans déclaration conservent leur classement historique. Aucun classement particulier à Accueil n’est requis dans le moteur.
+Les nouveaux modules déclarent leurs contributions dans `desc.xml`, bloc `AdminNavigation`. `AdminNavigation.php` les lit et réutilise le même inventaire dans les pages d’espace et le menu. Le module peut fournir plusieurs actions, chacune avec espace, rôle, icône et clé de traduction ; ses contrôleurs restent responsables des permissions. Une fonction accessible aux rédacteurs peut figurer dans Rédaction ou dans Configuration, selon son usage. Dans Configuration, les rédacteurs voient uniquement leurs écrans autorisés. Les fonctions réservées aux administrateurs peuvent être en Administration ou Configuration. Les modules sans déclaration conservent leur classement historique. Aucun classement particulier à Accueil n’est requis dans le moteur.
