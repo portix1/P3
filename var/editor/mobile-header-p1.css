@@ -1,5 +1,6 @@
 /* P3 — mobile header, fonts and navigation. Additive stylesheet; never edits active theme.
    Portrait smartphones and short landscape viewports are targeted independently. */
+body.theme-six-cordes-clair .p3-mobile-search-toggle { display: none; }
 @media screen and (max-width: 640px), screen and (max-width: 900px) and (max-height: 500px) {
   body.theme-six-cordes-clair:not(.is-authenticated) .site-header.six-cordes-masthead {
     box-sizing: border-box;
