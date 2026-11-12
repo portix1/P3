@@ -11,7 +11,7 @@ use DOMXPath;
 final class ResponsiveImages
 {
     private const WIDTHS = [400, 800, 1200];
-    private const MAX_SOURCE_PIXELS = 12000000;
+    private const MAX_SOURCE_PIXELS = 6000000;
     private const MAX_SOURCE_BYTES = 12582912;
     private const MAX_NEW_FILES_PER_RENDER = 4;
     private const SUBDIRECTORY = '/var/uploads/images/responsive';
@@ -67,16 +67,24 @@ final class ResponsiveImages
                 }
                 $key = $source['file'];
                 if (!isset($cache[$key])) {
-                    $cache[$key] = self::candidates($source, $root, $budget);
+                    try {
+                        $cache[$key] = self::candidates($source, $root, $budget);
+                    } catch (\Throwable) {
+                        // File-system or encoder failures must not break article reading.
+                        $cache[$key] = [];
+                    }
                 }
                 $candidates = $cache[$key];
                 if ($candidates === []) {
                     continue;
                 }
                 $versioned = self::withVersion($image->getAttribute('src'), $source['sha256']);
+                $originalUrl = $image->getAttribute('src');
+                $prefix = str_starts_with($originalUrl, '/') ? '/'
+                    : (str_starts_with($originalUrl, './') ? './' : '');
                 $parts = [];
                 foreach ($candidates as $width => $url) {
-                    $parts[] = $url . ' ' . $width . 'w';
+                    $parts[] = $prefix . $url . ' ' . $width . 'w';
                 }
                 $parts[] = $versioned . ' ' . $source['width'] . 'w';
                 $image->setAttribute('src', $versioned);
