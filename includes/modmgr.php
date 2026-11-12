@@ -93,13 +93,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException($translator->text('modules_move_failed'));
             }
 
-            $catalogueVerified = \Portix\Maintenance\ExtensionUpdates::verifyUploadedArchive(
-                'module', (string) $_FILES['userfile']['name'], $temporaryArchive
-            );
+            $catalogueVerified = false;
             $stagingDirectory = './tmp/module-stage-' . bin2hex(random_bytes(12));
             $backupDirectory = '';
             $moduleDirectory = '';
             try {
+                $catalogueVerified = \Portix\Maintenance\ExtensionUpdates::verifyUploadedArchive(
+                    'module', (string) $_FILES['userfile']['name'], $temporaryArchive
+                );
                 if (!mkdir($stagingDirectory, 0770, true)) {
                     throw new RuntimeException('modules_temp_failed');
                 }
