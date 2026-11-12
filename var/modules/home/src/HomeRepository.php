@@ -101,10 +101,11 @@ final class HomeRepository
         $used = [];
         $slots = 0;
         foreach ($sections as $section) {
-            $items = $this->candidates($section,$now);
+            $ids = $draw[(string) $section['id']] ?? [];
+            $items = $ids === [] || $slots >= 60 ? [] : $this->candidates($section, $now, $ids);
             $byId = array_column($items,null,'id');
             $chosen = [];
-            foreach ($draw[(string) $section['id']] ?? [] as $id) {
+            foreach ($ids as $id) {
                 if ($slots >= 60) { break; }
                 if (isset($byId[$id]) && !isset($used[$section['kind'].':'.$id])) {
                     $chosen[] = $byId[$id];
@@ -155,7 +156,7 @@ final class HomeRepository
         return $draw;
     }
 
-    private function candidates(array $section, int $now): array
+    private function candidates(array $section, int $now, ?array $selectedIds = null): array
     {
         if ($section['kind'] === 'articles') {
             if (!$this->enabled('articles') || !$this->installed('articles')) { return []; }
@@ -167,9 +168,22 @@ final class HomeRepository
                     if ($cat['is_visible'] && in_array((int) $cat['parent_id'],$allowed,true) && !in_array((int) $cat['id'],$allowed,true)) { $allowed[]=(int) $cat['id']; }
                 } } while (count($allowed)>$before);
             }
-            $q = $this->pdo->prepare("SELECT id,title,slug,summary,body,featured_image AS image FROM articles WHERE status='published' AND (published_at IS NULL OR published_at='' OR datetime(published_at)<=datetime(?)) AND category_id IN (".implode(',',array_fill(0,count($allowed),'?')).') ORDER BY id');
-            $q->execute([gmdate('Y-m-d H:i:s',$now),...$allowed]);
+            $date = gmdate('Y-m-d H:i:s', $now);
+            $columns = $selectedIds === null ? 'id,slug' : 'id,title,slug,summary,body,featured_image AS image';
+            $sql = "SELECT $columns FROM articles WHERE status='published' "
+                . "AND (published_at IS NULL OR published_at='' OR datetime(published_at)<=datetime(?)) "
+                . 'AND category_id IN (' . implode(',', array_fill(0, count($allowed), '?')) . ')';
+            $parameters = [$date, ...$allowed];
+            if ($selectedIds !== null) {
+                $sql .= ' AND id IN (' . implode(',', array_fill(0, count($selectedIds), '?')) . ')';
+                array_push($parameters, ...$selectedIds);
+            }
+            $q = $this->pdo->prepare($sql . ' ORDER BY id');
+            $q->execute($parameters);
             $items = $q->fetchAll(PDO::FETCH_ASSOC);
+            if ($selectedIds === null || $items === []) {
+                return $items;
+            }
             foreach ($items as &$item) {
                 $item['url']=rawurlencode($item['slug']).'.html';
                 $item['series']=''; $item['series_url']='';
@@ -190,9 +204,25 @@ final class HomeRepository
         }
         if ($section['kind'] === 'news') {
             if (!$this->enabled('news') || !$this->installed('news')) { return []; }
-            $q=$this->pdo->prepare("SELECT id,title,slug,intro AS summary,body,'' AS image FROM news WHERE status='published' AND (published_at IS NULL OR published_at='' OR datetime(published_at)<=datetime(?)) ORDER BY published_at DESC,id DESC LIMIT 12");
-            $q->execute([gmdate('Y-m-d H:i:s',$now)]);
-            return array_map(static fn ($item) => $item+['url'=>rawurlencode($item['slug']).'.html'],$q->fetchAll(PDO::FETCH_ASSOC));
+            $recent = "SELECT id,slug FROM news WHERE status='published' "
+                . "AND (published_at IS NULL OR published_at='' OR datetime(published_at)<=datetime(?)) "
+                . 'ORDER BY published_at DESC,id DESC LIMIT 12';
+            $date = gmdate('Y-m-d H:i:s', $now);
+            if ($selectedIds === null) {
+                $q = $this->pdo->prepare($recent);
+                $q->execute([$date]);
+                return $q->fetchAll(PDO::FETCH_ASSOC);
+            }
+            $q = $this->pdo->prepare(
+                "SELECT n.id,n.title,n.slug,n.intro AS summary,n.body,'' AS image FROM ($recent) recent "
+                . 'JOIN news n ON n.id=recent.id WHERE n.id IN ('
+                . implode(',', array_fill(0, count($selectedIds), '?')) . ')'
+            );
+            $q->execute([$date, ...$selectedIds]);
+            return array_map(
+                static fn (array $item): array => $item + ['url' => rawurlencode($item['slug']) . '.html'],
+                $q->fetchAll(PDO::FETCH_ASSOC)
+            );
         }
         if ($section['kind'] === 'affiliation') {
             if (!$this->enabled('affiliation') || !$this->installed('affiliate_products') || !$this->installed('affiliate_offers') || !$this->installed('affiliate_partners')) { return []; }

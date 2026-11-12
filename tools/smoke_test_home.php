@@ -58,6 +58,11 @@ try {
     $ids=[]; foreach ($draw as $section) { foreach ($section['items'] as $item) { $ids[]=$item['id']; } }
     homeCheck(count($ids)===count(array_unique($ids)) && count($ids)===8,'All article IDs drawn once');
     homeCheck($repository->selection($settings,$now)===$draw,'Draw stable between cache refreshes');
+    $pdo->exec("UPDATE articles SET summary='',body='<p>Updated excerpt</p>' WHERE id=1");
+    $cachedSelection=$repository->selection($settings,$now);
+    $cachedItems=array_column(array_merge(...array_column($cachedSelection,'items')),null,'id');
+    homeCheck(array_keys($cachedItems)===$ids && $cachedItems[1]['summary']==='' && $cachedItems[1]['body']==='<p>Updated excerpt</p>',
+        'Cached IDs retain their order and load the current excerpt body');
     $pdo->exec("UPDATE articles SET status='draft' WHERE id=1");
     $filtered=$repository->selection($settings,$now);
     foreach ($filtered as $section) { homeCheck(!in_array(1,array_column($section['items'],'id')),'Withdrawn content hidden immediately'); }
