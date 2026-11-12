@@ -22,4 +22,5 @@
 	<Enabled>
 		1
 	</Enabled>
+	<AdminAccess>admin</AdminAccess>
 </modules>

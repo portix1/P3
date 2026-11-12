@@ -26,7 +26,7 @@ final class AdminNavigation
         };
         if ($isAdmin) {
             $add('management', 'ux_accounts', 'Admin-users.html', 'users');
-            $add('management', 'diagnostics_nav', 'Admin-diagnostics.html', 'activity');
+            $add('configuration', 'diagnostics_nav', 'Admin-diagnostics.html', 'activity');
             $add('configuration', 'ux_identity', 'Admin-config.html', 'settings', 'Admin-config');
             $add('configuration', 'ux_modules', 'Admin-modmgr.html', 'boxes');
             $add('configuration', 'ux_themes', 'Admin-config-themes.html', 'images');
@@ -36,8 +36,8 @@ final class AdminNavigation
 
         $places = [
             'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
-            'media' => ['writing', 'images'], 'menu' => ['writing', 'menu'],
-            'footer' => ['configuration', 'panel-bottom'], 'dwl' => ['writing', 'download'],
+            'media' => ['writing', 'images'], 'menu' => ['management', 'menu'],
+            'footer' => ['management', 'panel-bottom'], 'dwl' => ['writing', 'download'],
             'affiliation' => ['writing', 'dollar-sign'], 'contact' => ['management', 'mail'],
             'insights' => ['management', 'chart-bar'], 'search' => ['management', 'search'],
             'safety' => ['management', 'triangle-alert'],
@@ -73,16 +73,19 @@ final class AdminNavigation
                 })($directory, $language, $manifest['default_language']);
                 $moduleTranslator = new Translator($moduleMessages);
                 foreach ($manifest['admin_navigation'] as $item) {
-                    if (!$isAdmin && $item['role'] !== 'editor') { continue; }
+                    if (!$isAdmin && ($item['role'] !== 'editor' || $item['area'] !== 'writing')) { continue; }
                     $url = 'Admin-' . $prefix . ($item['action'] !== '' ? '-' . $item['action'] : '') . '.html';
                     $add($item['area'], $moduleTranslator->text($item['label'], $translator->text($item['label'], $manifest['name'])), $url, $item['icon']);
                 }
                 continue;
             }
             [$section, $icon] = $places[$prefix] ?? [$access === 'editor' ? 'writing' : 'management', 'boxes'];
-            // Existing editor permissions continue to expose the Contact inbox.
-            if (!$isAdmin && $section === 'management') {
+            // Only editorial features may be exposed to a redactor.
+            // Keep the pre-existing Contact inbox under Rédaction.
+            if (!$isAdmin && $section === 'management' && $prefix === 'contact') {
                 $section = 'writing';
+            } elseif (!$isAdmin && $section !== 'writing') {
+                continue;
             }
             $add($section, $manifest['name'], 'Admin-' . $prefix . '.html', $icon);
             if ($isAdmin && $prefix === 'articles') {

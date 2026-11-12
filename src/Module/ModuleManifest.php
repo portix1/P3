@@ -104,7 +104,7 @@ final class ModuleManifest
             foreach (['area', 'action', 'role', 'icon', 'label'] as $attribute) { $item[$attribute] = $node->getAttribute($attribute); }
             if (!in_array($item['area'], ['writing', 'management', 'configuration'], true)
                 || !in_array($item['role'], ['editor', 'admin'], true)
-                || ($item['role'] === 'editor' && $item['area'] === 'management')
+                || ($item['role'] === 'editor' && $item['area'] !== 'writing')
                 || preg_match('/^(?:[a-z][a-z0-9_]*(?:-[a-z0-9_]+)*)?$/D', $item['action']) !== 1
                 || strlen($item['action']) > 80
                 || preg_match('/^[a-z][a-z0-9-]{0,40}$/D', $item['icon']) !== 1

@@ -345,6 +345,25 @@ if ($canAccessAdmin && $route === 'Admin') {
                 $description = $repositories->modules()->findByPrefix($adminRoute);
                 $adminAccess = is_array($description) ? $moduleAdminAccess($description) : 'none';
                 $canConfigureModule = $isAdmin || ($isRedactor && $adminAccess === 'editor');
+                if ($canConfigureModule && !$isAdmin && is_array($description)) {
+                    // Module declarations restrict each direct action to its editorial role.
+                    $modulePath = basename((string) $description['path']);
+                    try {
+                        $manifest = \Portix\Module\ModuleManifest::fromXml('./var/modules/' . $modulePath . '/desc.xml', $modulePath);
+                        if ($manifest['admin_navigation'] !== []) {
+                            $requestedAction = (string) ($argument[2] ?? '');
+                            $canConfigureModule = false;
+                            foreach ($manifest['admin_navigation'] as $item) {
+                                if ($item['action'] === $requestedAction && $item['role'] === 'editor' && $item['area'] === 'writing') {
+                                    $canConfigureModule = true;
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (Throwable) {
+                        $canConfigureModule = false;
+                    }
+                }
                 if ($canConfigureModule && is_array($description) && !empty($description['enabled'])) {
                     // Les fichiers de configuration des modules reçoivent ce contexte.
                     $ModAdmin = $description;
@@ -400,7 +419,7 @@ if ($route === 'Admin') {
     $template->set('ux_active_area', $activeArea);
     $template->set('ux_active_label', $activeArea === '' ? '' : $translator->text('ux_' . $activeArea));
     $template->set('ux_breadcrumb_leaf', $activeEntry);
-    if ($adminRoute === 'configuration' && !$isAdmin && $adminSections['configuration'] === []) {
+    if ($adminRoute === 'configuration' && !$isAdmin) {
         http_response_code(403);
         $template->setSlot('main', './var/admin/templates/access-denied.tpl');
     } elseif (in_array($adminRoute, ['writing', 'management', 'configuration'], true) && ($isAdmin || $adminRoute !== 'management')) {

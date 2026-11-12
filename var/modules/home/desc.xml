@@ -2,10 +2,10 @@
 <modules>
 <Name>Accueil</Name><Version>1.0.7</Version><Prefix>home</Prefix><Type>module</Type>
 <Priority>80</Priority><DefLang>fr</DefLang><Path>home</Path><Enabled>0</Enabled>
-<AdminAccess>editor</AdminAccess><SchemaFormat>desc-csv</SchemaFormat>
+<AdminAccess>admin</AdminAccess><SchemaFormat>desc-csv</SchemaFormat>
 <MinimumP3>0.8.4-rc4</MinimumP3>
 <AdminNavigation>
- <Item area="configuration" action="" role="editor" icon="house" label="home_admin" />
+ <Item area="configuration" action="" role="admin" icon="house" label="home_admin" />
  <Item area="configuration" action="settings" role="admin" icon="settings" label="home_settings" />
  <Item area="configuration" action="report" role="admin" icon="chart-bar" label="home_report" />
 </AdminNavigation>

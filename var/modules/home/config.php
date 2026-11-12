@@ -3,10 +3,9 @@ declare(strict_types=1);
 if ((require __DIR__.'/boot.php') === false) { return; }
 use PortixModule\Home\Renderer;
 
-if (!$user->isAdmin() && !$user->isRedactor()) { http_response_code(403); throw new RuntimeException('Accès refusé.'); }
+if (!$user->isAdmin()) { http_response_code(403); $template->setSlot('main','./var/admin/templates/access-denied.tpl'); return; }
 $homeView=(string)($argument[2]??'');
 if (!in_array($homeView,['','settings','report'],true)) { http_response_code(404); $template->setSlot('main','./var/admin/templates/not-found.tpl'); return; }
-if ($homeView!=='' && !$user->isAdmin()) { http_response_code(403); $template->setSlot('main','./var/admin/templates/access-denied.tpl'); return; }
 $e=Renderer::e(...); $t=static fn(string $key):string=>$translator->text($key);
 $message='';
 if ($request->method()==='POST') {
