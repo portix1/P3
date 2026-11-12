@@ -95,7 +95,7 @@ Corriger la boîte carrée : image haute de trois lignes de texte avec largeur a
 ### Demandes validées, à développer
 
 - [ ] **Bloc « Derniers articles »** : proposer les trois publications les plus récentes, titre, court extrait et miniature facultative. Ordre chronologique de publication, sans tirage aléatoire, sans inclure les brouillons ou publications futures. Aucun texte d’annonce à rédiger et aucune dépendance au module Actualités. Conserver les autres sélections semi-aléatoires ; masquer le bloc s’il ne contient rien de publiable.
-- [ ] **Séparation des trois espaces et des rôles (12 novembre 2026)** : Rédaction ne donne accès qu’au contenu éditorial ; Administration regroupe les opérations courantes (menus principal et de bas de page) ; Configuration les interventions rares qui définissent le site (composition de l’accueil, thèmes, modules, diagnostics). Les rédacteurs ne peuvent modifier la structure du site. La proposition #17 révisée applique les refus d’accès direct GET/POST aux écrans concernés ; tests et revue restent nécessaires avant fusion et déploiement.
+- [x] **Séparation des trois espaces et des rôles (12 novembre 2026)** : Rédaction ne donne accès qu’au contenu éditorial ; Administration regroupe les opérations courantes (menus principal et de bas de page) ; Configuration les interventions rares qui définissent le site (composition de l’accueil, thèmes, modules, diagnostics). Les rédacteurs ne peuvent modifier la structure du site. Les correctifs #17 et #18 sont intégrés à main et livrés. Les tests PHP 8.2 à 8.5, HTTP et Chromium ont réussi. Marc confirme le 12 novembre la résolution du blocage de déploiement et le regroupement dans Configuration.
 - [ ] **Sélecteur visuel de médiathèque** : bouton de choix avec miniatures, recherche et aperçu pour les images associées aux zones ; réutiliser le média sans duplication. Cette demande déjà enregistrée dans Drive reste à développer.
 
 ### Suggestions à examiner, non encore validées
@@ -106,4 +106,12 @@ Corriger la boîte carrée : image haute de trois lignes de texte avec largeur a
 - [ ] **Explications des zones vides dans la gestion** : distinguer zone désactivée, catégorie sans contenu publiable et module source désactivé ; conserver une page publique sans blocs vides ni messages techniques.
 - [ ] **Évaluation de la circulation depuis l’accueil** : utiliser le rapport d’expositions et de clics existant avant de modifier la pondération. Prévoir un volume de données suffisant ; ne pas changer le tirage sur quelques clics seulement. Ce point rejoint la phase d’ajustement déjà prévue.
 
-Statut : planification uniquement ; aucune de ces évolutions n’est livrée par cette mise à jour de roadmap. Ne pas ajouter de « méta-news » pour alimenter artificiellement l’accueil.
+Statut : séparation des espaces livrée ; les autres demandes et propositions ci-dessus conservent leur statut propre. Ne pas ajouter de « méta-news » pour alimenter artificiellement l’accueil.
+
+## Regroupement dans Configuration — validation du 12 novembre 2026
+
+- [x] Gestion des modules, Diagnostics et Protection des contenus (si active) regroupés dans Configuration par le [correctif #18](https://github.com/portix1/P3/pull/18), livré dans le patch Back-office 3.
+- [x] Gestion des modules accessible par `Admin-config-modules.html`, avec compatibilité de `Admin-modmgr.html`.
+- [x] Résolution confirmée par Marc sur Univers Guitare le 12 novembre 2026. Une ancienne file d’attente FileZilla réenvoyait les fichiers locaux et écrasait les fichiers corrigés. Aucun patch supplémentaire n’est nécessaire pour cet incident.
+
+Avant tout nouvel envoi FTP, supprimer les anciens transferts en attente et vérifier que la copie locale contient les correctifs courants. La fermeture de FileZilla ne vaut pas confirmation de suppression de sa file. Cette validation concerne le regroupement dans Configuration, pas une recette exhaustive de tous les écrans du back-office.
