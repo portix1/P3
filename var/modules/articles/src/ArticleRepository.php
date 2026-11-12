@@ -31,7 +31,8 @@ final class ArticleRepository
     public function allForAdministration(): array
     {
         return $this->pdo->query(
-            'SELECT article.*, category.name AS category_name FROM articles article '
+            'SELECT article.id, article.title, article.slug, article.category_id, article.status, '
+            . 'article.created_by, article.updated_at, category.name AS category_name FROM articles article '
             . 'LEFT JOIN article_categories category ON category.id = article.category_id '
             . 'ORDER BY article.updated_at DESC, article.id DESC'
         )->fetchAll();
@@ -44,6 +45,16 @@ final class ArticleRepository
             'SELECT article.*, category.name AS category_name FROM articles article '
             . 'LEFT JOIN article_categories category ON category.id = article.category_id '
             . 'ORDER BY article.category_id, article.position, article.title COLLATE NOCASE, article.id'
+        )->fetchAll();
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function relatedArticleCandidates(): array
+    {
+        return $this->pdo->query(
+            'SELECT article.id, article.title, article.category_id, article.status, article.created_by, '
+            . 'category.name AS category_name FROM articles article '
+            . 'LEFT JOIN article_categories category ON category.id = article.category_id'
         )->fetchAll();
     }
 

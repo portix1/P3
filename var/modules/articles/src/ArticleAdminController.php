@@ -14,6 +14,8 @@ require_once __DIR__ . '/SeriesAdminController.php';
 
 final class ArticleAdminController
 {
+    private ?array $permissionCategories = null;
+
     /** @param list<string> $reservedSlugs */
     public function __construct(
         private readonly ArticleRepository $articles,
@@ -27,6 +29,7 @@ final class ArticleAdminController
     /** @param list<string> $arguments */
     public function handle(\Portix\View\Template $template, array $arguments, UserAccount $user): void
     {
+        $this->permissionCategories = null;
         require_once $this->root . '/includes/class/html_sanitizer.class.php';
         require_once $this->root . '/includes/class/image_storage.class.php';
 
@@ -62,7 +65,7 @@ final class ArticleAdminController
             $this->previewArticle($arguments, $user);
         }
         if ($action === 'new' || $action === 'edit') {
-            $this->editArticle($template, $arguments, $user, $action === 'new');
+            $this->editArticle($template, $arguments, $user, $action === 'new', $targetArticle);
             return;
         }
         if ($action === 'series') {
@@ -176,10 +179,10 @@ final class ArticleAdminController
     }
 
     /** @param list<string> $arguments */
-    private function editArticle(\Portix\View\Template $template, array $arguments, UserAccount $user, bool $isNew): void
+    private function editArticle(\Portix\View\Template $template, array $arguments, UserAccount $user, bool $isNew, ?array $targetArticle): void
     {
         $id = $isNew ? null : $this->numericId($arguments[3] ?? null);
-        $existing = $id === null ? null : $this->articles->find($id);
+        $existing = $isNew ? null : $targetArticle;
         if (!$isNew && $existing === null) {
             throw new RuntimeException('articles_not_found');
         }
@@ -197,10 +200,7 @@ final class ArticleAdminController
         $reading = $id === null ? ['toc_enabled'=>false,'related'=>[]] : $this->articles->editorial()->reading($id);
         $tocEnabled = $reading['toc_enabled'];
         $relatedIds = array_map(static fn(array $a): int=>(int)$a['id'], $reading['related']);
-        $eligible=[];
-        foreach($this->articles->allForOrganization() as $target){
-            if((int)$target['id']!==$id && ($target['status']==='published'||$this->allowed($user,'edit',$target,$target['category_id']===null?null:(int)$target['category_id'])))$eligible[(int)$target['id']]=$target;
-        }
+        $eligible = null;
         $message = '';
 
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
@@ -246,6 +246,7 @@ final class ArticleAdminController
 
                 $saveReading = isset($_POST['reading_settings_present']);
                 if($saveReading){
+                    $eligible = $this->eligibleRelatedArticles($user, $id);
                     $tocEnabled=isset($_POST['toc_enabled']);
                     $raw=$_POST['related']??[];$positions=$_POST['related_positions']??[];
                     if(!is_array($raw)||!is_array($positions))throw new RuntimeException('articles_related_invalid');
@@ -326,6 +327,7 @@ final class ArticleAdminController
         $template->set('article_toc_checked', $tocEnabled ? 'checked' : '');
         $categoryId = $draft['category_id'] === null ? null : (int)$draft['category_id'];
         $selectedPositions = array_flip($relatedIds);
+        $eligible ??= $this->eligibleRelatedArticles($user, $id);
         usort($eligible, static function (array $a, array $b) use ($selectedPositions, $categoryId): int {
             $aSelected = isset($selectedPositions[(int)$a['id']]);
             $bSelected = isset($selectedPositions[(int)$b['id']]);
@@ -630,13 +632,29 @@ final class ArticleAdminController
         http_response_code(403);
         $template->setSlot('main', './var/admin/templates/access-denied.tpl');
     }
+    private function eligibleRelatedArticles(UserAccount $user, ?int $id): array
+    {
+        $eligible = [];
+        foreach ($this->articles->relatedArticleCandidates() as $candidate) {
+            $candidateId = (int) $candidate['id'];
+            $categoryId = $candidate['category_id'] === null ? null : (int) $candidate['category_id'];
+            if ($candidateId !== $id && ($candidate['status'] === 'published'
+                || $this->allowed($user, 'edit', $candidate, $categoryId))) {
+                $eligible[$candidateId] = $candidate;
+            }
+        }
+        return $eligible;
+    }
+
     private function categoryAllowed(UserAccount $user, ?int $id): bool
     {
-        return $user->isAdmin() || \Portix\Domain\ArticlePermissions::category($user->articlePermissions(), $id, $this->articles->flattenedCategories());
+        return $user->isAdmin() || \Portix\Domain\ArticlePermissions::category($user->articlePermissions(), $id,
+            $this->permissionCategories ??= $this->articles->flattenedCategories());
     }
     private function allowed(UserAccount $user, string $action, ?array $article, ?int $target): bool
     {
-        return \Portix\Domain\ArticlePermissions::allows($user, $action, $article, $target, $this->articles->flattenedCategories());
+        return $user->isAdmin() || \Portix\Domain\ArticlePermissions::allows($user, $action, $article, $target,
+            $this->permissionCategories ??= $this->articles->flattenedCategories());
     }
     private function numericId(mixed $value): int
     {
