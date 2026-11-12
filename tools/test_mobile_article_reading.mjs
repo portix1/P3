@@ -60,7 +60,7 @@ try {
           inlineAlign: style('p[style]').textAlign,
           icon: rect('#icon').width,
           iconHeight: rect('#icon').height,
-          tableFigure: rect('#tableFigure').width,
+          tableFigure: rect('#tableFigure img').width,
           captions: Array.from(document.querySelectorAll('figcaption')).map(el => el.textContent.trim()),
         };
       });
@@ -77,7 +77,7 @@ try {
           throw new Error('Justification on mobile at ' + width);
         }
         if (measured.icon > 55 || measured.iconHeight > 55 || measured.tableFigure > 100) {
-          throw new Error('Small icon enlarged at ' + width);
+          throw new Error('Small icon enlarged at ' + width + ': ' + JSON.stringify(measured));
         }
       } else if (width <= 1024) {
         if (measured.reading > 660) throw new Error('Tablet line too wide at ' + width + ': ' + measured.reading);
