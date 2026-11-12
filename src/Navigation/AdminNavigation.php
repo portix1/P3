@@ -37,7 +37,7 @@ final class AdminNavigation
         $places = [
             'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
             'media' => ['writing', 'images'], 'menu' => ['writing', 'menu'],
-            'footer' => ['writing', 'panel-bottom'], 'dwl' => ['writing', 'download'],
+            'footer' => ['configuration', 'panel-bottom'], 'dwl' => ['writing', 'download'],
             'affiliation' => ['writing', 'dollar-sign'], 'contact' => ['management', 'mail'],
             'insights' => ['management', 'chart-bar'], 'search' => ['management', 'search'],
             'safety' => ['management', 'triangle-alert'],

@@ -258,7 +258,7 @@ if ($canAccessAdmin && $route === 'Admin') {
         case 'writing':
         case 'management':
         case 'configuration':
-            if ($adminRoute !== 'writing' && !$isAdmin) {
+            if ($adminRoute === 'management' && !$isAdmin) {
                 http_response_code(403);
                 $template->setSlot('main', './var/admin/templates/access-denied.tpl');
             } else {
@@ -400,7 +400,10 @@ if ($route === 'Admin') {
     $template->set('ux_active_area', $activeArea);
     $template->set('ux_active_label', $activeArea === '' ? '' : $translator->text('ux_' . $activeArea));
     $template->set('ux_breadcrumb_leaf', $activeEntry);
-    if (in_array($adminRoute, ['writing', 'management', 'configuration'], true) && ($isAdmin || $adminRoute === 'writing')) {
+    if ($adminRoute === 'configuration' && !$isAdmin && $adminSections['configuration'] === []) {
+        http_response_code(403);
+        $template->setSlot('main', './var/admin/templates/access-denied.tpl');
+    } elseif (in_array($adminRoute, ['writing', 'management', 'configuration'], true) && ($isAdmin || $adminRoute !== 'management')) {
         $template->set('ux_area_title', $translator->text('ux_' . $adminRoute));
         $template->set('ux_area_help', $translator->text('ux_' . $adminRoute . '_help'));
         foreach ($adminSections[$adminRoute] as $entry) { $template->addRow('ux_entries', $entry); }

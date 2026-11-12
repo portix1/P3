@@ -141,6 +141,8 @@
         <a class="button action-content {{ ux_writing_current }}"{% if ux_writing_current == "is-current" %} aria-current="page"{% endif %} href="Admin-writing.html" data-admin-icon="pencil">{{ ux_writing }}</a>
         {% if is_admin == "1" %}
         <a class="button action-management {{ ux_management_current }}"{% if ux_management_current == "is-current" %} aria-current="page"{% endif %} href="Admin-management.html" data-admin-icon="users">{{ ux_management }}</a>
+        {% endif %}
+        {% if ux_has_configuration == "1" %}
         <a class="button action-configuration {{ ux_configuration_current }}"{% if ux_configuration_current == "is-current" %} aria-current="page"{% endif %} href="Admin-configuration.html" data-admin-icon="settings">{{ ux_configuration }}</a>
         {% endif %}
     </nav>

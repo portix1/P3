@@ -48,12 +48,16 @@ try {
     navigationCheck(count($news) === 1 && $news[0]['current'] === 'is-current', 'Actualités doit être présent et actif en Rédaction');
     $editor = AdminNavigation::sections($root, $modules, false, true, ['Admin', 'news'], $translator);
     navigationCheck(in_array('Admin-news.html', array_column($editor['writing'], 'url'), true), 'Actualités doit rester accessible aux rédacteurs');
-    navigationCheck($editor['management'] === [] && $editor['configuration'] === [], 'Espaces réservés masqués au rédacteur');
+    navigationCheck($editor['management'] === [], 'Administration masquée au rédacteur');
+    $editorConfiguration = array_column($editor['configuration'], 'url');
+    navigationCheck($editorConfiguration === (is_dir($root.'/var/modules/home') ? ['Admin-home.html'] : []), 'Configuration du rédacteur limitée aux écrans autorisés');
 
     if (is_dir($root.'/var/modules/home')) {
-    navigationCheck(in_array('Admin-home.html', array_column($editor['writing'], 'url'), true), 'Accueil accessible en Rédaction');
-    navigationCheck(in_array('Admin-home-settings.html', array_column($sections['configuration'], 'url'), true), 'Réglages Accueil en Configuration');
-    navigationCheck(in_array('Admin-home-report.html', array_column($sections['management'], 'url'), true), 'Résultats Accueil en Administration');
+    foreach (['Admin-home.html', 'Admin-home-settings.html', 'Admin-home-report.html'] as $url) {
+        navigationCheck(in_array($url, array_column($sections['configuration'], 'url'), true), 'Accueil regroupé dans Configuration');
+        navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['management']], 'url'), true), 'Accueil absent des autres espaces');
+    }
+    navigationCheck(in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Pied de page dans Configuration');
     $homeDisabled = array_map(static function (array $module): array { if ($module['prefix'] === 'home') { $module['enabled'] = false; } return $module; }, $modules);
     $homeHidden = AdminNavigation::sections($root, $homeDisabled, true, false, ['Admin'], $translator);
     foreach ($homeHidden as $entries) { foreach ($entries as $entry) { navigationCheck(!str_starts_with($entry['url'], 'Admin-home'), 'Accueil désactivé masqué dans tous les espaces'); } }

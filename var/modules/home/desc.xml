@@ -5,9 +5,9 @@
 <AdminAccess>editor</AdminAccess><SchemaFormat>desc-csv</SchemaFormat>
 <MinimumP3>0.8.4-rc4</MinimumP3>
 <AdminNavigation>
- <Item area="writing" action="" role="editor" icon="house" label="home_admin" />
+ <Item area="configuration" action="" role="editor" icon="house" label="home_admin" />
  <Item area="configuration" action="settings" role="admin" icon="settings" label="home_settings" />
- <Item area="management" action="report" role="admin" icon="chart-bar" label="home_report" />
+ <Item area="configuration" action="report" role="admin" icon="chart-bar" label="home_report" />
 </AdminNavigation>
 <SessionlessPostActions>events</SessionlessPostActions>
 </modules>

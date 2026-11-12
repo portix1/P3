@@ -11,7 +11,8 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 | Actualités | Rédaction et publication | — | — |
 | Médiathèque | Fichiers, images, insertion et gestion des médias | — | — |
 | Menu principal | Organisation des liens | — | — |
-| Menu de bas de page | Organisation des liens | — | — |
+| Menu de bas de page | — | — | Organisation des liens |
+| Accueil | — | — | Composition pour les rédacteurs et administrateurs, réglages et résultats pour les administrateurs |
 | Téléchargements | Fichiers et catégories | — | — |
 | Contact | Messagerie pour les rédacteurs disposant déjà de cet accès | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
 | Affiliation | Produits, offres et partenaires, accès administrateur conservé | — | Paramètres de présentation |

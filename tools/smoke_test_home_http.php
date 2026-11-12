@@ -127,6 +127,10 @@ try {
         $headers=['Content-Type: application/x-www-form-urlencoded','Cookie: PHPSESSID='.($cookie[1]??'')];
         $logged=$request('/login.html','POST',http_build_query(['pseudo'=>$actor,'pass'=>'test-home-password','csrf_token'=>$token[1]??'']),$headers);
         if (preg_match('/PHPSESSID=([^;]+)/',implode("\n",$logged[2]),$cookie)) { $headers[1]='Cookie: PHPSESSID='.$cookie[1]; }
+        $configArea=$request('/Admin-configuration.html','GET','',$headers);
+        $check($configArea[0]===200 && str_contains($configArea[1],'Admin-home.html'),'Staff can find Home in Configuration');
+        $check(str_contains($configArea[1],'Admin-home-report.html')===($actor==='admin'),'Home results remain admin-only in Configuration');
+        $check($request('/Admin-modmgr.html','GET','',$headers)[0]===($actor==='admin'?200:403),'Module manager permissions unchanged');
         $editor=$request('/Admin-home.html','GET','',$headers);
         $check($editor[0]===200 && str_contains($editor[1],'home_action'),'Staff composition screen');
         preg_match('/name="csrf_token" value="([^"]+)"/',$editor[1],$token);
