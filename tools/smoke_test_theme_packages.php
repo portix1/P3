@@ -27,6 +27,8 @@ try {
     $manager->install($plan['token']);
     packageAssert((new ThemeCatalog($temp, $core))->inspect('six-cordes')['version'] === '0.1.0', 'Installation neuve');
     packageAssert($manager->backups() === [], 'Pas de restauration fictive pour une installation neuve');
+    makeThemeZip($source, $zip, '0.0.9');
+    packageRefuses(fn () => $manager->stage($zip), 'rétrogradation du thème');
     $target = $temp . '/var/templates/six-cordes';file_put_contents($target . '/personnel.css', 'p{color:red}');
     makeThemeZip($source, $zip, '0.1.1');$plan = $manager->stage($zip);$receipt = $manager->install($plan['token']);
     packageAssert(file_get_contents($target . '/personnel.css') === 'p{color:red}', 'Fichier supplémentaire conservé');
