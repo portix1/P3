@@ -51,6 +51,20 @@
     margin-inline: auto;
   }
 
+  /* With srcset, width:auto can use a candidate's density-corrected intrinsic
+     size (e.g. 129px) even when its figure spans 370px. Only substantial
+     originals receive this class; little icons keep their native size. */
+  body.theme-six-cordes-clair .article-reading .news-rich-text .portix-image-figure:is(
+    .portix-image-size-25, .portix-image-size-33, .portix-image-size-50,
+    [data-width="25"], [data-width="33"], [data-width="50"]
+  ) img.p3-mobile-figure-expand {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: min(45svh, 360px) !important;
+    object-fit: contain;
+  }
+
   /* Anciennes insertions sans élément figure : même limite de lisibilité. */
   body.theme-six-cordes-clair .article-reading .news-rich-text img.portix-content-image:is(
     .portix-image-size-25, .portix-image-size-33, .portix-image-size-50,
