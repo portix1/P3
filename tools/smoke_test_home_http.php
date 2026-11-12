@@ -128,18 +128,36 @@ try {
         $logged=$request('/login.html','POST',http_build_query(['pseudo'=>$actor,'pass'=>'test-home-password','csrf_token'=>$token[1]??'']),$headers);
         if (preg_match('/PHPSESSID=([^;]+)/',implode("\n",$logged[2]),$cookie)) { $headers[1]='Cookie: PHPSESSID='.$cookie[1]; }
         $configArea=$request('/Admin-configuration.html','GET','',$headers);
-        $check($configArea[0]===200 && str_contains($configArea[1],'Admin-home.html'),'Staff can find Home in Configuration');
-        $check(str_contains($configArea[1],'Admin-home-report.html')===($actor==='admin'),'Home results remain admin-only in Configuration');
+        $check($configArea[0]===($actor==='admin'?200:403), 'Only administrators enter Configuration');
+        $check(str_contains($configArea[1],'Admin-home.html')===($actor==='admin'), 'Only administrators can find Home in Configuration');
+        $management=$request('/Admin-management.html','GET','',$headers);
+        $check($management[0]===($actor==='admin'?200:403), 'Only administrators enter Administration');
+        $check(str_contains($management[1],'Admin-menu.html')===($actor==='admin'), 'Main menu only appears in Administration for administrators');
+        $check(str_contains($management[1],'Admin-footer.html')===($actor==='admin'), 'Footer menu only appears in Administration for administrators');
         $check($request('/Admin-modmgr.html','GET','',$headers)[0]===($actor==='admin'?200:403),'Module manager permissions unchanged');
-        $editor=$request('/Admin-home.html','GET','',$headers);
-        $check($editor[0]===200 && str_contains($editor[1],'home_action'),'Staff composition screen');
-        preg_match('/name="csrf_token" value="([^"]+)"/',$editor[1],$token);
+        foreach (['menu','footer'] as $structural) {
+            $check($request('/Admin-'.$structural.'.html','GET','',$headers)[0]===($actor==='admin'?200:403), 'Structural menu GET restricted to administrators');
+            if ($actor==='editor') {
+                $check($request('/Admin-'.$structural.'.html','POST',http_build_query(['csrf_token'=>'invalid']),$headers)[0]===403, 'Structural menu POST restricted to administrators');
+            }
+        }
+        $composition=$request('/Admin-home.html','GET','',$headers);
+        $check($composition[0]===($actor==='admin'?200:403), 'Only administrators can compose Home');
         $count=count($home->sections(true));
-        $check($request('/Admin-home.html','POST',http_build_query(['home_action'=>'delete','id'=>1,'confirm_delete'=>1,'csrf_token'=>'wrong']),$headers)[0]===403,'Invalid CSRF refused');
-        $check(count($home->sections(true))===$count,'CSRF leaves zones intact');
-        $save=['csrf_token'=>$token[1]??'','home_action'=>'save','kind'=>'text','layout'=>'text','title'=>'Test '.$actor,'body'=>'Safe text','enabled'=>1,'position'=>50];
-        $check($request('/Admin-home.html','POST',http_build_query($save),$headers)[0]===200,'Staff can save a zone');
-        $check(count($home->sections(true))===$count+1,'Zone persisted');
+        if ($actor==='admin') {
+            $check(str_contains($composition[1],'home_action'), 'Home composition controls available to administrators');
+            preg_match('/name="csrf_token" value="([^"]+)"/',$composition[1],$token);
+            $check($request('/Admin-home.html','POST',http_build_query(['home_action'=>'delete','id'=>1,'confirm_delete'=>1,'csrf_token'=>'wrong']),$headers)[0]===403,'Invalid CSRF refused');
+            $check(count($home->sections(true))===$count,'CSRF leaves zones intact');
+            $save=['csrf_token'=>$token[1]??'','home_action'=>'save','kind'=>'text','layout'=>'text','title'=>'Test '.$actor,'body'=>'Safe text','enabled'=>1,'position'=>50];
+            $check($request('/Admin-home.html','POST',http_build_query($save),$headers)[0]===200,'Administrator can save a zone');
+            $check(count($home->sections(true))===$count+1,'Zone persisted');
+        } else {
+            $check(!str_contains($composition[1],'home_action'), 'No Home controls in denied editor response');
+            $save=['csrf_token'=>'invalid','home_action'=>'save','kind'=>'text','layout'=>'text','title'=>'Denied editor','body'=>'Must not persist','enabled'=>1,'position'=>50];
+            $check($request('/Admin-home.html','POST',http_build_query($save),$headers)[0]===403, 'Editor cannot save a Home zone by direct POST');
+            $check(count($home->sections(true))===$count, 'Rejected editor POST leaves Home unchanged');
+        }
         foreach (['settings','report'] as $view) { $check($request('/Admin-home-'.$view.'.html','GET','',$headers)[0]===($actor==='admin'?200:403),'Settings/reports permissions'); }
         $staffHome=$request('/','GET','',$headers);
         $check(!str_contains($staffHome[1],'home/assets/home.js'),'Staff measurement excluded');

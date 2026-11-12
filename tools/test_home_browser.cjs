@@ -112,12 +112,18 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
       const csrf = await tab.locator('input[name="csrf_token"]').first().inputValue();
       await ctx.request.post(base + '/login.html', {form: {pseudo: actor, pass: 'test-home-password', csrf_token: csrf}});
       const adminResponse = await tab.goto(base + '/Admin-home.html');
-      assert.equal(adminResponse.status(), 200, `${actor} can compose sections`);
-      const before = await tab.locator('details').count();
-      const rejected = await ctx.request.post(base + '/Admin-home.html', {form: {home_action:'delete',id:'1',confirm_delete:'1',csrf_token:'wrong'}});
-      assert.equal(rejected.status(), 403);
-      await tab.reload(); assert.equal(await tab.locator('details').count(), before);
-      for (const route of ['Admin-home-settings.html', 'Admin-home-report.html']) {
+      assert.equal(adminResponse.status(), actor === 'admin' ? 200 : 403, `${actor}: Home composition permissions`);
+      if (actor === 'admin') {
+        const before = await tab.locator('details').count();
+        const rejected = await ctx.request.post(base + '/Admin-home.html', {form: {home_action:'delete',id:'1',confirm_delete:'1',csrf_token:'wrong'}});
+        assert.equal(rejected.status(), 403);
+        await tab.reload(); assert.equal(await tab.locator('details').count(), before);
+      } else {
+        assert.equal(await tab.locator('form[action="Admin-home.html"]').count(), 0, 'Editor cannot see structural forms');
+        const rejected = await ctx.request.post(base + '/Admin-home.html', {form: {home_action:'save',title:'Denied',kind:'text',csrf_token:'wrong'}});
+        assert.equal(rejected.status(), 403, 'Editor cannot submit structural changes');
+      }
+      for (const route of ['Admin-home-settings.html', 'Admin-home-report.html', 'Admin-menu.html', 'Admin-footer.html']) {
         const result = await ctx.request.get(base + '/' + route);
         assert.equal(result.status(), actor === 'admin' ? 200 : 403, `${actor}: ${route}`);
       }

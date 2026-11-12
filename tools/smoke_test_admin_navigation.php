@@ -50,14 +50,20 @@ try {
     navigationCheck(in_array('Admin-news.html', array_column($editor['writing'], 'url'), true), 'Actualités doit rester accessible aux rédacteurs');
     navigationCheck($editor['management'] === [], 'Administration masquée au rédacteur');
     $editorConfiguration = array_column($editor['configuration'], 'url');
-    navigationCheck($editorConfiguration === (is_dir($root.'/var/modules/home') ? ['Admin-home.html'] : []), 'Configuration du rédacteur limitée aux écrans autorisés');
+    navigationCheck($editorConfiguration === [], 'Configuration inaccessible au rédacteur');
+    navigationCheck(!in_array('Admin-menu.html', array_column($editor['writing'], 'url'), true), 'Menu principal masqué au rédacteur');
+    navigationCheck(!in_array('Admin-footer.html', array_column($editor['writing'], 'url'), true), 'Menu de bas de page masqué au rédacteur');
 
     if (is_dir($root.'/var/modules/home')) {
     foreach (['Admin-home.html', 'Admin-home-settings.html', 'Admin-home-report.html'] as $url) {
         navigationCheck(in_array($url, array_column($sections['configuration'], 'url'), true), 'Accueil regroupé dans Configuration');
         navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['management']], 'url'), true), 'Accueil absent des autres espaces');
     }
-    navigationCheck(in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Pied de page dans Configuration');
+    navigationCheck(in_array('Admin-footer.html', array_column($sections['management'], 'url'), true), 'Menu de bas de page dans Administration');
+    navigationCheck(in_array('Admin-menu.html', array_column($sections['management'], 'url'), true), 'Menu principal dans Administration');
+    navigationCheck(!in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Menu de bas de page exclu de Configuration');
+    navigationCheck(!in_array('Admin-menu.html', array_column($sections['writing'], 'url'), true), 'Menu principal exclu de Rédaction');
+    navigationCheck(in_array('Admin-diagnostics.html', array_column($sections['configuration'], 'url'), true), 'Diagnostics dans Configuration');
     $homeDisabled = array_map(static function (array $module): array { if ($module['prefix'] === 'home') { $module['enabled'] = false; } return $module; }, $modules);
     $homeHidden = AdminNavigation::sections($root, $homeDisabled, true, false, ['Admin'], $translator);
     foreach ($homeHidden as $entries) { foreach ($entries as $entry) { navigationCheck(!str_starts_with($entry['url'], 'Admin-home'), 'Accueil désactivé masqué dans tous les espaces'); } }
@@ -73,6 +79,8 @@ try {
     $anonymous = AdminNavigation::sections($root, $modules, false, false, ['Admin'], $translator);
     navigationCheck($anonymous === ['writing' => [], 'management' => [], 'configuration' => []], 'Visiteur sans navigation privée');
     navigationCheck(in_array('Admin-config-themes.html', array_column($sections['configuration'], 'url'), true), 'Thèmes dans Configuration');
+    navigationCheck(!in_array('Admin-diagnostics.html', array_column($sections['management'], 'url'), true), 'Diagnostics exclus d’Administration');
+    navigationCheck($editor['management'] === [] && $editor['configuration'] === [], 'Rédacteur cantonné à Rédaction');
     echo "Navigation complète des modules, Actualités, rôles et désactivation : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR, $error->getMessage() . "\n");
