@@ -21,7 +21,7 @@ async function pick(form){
   const response=await fetch('Admin-media-api.html',{method:'POST',body:data,credentials:'same-origin',headers:{Accept:'application/json'}}),payload=await response.json();
   if(!response.ok||!payload.ok)throw Error(payload.error||'Médiathèque indisponible.');if(serial!==seq||!d.open)return;
   grid.replaceChildren();payload.result.filter(row=>row.family==='image'&&/^var\/uploads\/images\/[^?#]+\.(?:jpe?g|png|webp)$/i.test(row.public_path)).forEach(row=>{
-   const button=document.createElement('button'),img=document.createElement('img'),label=document.createElement('span');button.type='button';button.title='Choisir '+row.original_name;img.src=new URL(row.public_path,document.baseURI);img.alt='';img.loading='lazy';label.textContent=row.original_name;button.append(img,label);
+   const button=document.createElement('button'),img=document.createElement('img'),label=document.createElement('span');button.type='button';button.title='Choisir '+row.original_name;button.setAttribute('aria-label',button.title);img.src=new URL(row.public_path,document.baseURI);img.alt='';img.loading='lazy';label.textContent=row.original_name;button.append(img,label);
    button.addEventListener('click',()=>{const select=form.elements.image_path;let option=Array.from(select.options).find(o=>o.value===row.public_path);if(!option){option=new Option(row.original_name,row.public_path);select.add(option);}select.value=row.public_path;imagePreview(form);mark();d.close();});grid.append(button);
   });status.textContent=grid.children.length?'Sélectionnez une image.':'Aucune image trouvée.';
  }catch(error){if(d.open&&serial===seq)status.textContent=error.message;}}
