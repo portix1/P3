@@ -35,9 +35,11 @@ final class DailyAudience
         $this->database->transaction(function (PDO $pdo) use ($day, $now, $page, $title, $article, $referrer, $network, $agent, $retention): void {
             // Start with a write so concurrent first requests share the same daily key.
             $insert = $pdo->prepare(
-                'INSERT OR IGNORE INTO analytics_v2_daily (day, secret) VALUES (?, lower(hex(randomblob(32))))'
+                'INSERT OR IGNORE INTO analytics_v2_daily (day, secret) '
+                . 'SELECT :day, lower(hex(randomblob(32))) '
+                . 'WHERE NOT EXISTS (SELECT 1 FROM analytics_v2_daily WHERE day = :day)'
             );
-            $insert->execute([$day]);
+            $insert->execute(['day' => $day]);
             if ($insert->rowCount() === 1) {
                 $this->purge((int) $retention['analytics_retention_days'], $now);
                 $logs = [
@@ -66,8 +68,9 @@ final class DailyAudience
             $pdo->prepare('UPDATE analytics_v2_daily SET views = views + 1, visitors = visitors + ? WHERE day = ?')
                 ->execute([(int) $newVisitor, $day]);
 
+            $counts = [];
             if ($article !== null) {
-                $this->increment($day, 'article', $article, $title);
+                $counts[] = ['article', $article, $title];
                 // Feed the existing Home module's article popularity counters.
                 $pdo->prepare(
                     'INSERT INTO analytics_pages (entry_key, day, route, title, views) VALUES (?, ?, ?, ?, 1)
@@ -75,18 +78,27 @@ final class DailyAudience
                 )->execute([$day . '|' . hash('sha256', $article), $day, $article, $title]);
             }
             if ($newVisitor) {
-                $this->increment($day, 'entry', $page, $title);
-                $this->increment($day, 'referrer', $referrer, '');
+                $counts[] = ['entry', $page, $title];
+                $counts[] = ['referrer', $referrer, ''];
+            }
+            if ($counts !== []) {
+                $this->incrementCounts($pdo, $day, $counts);
             }
         });
     }
 
-    private function increment(string $day, string $kind, string $value, string $title): void
+    /** @param list<array{string, string, string}> $counts */
+    private function incrementCounts(PDO $pdo, string $day, array $counts): void
     {
-        $this->database->connection()->prepare(
-            'INSERT INTO analytics_v2_counts (entry_key, day, kind, dimension, title, total) VALUES (?, ?, ?, ?, ?, 1)
-            ON CONFLICT(entry_key) DO UPDATE SET total = total + 1, title = excluded.title'
-        )->execute([$day . '|' . $kind . '|' . hash('sha256', $value), $day, $kind, $value, $title]);
+        $values = implode(', ', array_fill(0, count($counts), '(?, ?, ?, ?, ?, 1)'));
+        $parameters = [];
+        foreach ($counts as [$kind, $value, $title]) {
+            array_push($parameters, $day . '|' . $kind . '|' . hash('sha256', $value), $day, $kind, $value, $title);
+        }
+        $pdo->prepare(
+            'INSERT INTO analytics_v2_counts (entry_key, day, kind, dimension, title, total) VALUES ' . $values
+            . ' ON CONFLICT(entry_key) DO UPDATE SET total = total + 1, title = excluded.title'
+        )->execute($parameters);
     }
 
     public function purge(int $retention, ?int $now = null): void

@@ -26,6 +26,10 @@ if ((int) $pdo->query("SELECT SUM(total) FROM analytics_v2_counts WHERE kind = '
     || (int) $pdo->query("SELECT SUM(total) FROM analytics_v2_counts WHERE kind = 'article'")->fetchColumn() !== 3) {
     throw new RuntimeException('Entries and article views use separate counters');
 }
+if ((int) $pdo->query("SELECT SUM(total) FROM analytics_v2_counts WHERE kind = 'referrer'")->fetchColumn() !== 2
+    || (int) $pdo->query("SELECT views FROM analytics_pages WHERE route = 'article'")->fetchColumn() !== 3) {
+    throw new RuntimeException('Referrers and Home popularity must preserve their totals');
+}
 $audience->record('/', 'Accueil', null, 'direct', '192.0.2.10', 'Firefox', $retention, $day + 86400);
 $days = $pdo->query('SELECT visitors, secret FROM analytics_v2_daily ORDER BY day')->fetchAll();
 if ($days[0]['secret'] !== null || $days[1]['secret'] === $row['secret']
