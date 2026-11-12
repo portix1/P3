@@ -67,6 +67,7 @@ $tests = [
     'smoke_test_documentation.php',
     'smoke_test_localization.php',
     'smoke_test_module_schema.php',
+    'smoke_test_extension_integrity.php',
     'smoke_test_module_packages.php',
     'smoke_test_portix3_services.php',
     'smoke_test_breadcrumb.php',
