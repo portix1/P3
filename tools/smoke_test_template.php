@@ -113,9 +113,13 @@ try {
         if (!str_contains($renderedTheme, 'style.min.css?v=1700000000')) {
             throw new RuntimeException('Le thème ' . $themeName . ' ne versionne pas sa feuille de style.');
         }
-        if (substr_count($renderedTheme, 'rel="stylesheet"') !== 1
+        $isClair = (bool) preg_match('/^six-cordes-ux-clair(?:-v[0-9]{1,3})?$/D', $themeName);
+        $expectedCss = $isClair ? 2 : 1;
+        if (substr_count($renderedTheme, 'rel="stylesheet"') !== $expectedCss
+            || ($isClair && substr_count($renderedTheme, 'var/editor/mobile-header-p1.css?v=20261112') !== 1)
+            || (!$isClair && str_contains($renderedTheme, 'var/editor/mobile-header-p1.css'))
             || str_contains($renderedTheme, 'portix-content.css')) {
-            throw new RuntimeException('Le thème ' . $themeName . ' doit charger une seule feuille CSS publique.');
+            throw new RuntimeException('Le thème ' . $themeName . ' charge un jeu de feuilles CSS inattendu.');
         }
         if (!str_contains($renderedTheme, 'href="login.html"')) {
             throw new RuntimeException('Le thème ' . $themeName . ' ne conserve pas le lien de connexion discret.');
