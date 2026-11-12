@@ -1,13 +1,13 @@
 # P3 — CMS PHP modulaire
 
-**Version de travail du dépôt :** `0.8.3-rc4` (version de test)  
+**Version de travail du dépôt :** `0.8.4-rc4` (version candidate)\
 **Version stable publiée :** `0.8.1`  
 **Archive source historique :** `0.8.01-beta1-preview5`  
 **Licence du projet :** `GPL-3.0-or-later`
 
 ## État de cette copie
 
-Cette arborescence contient les sources du moteur, des modules et des thèmes. Les distributions téléchargeables sont publiées sur [GitHub Releases](https://github.com/portix1/P3/releases). La 0.8.3-rc4 est une version de test ; la 0.8.1 reste disponible comme version stable. Les changements et les consignes d’installation figurent dans RELEASE-NOTES.md.
+Cette arborescence contient les sources du moteur, des modules et des thèmes. Les distributions téléchargeables sont publiées sur [GitHub Releases](https://github.com/portix1/P3/releases). La 0.8.4-rc4 est une version candidate. La 0.8.1 reste disponible comme version stable. Les changements et les consignes d’installation figurent dans RELEASE-NOTES.md.
 
 Elle conserve le moteur, les modules, les templates, les ressources de l’éditeur et les tests automatisés. Elle exclut les bases SQLite, les sessions, les sauvegardes, les médias importés, les configurations du site, les fichiers de patch temporaires et les index générés. Les répertoires de données sont conservés vides par des fichiers `.gitkeep`.
 

@@ -1,6 +1,23 @@
 # P3 0.8.4-rc4
 
-Mise à niveau depuis la production preview5 : reprise des correctifs canoniques déjà installés, contrat générique des modules et Accueil 1.0.2 compatible avec cette candidate. Le paquet de mise à jour de production conserve le thème actif, les données et les réglages ; il est distinct de la distribution neuve.
+Version candidate publique du CMS P3. La distribution complète comprend le moteur, les modules et les thèmes.
+
+- **Articles 1.4.8** — L’éditeur, la liste d’administration et le menu public évitent de charger le texte des articles lorsque seuls les titres et les liens sont nécessaires.
+- **Accueil 1.0.7** — Zones configurables, tirage pondéré et miniatures. Seuls les textes des cartes affichées sont chargés pour préparer les extraits.
+- **Recherche 1.0.5** — Un index FTS5 à jour est réutilisé directement pour les recherches avec résultats.
+- **Actualités** — Les listes et le flux RSS chargent uniquement les champs affichés.
+- **Affiliation 1.1.3** — Les offres affichées sur une page d’article sont chargées en une seule requête.
+- **Statistiques 2.0.3** — Comptage journalier avec empreinte côté serveur, graphique quotidien à deux barres et écritures groupées.
+
+## Installation
+
+Pour une installation neuve, décompresser `P3-0.8.4-rc4.zip`, transférer le contenu du dossier `P3` à la racine du site et ouvrir `install.php`. PHP 8.2 ou plus récent et PDO SQLite sont requis. Le fichier SHA-256 permet de vérifier le ZIP.
+
+Pour un site existant, tester la mise à jour sur une copie. Conserver la base SQLite, les médias, la configuration et les adaptations du serveur. La publication GitHub ne déploie aucun site.
+
+## Validation
+
+Tests automatisés sous PHP 8.2, 8.3, 8.4 et 8.5, dont installation, recherche, comptage et rendu HTTP. Le test Chromium couvre l’accueil. La version stable publiée reste la 0.8.1.
 
 # P3 0.8.4 — socle générique pour les modules
 
