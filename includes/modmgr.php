@@ -171,6 +171,8 @@ $template->set('modmgr_message', $message);
 
 $installedModules = $modulesDatabase->allOrdered();
 $updates = \Portix\Maintenance\ExtensionUpdates::dashboard(dirname(__DIR__), $installedModules, []);
+$catalogueError = \Portix\Maintenance\ExtensionUpdates::catalogueError();
+$template->set('extension_updates_warning', $catalogueError !== '' ? $translator->text($catalogueError) : '');
 foreach ($installedModules as $description) {
     $modulePath = basename((string) $description['path']);
     $moduleDirectory = './var/modules/' . $modulePath;
