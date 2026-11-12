@@ -53,7 +53,8 @@ final class Template
 
     public function render(): string
     {
-        return $this->renderFile($this->file, $this->data, 0);
+        $html = $this->renderFile($this->file, $this->data, 0);
+        return MobileThemeAssets::inject($html, $this->file);
     }
 
     public function validate(): void
