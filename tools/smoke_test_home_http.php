@@ -162,11 +162,30 @@ try {
             $save=['csrf_token'=>$token[1]??'','home_action'=>'save','kind'=>'text','layout'=>'text','title'=>'Test '.$actor,'body'=>'Safe text','enabled'=>1,'position'=>50];
             $check($request('/Admin-home.html','POST',http_build_query($save),$headers)[0]===200,'Administrator can save a zone');
             $check(count($home->sections(true))===$count+1,'Zone persisted');
+            $draft=$home->sections(true);
+            foreach ($draft as &$zone) { foreach (['enabled','descendants','weighted'] as $flag) { if (!$zone[$flag]) { unset($zone[$flag]); } } } unset($zone);
+            $draft[0]['title']='UNPUBLISHED PREVIEW';
+            $before=$home->sections(true);
+            $previewPost=['csrf_token'=>$token[1]??'','home_action'=>'preview','sections'=>json_encode($draft)];
+            $previewResponse=$request('/Admin-home.html','POST',http_build_query($previewPost),$headers);
+            $previewJson=json_decode($previewResponse[1],true);
+            $check($previewResponse[0]===200 && ($previewJson['ok']??false) && str_contains($previewJson['html'],'UNPUBLISHED PREVIEW'),'Draft is rendered before publication');
+            $check($home->sections(true)===$before,'Preview rolls back every zone change');
+            $draft=array_reverse($draft); $previewPost['sections']=json_encode($draft); $previewPost['home_action']='publish';
+            $publishResponse=$request('/Admin-home.html','POST',http_build_query($previewPost),$headers);
+            $check($publishResponse[0]===200 && (json_decode($publishResponse[1],true)['ok']??false),'Whole composition is published atomically');
+            $check(array_column($home->sections(true),'id')===array_column($draft,'id'),'Published order follows the draft');
+            $invalid=$draft; $invalid[0]['kind']='invalid'; $previewPost['sections']=json_encode($invalid);
+            $before=$home->sections(true);
+            $check($request('/Admin-home.html','POST',http_build_query($previewPost),$headers)[0]===422,'Invalid draft refused');
+            $check($home->sections(true)===$before,'Failed publication preserves all zones');
+
         } else {
             $check(!str_contains($composition[1],'home_action'), 'No Home controls in denied editor response');
             $save=['csrf_token'=>'invalid','home_action'=>'save','kind'=>'text','layout'=>'text','title'=>'Denied editor','body'=>'Must not persist','enabled'=>1,'position'=>50];
             $check($request('/Admin-home.html','POST',http_build_query($save),$headers)[0]===403, 'Editor cannot save a Home zone by direct POST');
             $check(count($home->sections(true))===$count, 'Rejected editor POST leaves Home unchanged');
+            foreach (['preview','publish'] as $action) { $check($request('/Admin-home.html','POST',http_build_query(['home_action'=>$action,'sections'=>'[]','csrf_token'=>'invalid']),$headers)[0]===403,'Editor cannot preview or publish composition'); }
         }
         foreach (['settings','report'] as $view) { $check($request('/Admin-home-'.$view.'.html','GET','',$headers)[0]===($actor==='admin'?200:403),'Settings/reports permissions'); }
         $staffHome=$request('/','GET','',$headers);

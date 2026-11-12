@@ -66,3 +66,7 @@ Configuration → Composer l’accueil (`Admin-home.html`, administrateurs seule
 ## Déclarations des modules — socle 0.8.4
 
 Les nouveaux modules déclarent leurs contributions dans `desc.xml`, bloc `AdminNavigation`. `AdminNavigation.php` les lit et réutilise le même inventaire dans les pages d’espace et le menu. Le module peut fournir plusieurs actions, chacune avec espace, rôle, icône et clé de traduction ; ses contrôleurs doivent vérifier les permissions côté serveur, sans se fier au masquage des menus. Une action accessible aux rédacteurs doit appartenir à Rédaction ; les déclarations donnant le rôle editor à une action Administration ou Configuration sont refusées. Les fonctions structurelles nécessitent toujours le rôle administrateur. Les fonctions réservées aux administrateurs peuvent être en Administration ou Configuration. Les modules sans déclaration conservent leur classement historique. Aucun classement particulier à Accueil n’est requis dans le moteur.
+
+## Composition de l’accueil — 1.1.0
+
+Configuration → Composer l’accueil conserve son accès administrateur uniquement. La composition propose les derniers articles, un choix visuel de médias, un ordre par glisser-déposer ou boutons clavier, un aperçu sans publication et un enregistrement global atomique. Les raisons de masquage des zones sont visibles uniquement dans cet écran. L’aperçu montre les contenus et styles du module, sans le thème public. Les fichiers à téléverser doivent être enregistrés dans la zone avant l’aperçu. La pondération statistique reste inchangée.

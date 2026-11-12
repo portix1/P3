@@ -115,3 +115,9 @@ Statut : séparation des espaces livrée ; les autres demandes et propositions c
 - [x] Résolution confirmée par Marc sur Univers Guitare le 12 novembre 2026. Une ancienne file d’attente FileZilla réenvoyait les fichiers locaux et écrasait les fichiers corrigés. Aucun patch supplémentaire n’est nécessaire pour cet incident.
 
 Avant tout nouvel envoi FTP, supprimer les anciens transferts en attente et vérifier que la copie locale contient les correctifs courants. La fermeture de FileZilla ne vaut pas confirmation de suppression de sa file. Cette validation concerne le regroupement dans Configuration, pas une recette exhaustive de tous les écrans du back-office.
+
+## Accueil — clôture fonctionnelle en cours, 12 novembre 2026
+
+Marc demande de terminer les travaux d’accueil, y compris les propositions de composition, d’aperçu, de réorganisation des zones et d’explication des zones vides. Accueil 1.1.0 regroupe ces fonctions, les derniers articles et le sélecteur visuel de médiathèque. La validation automatisée et la livraison sont suivies dans la proposition associée. La pondération reste inchangée tant qu’aucune analyse des mesures réelles ne justifie un ajustement.
+
+Marc confirme également que les en-têtes de tableaux illisibles sont corrigés. Ce point est clôturé.

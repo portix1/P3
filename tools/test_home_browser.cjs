@@ -118,6 +118,38 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         const rejected = await ctx.request.post(base + '/Admin-home.html', {form: {home_action:'delete',id:'1',confirm_delete:'1',csrf_token:'wrong'}});
         assert.equal(rejected.status(), 403);
         await tab.reload(); assert.equal(await tab.locator('details').count(), before);
+        const zones=tab.locator('[data-home-section]');
+        await zones.first().locator('summary').click();
+        await zones.first().locator('[name=title]').fill('Draft browser preview');
+        await zones.first().locator('[data-home-down]').click();
+        assert.equal(await zones.nth(1).locator('[name=title]').inputValue(),'Draft browser preview','Keyboard order changes the draft');
+        await tab.locator('[data-home-preview]').click();
+        await tab.locator('.home-preview-frame').waitFor();
+        assert((await tab.locator('.home-preview-frame').getAttribute('srcdoc')).includes('Draft browser preview'));
+        const unchanged=await ctx.request.get(base+'/Admin-home.html');
+        assert(!(await unchanged.text()).includes('Draft browser preview'),'Browser preview is not published');
+        await tab.getByRole('button',{name:'Téléphone',exact:true}).click();
+        assert.equal(await tab.locator('.home-preview-frame').evaluate(el=>el.getBoundingClientRect().width),375);
+        await tab.getByRole('button',{name:'Fermer',exact:true}).click();
+        const chosen=zones.nth(1);
+        await tab.route('**/Admin-media-api.html',route=>route.fulfill({json:{ok:true,result:[{family:'image',public_path:'var/uploads/images/home-test.webp',original_name:'Home test image'}]}}));
+        await chosen.locator('[data-home-pick]').click();
+        await tab.getByRole('button',{name:'Choisir Home test image',exact:true}).click();
+        assert.equal(await chosen.locator('[name=image_path]').inputValue(),'var/uploads/images/home-test.webp');
+        await chosen.locator('[data-home-clear]').click();
+        assert.equal(await chosen.locator('[name=image_path]').inputValue(),'');
+        const fresh=tab.locator('[data-home-section="0"]');
+        await fresh.locator('[name=kind]').selectOption('latest');
+        assert.equal(await fresh.locator('[name=item_count]').inputValue(),'3');
+        await fresh.locator('[name=title]').fill('Latest browser articles');
+        await Promise.all([tab.waitForNavigation({waitUntil:'networkidle'}),tab.locator('[data-home-publish]').click()]);
+        assert.equal(await tab.locator('[name=title]').evaluateAll(nodes=>nodes.filter(n=>n.value==='Latest browser articles').length),1);
+        for(const width of [1280,375,320]) {
+          await tab.setViewportSize({width,height:900});
+          assert(await tab.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Composer fits narrow viewport');
+          if(process.env.HOME_SCREENSHOT_DIR)await tab.screenshot({path:path.join(process.env.HOME_SCREENSHOT_DIR,`composer-${width}.png`),fullPage:true});
+        }
+
       } else {
         assert.equal(await tab.locator('form[action="Admin-home.html"]').count(), 0, 'Editor cannot see structural forms');
         const rejected = await ctx.request.post(base + '/Admin-home.html', {form: {home_action:'save',title:'Denied',kind:'text',csrf_token:'wrong'}});

@@ -20,7 +20,7 @@ final class Renderer
         $categoryMap=array_column($categories,null,'id');
         foreach ($sections as $section) {
             $sid=(int)$section['id']; $layout=$section['layout'];
-            $title=$section['title'] ?: ($categoryMap[$section['category_id']]['name']??'');
+            $title=$section['title'] ?: ($section['kind']==='latest'?($labels['home_latest']??'Derniers articles'):($categoryMap[$section['category_id']]['name']??''));
             $html.='<section class="home-zone home-layout-'.$layout.' home-kind-'.$e($section['kind']).'" aria-label="'.$e($title).'">';
             if ($title!=='') { $html.='<h2>'.$e($title).'</h2>'; }
             $categoryImage=Image::thumbnail($root,$section['image_path']);
@@ -36,7 +36,7 @@ final class Renderer
             $html.='<div class="home-items">';
             foreach ($section['items'] as $i=>$item) {
                 $slot=$sid.'-'.$i;
-                $track=$section['kind']==='articles';
+                $track=in_array($section['kind'],['articles','latest'],true);
                 if ($track) { $slots[$slot]=[$sid,(int)$item['id'],$i+1]; }
                 $image='';
                 if ($layout!=='text') {
