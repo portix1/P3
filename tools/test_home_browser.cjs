@@ -124,6 +124,19 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
       await tab.goto(base);
       assert.equal(await tab.locator('script[src*="home/assets/home.js"]').count(), 0, 'Staff excluded from measurement');
       if (actor === 'admin') {
+        await tab.goto(base + '/Admin-home-settings.html');
+        const toggle = tab.locator('label').filter({has: tab.locator('input[name="tracking"]')});
+        for (const width of [1280, 320]) {
+          await tab.setViewportSize({width, height:900});
+          assert(await toggle.evaluate(label => {
+            const checkbox = label.querySelector('input').getBoundingClientRect();
+            const text = [...label.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+            const range = document.createRange();
+            range.selectNodeContents(text);
+            const firstLine = range.getClientRects()[0];
+            return firstLine.left >= checkbox.right && firstLine.top < checkbox.bottom && checkbox.top < firstLine.bottom;
+          }), `Checkbox precedes its label at ${width}px`);
+        }
         await tab.goto(base + '/Admin-home-report.html');
         assert((await tab.locator('main').innerText()).includes('Pages d’accueil observées'));
       }
