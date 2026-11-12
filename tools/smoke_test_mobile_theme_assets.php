@@ -48,6 +48,13 @@ if (function_exists('imagecreatefromwebp') && function_exists('imagewebp')
     if (is_array($info) && (int) $info[0] > 800 && (int) $info[0] * (int) $info[1] <= 6000000) {
         mobileAssetAssert(str_contains($rendered, 'imagesrcset=') && str_contains($rendered, 'image-set('),
             'variantes WebP non servies');
+        mobileAssetAssert(
+            str_contains($rendered, '.site-header.six-cordes-masthead{')
+                && str_contains($rendered, '.site-footer.six-cordes-footer{')
+                && substr_count($rendered, 'image-set(') === 2
+                && substr_count($rendered, 'linear-gradient(') >= 2,
+            'en-tête et pied de page doivent partager les dérivés tout en gardant un dégradé'
+        );
         mobileAssetAssert(preg_match('/var\/uploads\/images\/responsive\/[a-f0-9]{32}\.webp/', $rendered) === 1,
             'URL de dérivé invalide');
         preg_match_all('~var/uploads/images/responsive/([a-f0-9]{32}\.webp)~', $rendered, $matches);

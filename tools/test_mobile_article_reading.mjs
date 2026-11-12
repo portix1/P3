@@ -23,14 +23,14 @@ const html = [
   '<p class="ql-align-justify">Paragraphe de lecture justifié servant à mesurer les espaces entre les mots sur téléphone.</p>',
   '<p style="text-align: justify">Autre paragraphe justifié directement dans le contenu éditorial.</p>',
   '<figure id="f25" class="portix-image-figure portix-image-size-25 portix-image-align-left" data-width="25">',
-  '<img class="portix-content-image" src="' + svg(900,1448,'#a0b8ca') + '" width="900" height="1448" alt="Manche">',
+  '<img class="portix-content-image p3-mobile-figure-expand" src="' + svg(900,1448,'#a0b8ca') + '" width="900" height="1448" alt="Manche">',
   '<figcaption>Manche de guitare — figure 25 %</figcaption></figure>',
   '<p>Le paragraphe suivant vérifie que le texte reprend toute la largeur.</p>',
   '<figure id="f33" class="portix-image-figure portix-image-size-33 portix-image-align-right" data-width="33">',
-  '<img class="portix-content-image" src="' + svg(1448,900,'#cca18a') + '" width="1448" height="900" alt="Cavité">',
+  '<img class="portix-content-image p3-mobile-figure-expand" src="' + svg(1448,900,'#cca18a') + '" width="1448" height="900" alt="Cavité">',
   '<figcaption>Fraise et cavité — figure 33 %</figcaption></figure>',
   '<figure id="f50" class="portix-image-figure portix-image-size-50" data-width="50">',
-  '<img class="portix-content-image" src="' + svg(1448,900,'#b2caa1') + '" width="1448" height="900" alt="Chevalet">',
+  '<img class="portix-content-image p3-mobile-figure-expand" src="' + svg(1448,900,'#b2caa1') + '" width="1448" height="900" alt="Chevalet">',
   '<figcaption>Chevalet — figure 50 %</figcaption></figure>',
   '<img id="icon" class="portix-content-image portix-image-size-25" src="' + svg(48,48,'#b1b1b1') + '" width="48" height="48" alt="Icône">',
   '<div class="article-table-scroll"><table><tbody><tr><td>',
@@ -55,6 +55,7 @@ try {
           scroll: document.documentElement.scrollWidth,
           reading: rect('.article-reading > .news-body.news-rich-text').width,
           figures: ['#f25','#f33','#f50'].map(sel => rect(sel).width),
+          figureImages: ['#f25 > img','#f33 > img','#f50 > img'].map(sel => rect(sel).width),
           float: style('#f25').float,
           textAlign: style('.ql-align-justify').textAlign,
           inlineAlign: style('p[style]').textAlign,
@@ -71,6 +72,9 @@ try {
         const threshold = Math.min(measured.reading * .70, 270);
         if (measured.figures.some(x => x < threshold)) {
           throw new Error('Small mobile figure at ' + width + 'px: ' + JSON.stringify(measured));
+        }
+        if (measured.figureImages.some(x => x < Math.min(measured.reading*.70, 270))) {
+          throw new Error('Large image still rendered as a thumbnail at ' + width + ': ' + JSON.stringify(measured));
         }
         if (measured.float !== 'none') throw new Error('Figure float at ' + width);
         if (!['start','left'].includes(measured.textAlign) || !['start','left'].includes(measured.inlineAlign)) {
