@@ -48,11 +48,18 @@ final class MobileThemeAssets
                 $two = $images[800];
                 $head .= '<link rel="preload" as="image" href="' . $two . '" imagesrcset="' . $one
                     . ' 1x, ' . $two . ' 2x" media="' . self::MOBILE_MEDIA . '">' . "\n";
+                // The same original background is used by the header AND footer.
+                // Replace both layers to avoid an otherwise unnecessary 88KB download.
+                $imageSet = 'image-set(url("' . $one . '") 1x,url("' . $two . '") 2x)';
+                $headerGradient = 'linear-gradient(90deg,rgba(8,10,12,.88),rgba(8,10,12,.58) 47%,rgba(8,10,12,.22))';
+                $footerGradient = 'linear-gradient(90deg,rgba(8,10,12,.90),rgba(8,10,12,.66) 48%,rgba(8,10,12,.34))';
                 $head .= '<style id="p3-mobile-header-image">@media screen and (max-width: 640px),'
                     . ' screen and (max-width: 900px) and (max-height: 500px) {'
                     . 'body.theme-six-cordes-clair .site-header.six-cordes-masthead{'
-                    . 'background-image:image-set(url("' . $one . '") 1x,url("' . $two
-                    . '") 2x)!important;}}</style>' . "\n";
+                    . 'background-image:' . $headerGradient . ',' . $imageSet . '!important;}'
+                    . 'body.theme-six-cordes-clair .site-footer.six-cordes-footer{'
+                    . 'background-image:' . $footerGradient . ',' . $imageSet . '!important;}'
+                    . '}</style>' . "\n";
             }
         } catch (\Throwable) {
             // File system permissions and GD availability must never break public pages.
