@@ -652,3 +652,6 @@ $_LANG['extension_updates_manual_unverified'] = 'Import manuel : archive non vé
 $_LANG['modules_downgrade_denied'] = 'La version proposée est antérieure à celle déjà installée. Remplacement refusé.';
 $_LANG['modules_identity_mismatch'] = 'Le ZIP ne correspond pas à l’identité du module installé.';
 $_LANG['modules_installed_manifest_missing'] = 'Le module existant ne possède pas de manifeste valide : remplacement automatique refusé.';
+
+$_LANG['extension_updates_checksum_failed'] = 'Empreinte SHA-256 incorrecte : archive refusée avant installation.';
+$_LANG['extension_updates_package_type_mismatch'] = 'Ce ZIP est déclaré pour un autre type d’extension dans le catalogue.';
