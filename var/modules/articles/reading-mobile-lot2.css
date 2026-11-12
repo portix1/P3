@@ -1,0 +1,81 @@
+/* Lot mobile P1 / Lecture — surcharge additive du module Articles.
+   Ne modifie ni l'éditeur, ni les thèmes, ni les réglages de taille enregistrés.
+   Ciblage volontaire du thème Six cordes UX clair. */
+
+/* Une ligne d'environ 70 caractères reste lisible sur tablette.
+   Sur téléphone, la colonne continue d'occuper la largeur disponible. */
+@media screen and (min-width: 641px) and (max-width: 1024px) {
+  body.theme-six-cordes-clair .article-reading > .news-body.news-rich-text {
+    box-sizing: border-box;
+    width: min(100%, 68ch, 620px) !important;
+    max-width: 620px !important;
+    margin-inline: auto !important;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  /* Évite les espaces étirés entre les mots sur Safari et Chrome mobile. */
+  body.theme-six-cordes-clair .article-reading > .news-rich-text.ql-align-justify,
+  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li).ql-align-justify,
+  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align: justify"],
+  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align:justify"] {
+    text-align: start !important;
+    hyphens: manual;
+  }
+
+  /* Les figures éditoriales à 25/33/50 % deviennent des blocs de lecture.
+     Les images restent limitées à leur taille native et en hauteur. */
+  body.theme-six-cordes-clair .article-reading .news-rich-text .portix-image-figure:is(
+    .portix-image-size-25, .portix-image-size-33, .portix-image-size-50,
+    [data-width="25"], [data-width="33"], [data-width="50"]
+  ) {
+    box-sizing: border-box;
+    display: block;
+    width: min(100%, 27rem) !important;
+    max-width: 100%;
+    float: none !important;
+    clear: both;
+    margin: .9rem auto 1rem !important;
+  }
+
+  body.theme-six-cordes-clair .article-reading .news-rich-text .portix-image-figure:is(
+    .portix-image-size-25, .portix-image-size-33, .portix-image-size-50,
+    [data-width="25"], [data-width="33"], [data-width="50"]
+  ) > img {
+    display: block;
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: min(45svh, 360px) !important;
+    object-fit: contain;
+    margin-inline: auto;
+  }
+
+  /* Anciennes insertions sans élément figure : même limite de lisibilité. */
+  body.theme-six-cordes-clair .article-reading .news-rich-text img.portix-content-image:is(
+    .portix-image-size-25, .portix-image-size-33, .portix-image-size-50,
+    [data-width="25"], [data-width="33"], [data-width="50"]
+  ):not(.portix-image-figure > img) {
+    display: block;
+    width: auto !important;
+    max-width: min(100%, 27rem) !important;
+    height: auto !important;
+    max-height: min(45svh, 360px) !important;
+    object-fit: contain;
+    float: none !important;
+    clear: both;
+    margin: .9rem auto 1rem !important;
+  }
+
+  /* Les tableaux et leurs miniatures ne sont pas transformés en grandes figures. */
+  body.theme-six-cordes-clair .article-reading .news-rich-text :is(td, th) .portix-image-figure {
+    width: auto !important;
+    max-width: 100%;
+    margin: .5rem auto !important;
+  }
+  body.theme-six-cordes-clair .article-reading .news-rich-text :is(td, th) img.portix-content-image {
+    width: auto !important;
+    max-width: 100% !important;
+    max-height: 220px !important;
+  }
+}

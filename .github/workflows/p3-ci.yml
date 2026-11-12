@@ -58,6 +58,8 @@ jobs:
         env:
           HOME_SCREENSHOT_DIR: home-browser-previews
         run: php tools/smoke_test_home_http.php --browser
+      - name: Validate mobile article reading at 320 to 1280 px
+        run: node tools/test_mobile_article_reading.mjs
       - name: Keep browser previews
         if: always()
         uses: actions/upload-artifact@v4

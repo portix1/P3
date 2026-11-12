@@ -95,6 +95,28 @@ try {
     responsiveCheck(count(glob($directory . '/*.webp') ?: []) === 6 && count(responsiveImages($twice)) === 5,
         'seconde transformation sans duplication');
 
+    $clair = ResponsiveImages::enhance($html, $root, 'six-cordes-ux-clair');
+    $clairImages = responsiveImages($clair);
+    responsiveCheck(
+        str_contains($clairImages[0]->getAttribute('sizes'), '(max-width: 640px) min(94vw, 432px)')
+            && str_contains($clairImages[1]->getAttribute('sizes'), '(max-width: 640px) min(94vw, 432px)'),
+        'les petites figures élargies demandent une résolution mobile suffisante'
+    );
+    $otherTheme = ResponsiveImages::enhance($html, $root, 'another-theme');
+    responsiveCheck(
+        str_contains(responsiveImages($otherTheme)[0]->getAttribute('sizes'), '(max-width: 640px) 25vw'),
+        'le comportement des autres thèmes ne change pas'
+    );
+    $legacy = ResponsiveImages::enhance(
+        '<figure class="portix-image-figure portix-image-size-50"><img src="var/uploads/images/' . $first . '"></figure>',
+        $root,
+        'six-cordes-ux-clair'
+    );
+    responsiveCheck(
+        str_contains(responsiveImages($legacy)[0]->getAttribute('sizes'), '(max-width: 640px) min(94vw, 432px)'),
+        'les anciens réglages de largeur par classe sont pris en charge'
+    );
+
     responsiveImage($images . '/' . $first, 1448, 900, 59);
     $changed = ResponsiveImages::enhance('<img src="var/uploads/images/' . $first . '">', $root);
     responsiveCheck(str_contains($changed, 'p3image=') && $changed !== $output

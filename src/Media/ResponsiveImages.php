@@ -16,7 +16,7 @@ final class ResponsiveImages
     private const MAX_NEW_FILES_PER_RENDER = 4;
     private const SUBDIRECTORY = '/var/uploads/images/responsive';
 
-    public static function enhance(string $html, string $root): string
+    public static function enhance(string $html, string $root, string $theme = ''): string
     {
         if (stripos($html, '<img') === false || !class_exists(DOMDocument::class)) {
             return $html;
@@ -90,7 +90,7 @@ final class ResponsiveImages
                 $image->setAttribute('src', $versioned);
                 $image->setAttribute('srcset', implode(', ', $parts));
                 if (!$image->hasAttribute('sizes')) {
-                    $image->setAttribute('sizes', self::sizes($image));
+                    $image->setAttribute('sizes', self::sizes($image, $theme));
                 }
             }
             $output = '';
@@ -269,7 +269,7 @@ final class ResponsiveImages
             . (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
     }
 
-    private static function sizes(DOMElement $image): string
+    private static function sizes(DOMElement $image, string $theme): string
     {
         $parent = $image;
         for ($i = 0; $i < 4 && $parent !== null; $i++) {
@@ -281,14 +281,28 @@ final class ResponsiveImages
             if (preg_match('/^(?:[1-9]|[1-9][0-9]|100)$/D', $value) === 1) {
                 $percent = (int) $value;
                 $desktop = max(20, (int) round(760 * $percent / 100));
-                return "(max-width: 640px) {$percent}vw, (max-width: 1024px) {$percent}vw, {$desktop}px";
+                $mobile = $theme === 'six-cordes-ux-clair' && in_array($percent, [25, 33, 50], true)
+                    ? 'min(94vw, 432px)' : "{$percent}vw";
+                return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, {$desktop}px";
             }
         }
         $value = $image->getAttribute('data-width');
+        if ($value === '') {
+            // Legacy images can encode the editor's width as a CSS class.
+            $figure = $image->parentNode instanceof DOMElement ? $image->parentNode : null;
+            $classes = $image->getAttribute('class') . ' ' .
+                (($figure !== null && strtolower($figure->tagName) === 'figure')
+                    ? $figure->getAttribute('class') : '');
+            if (preg_match('/(?:^|\s)portix-image-size-(25|33|50)(?:\s|$)/', $classes, $match) === 1) {
+                $value = $match[1];
+            }
+        }
         if (preg_match('/^(?:[1-9]|[1-9][0-9]|100)$/D', $value) === 1) {
             $percent = (int) $value;
             $desktop = max(20, (int) round(760 * $percent / 100));
-            return "(max-width: 640px) {$percent}vw, (max-width: 1024px) {$percent}vw, {$desktop}px";
+            $mobile = $theme === 'six-cordes-ux-clair' && in_array($percent, [25, 33, 50], true)
+                    ? 'min(94vw, 432px)' : "{$percent}vw";
+                return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, {$desktop}px";
         }
         return '(max-width: 640px) 90vw, (max-width: 1024px) 78vw, 760px';
     }

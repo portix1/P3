@@ -39,7 +39,7 @@ if ($articleAction === 'preview') {
     $categoryId = $preview['category_id'] === null ? null : (int) $preview['category_id'];
     $category = $categoryId === null ? null : $articleRepository->findCategory($categoryId);
     $previewRendered = \PortixModule\Articles\ReadingView::document(PortixHtmlSanitizer::clean((string)$preview['body']), $translator->text('articles_table_scroll'), !empty($preview['toc_enabled']), $translator->text('articles_heading_toc'), 'articles-preview-' . (string)($argument[2] ?? '') . '.html');
-    $previewRendered['body'] = \Portix\Media\ResponsiveImages::enhance($previewRendered['body'], dirname(__DIR__, 3));
+    $previewRendered['body'] = \Portix\Media\ResponsiveImages::enhance($previewRendered['body'], dirname(__DIR__, 3), (string) ($CONFIG['template'] ?? ''));
     $template->set('article_heading_toc', \Portix\View\Html::trusted($previewRendered['toc']));
     $template->addRow('showarticle', [
         'title' => (string) $preview['title'],
@@ -93,7 +93,7 @@ if ($articleAction === 'page') {
     }
     $reading = $articleRepository->editorial()->reading((int)$article['id'], true);
     $rendered = \PortixModule\Articles\ReadingView::document(PortixHtmlSanitizer::clean((string)$article['body']), $translator->text('articles_table_scroll'), $reading['toc_enabled'], $translator->text('articles_heading_toc'), (string)$article['slug'] . '.html');
-    $rendered['body'] = \Portix\Media\ResponsiveImages::enhance($rendered['body'], dirname(__DIR__, 3));
+    $rendered['body'] = \Portix\Media\ResponsiveImages::enhance($rendered['body'], dirname(__DIR__, 3), (string) ($CONFIG['template'] ?? ''));
     $template->set('article_heading_toc', \Portix\View\Html::trusted($rendered['toc']));
     $template->set('article_has_related', $reading['related'] !== [] ? '1' : '0');
     foreach($reading['related'] as $related)$template->addRow('relatedarticle',['title'=>(string)$related['title'],'slug'=>(string)$related['slug']]);
