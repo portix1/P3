@@ -21,6 +21,9 @@ final class MobileThemeAssets
             || stripos($html, '</head>') === false) {
             return $html;
         }
+        if (str_contains($html, self::CSS_URL)) {
+            return $html;
+        }
         $root = $projectRoot ?? dirname(__DIR__, 2);
         if (!is_file($root . '/var/editor/mobile-header-p1.css')
             || !is_file($root . '/var/editor/mobile-header-p1.js')) {
