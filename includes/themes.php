@@ -62,6 +62,8 @@ $template->setSlot('main', './var/admin/templates/themes.tpl');
 $template->set('extension_updates_download', $translator->text('extension_updates_download'));
 $template->set('confmessage', $configurationMessage);
 $updates = \Portix\Maintenance\ExtensionUpdates::dashboard(dirname(__DIR__), [], $themeInventory);
+$catalogueError = \Portix\Maintenance\ExtensionUpdates::catalogueError();
+$template->set('extension_updates_warning', $catalogueError !== '' ? $translator->text($catalogueError) : '');
 foreach ($themeInventory as $entry) {
     $fileStatus = $translator->text('themes_not_measured');
     if ($entry['versioned']) {
