@@ -8,6 +8,8 @@
 <p class="status-message" role="status">{{ modmgr_message }}</p>
 {% endif %}
 
+{% if extension_updates_warning %}<p role="alert" class="status-message">{{ extension_updates_warning }}</p>{% endif %}
+
 <section class="admin-section">
 <h2>{{ modules_install }}</h2>
 <p>{{ extension_updates_upload_help }}</p>
