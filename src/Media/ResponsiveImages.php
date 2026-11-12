@@ -48,6 +48,15 @@ final class ResponsiveImages
                     continue;
                 }
                 $count++;
+                // A 400px+ original may fill a narrow editorial figure on mobile.
+                // Mark it explicitly so thumbnail-sized icons are never enlarged.
+                if ($source['width'] >= 400 && self::isClairTheme($theme)
+                    && self::isNarrowFigure($image)) {
+                    $classes = trim($image->getAttribute('class') . ' p3-mobile-figure-expand');
+                    if (!str_contains(' ' . $image->getAttribute('class') . ' ', ' p3-mobile-figure-expand ')) {
+                        $image->setAttribute('class', $classes);
+                    }
+                }
                 if (!$image->hasAttribute('width')) {
                     $image->setAttribute('width', (string) $source['width']);
                 }
@@ -269,6 +278,25 @@ final class ResponsiveImages
             . (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
     }
 
+    private static function isClairTheme(string $theme): bool
+    {
+        return preg_match('/^six-cordes-ux-clair(?:-v[0-9]{1,3})?$/D', $theme) === 1;
+    }
+
+    private static function isNarrowFigure(DOMElement $image): bool
+    {
+        $parent = $image->parentNode;
+        for ($i = 0; $i < 4 && $parent instanceof DOMElement; $i++) {
+            if (strtolower($parent->tagName) === 'figure') {
+                return in_array($parent->getAttribute('data-width'), ['25','33','50'], true)
+                    || preg_match('/(?:^|\s)portix-image-size-(?:25|33|50)(?:\s|$)/',
+                        $parent->getAttribute('class')) === 1;
+            }
+            $parent = $parent->parentNode;
+        }
+        return false;
+    }
+
     private static function sizes(DOMElement $image, string $theme): string
     {
         $parent = $image;
@@ -281,7 +309,7 @@ final class ResponsiveImages
             if (preg_match('/^(?:[1-9]|[1-9][0-9]|100)$/D', $value) === 1) {
                 $percent = (int) $value;
                 $desktop = max(20, (int) round(760 * $percent / 100));
-                $mobile = $theme === 'six-cordes-ux-clair' && in_array($percent, [25, 33, 50], true)
+                $mobile = self::isClairTheme($theme) && in_array($percent, [25, 33, 50], true)
                     ? 'min(94vw, 432px)' : "{$percent}vw";
                 return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, {$desktop}px";
             }
@@ -300,7 +328,7 @@ final class ResponsiveImages
         if (preg_match('/^(?:[1-9]|[1-9][0-9]|100)$/D', $value) === 1) {
             $percent = (int) $value;
             $desktop = max(20, (int) round(760 * $percent / 100));
-            $mobile = $theme === 'six-cordes-ux-clair' && in_array($percent, [25, 33, 50], true)
+            $mobile = self::isClairTheme($theme) && in_array($percent, [25, 33, 50], true)
                     ? 'min(94vw, 432px)' : "{$percent}vw";
                 return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, {$desktop}px";
         }
