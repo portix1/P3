@@ -1,4 +1,4 @@
-# Accueil 1.0.7
+# Accueil 1.0.8
 
 Module générique de composition de la page d’accueil, sans catégorie ni domaine imposé.
 
