@@ -74,6 +74,8 @@
     margin: .5rem auto !important;
   }
   body.theme-six-cordes-clair .article-reading .news-rich-text :is(td, th) img.portix-content-image {
+    width: auto !important;
+    max-width: 100% !important;
     max-height: 220px !important;
   }
 }
