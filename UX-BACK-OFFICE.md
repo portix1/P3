@@ -6,7 +6,7 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 
 | Composant | Rédaction | Administration | Configuration |
 | --- | --- | --- | --- |
-| Moteur | — | Comptes et droits, diagnostics, mises à jour | Identité, référencement, messagerie, apparence |
+| Moteur | — | Comptes et droits, diagnostics | Identité, gestion des modules, référencement, messagerie, apparence |
 | Articles | Articles, catégories, séries, ordre de lecture | — | Navigation des articles |
 | Actualités | Rédaction et publication | — | — |
 | Médiathèque | Fichiers, images, insertion et gestion des médias | — | — |
@@ -25,7 +25,7 @@ Les fonctions d’un module désactivé ne sont pas ajoutées au menu. Les compo
 
 ## Formulaires et parcours
 
-Les pages Identité, Référencement, Messagerie et Apparence enregistrent leurs propres champs. Les anciens liens Admin-config.html et Admin-config-themes.html restent valides. Les paramètres des modules possèdent leur entrée dans Configuration. La vérification des mises à jour est déplacée dans Administration.
+Les pages Identité, Référencement, Messagerie et Apparence enregistrent leurs propres champs. Les anciens liens Admin-config.html et Admin-config-themes.html restent valides. Les paramètres des modules possèdent leur entrée dans Configuration. La gestion des modules se trouve dans Configuration. Les alertes de mise à jour restent accessibles depuis le tableau de bord.
 
 L’import d’un thème contrôlé et sans conflit déclenche son installation directement. Un conflit avec une personnalisation bloque l’installation et liste les fichiers. Le thème public est choisi séparément depuis Apparence du site. Les protections de sauvegarde, de restauration, de rôle et de formulaire sont conservées.
 

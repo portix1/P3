@@ -26,9 +26,9 @@ final class AdminNavigation
         };
         if ($isAdmin) {
             $add('management', 'ux_accounts', 'Admin-users.html', 'users');
-            $add('management', 'ux_modules', 'Admin-modmgr.html', 'boxes');
             $add('management', 'diagnostics_nav', 'Admin-diagnostics.html', 'activity');
             $add('configuration', 'ux_identity', 'Admin-config.html', 'settings', 'Admin-config');
+            $add('configuration', 'ux_modules', 'Admin-modmgr.html', 'boxes');
             $add('configuration', 'ux_themes', 'Admin-config-themes.html', 'images');
             $add('configuration', 'ux_seo', 'Admin-config-seo.html', 'search');
             $add('configuration', 'ux_mail', 'Admin-config-mail.html', 'mail');

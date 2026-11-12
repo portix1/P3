@@ -39,6 +39,11 @@ try {
         }
     }
 
+    $moduleManager = AdminNavigation::sections($root, $modules, true, false, ['Admin', 'modmgr'], $translator);
+    $managerEntry = array_values(array_filter($moduleManager['configuration'], static fn (array $item): bool => $item['url'] === 'Admin-modmgr.html'));
+    navigationCheck(count($managerEntry) === 1 && $managerEntry[0]['current'] === 'is-current', 'Gestion des modules active dans Configuration');
+    navigationCheck(!in_array('Admin-modmgr.html', array_column($moduleManager['management'], 'url'), true), 'Gestion des modules absente d’Administration');
+
     $news = array_values(array_filter($sections['writing'], static fn (array $item): bool => $item['url'] === 'Admin-news.html'));
     navigationCheck(count($news) === 1 && $news[0]['current'] === 'is-current', 'Actualités doit être présent et actif en Rédaction');
     $editor = AdminNavigation::sections($root, $modules, false, true, ['Admin', 'news'], $translator);
