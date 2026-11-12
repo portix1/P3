@@ -10,6 +10,7 @@
 
 <section class="admin-section">
 <h2>{{ modules_install }}</h2>
+<p>{{ extension_updates_upload_help }}</p>
 <form enctype="multipart/form-data" action="Admin-config-modules.html" method="post" class="upload-form">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
 <input type="hidden" name="module_action" value="upload" />
