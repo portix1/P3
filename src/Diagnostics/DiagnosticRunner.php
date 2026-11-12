@@ -180,10 +180,11 @@ final class DiagnosticRunner
     {
         $apache = (string) @file_get_contents($this->root . '/.htaccess');
         $iis = (string) @file_get_contents($this->root . '/web.config');
-        $ok = $apache !== '' && $iis !== ''
-            && str_contains($apache, 'var/modules/[^/]+/database')
-            && str_contains($iis, 'var/modules/[^/]+/database');
-        $this->add($rows, 'server-rules', 'Protection HTTP', $ok, $ok ? 'Règles Apache/IIS présentes' : 'Règles de protection incomplètes');
+        $inspection = ServerProtectionRules::inspect($apache, $iis);
+        $ok = $inspection['apache'] && $inspection['iis'];
+        $this->add($rows, 'server-rules', 'Protection HTTP', $ok,
+            $ok ? 'Règles sources Apache/IIS conformes ; vérifier leur application par HTTP'
+                : 'Règles sources Apache/IIS incomplètes ou inactives');
     }
 
     /** @param list<array<string,string>> $rows */
