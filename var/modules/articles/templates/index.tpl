@@ -7,7 +7,7 @@
 {% endfor %}
 
 {% for showarticle in showarticle %}
-<link rel="stylesheet" href="var/modules/articles/reading-mobile-lot2.css?v=20261112" media="screen">
+<link rel="stylesheet" href="var/modules/articles/reading-mobile-lot2.css?v=20261112b" media="screen">
 <article class="news-detail article-reading">
     <header class="p3-article-edit-heading"><h1>{{ showarticle.title }}</h1>
         {% for articleeditlink in articleeditlink %}
