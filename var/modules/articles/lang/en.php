@@ -189,3 +189,6 @@ $_LANG['articles_page_next'] = 'Next page';
 
 $_LANG['articles_optional_metadata'] = 'Author and featured image';
 $_LANG['articles_optional_metadata_help'] = 'Optional fields. If left blank, P3 uses the site author and the first image in the article.';
+
+$_LANG['articles_save_continue'] = 'Save and continue';
+$_LANG['articles_saved_continue'] = 'Article saved. You can continue editing.';
