@@ -8,8 +8,11 @@
 {% if review_is_pending == "1" %}<p class="review-banner" role="status">{{ articles_review_pending_edit_notice }}</p>{% endif %}
 {% if review_note_value %}<p class="review-note-banner">{{ articles_review_returned }} : {{ review_note_value }}</p>{% endif %}
 
-<form method="post" action="{{ articles_form_action }}" class="news-editor-form" data-unsaved-warning="1">
+<form method="post" action="{{ articles_form_action }}" class="news-editor-form" data-unsaved-warning="1" data-article-autosave="{{ articles_autosave_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+    <input type="hidden" name="base_updated_at" value="{{ articles_autosave_base }}" />
+    <textarea id="article-autosave-snapshot" hidden aria-hidden="true">{{ articles_autosave_snapshot }}</textarea>
+    <p class="article-autosave-status" id="article-autosave-status" role="status" aria-live="polite"></p>
     <div class="news-form-grid">
         <label>{{ articles_field_title }}
             <input type="text" name="title" value="{{ articles_title_value }}" maxlength="250" required />
@@ -94,7 +97,7 @@
 
     <div class="form-actions news-form-actions">
         <button type="submit">{% if review_required == "1" %}{{ articles_save_draft }}{% else %}{{ ui_save }}{% endif %}</button>
-        {% if articles_is_edit == "1" %}<button class="button button-quiet" type="submit" name="save_continue" value="1">{{ articles_save_continue }}</button>{% endif %}
+
         <button class="button button-quiet" type="submit" formaction="{{ articles_preview_action }}" formtarget="_blank" formnovalidate data-preview-submit="1">{{ ui_preview }}</button>
         <a class="button button-quiet" href="Admin-articles.html">{{ ui_cancel }}</a>
     </div>
