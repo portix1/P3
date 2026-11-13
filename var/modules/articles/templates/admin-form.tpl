@@ -36,15 +36,11 @@
         </select>
     </label>
 
-    <div class="news-form-grid">
-        <label>{{ articles_field_author }}
-            <input type="text" name="author_name" value="{{ articles_author_value }}" maxlength="160" />
-            <small>{{ articles_field_author_help }}</small>
-        </label>
-        <label class="form-grid-wide">{{ articles_field_featured_image }}
-            <input type="text" name="featured_image" value="{{ articles_featured_image_value }}" maxlength="500" placeholder="var/uploads/images/image.webp" />
-            <small>{{ articles_field_featured_image_help }}</small>
-        </label>
+    <label for="article-body">{{ articles_field_body }}</label>
+    <p class="portix-editor-help" id="article-body-help">{{ articles_body_help }}</p>
+    <div class="portix-editor" data-portix-editor="1" data-editor-label="{{ articles_field_body }}" data-upload-url="Admin-articles-upload-image.html">
+        <textarea class="portix-editor-source" id="article-body" name="content" rows="18" aria-describedby="article-body-help">{{ articles_body_value }}</textarea>
+        <div class="portix-editor-surface"></div>
     </div>
 
     <label for="article-summary">{{ articles_field_summary }}</label>
@@ -80,12 +76,21 @@
     <script src="var/modules/articles/article-picker.js?v={{ articles_asset_version }}" defer></script>
     <script src="var/modules/articles/series-order.js?v={{ articles_asset_version }}" defer></script>
 
-    <label for="article-body">{{ articles_field_body }}</label>
-    <p class="portix-editor-help" id="article-body-help">{{ articles_body_help }}</p>
-    <div class="portix-editor" data-portix-editor="1" data-editor-label="{{ articles_field_body }}" data-upload-url="Admin-articles-upload-image.html">
-        <textarea class="portix-editor-source" id="article-body" name="content" rows="18" aria-describedby="article-body-help">{{ articles_body_value }}</textarea>
-        <div class="portix-editor-surface"></div>
+    <details class="article-optional-metadata">
+        <summary>{{ articles_optional_metadata }}</summary>
+        <p class="field-help">{{ articles_optional_metadata_help }}</p>
+    <div class="news-form-grid">
+        <label>{{ articles_field_author }}
+            <input type="text" name="author_name" value="{{ articles_author_value }}" maxlength="160" />
+            <small>{{ articles_field_author_help }}</small>
+        </label>
+        <label class="form-grid-wide">{{ articles_field_featured_image }}
+            <input type="text" name="featured_image" value="{{ articles_featured_image_value }}" maxlength="500" placeholder="var/uploads/images/image.webp" />
+            <small>{{ articles_field_featured_image_help }}</small>
+        </label>
     </div>
+
+    </details>
 
     <div class="form-actions news-form-actions">
         <button type="submit">{% if review_required == "1" %}{{ articles_save_draft }}{% else %}{{ ui_save }}{% endif %}</button>
