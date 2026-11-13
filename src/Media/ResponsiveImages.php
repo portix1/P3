@@ -307,12 +307,7 @@ final class ResponsiveImages
             }
             $value = $parent->getAttribute('data-width');
             if (preg_match('/^(?:[1-9]|[1-9][0-9]|100)$/D', $value) === 1) {
-                $percent = (int) $value;
-                $desktopBasis = self::isClairTheme($theme) ? 640 : 760;
-                $desktop = max(20, (int) round($desktopBasis * $percent / 100));
-                $mobile = self::isClairTheme($theme) && in_array($percent, [25, 33, 50], true)
-                    ? 'min(94vw, 432px)' : "{$percent}vw";
-                return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, {$desktop}px";
+                return self::percentSizes((int) $value, $theme);
             }
         }
         $value = $image->getAttribute('data-width');
@@ -322,19 +317,38 @@ final class ResponsiveImages
             $classes = $image->getAttribute('class') . ' ' .
                 (($figure !== null && strtolower($figure->tagName) === 'figure')
                     ? $figure->getAttribute('class') : '');
-            if (preg_match('/(?:^|\s)portix-image-size-(25|33|50)(?:\s|$)/', $classes, $match) === 1) {
+            if (preg_match('/(?:^|\\s)portix-image-size-(25|33|50)(?:\\s|$)/', $classes, $match) === 1) {
                 $value = $match[1];
             }
         }
         if (preg_match('/^(?:[1-9]|[1-9][0-9]|100)$/D', $value) === 1) {
-            $percent = (int) $value;
-            $desktopBasis = self::isClairTheme($theme) ? 640 : 760;
-            $desktop = max(20, (int) round($desktopBasis * $percent / 100));
-            $mobile = self::isClairTheme($theme) && in_array($percent, [25, 33, 50], true)
-                    ? 'min(94vw, 432px)' : "{$percent}vw";
-                return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, {$desktop}px";
+            return self::percentSizes((int) $value, $theme);
         }
-        $desktopWidth = self::isClairTheme($theme) ? 640 : 760;
-        return "(max-width: 640px) 90vw, (max-width: 1024px) 78vw, {$desktopWidth}px";
+
+        if (self::isClairTheme($theme)) {
+            return '(max-width: 640px) 90vw, (max-width: 1024px) 78vw, '
+                . '(max-width: 1399px) 700px, (max-width: 1699px) 820px, 940px';
+        }
+        return '(max-width: 640px) 90vw, (max-width: 1024px) 78vw, 760px';
+    }
+
+    /** Keep desktop srcset hints consistent with the progressive reading column.
+     * Other themes retain their historical 760px reference width.
+     */
+    private static function percentSizes(int $percent, string $theme): string
+    {
+        $clair = self::isClairTheme($theme);
+        $mobile = $clair && in_array($percent, [25, 33, 50], true)
+            ? 'min(94vw, 432px)' : "{$percent}vw";
+
+        if ($clair) {
+            $small = max(20, (int) round(700 * $percent / 100));
+            $medium = max(20, (int) round(820 * $percent / 100));
+            $large = max(20, (int) round(940 * $percent / 100));
+            return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, "
+                . "(max-width: 1399px) {$small}px, (max-width: 1699px) {$medium}px, {$large}px";
+        }
+        $desktop = max(20, (int) round(760 * $percent / 100));
+        return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, {$desktop}px";
     }
 }
