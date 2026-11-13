@@ -1012,3 +1012,10 @@ input[type="submit"]:hover,
 .article-review-details>summary{cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:.15em}
 .article-review-details[open]{padding:.45rem .65rem;border:1px solid #d8dfe7;border-radius:.35rem}
 .article-review-details .article-review-form{margin-top:.65rem}
+
+
+/* Article list pagination, including narrow editorial screens. */
+.article-pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.65rem;margin:1rem 0;padding:.75rem 1rem;border:1px solid #d8dfe7;border-radius:.4rem}
+.article-pagination p{margin:0}
+.article-pagination-links{display:flex;gap:.5rem;flex-wrap:wrap}
+@media(max-width:540px){.article-pagination{align-items:stretch}.article-pagination-links{width:100%}.article-pagination-links>a{flex:1 1 auto;text-align:center}}
