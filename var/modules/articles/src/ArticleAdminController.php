@@ -492,28 +492,11 @@ final class ArticleAdminController
         $categoryId = $existing['category_id'] === null ? null : (int) $existing['category_id'];
         $canPublish = $this->allowed($user, 'publish', $existing, $categoryId);
         $canEdit = $this->allowed($user, 'edit', $existing, $categoryId);
-        $note = null;
-
-        if ($status === 'published') {
-            if (!$canPublish || !in_array($current, ['draft', 'pending'], true)) {
-                throw new RuntimeException('security_access_denied');
-            }
-        } elseif ($status === 'pending') {
-            if (!$canEdit || $current !== 'draft') {
-                throw new RuntimeException('security_access_denied');
-            }
-        } elseif ($status === 'draft') {
-            if ($current === 'pending' && $user->isAdmin()) {
-                $note = trim(strip_tags((string) ($_POST['review_note'] ?? '')));
-                if ($note === '' || mb_strlen($note, 'UTF-8') > 2000) {
-                    throw new RuntimeException('articles_review_note_required');
-                }
-            } elseif (!$canPublish || $current !== 'published') {
-                throw new RuntimeException('security_access_denied');
-            }
-        } else {
-            throw new RuntimeException('articles_invalid_status');
-        }
+        require_once __DIR__ . '/ArticleReviewPolicy.php';
+        $note = ArticleReviewPolicy::transition(
+            $current, $status, $user->isAdmin(), $canEdit, $canPublish,
+            (string) ($_POST['review_note'] ?? '')
+        );
 
         $this->articles->transaction(function () use ($id, $existing, $user, $status, $note): void {
             if ($this->safety !== null) {
