@@ -10,6 +10,7 @@ namespace Portix\View;
 final class MobileThemeAssets
 {
     private const CSS_URL = 'var/editor/mobile-header-p1.css?v=20261112';
+    private const DESKTOP_READING_CSS_URL = 'var/editor/reading-desktop-p2.css?v=20261113';
     private const JS_URL = 'var/editor/mobile-header-p1.js?v=20261112';
     private const MOBILE_MEDIA = '(max-width: 640px), (max-width: 900px) and (max-height: 500px)';
 
@@ -39,6 +40,13 @@ final class MobileThemeAssets
             }
         }
         $head .= '<link rel="stylesheet" href="' . self::CSS_URL . '" media="screen">' . "\n";
+        // Only article views need the large-screen reading correction.
+        // Keep it outside the immutable Articles 1.4.8 package and active theme.
+        if (str_contains($html, 'article-reading')
+            && is_file($root . '/var/editor/reading-desktop-p2.css')) {
+            $head .= '<link rel="stylesheet" href="' . self::DESKTOP_READING_CSS_URL
+                . '" media="screen and (min-width: 1025px)">' . "\n";
+        }
         $head .= '<script src="' . self::JS_URL . '" defer></script>' . "\n";
         try {
             $images = self::headerImages($root, $theme);
