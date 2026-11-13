@@ -20,6 +20,17 @@ final class ArticlePermissions
         }
         return $result;
     }
+    /** Keep direct publication and correction rights inseparable for each rédacteur. */
+    public static function withPublicationChoice(array $permissions, string $choice): array
+    {
+        if (!in_array($choice, ['direct', 'review'], true)) {
+            throw new \RuntimeException('users_permissions_invalid');
+        }
+        $permissions['publish'] = $choice === 'direct';
+        $permissions['edit_published'] = $choice === 'direct';
+        return $permissions;
+    }
+
     public static function category(array $permissions, ?int $id, array $categories): bool
     {
         if ($permissions['all_categories']) { return true; }

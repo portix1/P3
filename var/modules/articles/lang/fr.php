@@ -13,7 +13,7 @@ $_LANG = array_merge($_LANG, array(
     'articles_next' => 'Article suivant',
 
     'articles_admin_title' => 'Articles',
-    'articles_admin_introduction' => 'Rédigez les contenus intemporels du site et classez-les dans une arborescence.',
+    'articles_admin_introduction' => 'Créez et modifiez vos articles. Enregistrez un brouillon, puis publiez-le ou demandez sa publication selon vos droits.',
     'articles_admin_summary' => 'Vue d’ensemble des articles',
     'articles_admin_total' => 'article(s)',
     'articles_admin_published_total' => 'publié(s)',
@@ -24,6 +24,17 @@ $_LANG = array_merge($_LANG, array(
     'articles_last_update' => 'Dernière modification',
     'articles_status_draft' => 'Brouillon',
     'articles_status_published' => 'Publié',
+    'articles_status_pending' => 'En attente de relecture',
+    'articles_admin_pending_total' => 'en attente de relecture',
+    'articles_review_request' => 'Demander la publication',
+    'articles_review_approve' => 'Accepter et publier',
+    'articles_review_send_back' => 'Renvoyer pour correction',
+    'articles_review_note_label' => 'Expliquer les corrections demandées',
+    'articles_review_note_required' => 'Expliquez les corrections demandées (2 000 caractères maximum).',
+    'articles_review_returned' => 'Corrections demandées',
+    'articles_review_pending_edit_notice' => 'Cet article attend une relecture. Si vous le modifiez, il redeviendra un brouillon : vous devrez demander sa publication à nouveau.',
+    'articles_empty_admin' => 'Aucun article pour le moment. Créez le premier article pour commencer.',
+    'articles_empty_redactor' => 'Aucun article à modifier. Vous pouvez créer votre premier brouillon si vous en avez l’autorisation.',
     'articles_publish' => 'Publier',
     'articles_make_draft' => 'Passer en brouillon',
     'articles_delete_title' => 'Supprimer cet article ?',
@@ -40,19 +51,19 @@ $_LANG = array_merge($_LANG, array(
 
     'articles_form_new' => 'Nouvel article',
     'articles_form_edit' => 'Modifier l’article',
-    'articles_form_help' => 'Le titre propose l’adresse publique. Le slug peut rester inchangé lorsque le titre évolue.',
+    'articles_form_help' => 'Le titre sert à proposer une adresse pour l’article. Vous pouvez garder cette adresse même si le titre change.',
     'articles_field_title' => 'Titre',
     'articles_field_url' => 'Adresse publique',
     'articles_slug_placeholder' => 'générée depuis le titre',
-    'articles_slug_help' => 'Laissez vide pour générer automatiquement le slug.',
+    'articles_slug_help' => 'Laissez vide pour créer automatiquement l’adresse de la page.',
     'articles_field_status' => 'État',
     'articles_field_category' => 'Catégorie',
     'articles_field_author' => 'Auteur',
     'articles_field_author_help' => 'Optionnel. À défaut, l’auteur général configuré pour le site est utilisé.',
-    'articles_field_featured_image' => 'Image principale pour le référencement',
+    'articles_field_featured_image' => 'Image principale (Google et partages)',
     'articles_field_featured_image_help' => 'Optionnel. Laissez vide pour reprendre automatiquement la première image de l’article.',
     'articles_field_summary' => 'Description pour Google et les partages',
-    'articles_field_summary_help' => 'Optionnelle. 170 caractères maximum. Elle sert aux aperçus et aux métadonnées, pas au contenu visible de l’article.',
+    'articles_field_summary_help' => 'Facultative, 170 caractères maximum. Ce texte peut apparaître dans Google ou lors du partage du lien, mais pas dans l’article.',
     'articles_invalid_summary' => 'La description ne peut pas dépasser 170 caractères.',
     'articles_invalid_seo_fields' => 'Les informations de référencement de l’article sont trop longues.',
     'articles_field_body' => 'Contenu',
@@ -154,3 +165,27 @@ $_LANG['articles_series_batch_failed'] = 'La création des séries n’a pas abo
 $_LANG['articles_series_batch_backup_failed'] = 'Impossible de sauvegarder les séries existantes. Aucune modification appliquée.';
 
 $_LANG['articles_public_edit'] = 'Modifier cet article';
+
+$_LANG['articles_save_draft'] = 'Enregistrer le brouillon';
+$_LANG['articles_review_next_step'] = 'Enregistrez votre brouillon. Dans la liste des articles, choisissez ensuite « Demander la publication ». Un administrateur le relira avant sa mise en ligne.';
+
+$_LANG['articles_filter_heading'] = 'Rechercher dans les articles';
+$_LANG['articles_filter_search'] = 'Rechercher';
+$_LANG['articles_filter_placeholder'] = 'Titre, catégorie ou adresse…';
+$_LANG['articles_filter_status'] = 'État de l’article';
+$_LANG['articles_filter_all'] = 'Tous les états';
+$_LANG['articles_filter_apply'] = 'Filtrer';
+$_LANG['articles_filter_clear'] = 'Effacer les filtres';
+$_LANG['articles_filter_result_label'] = 'article(s) affiché(s)';
+$_LANG['articles_filter_no_matches_label'] = 'Aucun article ne correspond à cette recherche.';
+
+$_LANG['articles_review_view_pending'] = 'Voir les demandes';
+
+$_LANG['articles_page_navigation'] = 'Pages de la liste des articles';
+$_LANG['articles_page_items'] = 'Articles';
+$_LANG['articles_page_previous'] = 'Page précédente';
+$_LANG['articles_page_next'] = 'Page suivante';
+
+$_LANG['articles_optional_metadata'] = 'Auteur et image principale';
+$_LANG['articles_optional_metadata_help'] = 'Champs facultatifs. Sans indication, P3 utilise l’auteur du site et la première image de l’article.';
+

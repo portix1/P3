@@ -2,7 +2,7 @@ name: P3 validation
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'release/0.9.2-rc1', 'release/0.9.2']
   pull_request:
   workflow_dispatch:
 
@@ -32,12 +32,16 @@ jobs:
           php -m
 
       - name: Validate release
+        env:
+          P3_DEVELOPMENT_VALIDATION: ${{ github.event_name == 'pull_request' && '1' || '0' }}
         run: php tools/validate_release.php
 
       - name: Validate public search index reuse
         run: php var/modules/search/tests/smoke_test_text_fragments.php
 
       - name: Verify reproducible official Articles package
+        env:
+          P3_DEVELOPMENT_VALIDATION: ${{ github.event_name == 'pull_request' && '1' || '0' }}
         run: python3 tools/test_catalogue_distribution.py
 
   home-browser:
@@ -75,7 +79,7 @@ jobs:
 
   publish:
     name: Distribution GitHub
-    if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Release P3 ')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'Release P3 ')
     needs: [validate, home-browser]
     runs-on: ubuntu-latest
     permissions:

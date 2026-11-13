@@ -56,6 +56,10 @@ $tests = [
     'smoke_test_theme_packages.php',
     'smoke_test_theme_admin.php',
     'smoke_test_article_permissions.php',
+    'smoke_test_article_review.php',
+    'smoke_test_article_autosave.php',
+    'smoke_test_article_form_ux.php',
+    'smoke_test_article_list_context.php',
     'smoke_test_static_cache.php',
     'smoke_test_accessibility.php',
     'smoke_test_security.php',
@@ -84,7 +88,10 @@ if (is_file($root . '/var/modules/media/src/MediaManager.php')) { $tests[] = 'sm
 $tests[] = 'smoke_test_responsive_images.php';
 $tests[] = 'smoke_test_mobile_theme_assets.php';
 
-if (is_file($root . '/var/modules/home/desc.xml')) { $tests[] = 'smoke_test_home.php'; $tests[] = 'smoke_test_home_http.php'; }
+// The isolated Home HTTP/browser fixture is tested once in the dedicated
+// home-browser CI job. Repeating its full web server lifecycle in all four
+// PHP matrix jobs is redundant and intermittently exhausts runner resources.
+if (is_file($root . '/var/modules/home/desc.xml')) { $tests[] = 'smoke_test_home.php'; }
 
 foreach ($tests as $test) {
     releaseRunPhp($root, $test);

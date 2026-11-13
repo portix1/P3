@@ -8,6 +8,7 @@
 <title>{{ ui_admin }} — {{ title }}</title>
 <link rel="stylesheet" href="var/admin/style.css?v={{ asset_version }}" media="screen" />
 <link rel="stylesheet" href="var/admin/icons.css?v={{ asset_version }}&amp;icons=2" media="screen" />
+<script src="var/modules/articles/article-autosave.js?v={{ asset_version }}" defer></script>
 <script src="var/editor/portix-editor.js?v={{ asset_version }}&amp;media=4" defer></script>
 <script src="var/editor/portix-ui.js?v={{ asset_version }}" defer></script>
 <script src="var/admin/icons.js?v={{ asset_version }}&amp;icons=2" defer></script>

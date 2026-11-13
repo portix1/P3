@@ -154,3 +154,39 @@ $_LANG['articles_series_batch_failed'] = 'Series creation did not complete. No s
 $_LANG['articles_series_batch_backup_failed'] = 'Could not back up existing series. No changes applied.';
 
 $_LANG['articles_public_edit'] = 'Edit this article';
+
+$_LANG['articles_status_pending'] = 'Awaiting review';
+$_LANG['articles_admin_pending_total'] = 'awaiting review';
+$_LANG['articles_review_request'] = 'Request publication';
+$_LANG['articles_review_approve'] = 'Approve and publish';
+$_LANG['articles_review_send_back'] = 'Return for changes';
+$_LANG['articles_review_note_label'] = 'Explain the changes requested';
+$_LANG['articles_review_note_required'] = 'Describe the requested changes (up to 2,000 characters).';
+$_LANG['articles_review_returned'] = 'Changes requested';
+$_LANG['articles_review_pending_edit_notice'] = 'This article is awaiting review. Editing it returns it to draft; request publication again when ready.';
+$_LANG['articles_empty_admin'] = 'No articles yet. Create an article to begin.';
+$_LANG['articles_empty_redactor'] = 'No articles available to edit. You can create a draft if permitted.';
+
+$_LANG['articles_save_draft'] = 'Save draft';
+$_LANG['articles_review_next_step'] = 'Save your draft first. In the article list, choose “Request publication”. An administrator will review it before it appears online.';
+
+$_LANG['articles_filter_heading'] = 'Find articles';
+$_LANG['articles_filter_search'] = 'Search';
+$_LANG['articles_filter_placeholder'] = 'Title, category or address…';
+$_LANG['articles_filter_status'] = 'Article status';
+$_LANG['articles_filter_all'] = 'All statuses';
+$_LANG['articles_filter_apply'] = 'Filter';
+$_LANG['articles_filter_clear'] = 'Clear filters';
+$_LANG['articles_filter_result_label'] = 'article(s) shown';
+$_LANG['articles_filter_no_matches_label'] = 'No articles match these filters.';
+
+$_LANG['articles_review_view_pending'] = 'View requests';
+
+$_LANG['articles_page_navigation'] = 'Article list pages';
+$_LANG['articles_page_items'] = 'Articles';
+$_LANG['articles_page_previous'] = 'Previous page';
+$_LANG['articles_page_next'] = 'Next page';
+
+$_LANG['articles_optional_metadata'] = 'Author and featured image';
+$_LANG['articles_optional_metadata_help'] = 'Optional fields. If left blank, P3 uses the site author and the first image in the article.';
+

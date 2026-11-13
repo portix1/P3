@@ -16,6 +16,11 @@ final class ArticleRepository
     }
 
     public function editorial(): EditorialRepository { return new EditorialRepository($this->pdo); }
+    public function autosaves(): ArticleAutosaveStore
+    {
+        require_once __DIR__ . '/ArticleAutosaveStore.php';
+        return new ArticleAutosaveStore($this->pdo);
+    }
 
     public function countAll(): int
     {
@@ -32,7 +37,7 @@ final class ArticleRepository
     {
         return $this->pdo->query(
             'SELECT article.id, article.title, article.slug, article.category_id, article.status, '
-            . 'article.created_by, article.updated_at, category.name AS category_name FROM articles article '
+            . 'article.created_by, article.updated_at, article.review_note, category.name AS category_name FROM articles article '
             . 'LEFT JOIN article_categories category ON category.id = article.category_id '
             . 'ORDER BY article.updated_at DESC, article.id DESC'
         )->fetchAll();
@@ -397,7 +402,7 @@ final class ArticleRepository
 
     public function updateArticleStatus(int $id, string $status, string $now): void
     {
-        if (!in_array($status, ['draft', 'published'], true)) {
+        if (!in_array($status, ['draft', 'pending', 'published'], true)) {
             throw new RuntimeException('articles_invalid_status');
         }
         $article = $this->find($id);
@@ -417,6 +422,16 @@ final class ArticleRepository
             'published_at' => $publishedAt,
             'updated_at' => $now,
         ]);
+    }
+
+    /** Only the administrator may save an explanatory return-to-author message. */
+    public function saveReviewNote(int $id, ?string $note): void
+    {
+        $statement = $this->pdo->prepare('UPDATE articles SET review_note = :note WHERE id = :id');
+        $statement->execute(['id' => $id, 'note' => $note,]);
+        if ($statement->rowCount() === 0 && $this->find($id) === null) {
+            throw new RuntimeException('articles_not_found');
+        }
     }
 
     public function deleteCategory(int $id): void

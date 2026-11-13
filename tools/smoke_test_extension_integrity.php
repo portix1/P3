@@ -141,23 +141,35 @@ try {
     $articlesEntry = $articlesEntries[0];
     $articlesRoot = $root . '/var/modules/articles';
     $articlesManifest = ModuleManifest::fromXml($articlesRoot . '/desc.xml', 'articles');
-    integrityCheck($articlesEntry['version'] === $articlesManifest['version'],
-        'Catalogue Articles désynchronisé du manifeste embarqué');
-    integrityCheck($articlesEntry['version'] === trim((string) file_get_contents($articlesRoot . '/MODULE-VERSION')),
-        'Catalogue Articles désynchronisé de MODULE-VERSION');
+    $workingVersion = (string) $articlesManifest['version'];
+    $moduleVersion = trim((string) file_get_contents($articlesRoot . '/MODULE-VERSION'));
+    integrityCheck($workingVersion === $moduleVersion, 'Manifeste et MODULE-VERSION désynchronisés');
+    $unreleasedVersion = $workingVersion !== $articlesEntry['version'];
+    // A development pull request may carry a newer module while the trusted
+    // catalogue deliberately keeps the last published, immutable ZIP.
+    // The flag is NEVER enabled by the stable/release validation workflow.
+    if ($unreleasedVersion) {
+        integrityCheck(getenv('P3_DEVELOPMENT_VALIDATION') === '1'
+            && version_compare($workingVersion, (string)$articlesEntry['version'], '>'),
+            'Une version Articles non publiée est interdite dans une distribution stable');
+    }
     integrityCheck($articlesEntry['p3_min'] === $articlesManifest['minimum_p3'],
         'Version minimale P3 du catalogue incohérente');
-    ModuleManifest::assertCompatible($articlesManifest, '0.9.0');
-    integrityRefuses(static fn () => ModuleManifest::assertCompatible($articlesManifest, '0.8.4-rc4'),
-        'Articles 1.4.8 doit exiger un moteur avec ResponsiveImages');
+    ModuleManifest::assertCompatible($articlesManifest, trim((string)file_get_contents($root . '/VERSION')));
+    integrityRefuses(static fn () => ModuleManifest::assertCompatible($articlesManifest, '0.9.1'),
+        'Articles 1.4.9 exige P3 0.9.2 ou sa candidate');
     $zip = new ZipArchive();
     integrityCheck($zip->open($root . '/distribution/' . $articlesEntry['file']) === true,
         'Archive officielle Articles illisible');
     try {
         foreach (['desc.xml', 'MODULE-VERSION', 'index.php', 'templates/index.tpl'] as $relative) {
-            integrityCheck($zip->getFromName('articles/' . $relative) ===
-                file_get_contents($articlesRoot . '/' . $relative),
-                'Archive Articles différente des sources pour ' . $relative);
+            integrityCheck($zip->getFromName('articles/' . $relative) !== false,
+                'Archive officielle Articles incomplète : ' . $relative);
+            if (!$unreleasedVersion) {
+                integrityCheck($zip->getFromName('articles/' . $relative) ===
+                    file_get_contents($articlesRoot . '/' . $relative),
+                    'Archive Articles différente des sources pour ' . $relative);
+            }
         }
     } finally {
         $zip->close();

@@ -82,16 +82,52 @@
     </div>
 </form>
 
-{% if users_is_edit == "1" %}<section class="admin-section"><h2>{{ users_permissions_title }}</h2><p>{{ users_article_permissions_help }}</p><form method="post" action="{{ users_permissions_action }}" class="settings-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><fieldset><legend>{{ users_permissions_title }}</legend><label class="checkbox-label"><input type="checkbox" name="permission_create" value="1" {% if permission_create == "1" %}checked{% endif %} /><span>{{ users_permission_create }}</span></label>
-<label class="checkbox-label"><input type="checkbox" name="permission_edit_own" value="1" {% if permission_edit_own == "1" %}checked{% endif %} /><span>{{ users_permission_edit_own }}</span></label>
-<label class="checkbox-label"><input type="checkbox" name="permission_edit_others" value="1" {% if permission_edit_others == "1" %}checked{% endif %} /><span>{{ users_permission_edit_others }}</span></label>
-<label class="checkbox-label"><input type="checkbox" name="permission_publish" value="1" {% if permission_publish == "1" %}checked{% endif %} /><span>{{ users_permission_publish }}</span></label>
-<label class="checkbox-label"><input type="checkbox" name="permission_edit_published" value="1" {% if permission_edit_published == "1" %}checked{% endif %} /><span>{{ users_permission_edit_published }}</span></label>
-<label class="checkbox-label"><input type="checkbox" name="permission_delete_own" value="1" {% if permission_delete_own == "1" %}checked{% endif %} /><span>{{ users_permission_delete_own }}</span></label>
-<label class="checkbox-label"><input type="checkbox" name="permission_all_categories" value="1" {% if permission_all_categories == "1" %}checked{% endif %} /><span>{{ users_permission_all_categories }}</span></label>
-<label class="checkbox-label"><input type="checkbox" name="permission_include_children" value="1" {% if permission_include_children == "1" %}checked{% endif %} /><span>{{ users_permission_include_children }}</span></label>
-</fieldset><fieldset><legend>{{ users_permission_categories }}</legend>{% for permissioncategory in permissioncategory %}<label class="checkbox-label"><input type="checkbox" name="permission_categories[]" value="{{ permissioncategory.id }}" {% if permissioncategory.checked == "1" %}checked{% endif %} /><span>{{ permissioncategory.name }} (#{{ permissioncategory.id }})</span></label>{% endfor %}</fieldset><button type="submit" title="{{ ui_save }}">{{ ui_save }}</button> <button type="submit" name="permissions_reset" value="1" title="{{ users_permissions_reset }}">{{ users_permissions_reset }}</button></form></section>{% endif %}
+{% if users_is_edit == "1" %}
+<section class="admin-section user-form-section">
+    <h2>{{ users_permissions_title }}</h2>
+    <p>{{ users_article_permissions_help }}</p>
+    <form method="post" action="{{ users_permissions_action }}" class="settings-form user-article-rights">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
 
+        <fieldset class="settings-group">
+            <legend>{{ users_publication_legend }}</legend>
+            <div class="role-options publication-trust">
+                <label class="role-option">
+                    <input type="radio" name="permission_publication" value="review" {% if users_publication_direct == "0" %}checked{% endif %} />
+                    <span><strong>{{ users_publication_review }}</strong><small>{{ users_publication_review_help }}</small></span>
+                </label>
+                <label class="role-option">
+                    <input type="radio" name="permission_publication" value="direct" {% if users_publication_direct == "1" %}checked{% endif %} />
+                    <span><strong>{{ users_publication_direct_label }}</strong><small>{{ users_publication_direct_help }}</small></span>
+                </label>
+            </div>
+        </fieldset>
+
+        <fieldset class="settings-group">
+            <legend>{{ users_permissions_title }}</legend>
+            <label class="checkbox-label"><input type="checkbox" name="permission_create" value="1" {% if permission_create == "1" %}checked{% endif %} /><span>{{ users_permission_create }}</span></label>
+            <label class="checkbox-label"><input type="checkbox" name="permission_edit_own" value="1" {% if permission_edit_own == "1" %}checked{% endif %} /><span>{{ users_permission_edit_own }}</span></label>
+            <label class="checkbox-label"><input type="checkbox" name="permission_edit_others" value="1" {% if permission_edit_others == "1" %}checked{% endif %} /><span>{{ users_permission_edit_others }}</span></label>
+            <label class="checkbox-label"><input type="checkbox" name="permission_delete_own" value="1" {% if permission_delete_own == "1" %}checked{% endif %} /><span>{{ users_permission_delete_own }}</span></label>
+        </fieldset>
+
+        <fieldset class="settings-group">
+            <legend>{{ users_permission_categories }}</legend>
+            <label class="checkbox-label"><input type="checkbox" name="permission_all_categories" value="1" {% if permission_all_categories == "1" %}checked{% endif %} /><span>{{ users_permission_all_categories }}</span></label>
+            <label class="checkbox-label"><input type="checkbox" name="permission_include_children" value="1" {% if permission_include_children == "1" %}checked{% endif %} /><span>{{ users_permission_include_children }}</span></label>
+            <div class="user-category-choices">
+                {% for permissioncategory in permissioncategory %}
+                <label class="checkbox-label"><input type="checkbox" name="permission_categories[]" value="{{ permissioncategory.id }}" {% if permissioncategory.checked == "1" %}checked{% endif %} /><span>{{ permissioncategory.name }}</span></label>
+                {% endfor %}
+            </div>
+        </fieldset>
+        <div class="user-form-actions">
+            <button type="submit">{{ ui_save }}</button>
+            <button type="submit" name="permissions_reset" value="1" class="button-quiet">{{ users_permissions_reset }}</button>
+        </div>
+    </form>
+</section>
+{% endif %}
 
 {% if users_is_edit == "1" %}
 <section class="admin-section user-password-section">

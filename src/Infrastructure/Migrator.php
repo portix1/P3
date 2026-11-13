@@ -9,7 +9,7 @@ use RuntimeException;
 
 final class Migrator
 {
-    private const VERSION = 8;
+    private const VERSION = 9;
 
     public function __construct(private readonly Database $database)
     {
@@ -73,6 +73,13 @@ final class Migrator
                 if ($this->tableExists($pdo, 'users')) {
                     $pdo->exec("ALTER TABLE users ADD COLUMN article_permissions TEXT NOT NULL DEFAULT '{}'");
                 }
+                $this->recordVersion($pdo, 8);
+            });
+            $current = 8;
+        }
+        if ($current === 8) {
+            $this->database->transaction(function (PDO $pdo): void {
+                $this->addArticleReviewNote($pdo);
                 $this->recordVersion($pdo, self::VERSION);
             });
             $current = self::VERSION;
@@ -81,6 +88,15 @@ final class Migrator
             throw new RuntimeException('Version de schéma SQLite non prise en charge : ' . $current . '.');
         }
         $this->createCurrentSchema($pdo);
+    }
+
+    private function addArticleReviewNote(PDO $pdo): void
+    {
+        if (!$this->tableExists($pdo, 'articles')) { return; }
+        foreach ($pdo->query('PRAGMA table_info(articles)')->fetchAll(PDO::FETCH_ASSOC) as $column) {
+            if ((string) $column['name'] === 'review_note') { return; }
+        }
+        $pdo->exec('ALTER TABLE articles ADD COLUMN review_note TEXT');
     }
 
     private function createCurrentSchema(PDO $pdo): void

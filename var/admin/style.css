@@ -977,3 +977,52 @@ input[type="submit"]:hover,
     .ux-area-shortcuts { order: 3; flex: 1 0 100%; }
     .ux-area-shortcuts > a { flex: 1 1 auto; justify-content: center; }
 }
+
+/* Back-office editorial review: restrained, readable statuses and actions. */
+.state-pending{display:inline-block;padding:.2rem .5rem;border:1px solid #a77c35;border-radius:.35rem;color:#704f20;background:#fff8ea}
+.review-note,.review-note-banner{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.92rem}
+.review-note-banner{margin:0 0 1rem;padding:.75rem 1rem;border-inline-start:3px solid #a77c35;background:#fff8ea}
+.review-banner{margin:0 0 1rem;padding:.75rem 1rem;border-inline-start:3px solid #55779c;background:#eef4fb}
+.article-review-form{display:flex;flex-direction:column;gap:.4rem;max-width:22rem;margin:.45rem 0}
+.article-review-form label{display:flex;flex-direction:column;gap:.25rem;font-size:.9rem}
+.article-review-form textarea{min-height:4rem;width:100%;resize:vertical}
+.article-review-form button{align-self:flex-start}
+.empty-state{padding:1rem;border:1px solid #d8dfe7;border-radius:.4rem}
+.publication-trust{display:flex;flex-direction:column;gap:.7rem;margin:.8rem 0;padding:.8rem;border:1px solid #d5dce5;border-radius:.4rem}
+.publication-trust .role-option{display:flex;align-items:start;gap:.6rem}
+.publication-trust .role-option span{display:flex;flex-direction:column;gap:.2rem}
+.publication-trust input[type=radio]{margin-top:.35rem}
+
+
+/* Article list: compact, keyboard-accessible filters. */
+.article-list-filters{padding:.85rem 1rem}
+.article-filter-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.7rem}
+.article-filter-form label{display:flex;flex-direction:column;gap:.25rem;min-width:11rem;flex:0 1 15rem}
+.article-filter-form label:first-child{flex:1 1 16rem}
+.article-filter-form input,.article-filter-form select{width:100%;max-width:100%}
+.article-filter-form button,.article-filter-form a{margin:0}
+.article-list-filters .field-help{margin:.6rem 0 0}
+@media(max-width:540px){.article-filter-form label{flex:1 1 100%}.article-filter-form button,.article-filter-form a{flex:1 1 auto;text-align:center}}
+
+
+/* Review queue: clear priority without changing article permissions. */
+.news-admin-row.article-row-pending{border-inline-start:3px solid #a77c35;padding-inline-start:.65rem}
+.article-review-shortcut{display:inline-block;margin-inline-start:.4rem;font-weight:600}
+.article-review-details{margin:.4rem 0;max-width:23rem}
+.article-review-details>summary{cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:.15em}
+.article-review-details[open]{padding:.45rem .65rem;border:1px solid #d8dfe7;border-radius:.35rem}
+.article-review-details .article-review-form{margin-top:.65rem}
+
+
+/* Article list pagination, including narrow editorial screens. */
+.article-pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.65rem;margin:1rem 0;padding:.75rem 1rem;border:1px solid #d8dfe7;border-radius:.4rem}
+.article-pagination p{margin:0}
+.article-pagination-links{display:flex;gap:.5rem;flex-wrap:wrap}
+@media(max-width:540px){.article-pagination{align-items:stretch}.article-pagination-links{width:100%}.article-pagination-links>a{flex:1 1 auto;text-align:center}}
+
+
+/* Keep the article body visible before secondary metadata. */
+.article-optional-metadata{margin:1rem 0;padding:.65rem .85rem;border:1px solid #d5dce5;border-radius:.4rem}
+.article-optional-metadata>summary{cursor:pointer;font-weight:600}
+.article-optional-metadata[open]>summary{margin-bottom:.65rem}
+.article-optional-metadata .news-form-grid{margin-top:.5rem}

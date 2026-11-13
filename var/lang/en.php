@@ -656,3 +656,13 @@ $_LANG['modules_installed_manifest_missing'] = 'The installed module has no vali
 $_LANG['extension_updates_checksum_failed'] = 'SHA-256 mismatch: archive rejected before installation.';
 $_LANG['extension_updates_package_type_mismatch'] = 'The catalogue declares this ZIP for a different extension type.';
 $_LANG['extension_updates_catalogue_untrusted'] = 'The extension catalogue does not match the trusted published version. No official update is offered.';
+
+$_LANG['users_publication_legend'] = 'Publishing permission';
+$_LANG['users_publication_review'] = 'Review required';
+$_LANG['users_publication_review_help'] = 'The author requests publication. An administrator approves the article or asks for changes.';
+$_LANG['users_publication_direct_label'] = 'Publish directly';
+$_LANG['users_publication_direct_help'] = 'The author may publish and correct their own published articles without further approval.';
+
+$_LANG['ux_articles_categories'] = 'Article categories';
+$_LANG['ux_articles_series'] = 'Article series';
+$_LANG['ux_articles_order'] = 'Article order';

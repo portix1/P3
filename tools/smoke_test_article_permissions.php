@@ -62,7 +62,7 @@ function permissionRun(): void {
     $translator=new Portix\Support\Translator($_LANG);
     $controller=new PortixModule\Articles\ArticleAdminController($articles,$root,$translator);
     $user=$repo->find('writer');
-    foreach ([['edit',$otherId],['preview',$otherId],['status',$id],['delete',$id],['category','new'],['order']] as $route) {
+    foreach ([['edit',$otherId],['preview',$otherId],['delete',$id],['category','new'],['order']] as $route) {
         $_SERVER['REQUEST_METHOD']='GET'; $_POST=[]; http_response_code(200);
         $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');
         $controller->handle($tpl,array_merge(['Admin','articles'],$route),$user);
@@ -81,13 +81,14 @@ function permissionRun(): void {
     $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');$tpl->set('csrf_token','fixture'); foreach ($_LANG as $key=>$value) { $tpl->set($key,$value); }
     $controller->handle($tpl,['Admin','articles'],$user);$html=json_encode($tpl->rows('articlerow')); 
     permissionAssert(str_contains($html,'Own')&&!str_contains($html,'Other'),'list filters other authors');
-    permissionAssert(!str_contains($html,'"can_publish":"1"'),'publish controls hidden');
+    permissionAssert(str_contains($html,'"next_status":"pending"'), 'draft offers review request, not direct publication');
+    permissionAssert(!str_contains($html,'"next_status":"published"'), 'untrusted writer cannot directly publish');
     $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');$tpl->set('csrf_token','fixture'); foreach ($_LANG as $key=>$value) { $tpl->set($key,$value); }
     $controller->handle($tpl,['Admin','articles','edit',(string)$id],$user);$html=$tpl->render();
     permissionAssert(!str_contains($html,'>Outside</option>')&&!str_contains($html,'value="published"'),'form filters category and publish');
     // Migration from the exact previous schema preserves user/content data.
     $pdo->exec('ALTER TABLE users DROP COLUMN article_permissions');
-    $pdo->exec("UPDATE schema_migrations SET version=7 WHERE version=8");$pdo->exec('PRAGMA user_version=7');
+    $pdo->exec("UPDATE schema_migrations SET version=7 WHERE version=9");$pdo->exec('PRAGMA user_version=7');
     (new Portix\Infrastructure\Migrator($db))->migrate();
     permissionAssert($repo->find('writer')->articlePermissions()===P::DEFAULTS,'old users inherit defaults');
     permissionAssert($articles->find($id)['title']==='Own','upgrade preserves content');

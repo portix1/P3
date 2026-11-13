@@ -46,6 +46,22 @@ try {
     navigationCheck(!in_array('Admin-config-modules.html', array_column($moduleManager['management'], 'url'), true), 'Gestion des modules absente d’Administration');
     navigationCheck(in_array('Admin-safety.html', array_column($moduleManager['configuration'], 'url'), true), 'Protection des contenus dans Configuration');
 
+    // Article structure belongs to Administration, article menu settings to Configuration.
+    foreach (['Admin-articles-categories.html', 'Admin-articles-series.html', 'Admin-articles-order.html'] as $url) {
+        navigationCheck(in_array($url, array_column($sections['management'], 'url'), true),
+            'Organisation des articles présente en Administration : ' . $url);
+        navigationCheck(!in_array($url, array_column($sections['writing'], 'url'), true),
+            'Organisation des articles absente de Rédaction : ' . $url);
+    }
+    navigationCheck(in_array('Admin-articles-menu.html', array_column($sections['configuration'], 'url'), true),
+        'Réglages du menu des articles dans Configuration');
+    navigationCheck(!in_array('Admin-articles-menu.html', array_column($sections['management'], 'url'), true),
+        'Réglages du menu des articles absents d’Administration');
+    $articlesMenu = AdminNavigation::sections($root, $modules, true, false, ['Admin', 'articles', 'order'], $translator);
+    $activeOrder = array_values(array_filter($articlesMenu['management'],
+        static fn (array $item): bool => $item['url'] === 'Admin-articles-order.html' && $item['current'] === 'is-current'));
+    navigationCheck(count($activeOrder) === 1, 'Page Organisation active dans Administration');
+
     $news = array_values(array_filter($sections['writing'], static fn (array $item): bool => $item['url'] === 'Admin-news.html'));
     navigationCheck(count($news) === 1 && $news[0]['current'] === 'is-current', 'Actualités doit être présent et actif en Rédaction');
     $editor = AdminNavigation::sections($root, $modules, false, true, ['Admin', 'news'], $translator);
@@ -61,10 +77,11 @@ try {
         navigationCheck(in_array($url, array_column($sections['configuration'], 'url'), true), 'Accueil regroupé dans Configuration');
         navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['management']], 'url'), true), 'Accueil absent des autres espaces');
     }
-    navigationCheck(in_array('Admin-footer.html', array_column($sections['management'], 'url'), true), 'Menu de bas de page dans Administration');
-    navigationCheck(in_array('Admin-menu.html', array_column($sections['management'], 'url'), true), 'Menu principal dans Administration');
-    navigationCheck(!in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Menu de bas de page exclu de Configuration');
+    navigationCheck(in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Menu de bas de page dans Configuration');
+    navigationCheck(in_array('Admin-menu.html', array_column($sections['configuration'], 'url'), true), 'Menu principal dans Configuration');
+    navigationCheck(!in_array('Admin-footer.html', array_column($sections['management'], 'url'), true), 'Menu de bas de page absent d’Administration');
     navigationCheck(!in_array('Admin-menu.html', array_column($sections['writing'], 'url'), true), 'Menu principal exclu de Rédaction');
+    navigationCheck(!in_array('Admin-menu.html', array_column($sections['management'], 'url'), true), 'Menu principal absent d’Administration');
     navigationCheck(in_array('Admin-diagnostics.html', array_column($sections['configuration'], 'url'), true), 'Diagnostics dans Configuration');
     $homeDisabled = array_map(static function (array $module): array { if ($module['prefix'] === 'home') { $module['enabled'] = false; } return $module; }, $modules);
     $homeHidden = AdminNavigation::sections($root, $homeDisabled, true, false, ['Admin'], $translator);

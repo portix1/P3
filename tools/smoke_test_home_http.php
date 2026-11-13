@@ -44,9 +44,20 @@ try {
     fclose($pipes[0]);
     $request=static function(string $path,string $method='GET',string $body='',array $headers=[])use($base):array {
         $context=stream_context_create(['http'=>['method'=>$method,'header'=>implode("\r\n",$headers),'content'=>$body,'ignore_errors'=>true,'follow_location'=>0,'timeout'=>10]]);
-        $text=@file_get_contents($base.$path,false,$context);$responseHeaders=$http_response_header??[];
-        preg_match('~HTTP/\S+ (\d+)~',$responseHeaders[0]??'',$match);
-        return [(int)($match[1]??0),$text===false?'':$text,$responseHeaders];
+        // The disposable PHP test server can transiently refuse a connection
+        // under CI load. Retry safe reads only when there was no HTTP response.
+        // Never retry POST, which could repeat a state-changing operation.
+        for ($attempt = 0; $attempt < 3; $attempt++) {
+            $text = @file_get_contents($base . $path, false, $context);
+            $responseHeaders = $http_response_header ?? [];
+            preg_match('~HTTP/\S+ (\d+)~', $responseHeaders[0] ?? '', $match);
+            $code = (int) ($match[1] ?? 0);
+            if ($code !== 0 || !in_array($method, ['GET', 'HEAD'], true) || $attempt === 2) {
+                return [$code, $text === false ? '' : $text, $responseHeaders];
+            }
+            usleep(150000 * ($attempt + 1));
+        }
+        throw new RuntimeException('Réponse HTTP absente après trois tentatives.');
     };
     for ($attempt=0;$attempt<40;$attempt++) { $response=$request('/');if ($response[0]!==0) { break; }usleep(100000); }
     $check=static function(bool $value,string $message):void { if (!$value) { throw new RuntimeException($message); } };
@@ -132,8 +143,14 @@ try {
         $check(str_contains($configArea[1],'Admin-home.html')===($actor==='admin'), 'Only administrators can find Home in Configuration');
         $management=$request('/Admin-management.html','GET','',$headers);
         $check($management[0]===($actor==='admin'?200:403), 'Only administrators enter Administration');
-        $check(str_contains($management[1],'Admin-menu.html')===($actor==='admin'), 'Main menu only appears in Administration for administrators');
-        $check(str_contains($management[1],'Admin-footer.html')===($actor==='admin'), 'Footer menu only appears in Administration for administrators');
+        $check(str_contains($configArea[1], 'href="Admin-menu.html"')===($actor==='admin'),
+            'Main menu appears only in Configuration for administrators');
+        $check(str_contains($configArea[1], 'href="Admin-footer.html"')===($actor==='admin'),
+            'Footer menu appears only in Configuration for administrators');
+        $check(!str_contains($management[1], 'href="Admin-menu.html"'),
+            'Main menu absent from Administration');
+        $check(!str_contains($management[1], 'href="Admin-footer.html"'),
+            'Footer menu absent from Administration');
         foreach (['Admin-config-modules.html', 'Admin-diagnostics.html', 'Admin-safety.html'] as $entry) {
             $check(str_contains($configArea[1], 'href="' . $entry . '"') === ($actor === 'admin'), 'Configuration entry: '.$entry);
             $check(!str_contains($management[1], 'href="' . $entry . '"'), 'Entry absent from Administration: '.$entry);
@@ -191,14 +208,29 @@ try {
         $staffHome=$request('/','GET','',$headers);
         $check(!str_contains($staffHome[1],'home/assets/home.js'),'Staff measurement excluded');
     }
+    // The preceding HTTP exercises may generate real minimal measurements.
+    // Reset only this isolated fixture so the empty-dashboard assertion remains
+    // deterministic across PHP versions and request timings.
+    $db->connection()->exec('DELETE FROM analytics_v2_counts');
+    $db->connection()->exec('DELETE FROM analytics_v2_daily');
     $empty = $request('/Admin-insights.html', 'GET', '', $auth);
-    $check($empty[0] === 200 && str_contains($empty[1], 'Aucune mesure sur cette période.'), 'Empty dashboard is readable');
+    $check($empty[0] === 200 && str_contains($empty[1], 'Aucune mesure sur cette période.'),
+        'Empty dashboard is readable (HTTP ' . $empty[0]
+        . ', has expected text: ' . (str_contains($empty[1], 'Aucune mesure sur cette période.') ? 'yes' : 'no')
+        . ', body bytes: ' . strlen($empty[1]) . ')');
     PortixSettings::write('insights', ['mode' => 'daily'], $fixture);
     $slug = $db->connection()->query("SELECT slug FROM articles WHERE status = 'published' ORDER BY id LIMIT 1")->fetchColumn();
     $articleUrl = '/' . $slug . '.html';
     $visitor = ['User-Agent: Firefox test visitor', 'Referer: https://example.test/path?private=1'];
     $first = $request('/', 'GET', '', $visitor);
-    $check($first[0] === 200 && !preg_grep('/^Set-Cookie:/i', $first[2]), 'Daily fingerprint sets no cookie');
+    $unexpectedCookies = array_values(preg_grep('/^Set-Cookie:/i', $first[2]) ?: []);
+    $check($first[0] === 200 && $unexpectedCookies === [],
+        'Daily fingerprint sets no cookie (HTTP ' . $first[0]
+        . ', cookie headers: ' . count($unexpectedCookies)
+        . ', response path: /; cookie names: '
+        . implode(', ', array_map(static function (string $header): string {
+            return preg_replace('/^Set-Cookie:\s*([^=;]+).*/i', '$1', $header) ?? '';
+        }, $unexpectedCookies)) . ')');
     $check($request($articleUrl, 'GET', '', $visitor)[0] === 200, 'Public article is measurable');
     $request($articleUrl, 'GET', '', ['User-Agent: Googlebot']);
     $request($articleUrl, 'GET', '', [...$visitor, 'DNT: 1']);
@@ -222,6 +254,27 @@ try {
     echo "Statistiques HTTP : empreinte quotidienne, exclusions, article, entrée, référent et export vérifiés.\n";
 
     if (in_array('--browser',$argv,true)) {
+        // Start Chromium against a fresh HTTP process, not the fixture server
+        // already used for dozens of PHP integration requests. The same
+        // isolated SQLite fixture is retained; no assertions are skipped.
+        if (is_resource($server)) {
+            proc_terminate($server);
+            proc_close($server);
+        }
+        $server = proc_open(
+            [PHP_BINARY,'-S',$address,'-t',$fixture,$fixture.'/router.php'],
+            [['pipe','r'],['file',$fixture.'/server.log','a'],['file',$fixture.'/server.log','a']],
+            $browserPipes,$fixture
+        );
+        $check(is_resource($server), 'Fresh browser fixture server starts');
+        fclose($browserPipes[0]);
+        $ready = false;
+        for ($attempt=0; $attempt<30; $attempt++) {
+            usleep(100000);
+            $response = $request('/');
+            if ($response[0] === 200) { $ready = true; break; }
+        }
+        $check($ready, 'Fresh browser fixture server is ready');
         putenv('HOME_TEST_URL='.$base);
         passthru('node '.escapeshellarg($source.'/tools/test_home_browser.cjs'),$exit);
         $check($exit===0,'Browser validation');
@@ -231,6 +284,12 @@ try {
     echo "Accueil HTTP : public, rôles, CSRF, persistance, signature, port local et absence de nouveau cookie : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR,$error->getMessage()."\n");
+    if (is_resource($server)) {
+        $serverState = proc_get_status($server);
+        fwrite(STDERR, 'Fixture PHP server running: '
+            . (($serverState['running'] ?? false) ? 'yes' : 'no')
+            . ', exit code: ' . ($serverState['exitcode'] ?? 'unknown') . "\n");
+    }
     if (is_file($fixture.'/server.log')) { fwrite(STDERR,substr((string)file_get_contents($fixture.'/server.log'),-2400)); }
     $status=1;
 } finally {

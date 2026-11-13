@@ -5,9 +5,17 @@
 </header>
 
 {% if articles_message %}<p class="status-message" role="status">{{ articles_message }}</p>{% endif %}
+{% if review_is_pending == "1" %}<p class="review-banner" role="status">{{ articles_review_pending_edit_notice }}</p>{% endif %}
+{% if review_note_value %}<p class="review-note-banner">{{ articles_review_returned }} : {{ review_note_value }}</p>{% endif %}
 
-<form method="post" action="{{ articles_form_action }}" class="news-editor-form" data-unsaved-warning="1">
+<form method="post" action="{{ articles_form_action }}" class="news-editor-form" data-unsaved-warning="1" data-article-autosave="{{ articles_autosave_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+    <input type="hidden" name="from_page" value="{{ articles_return_page }}" />
+    <input type="hidden" name="from_state" value="{{ articles_return_state }}" />
+    <input type="hidden" name="from_q" value="{{ articles_return_q }}" />
+    <input type="hidden" name="base_updated_at" value="{{ articles_autosave_base }}" />
+    <textarea id="article-autosave-snapshot" hidden aria-hidden="true" aria-label="Sauvegarde de récupération privée">{{ articles_autosave_snapshot }}</textarea>
+    <p class="article-autosave-status" id="article-autosave-status" role="status" aria-live="polite"></p>
     <div class="news-form-grid">
         <label>{{ articles_field_title }}
             <input type="text" name="title" value="{{ articles_title_value }}" maxlength="250" required />
@@ -19,10 +27,12 @@
         <label>{{ articles_field_status }}
             <select name="status">
                 <option value="draft" {{ articles_draft_selected }}>{{ articles_status_draft }}</option>
+                
                 {% if articles_can_publish == "1" %}<option value="published" {{ articles_published_selected }}>{{ articles_status_published }}</option>{% endif %}
             </select>
         </label>
     </div>
+    {% if review_required == "1" %}<p class="field-help">{{ articles_review_next_step }}</p>{% endif %}
 
     <label>{{ articles_field_category }}
         <select name="category_id">
@@ -32,15 +42,11 @@
         </select>
     </label>
 
-    <div class="news-form-grid">
-        <label>{{ articles_field_author }}
-            <input type="text" name="author_name" value="{{ articles_author_value }}" maxlength="160" />
-            <small>{{ articles_field_author_help }}</small>
-        </label>
-        <label class="form-grid-wide">{{ articles_field_featured_image }}
-            <input type="text" name="featured_image" value="{{ articles_featured_image_value }}" maxlength="500" placeholder="var/uploads/images/image.webp" />
-            <small>{{ articles_field_featured_image_help }}</small>
-        </label>
+    <label for="article-body">{{ articles_field_body }}</label>
+    <p class="portix-editor-help" id="article-body-help">{{ articles_body_help }}</p>
+    <div class="portix-editor" data-portix-editor="1" data-editor-label="{{ articles_field_body }}" data-upload-url="Admin-articles-upload-image.html">
+        <textarea class="portix-editor-source" id="article-body" name="content" rows="18" aria-describedby="article-body-help">{{ articles_body_value }}</textarea>
+        <div class="portix-editor-surface"></div>
     </div>
 
     <label for="article-summary">{{ articles_field_summary }}</label>
@@ -76,16 +82,26 @@
     <script src="var/modules/articles/article-picker.js?v={{ articles_asset_version }}" defer></script>
     <script src="var/modules/articles/series-order.js?v={{ articles_asset_version }}" defer></script>
 
-    <label for="article-body">{{ articles_field_body }}</label>
-    <p class="portix-editor-help" id="article-body-help">{{ articles_body_help }}</p>
-    <div class="portix-editor" data-portix-editor="1" data-editor-label="{{ articles_field_body }}" data-upload-url="Admin-articles-upload-image.html">
-        <textarea class="portix-editor-source" id="article-body" name="content" rows="18" aria-describedby="article-body-help">{{ articles_body_value }}</textarea>
-        <div class="portix-editor-surface"></div>
+    <details class="article-optional-metadata">
+        <summary>{{ articles_optional_metadata }}</summary>
+        <p class="field-help">{{ articles_optional_metadata_help }}</p>
+    <div class="news-form-grid">
+        <label>{{ articles_field_author }}
+            <input type="text" name="author_name" value="{{ articles_author_value }}" maxlength="160" />
+            <small>{{ articles_field_author_help }}</small>
+        </label>
+        <label class="form-grid-wide">{{ articles_field_featured_image }}
+            <input type="text" name="featured_image" value="{{ articles_featured_image_value }}" maxlength="500" placeholder="var/uploads/images/image.webp" />
+            <small>{{ articles_field_featured_image_help }}</small>
+        </label>
     </div>
 
+    </details>
+
     <div class="form-actions news-form-actions">
-        <button type="submit">{{ ui_save }}</button>
+        <button type="submit">{% if review_required == "1" %}{{ articles_save_draft }}{% else %}{{ ui_save }}{% endif %}</button>
+
         <button class="button button-quiet" type="submit" formaction="{{ articles_preview_action }}" formtarget="_blank" formnovalidate data-preview-submit="1">{{ ui_preview }}</button>
-        <a class="button button-quiet" href="Admin-articles.html">{{ ui_cancel }}</a>
+        <a class="button button-quiet" href="{{ articles_return_url }}">{{ ui_cancel }}</a>
     </div>
 </form>

@@ -36,8 +36,8 @@ final class AdminNavigation
 
         $places = [
             'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
-            'media' => ['writing', 'images'], 'menu' => ['management', 'menu'],
-            'footer' => ['management', 'panel-bottom'], 'dwl' => ['writing', 'download'],
+            'media' => ['writing', 'images'], 'menu' => ['configuration', 'menu'],
+            'footer' => ['configuration', 'panel-bottom'], 'dwl' => ['writing', 'download'],
             'affiliation' => ['writing', 'dollar-sign'], 'contact' => ['management', 'mail'],
             'insights' => ['management', 'chart-bar'], 'search' => ['management', 'search'],
             'safety' => ['configuration', 'triangle-alert'],
@@ -89,6 +89,9 @@ final class AdminNavigation
             }
             $add($section, $manifest['name'], 'Admin-' . $prefix . '.html', $icon);
             if ($isAdmin && $prefix === 'articles') {
+                $add('management', 'ux_articles_categories', 'Admin-articles-categories.html', 'folder');
+                $add('management', 'ux_articles_series', 'Admin-articles-series.html', 'list');
+                $add('management', 'ux_articles_order', 'Admin-articles-order.html', 'arrow-up-down');
                 $add('configuration', 'ux_settings_articles', 'Admin-articles-menu.html', 'menu');
             }
             if ($isAdmin && in_array($prefix, $settings, true)) {

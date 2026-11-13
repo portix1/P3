@@ -362,16 +362,19 @@ try {
             && str_contains($articleAdminController, 'http_response_code(403);'),
         'configuration du menu Articles réservée aux administrateurs'
     );
-    foreach (['admin-list.tpl', 'admin-categories.tpl'] as $articleAdminTemplate) {
-        $articleAdminMarkup = (string) file_get_contents(
-            $root . '/var/modules/articles/templates/' . $articleAdminTemplate
-        );
-        assertSameValue(
-            true,
-            str_contains($articleAdminMarkup, '{% if articles_can_configure_menu == "1" %}'),
-            'lien de configuration du menu masqué aux rédacteurs'
-        );
-    }
+    // The article list is exclusively editorial; structural menu settings only
+    // appear on the categories screen and are hidden unless the server grants
+    // the administrator-only articles_can_configure_menu flag.
+    $articleListMarkup = (string) file_get_contents($root . '/var/modules/articles/templates/admin-list.tpl');
+    assertSameValue(false, str_contains($articleListMarkup, 'Admin-articles-menu.html'),
+        'aucun réglage structurel dans la liste des articles');
+    $categoriesMarkup = (string) file_get_contents($root . '/var/modules/articles/templates/admin-categories.tpl');
+    assertSameValue(
+        true,
+        str_contains($categoriesMarkup, '{% if articles_can_configure_menu == "1" %}')
+            && str_contains($categoriesMarkup, 'href="Admin-articles-menu.html"'),
+        'réglage du menu masqué aux rédacteurs dans la gestion des catégories'
+    );
     $articleSchema = (string) file_get_contents($root . '/var/modules/articles/database/articles/desc.csv');
     assertSameValue(true, str_contains($articleSchema, 'position; numeric;'), 'position SQLite des articles');
     foreach (['34', 'chomeur', 'temp2', 'mgc'] as $removedTheme) {
