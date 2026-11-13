@@ -348,9 +348,25 @@
         var status = document.createElement('p'); status.className = 'media-status'; status.setAttribute('role', 'status');
         var label = document.createElement('input'); label.type = 'text'; label.maxLength = 250; label.title = 'Texte du lien'; label.value = savedText;
         var labelField = labelledField('Texte du lien', label); labelField.classList.add('media-document-label'); labelField.hidden = family === 'image';
+        var imageAltInput = document.createElement('input'); imageAltInput.type = 'text'; imageAltInput.maxLength = 250;
+        imageAltInput.placeholder = 'Décrivez les informations visibles dans l’image';
+        var imageAltField = labelledField('Texte alternatif (lecteur d’écran)', imageAltInput);
+        imageAltField.classList.add('media-document-label'); imageAltField.hidden = family !== 'image';
+        var imageDecorative = document.createElement('input'); imageDecorative.type = 'checkbox';
+        imageDecorative.title = 'L’image n’apporte aucune information utile au texte.';
+        var decorativeField = document.createElement('label');
+        decorativeField.append(imageDecorative, document.createTextNode(' Image décorative — texte alternatif vide'));
+        decorativeField.hidden = family !== 'image';
+        var imageA11yHelp = document.createElement('small');
+        imageA11yHelp.textContent = 'Renseignez le texte alternatif ou cochez « Image décorative » avant d’insérer.';
+        imageA11yHelp.hidden = family !== 'image';
+        imageDecorative.addEventListener('change',function(){
+            imageAltInput.disabled = imageDecorative.checked;
+            if(imageDecorative.checked){imageAltInput.value='';}
+        });
         var insert = makeRichButton('Insérer'); insert.disabled = true;
         var cancel = makeRichButton('Annuler');
-        actions.append(search, add); dialog.body.append(actions,status,grid,labelField); dialog.actions.append(cancel,insert);
+        actions.append(search, add); dialog.body.append(actions,status,grid,labelField,imageAltField,decorativeField,imageA11yHelp); dialog.actions.append(cancel,insert);
         var selected = null, serial = 0, closed = false, busy = false, timer;
         function close() { closed=true;clearTimeout(timer);dialog.close();dialog.dialog.remove();quill.focus(); }
         cancel.addEventListener('click', close);
@@ -371,6 +387,11 @@
             selected=row;insert.disabled=false;
             grid.querySelectorAll('.media-card').forEach(function(node){node.classList.toggle('is-selected',node===card);node.setAttribute('aria-pressed',node===card?'true':'false');});
             if(family!=='image' && !savedText){label.value=row.original_name;}
+            if(family==='image'){
+                imageAltInput.value = row.alt_text || '';
+                imageDecorative.checked = row.is_decorative === 1 || row.is_decorative === '1';
+                imageAltInput.disabled = imageDecorative.checked;
+            }
         }
         async function load() {
             var current=++serial;status.textContent='Chargement…';
@@ -408,6 +429,10 @@
             if(!selected || busy){return;}
             var row=selected;var text=label.value.trim();
             if(family!=='image' && !text){status.textContent='Indiquez le texte du lien.';label.focus();return;}
+            if(family==='image' && !imageDecorative.checked && !imageAltInput.value.trim()){
+                status.textContent='Renseignez un texte alternatif ou indiquez explicitement que l’image est décorative.';
+                imageAltInput.focus();return;
+            }
             // Validate against the same local allow-list as the editor, even for server responses.
             if(family==='image' ? !safeImageSource(row.public_path) : !/^var\/uploads\/media\/[a-f0-9]{32}\.(?:pdf|zip)$/.test(row.public_path)){
                 status.textContent='Adresse de média refusée.';return;
@@ -420,7 +445,7 @@
                 var imageCallout=!insideTable?imageCalloutAttributes(quill,range.index):{};
                 var delta=new Delta().retain(range.index).delete(range.length);
                 if(prefix){delta.insert(prefix,imageCallout);}
-                delta.insert({'portix-image':{src:row.public_path}});
+                delta.insert({'portix-image':{src:row.public_path,alt:imageDecorative.checked?'':imageAltInput.value.trim(),'image-decorative':imageDecorative.checked?'1':''}});
                 if(!insideTable){delta.insert('\n',imageCallout);}
                 quill.updateContents(delta,'user');
                 // Keep the image inside the selected callout on save and reopen.
