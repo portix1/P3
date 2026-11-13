@@ -16,6 +16,11 @@ final class ArticleRepository
     }
 
     public function editorial(): EditorialRepository { return new EditorialRepository($this->pdo); }
+    public function autosaves(): ArticleAutosaveStore
+    {
+        require_once __DIR__ . '/ArticleAutosaveStore.php';
+        return new ArticleAutosaveStore($this->pdo);
+    }
 
     public function countAll(): int
     {
