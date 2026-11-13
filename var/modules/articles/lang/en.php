@@ -181,3 +181,8 @@ $_LANG['articles_filter_result_label'] = 'article(s) shown';
 $_LANG['articles_filter_no_matches_label'] = 'No articles match these filters.';
 
 $_LANG['articles_review_view_pending'] = 'View requests';
+
+$_LANG['articles_page_navigation'] = 'Article list pages';
+$_LANG['articles_page_items'] = 'Articles';
+$_LANG['articles_page_previous'] = 'Previous page';
+$_LANG['articles_page_next'] = 'Next page';
