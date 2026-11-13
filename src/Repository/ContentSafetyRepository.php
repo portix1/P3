@@ -240,7 +240,7 @@ final class ContentSafetyRepository
         $st = $this->pdo->prepare('INSERT INTO articles '
             . '(id, category_id, title, slug, summary, body, status, position, created_by, author_name, featured_image, published_at, created_at, updated_at) '
             . 'VALUES (:id,:category_id,:title,:slug,:summary,:body,:status,:position,:created_by,:author_name,:featured_image,:published_at,:created_at,:updated_at)');
-        $st->execute($this->pick($s, ['id','category_id','title','slug','summary','body','status','position','created_by','author_name','featured_image','published_at','created_at','updated_at']));
+        $st->execute($this->pick($s, ['id','category_id','title','slug','summary','body','status','position','created_by','author_name','featured_image','published_at','created_at','updated_at','review_note']));
     }
 
     /** @param array<string,mixed> $s */
@@ -285,8 +285,8 @@ final class ContentSafetyRepository
     /** @param array<string,mixed> $s */
     private function updateArticleFromSnapshot(array $s): void
     {
-        $st = $this->pdo->prepare('UPDATE articles SET category_id=:category_id,title=:title,slug=:slug,summary=:summary,body=:body,status=:status,position=:position,created_by=:created_by,author_name=:author_name,featured_image=:featured_image,published_at=:published_at,created_at=:created_at,updated_at=:updated_at WHERE id=:id');
-        $st->execute($this->pick($s, ['id','category_id','title','slug','summary','body','status','position','created_by','author_name','featured_image','published_at','created_at','updated_at']));
+        $st = $this->pdo->prepare('UPDATE articles SET category_id=:category_id,title=:title,slug=:slug,summary=:summary,body=:body,status=:status,position=:position,created_by=:created_by,author_name=:author_name,featured_image=:featured_image,published_at=:published_at,created_at=:created_at,updated_at=:updated_at,review_note=:review_note WHERE id=:id');
+        $st->execute($this->pick($s, ['id','category_id','title','slug','summary','body','status','position','created_by','author_name','featured_image','published_at','created_at','updated_at','review_note']));
     }
 
     /** @param array<string,mixed> $s */
