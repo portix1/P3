@@ -1003,3 +1003,12 @@ input[type="submit"]:hover,
 .article-filter-form button,.article-filter-form a{margin:0}
 .article-list-filters .field-help{margin:.6rem 0 0}
 @media(max-width:540px){.article-filter-form label{flex:1 1 100%}.article-filter-form button,.article-filter-form a{flex:1 1 auto;text-align:center}}
+
+
+/* Review queue: clear priority without changing article permissions. */
+.news-admin-row.article-row-pending{border-inline-start:3px solid #a77c35;padding-inline-start:.65rem}
+.article-review-shortcut{display:inline-block;margin-inline-start:.4rem;font-weight:600}
+.article-review-details{margin:.4rem 0;max-width:23rem}
+.article-review-details>summary{cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:.15em}
+.article-review-details[open]{padding:.45rem .65rem;border:1px solid #d8dfe7;border-radius:.35rem}
+.article-review-details .article-review-form{margin-top:.65rem}
