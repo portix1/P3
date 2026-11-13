@@ -1,6 +1,6 @@
 # Catalogue officiel des extensions P3
 
-Ce répertoire contient les archives autonomes disponibles par le canal vérifié de la version **P3 0.9.2** (préparée, non publiée). Il ne constitue pas une liste exhaustive des modules inclus dans la distribution complète du moteur.
+Ce répertoire contient les archives autonomes préparées pour le canal vérifié de **P3 0.9.2** (non publié). Le canal actuellement diffusé reste celui de 0.9.1. Il ne constitue pas une liste exhaustive des modules inclus dans la distribution complète du moteur.
 
 | Extension autonome | Version | Compatibilité | Téléchargement |
 | --- | --- | --- | --- |

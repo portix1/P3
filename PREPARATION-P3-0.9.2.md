@@ -58,3 +58,10 @@ La candidate reste distincte d'une version stable et de la production. La fusion
 ## Dernière étape — version stable préparée
 
 La version `0.9.2` est préparée sur la branche isolée `release/0.9.2`. Le catalogue et le ZIP Articles sont reconstruits avec `<MinimumP3>0.9.2</MinimumP3>`, puis leur empreinte est fixée dans le noyau. Les tests sous PHP 8.2 à 8.5, le contrôle navigateur et l'archive complète sont relancés. Aucun transfert en production ni modification de `main` n'est autorisé implicitement.
+
+### Catalogue figé pour 0.9.2
+
+- Commit contenant le catalogue et le ZIP Articles 1.4.9 : `85a1f234c6c9f1a21f8b5b9634a0085ac867f74b`.
+- SHA-256 du catalogue : `1e0f83fc50026a6349f3042b39c28f6408ccdf7a4f0e1bbc66c755c59d4fa658`.
+- SHA-256 du ZIP Articles 1.4.9 : `cf47437ae75242baef96bd979f8a64bc2cd364b12d52ad022e1f10c78e3144d3`.
+- Un changement ultérieur de la branche ne modifie pas la source des mises à jour. Les empreintes ne doivent être changées qu'avec une nouvelle publication contrôlée.
