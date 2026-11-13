@@ -74,6 +74,15 @@
     </article>
     {% endfor %}
 </section>
+{% if articles_pages_visible == "1" %}
+<nav class="article-pagination" aria-label="{{ articles_page_navigation }}">
+    <p>{{ articles_page_items }} {{ articles_page_from }}–{{ articles_page_to }} · {{ articles_page_current }} / {{ articles_page_total }}</p>
+    <div class="article-pagination-links">
+        {% if articles_page_previous_visible == "1" %}<a class="button button-quiet" href="{{ articles_page_previous_url }}">{{ articles_page_previous }}</a>{% endif %}
+        {% if articles_page_next_visible == "1" %}<a class="button button-quiet" href="{{ articles_page_next_url }}">{{ articles_page_next }}</a>{% endif %}
+    </div>
+</nav>
+{% endif %}
 {% if articles_filter_active == "1" %}{% if articles_filter_no_matches == "1" %}<p class="empty-state">{{ articles_filter_no_matches_label }}</p>{% endif %}{% endif %}
 {% if articles_filter_active == "0" %}{% if review_has_rows == "0" %}<p class="empty-state">{{ review_empty_help }}</p>{% endif %}{% endif %}
 
