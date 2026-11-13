@@ -61,6 +61,32 @@ final class MediaManager
         return $query->fetch(PDO::FETCH_ASSOC);
     }
 
+    /** Save reusable editorial defaults, without altering image bytes or articles. */
+    public function setAccessibility(int $id, string $altText, bool $decorative): array
+    {
+        $item = $this->item($id);
+        if ($item['family'] !== 'image') {
+            throw new RuntimeException('Les métadonnées d’accessibilité ne concernent que les images.');
+        }
+        $altText = trim($altText);
+        if (mb_strlen($altText, 'UTF-8') > 250) {
+            throw new RuntimeException('Le texte alternatif dépasse 250 caractères.');
+        }
+        if ($decorative) {
+            $altText = '';
+        } elseif ($altText === '') {
+            throw new RuntimeException('Renseignez un texte alternatif ou marquez l’image comme décorative.');
+        }
+        $query = $this->pdo->prepare(
+            'UPDATE media_items SET alt_text = :alt, is_decorative = :decorative, updated_at = :updated WHERE id = :id'
+        );
+        $query->execute([
+            'alt' => $altText, 'decorative' => $decorative ? 1 : 0,
+            'updated' => gmdate('Y-m-d H:i:s'), 'id' => $id,
+        ]);
+        return $this->item($id);
+    }
+
     /** @return array{added:int,unknown:list<string>} */
     public function inventory(): array
     {
