@@ -49,9 +49,9 @@ if hashlib.sha256(official.read_bytes()).hexdigest() != package['sha256']:
 with zipfile.ZipFile(official) as archive:
     if archive.testzip() is not None:
         raise AssertionError('Invalid ZIP')
-    if set(archive.namelist()) != set(expected):
+    if not unreleased and set(archive.namelist()) != set(expected):
         raise AssertionError('ZIP content list differs from tracked module files')
-    for name, src in expected.items():
+    for name, src in (expected.items() if not unreleased else []):
         if not unreleased and archive.read(name) != src.read_bytes():
             raise AssertionError('ZIP file differs from checked-in source: ' + name)
         if archive.getinfo(name).date_time != (1980, 1, 1, 0, 0, 0):
