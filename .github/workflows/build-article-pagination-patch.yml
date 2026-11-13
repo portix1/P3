@@ -1,0 +1,61 @@
+name: Patch P3 - pagination des articles
+on:
+  push:
+    branches:
+      - feature/relecture-articles-chatgpt-20261113
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tester et construire le patch de pagination
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\r\n' < VERSION)" = "0.9.1"
+          sudo apt-get update -qq
+          sudo apt-get install -y php-sqlite3 php-mbstring php-xml php-gd php-zip >/dev/null
+          php -l var/modules/articles/src/ArticleListPagination.php
+          php -l var/modules/articles/src/ArticleAdminController.php
+          php -l var/modules/articles/lang/fr.php
+          php -l var/modules/articles/lang/en.php
+          php tools/smoke_test_article_review.php
+          php tools/smoke_test_template.php
+          if grep -En '\{% if [^%]*(\&\&|\|\|)[^%]*%\}' var/modules/articles/templates/admin-list.tpl; then
+            echo 'Condition de template non supportee'
+            exit 1
+          fi
+          mkdir -p patch
+          for file in \
+            var/modules/articles/src/ArticleListPagination.php \
+            var/modules/articles/src/ArticleAdminController.php \
+            var/modules/articles/templates/admin-list.tpl \
+            var/modules/articles/lang/fr.php \
+            var/modules/articles/lang/en.php \
+            var/admin/style.css; do
+            mkdir -p "patch/$(dirname "$file")"
+            cp "$file" "patch/$file"
+          done
+          cat > patch/LISEZ-MOI-PATCH.txt <<'EOF'
+          P3 0.9.1 — Pagination des articles
+          Correctif à appliquer sur la version déjà mise à jour avec les
+          précédents patchs de relecture, recherche et navigation.
+          Aucun installateur, aucune base SQLite ou média dans l'archive.
+          Sauvegarder les fichiers du site puis copier var/ à la racine P3,
+          en conservant l'arborescence et en remplaçant les fichiers existants.
+          Ouvrir Rédaction > Articles, vérifier les 25 premiers articles,
+          Page suivante, Page précédente et la conservation des filtres.
+          Aucun changement de structure SQLite.
+          EOF
+          (cd patch && zip -qr ../P3-patch-pagination-articles-0.9.1.zip .)
+          unzip -t P3-patch-pagination-articles-0.9.1.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P3-patch-pagination-articles-0.9.1
+          path: P3-patch-pagination-articles-0.9.1.zip
+          if-no-files-found: error
