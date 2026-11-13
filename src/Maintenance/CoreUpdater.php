@@ -148,8 +148,14 @@ final class CoreUpdater
             if ($zip->numFiles < 3 || $zip->numFiles > self::MAX_FILES) {
                 throw new RuntimeException('Nombre de fichiers inattendu dans l’archive.');
             }
+            $totalSize = 0;
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 $stat = $zip->statIndex($i);
+                if (!is_array($stat) || ($stat['size'] ?? 0) > 12582912 || ($stat['size'] ?? 0) < 0) {
+                    throw new RuntimeException('Un fichier de l’archive est trop volumineux.');
+                }
+                $totalSize += (int) $stat['size'];
+                if ($totalSize > 100663296) { throw new RuntimeException('Archive décompressée trop volumineuse.'); }
                 $entry = (string) ($stat['name'] ?? '');
                 if (!str_starts_with($entry, 'P3/')) {
                     throw new RuntimeException('Archive P3 : racine inattendue.');
@@ -217,7 +223,7 @@ final class CoreUpdater
                 $maintenance = true;
                 // VERSION last, so an interrupted update never advertises a new version.
                 unset($files['VERSION']);
-                $files['VERSION'] = $seen['VERSION'] ? -1 : -1;
+                $files['VERSION'] = -1;
                 foreach (array_keys($files) as $relative) {
                     self::assertDestinationSafe($root, $relative);
                     $destination = $root . '/' . $relative;
@@ -283,7 +289,7 @@ final class CoreUpdater
             'var/admin/', 'var/editor/', 'var/lang/', 'var/modules/'] as $prefix) {
             if (str_starts_with($relative, $prefix)) {
                 // Never overwrite an existing module's runtime data.
-                if (preg_match('~(?:^|/)(?:uploads|private|cache|sessions|database)/~', $relative)) {
+                if (preg_match('~(?:^|/)(?:uploads|private|cache|sessions)/~', $relative)) {
                     return false;
                 }
                 return !str_ends_with($relative, '/.htaccess');
