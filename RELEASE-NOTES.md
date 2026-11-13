@@ -1,7 +1,6 @@
-# P3 0.9.2-rc1 — candidate de consolidation
+# P3 0.9.2 — consolidation du back-office
 
-**Candidate de préparation, non publiée.** La version stable reste **P3 0.9.1**.
-La compilation et les tests automatisés ne constituent pas une autorisation de déploiement.
+**Version stable en préparation sur une branche distincte, non fusionnée et non publiée.** La version diffusée demeure **P3 0.9.1** jusqu'à autorisation de publication.
 
 ## Changements depuis 0.9.1
 
@@ -14,7 +13,7 @@ La compilation et les tests automatisés ne constituent pas une autorisation de 
 
 ## Module autonome et provenance
 
-- Module **Articles 1.4.9** inclus dans cette candidate ; compatible avec **P3 0.9.2-rc1 ou version ultérieure**.
+- Module **Articles 1.4.9** inclus dans cette version préparée ; compatible avec **P3 0.9.2 ou version ultérieure**.
 - Catalogue de cette candidate et ZIP autonome Articles reconstruits ensemble, avec empreintes SHA-256 et référence Git de confiance figée.
 - Il ne faut pas remplacer séparément le catalogue, le module et la référence de confiance.
 - Le canal stable de P3 0.9.1 reste inchangé tant que la 0.9.2 n'est pas approuvée et publiée.
@@ -35,4 +34,4 @@ L'archive complète est destinée à une installation neuve ou à une mise à jo
 - Distribution sans bases de production, sessions, sauvegardes, configurations privées ni médias importés.
 - Contrôle d'une installation neuve et de la conservation des données d'une installation existante.
 
-La publication stable `0.9.2` et la fusion dans `main` demandent une autorisation explicite.
+La fusion dans `main`, la création d'une GitHub Release et tout déploiement en production nécessitent une autorisation explicite.

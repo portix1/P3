@@ -1,7 +1,7 @@
 # P3 — CMS PHP modulaire
 
 **Version stable actuelle :** `0.9.1`  
-**Candidate en préparation :** `0.9.2-rc1` (branche séparée, non publiée)  
+**Version 0.9.2 préparée :** branche `release/0.9.2` (non fusionnée, non publiée)  
 **Version stable précédente :** `0.9.0`  
 **Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
 **Licence :** `GPL-3.0-or-later`
@@ -10,7 +10,7 @@ P3 est un CMS PHP modulaire avec des espaces distincts pour la Rédaction, l'Adm
 
 ## Distribution
 
-Les versions complètes sont publiées dans [GitHub Releases](https://github.com/portix1/P3/releases). Voir [RELEASE-NOTES.md](RELEASE-NOTES.md) pour les modifications de 0.9.1, la procédure de mise à jour et les limites connues.
+Les versions complètes sont publiées dans [GitHub Releases](https://github.com/portix1/P3/releases). Voir [RELEASE-NOTES.md](RELEASE-NOTES.md) pour les modifications prévues de 0.9.2, la procédure de mise à jour et les limites connues.
 
 L'archive complète inclut le moteur, les modules et les thèmes de référence. Elle exclut les bases SQLite d'exploitation, les sessions, sauvegardes, médias importés, configurations privées et données générées. Les archives de modules et le catalogue d'extensions autonomes sont gérés séparément dans [distribution/](distribution/README.md).
 

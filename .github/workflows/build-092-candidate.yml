@@ -1,8 +1,8 @@
-name: P3 0.9.2-rc1 — candidate ZIP
+name: P3 0.9.2 — archive de validation
 on:
   push:
     branches:
-      - release/0.9.2-rc1
+      - release/0.9.2
   workflow_dispatch:
 
 permissions:
@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(tr -d '\r\n' < VERSION)" = "0.9.2-rc1"
+          test "$(tr -d '\r\n' < VERSION)" = "0.9.2"
           test "$(tr -d '\r\n' < var/modules/articles/MODULE-VERSION)" = "1.4.9"
           php tools/validate_release.php
           python3 tools/test_catalogue_distribution.py
@@ -32,14 +32,14 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/build_distribution.py
-          zipfile=dist/P3-0.9.2-rc1.zip
+          zipfile=dist/P3-0.9.2.zip
           test -s "$zipfile"
           unzip -t "$zipfile" >/dev/null
-          (cd dist && sha256sum -c P3-0.9.2-rc1.sha256)
+          (cd dist && sha256sum -c P3-0.9.2.sha256)
           python3 - <<'PY'
           from pathlib import Path
           from zipfile import ZipFile
-          path=Path('dist/P3-0.9.2-rc1.zip')
+          path=Path('dist/P3-0.9.2.zip')
           with ZipFile(path) as z:
               entries=z.namelist()
               must_have={'P3/VERSION','P3/index.php','P3/install.php',
@@ -56,14 +56,14 @@ jobs:
                   if entry.startswith(forbidden):
                       assert entry.endswith(('/.htaccess','/web.config','/.gitkeep')), entry
                   assert not entry.endswith(('.sqlite','.db','.log')), entry
-              assert z.read('P3/VERSION').strip()==b'0.9.2-rc1'
+              assert z.read('P3/VERSION').strip()==b'0.9.2'
               print(f'Candidate verified: {len(entries)} files, {path.stat().st_size} bytes')
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: P3-0.9.2-rc1-candidate
+          name: P3-0.9.2-validation
           path: |
-            dist/P3-0.9.2-rc1.zip
-            dist/P3-0.9.2-rc1.sha256
+            dist/P3-0.9.2.zip
+            dist/P3-0.9.2.sha256
             RELEASE-NOTES.md
           if-no-files-found: error

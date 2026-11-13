@@ -54,3 +54,7 @@ La branche isolée `release/0.9.2-rc1` fixe `VERSION=0.9.2-rc1` et le module Art
 - Un workflow de construction **en lecture seule** produit l'archive complète et son empreinte comme artefacts CI, sans publication GitHub Release ni déploiement.
 
 La candidate reste distincte d'une version stable et de la production. La fusion dans `main` exige une autorisation explicite.
+
+## Dernière étape — version stable préparée
+
+La version `0.9.2` est préparée sur la branche isolée `release/0.9.2`. Le catalogue et le ZIP Articles sont reconstruits avec `<MinimumP3>0.9.2</MinimumP3>`, puis leur empreinte est fixée dans le noyau. Les tests sous PHP 8.2 à 8.5, le contrôle navigateur et l'archive complète sont relancés. Aucun transfert en production ni modification de `main` n'est autorisé implicitement.
