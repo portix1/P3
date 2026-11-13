@@ -102,6 +102,17 @@ try {
             && str_contains($clairImages[1]->getAttribute('sizes'), '(max-width: 640px) min(94vw, 432px)'),
         'les petites figures élargies demandent une résolution mobile suffisante'
     );
+    responsiveCheck(
+        str_ends_with($clairImages[0]->getAttribute('sizes'), '160px')
+            && str_ends_with($clairImages[1]->getAttribute('sizes'), '211px'),
+        'la taille des figures 25/33 % suit une colonne de lecture desktop de 640px'
+    );
+    $fullWidthClair = ResponsiveImages::enhance(
+        '<img src="var/uploads/images/' . $first . '" alt="Grand schéma">',
+        $root, 'six-cordes-ux-clair'
+    );
+    responsiveCheck(str_ends_with(responsiveImages($fullWidthClair)[0]->getAttribute('sizes'), '640px'),
+        'une illustration pleine largeur doit déclarer 640px au-delà de 1024px');
     $versionedTheme = ResponsiveImages::enhance($html, $root, 'six-cordes-ux-clair-v018');
     $versionedImages = responsiveImages($versionedTheme);
     responsiveCheck(
@@ -125,8 +136,9 @@ try {
     );
     $otherTheme = ResponsiveImages::enhance($html, $root, 'another-theme');
     responsiveCheck(
-        str_contains(responsiveImages($otherTheme)[0]->getAttribute('sizes'), '(max-width: 640px) 25vw'),
-        'le comportement des autres thèmes ne change pas'
+        str_contains(responsiveImages($otherTheme)[0]->getAttribute('sizes'), '(max-width: 640px) 25vw')
+            && str_ends_with(responsiveImages($otherTheme)[0]->getAttribute('sizes'), '190px'),
+        'le comportement desktop des autres thèmes reste fondé sur 760px'
     );
     $legacy = ResponsiveImages::enhance(
         '<figure class="portix-image-figure portix-image-size-50"><img src="var/uploads/images/' . $first . '"></figure>',

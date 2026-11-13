@@ -25,6 +25,21 @@ $before = is_file($originalImage) ? hash_file('sha256', $originalImage) : null;
 $rendered = MobileThemeAssets::inject($markup, $tpl, $root);
 mobileAssetAssert(str_contains($rendered, 'var/editor/mobile-header-p1.css?v=20261112'), 'feuille CSS non injectée');
 mobileAssetAssert(str_contains($rendered, 'var/editor/mobile-header-p1.js?v=20261112'), 'script de navigation non injecté');
+mobileAssetAssert(!str_contains($rendered, 'reading-desktop-p2.css'),
+    'l’accueil ne doit pas télécharger le CSS des articles');
+$articleMarkup = str_replace('<h1>Univers Guitare</h1>',
+    '<article class="news-detail article-reading"><div class="news-body news-rich-text">Texte</div></article>', $markup);
+$articleRendered = MobileThemeAssets::inject($articleMarkup, $tpl, $root);
+mobileAssetAssert(str_contains($articleRendered,
+    'var/editor/reading-desktop-p2.css?v=20261113'),
+    'correction de lecture desktop non injectée sur les articles');
+mobileAssetAssert(str_contains($articleRendered, 'media="screen and (min-width: 1025px)"'),
+    'feuille de lecture desktop non limitée au grand écran');
+mobileAssetAssert(MobileThemeAssets::inject($articleRendered, $tpl, $root) === $articleRendered,
+    'feuille de lecture desktop injectée deux fois');
+mobileAssetAssert(MobileThemeAssets::inject($articleMarkup,
+    './var/templates/modern/index.tpl', $root) === $articleMarkup,
+    'correction desktop injectée dans un autre thème');
 mobileAssetAssert(str_contains($rendered, 'theme-color'), 'barre de navigateur non configurée');
 mobileAssetAssert(str_contains($rendered, 'work-sans-latin-wght-normal.woff2'), 'préchargement Work Sans manquant');
 mobileAssetAssert(str_contains($rendered, 'literata-latin-wght-normal.woff2'), 'préchargement Literata manquant');
