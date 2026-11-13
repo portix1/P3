@@ -5,6 +5,8 @@
 </header>
 
 {% if articles_message %}<p class="status-message" role="status">{{ articles_message }}</p>{% endif %}
+{% if articles_is_pending == "1" %}<p class="review-banner" role="status">{{ articles_review_pending_edit_notice }}</p>{% endif %}
+{% if articles_review_note %}<p class="review-note-banner">{{ articles_review_returned }} : {{ articles_review_note }}</p>{% endif %}
 
 <form method="post" action="{{ articles_form_action }}" class="news-editor-form" data-unsaved-warning="1">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
@@ -19,6 +21,7 @@
         <label>{{ articles_field_status }}
             <select name="status">
                 <option value="draft" {{ articles_draft_selected }}>{{ articles_status_draft }}</option>
+                {% if articles_is_pending == "1" %}<option value="pending" selected disabled>{{ articles_status_pending }}</option>{% endif %}
                 {% if articles_can_publish == "1" %}<option value="published" {{ articles_published_selected }}>{{ articles_status_published }}</option>{% endif %}
             </select>
         </label>
