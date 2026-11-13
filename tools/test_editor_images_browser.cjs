@@ -78,8 +78,8 @@ async function run(engine, origin) {
             assert.equal(await button.innerText(),'','icon command without text'); assert.equal(await button.locator('svg').count(),1);
         }
         assert.equal(await page.locator('button:not([title])').count(),0,'all buttons have tooltips');
-        assert.equal(await page.locator('.portix-image-tools button').count(),4,'image palette has only three positions and properties');
-        assert.equal(await page.locator('.portix-image-tools input,.portix-image-tools select').count(),0,'no image settings panel');
+        assert.equal(await page.locator('.portix-image-tools button').count(),7,'image palette keeps positions, move tools and properties');
+        assert.equal(await page.locator('.portix-image-tools input[type="text"]').count(),0,'alt and caption remain inside properties dialog');
         await page.screenshot({path:'/tmp/p3-rc15-image.png',fullPage:true});
         await page.locator('[data-image-properties]').click();
         const properties=page.locator('dialog[open]');
