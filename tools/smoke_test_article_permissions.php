@@ -81,7 +81,8 @@ function permissionRun(): void {
     $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');$tpl->set('csrf_token','fixture'); foreach ($_LANG as $key=>$value) { $tpl->set($key,$value); }
     $controller->handle($tpl,['Admin','articles'],$user);$html=json_encode($tpl->rows('articlerow')); 
     permissionAssert(str_contains($html,'Own')&&!str_contains($html,'Other'),'list filters other authors');
-    permissionAssert(!str_contains($html,'"can_publish":"1"'),'publish controls hidden');
+    permissionAssert(str_contains($html,'"next_status":"pending"'), 'draft offers review request, not direct publication');
+    permissionAssert(!str_contains($html,'"next_status":"published"'), 'untrusted writer cannot directly publish');
     $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');$tpl->set('csrf_token','fixture'); foreach ($_LANG as $key=>$value) { $tpl->set($key,$value); }
     $controller->handle($tpl,['Admin','articles','edit',(string)$id],$user);$html=$tpl->render();
     permissionAssert(!str_contains($html,'>Outside</option>')&&!str_contains($html,'value="published"'),'form filters category and publish');
