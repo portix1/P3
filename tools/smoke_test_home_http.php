@@ -132,8 +132,14 @@ try {
         $check(str_contains($configArea[1],'Admin-home.html')===($actor==='admin'), 'Only administrators can find Home in Configuration');
         $management=$request('/Admin-management.html','GET','',$headers);
         $check($management[0]===($actor==='admin'?200:403), 'Only administrators enter Administration');
-        $check(str_contains($management[1],'Admin-menu.html')===($actor==='admin'), 'Main menu only appears in Administration for administrators');
-        $check(str_contains($management[1],'Admin-footer.html')===($actor==='admin'), 'Footer menu only appears in Administration for administrators');
+        $check(str_contains($configArea[1], 'href="Admin-menu.html"')===($actor==='admin'),
+            'Main menu appears only in Configuration for administrators');
+        $check(str_contains($configArea[1], 'href="Admin-footer.html"')===($actor==='admin'),
+            'Footer menu appears only in Configuration for administrators');
+        $check(!str_contains($management[1], 'href="Admin-menu.html"'),
+            'Main menu absent from Administration');
+        $check(!str_contains($management[1], 'href="Admin-footer.html"'),
+            'Footer menu absent from Administration');
         foreach (['Admin-config-modules.html', 'Admin-diagnostics.html', 'Admin-safety.html'] as $entry) {
             $check(str_contains($configArea[1], 'href="' . $entry . '"') === ($actor === 'admin'), 'Configuration entry: '.$entry);
             $check(!str_contains($management[1], 'href="' . $entry . '"'), 'Entry absent from Administration: '.$entry);
