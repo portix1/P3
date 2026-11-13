@@ -61,6 +61,14 @@ final class UserAdminController
                         $permissions[$key] = array_values(array_unique($permissions[$key]));
                     } else { $permissions[$key] = isset($_POST['permission_' . $key]); }
                 }
+                if (!isset($_POST['permissions_reset'])) {
+                    $publication = (string) ($_POST['permission_publication'] ?? '');
+                    if (!in_array($publication, ['direct', 'review'], true)) {
+                        throw new RuntimeException('users_permissions_invalid');
+                    }
+                    $permissions['publish'] = $publication === 'direct';
+                    $permissions['edit_published'] = $publication === 'direct';
+                }
                 if (isset($_POST['permissions_reset'])) { $permissions = []; }
                 $this->users->saveArticlePermissions($pseudo, $permissions);
                 if ($pseudo === $actor->pseudo()) { $_SESSION['auth_version'] = $this->users->find($pseudo)->authVersion(); }
@@ -334,6 +342,7 @@ final class UserAdminController
         $template->set('users_redactor_checked', !empty($draft['is_redactor']) ? '1' : '0');
         $permissions = $account?->articlePermissions() ?? \Portix\Domain\ArticlePermissions::DEFAULTS;
         $template->set('users_permissions_action', 'Admin-users-permissions-' . $encodedPseudo . '.html');
+        $template->set('users_publication_direct', !empty($permissions['publish']) && !empty($permissions['edit_published']) ? '1' : '0');
         foreach ($permissions as $key => $value) {
             if ($key !== 'categories') { $template->set('permission_' . $key, $value ? '1' : '0'); }
         }
