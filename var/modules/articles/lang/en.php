@@ -166,3 +166,5 @@ $_LANG['articles_review_returned'] = 'Changes requested';
 $_LANG['articles_review_pending_edit_notice'] = 'This article is awaiting review. Editing it returns it to draft; request publication again when ready.';
 $_LANG['articles_empty_admin'] = 'No articles yet. Create an article to begin.';
 $_LANG['articles_empty_redactor'] = 'No articles available to edit. You can create a draft if permitted.';
+
+$_LANG['articles_review_next_step'] = 'Save your draft first. In the article list, choose “Request publication”. An administrator will review it before it appears online.';
