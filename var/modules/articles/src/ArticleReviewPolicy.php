@@ -20,7 +20,8 @@ final class ArticleReviewPolicy
         string $rawNote = ''
     ): ?string {
         if ($next === 'published') {
-            if (!$canPublish || !in_array($current, ['draft', 'pending'], true)) {
+            if (!$canPublish || !in_array($current, ['draft', 'pending'], true)
+                || ($current === 'pending' && !$isAdmin)) {
                 throw new RuntimeException('security_access_denied');
             }
             return null;
