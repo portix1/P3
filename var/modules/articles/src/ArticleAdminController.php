@@ -38,6 +38,9 @@ final class ArticleAdminController
         if (!$user->isAdmin() && !$user->isRedactor()) { $this->deny($template); return; }
         if (!$user->isAdmin() && in_array($action, ['order', 'category', 'categories', 'menu', 'series'], true)) { $this->deny($template); return; }
         $targetArticle = isset($arguments[3]) && ctype_digit((string)$arguments[3]) ? $this->articles->find((int)$arguments[3]) : null;
+        if ($action === 'autosave') {
+            $this->autosaveArticle($arguments, $user);
+        }
         if (in_array($action, ['edit','preview','status','delete','new'], true)) {
             $targetCategory = $targetArticle === null || $targetArticle['category_id'] === null ? null : (int)$targetArticle['category_id'];
             if ($targetArticle === null && in_array($action, ['new','preview'], true) && !$user->isAdmin()) {
@@ -363,6 +366,8 @@ final class ArticleAdminController
                 }
                 if($saveReading)$this->articles->editorial()->saveReading($id,$tocEnabled,$relatedIds);
                 });
+                // Saving the article replaces its private recovery copy.
+                $this->articles->autosaves()->delete($user->pseudo(), $id ?? 0);
                 header('Location: Admin-articles.html');
                 exit;
             } catch (RuntimeException $error) {
@@ -381,6 +386,12 @@ final class ArticleAdminController
             }
         }
 
+        $autosaved = $this->articles->autosaves()->load($user->pseudo(), $id ?? 0);
+        $template->set('articles_autosave_url', 'Admin-articles-autosave'
+            . ($id === null ? '' : '-' . $id) . '.html');
+        $template->set('articles_autosave_base', (string) ($existing['updated_at'] ?? ''));
+        $template->set('articles_autosave_snapshot', $autosaved === null ? ''
+            : json_encode($autosaved, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE));
         $template->setSlot('main', './var/modules/articles/templates/admin-form.tpl');
         $template->set('articles_can_publish', $user->isAdmin() || $user->articlePermissions()['publish'] ? '1' : '0');
         $template->set('review_required', !$user->isAdmin() && !$user->articlePermissions()['publish'] ? '1' : '0');
@@ -674,6 +685,82 @@ final class ArticleAdminController
                 'name' => (string) $category['indented_name'],
                 'selected' => (int) ($draft['parent_id'] ?? 0) === (int) $category['id'] ? 'selected' : '',
             ]);
+        }
+    }
+
+    /**
+     * Stores a private recovery snapshot. It never creates, edits or publishes an article.
+     * The manual save remains the only way to update public content.
+     * @param list<string> $arguments
+     */
+    private function autosaveArticle(array $arguments, UserAccount $user): never
+    {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || !\PortixSecurity::csrfIsValid()) {
+            $this->json(403, ['ok' => false, 'error' => 'Requête refusée.']);
+        }
+        $rawId = (string) ($arguments[3] ?? '');
+        if ($rawId !== '' && (!ctype_digit($rawId) || (int) $rawId < 1)) {
+            $this->json(400, ['ok' => false, 'error' => 'Article invalide.']);
+        }
+        $id = $rawId === '' ? 0 : (int) $rawId;
+        $article = $id > 0 ? $this->articles->find($id) : null;
+        if ($id > 0 && $article === null) {
+            $this->json(404, ['ok' => false, 'error' => 'Article introuvable.']);
+        }
+        $category = $_POST['category_id'] ?? '';
+        if (!is_scalar($category) || ($category !== '' && (!ctype_digit((string)$category) || (int)$category < 1))) {
+            $this->json(400, ['ok' => false, 'error' => 'Catégorie invalide.']);
+        }
+        $categoryId = $category === '' ? null : (int) $category;
+        if ($article !== null) {
+            if (!$this->allowed($user, 'edit', $article, $categoryId)) {
+                $this->json(403, ['ok' => false, 'error' => 'Accès refusé.']);
+            }
+        } elseif (!$user->isAdmin() && (!$user->articlePermissions()['create']
+                || !$this->categoryAllowed($user, $categoryId))) {
+            $this->json(403, ['ok' => false, 'error' => 'Accès refusé.']);
+        }
+        $base = $_POST['base_updated_at'] ?? '';
+        if (!is_string($base)) {
+            $this->json(400, ['ok' => false, 'error' => 'Version invalide.']);
+        }
+        if ($article !== null && !hash_equals((string)$article['updated_at'], $base)) {
+            $this->json(409, ['ok' => false, 'error' => 'Cet article a été modifié ailleurs.']);
+        }
+        $fields = [];
+        foreach (['title', 'slug', 'category_id', 'content', 'summary', 'author_name', 'featured_image'] as $key) {
+            $value = $_POST[$key] ?? '';
+            if (!is_string($value)) {
+                $this->json(400, ['ok' => false, 'error' => 'Données invalides.']);
+            }
+            $fields[$key] = $value;
+        }
+        $fields['toc_enabled'] = isset($_POST['toc_enabled']) ? '1' : '0';
+        $related = $_POST['related'] ?? [];
+        $positions = $_POST['related_positions'] ?? [];
+        if (!is_array($related) || !is_array($positions) || count($related) > 2000 || count($positions) > 2000) {
+            $this->json(400, ['ok' => false, 'error' => 'Liste de liens invalide.']);
+        }
+        $fields['related'] = [];
+        foreach ($related as $value) {
+            if (!is_scalar($value) || !ctype_digit((string)$value)) {
+                $this->json(400, ['ok' => false, 'error' => 'Lien invalide.']);
+            }
+            $fields['related'][] = (string)$value;
+        }
+        $fields['related_positions'] = [];
+        foreach ($positions as $key => $value) {
+            if (!ctype_digit((string)$key) || !is_scalar($value) || !ctype_digit((string)$value)) {
+                $this->json(400, ['ok' => false, 'error' => 'Ordre invalide.']);
+            }
+            $fields['related_positions'][(string)$key] = (string)$value;
+        }
+        try {
+            $this->articles->autosaves()->save($user->pseudo(), $id, $fields, $base);
+            $this->json(200, ['ok' => true, 'saved_at' => gmdate('H:i')]);
+        } catch (\Throwable $error) {
+            error_log((string)$error);
+            $this->json(500, ['ok' => false, 'error' => 'Sauvegarde automatique impossible.']);
         }
     }
 
