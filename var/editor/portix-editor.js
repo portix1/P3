@@ -448,6 +448,11 @@
                 delta.insert({'portix-image':{src:row.public_path,alt:imageDecorative.checked?'':imageAltInput.value.trim(),'image-decorative':imageDecorative.checked?'1':''}});
                 if(!insideTable){delta.insert('\n',imageCallout);}
                 quill.updateContents(delta,'user');
+                // Quill retains the embed src, but may normalize custom fields in
+                // a Delta insert. Apply accessibility metadata as blot formats.
+                var imageIndex=range.index+prefix.length;
+                quill.formatText(imageIndex,1,'alt',imageDecorative.checked?'':imageAltInput.value.trim(),'user');
+                if(imageDecorative.checked){quill.formatText(imageIndex,1,'image-decorative','1','user');}
                 // Keep the image inside the selected callout on save and reopen.
                 if (!insideTable && imageCallout.callout) {
                     quill.formatLine(range.index + prefix.length, 1, 'callout', imageCallout.callout, 'user');
