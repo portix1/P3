@@ -110,6 +110,22 @@ final class ArticleAdminController
         $template->set('review_empty_help', $this->translator->text($user->isAdmin() ? 'articles_empty_admin' : 'articles_empty_redactor'));
         $template->set('articles_can_create', $user->isAdmin() || $user->articlePermissions()['create'] ? '1' : '0');
 
+        // Search acts only on articles already visible to this account.
+        $rawState = $_GET['state'] ?? '';
+        $state = is_string($rawState) && in_array($rawState, ['draft', 'pending', 'published'], true) ? $rawState : '';
+        $rawQuery = $_GET['q'] ?? '';
+        $query = is_string($rawQuery) ? trim(mb_substr($rawQuery, 0, 120, 'UTF-8')) : '';
+        require_once __DIR__ . '/ArticleListFilter.php';
+        $visibleRows = ArticleListFilter::apply($visibleRows, $state, $query);
+        $template->set('articles_filter_query', $query);
+        $template->set('articles_filter_all_selected', $state === '' ? 'selected' : '');
+        foreach (['draft', 'pending', 'published'] as $choice) {
+            $template->set('articles_filter_' . $choice . '_selected', $state === $choice ? 'selected' : '');
+        }
+        $template->set('articles_filter_count', (string) count($visibleRows));
+        $template->set('articles_filter_no_matches', $visibleRows === [] ? '1' : '0');
+        $template->set('articles_filter_active', $state !== '' || $query !== '' ? '1' : '0');
+
         foreach ($visibleRows as $row) {
             $status = (string) $row['status'];
             $published = $status === 'published';
