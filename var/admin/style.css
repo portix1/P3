@@ -992,3 +992,14 @@ input[type="submit"]:hover,
 .publication-trust .role-option{display:flex;align-items:start;gap:.6rem}
 .publication-trust .role-option span{display:flex;flex-direction:column;gap:.2rem}
 .publication-trust input[type=radio]{margin-top:.35rem}
+
+
+/* Article list: compact, keyboard-accessible filters. */
+.article-list-filters{padding:.85rem 1rem}
+.article-filter-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.7rem}
+.article-filter-form label{display:flex;flex-direction:column;gap:.25rem;min-width:11rem;flex:0 1 15rem}
+.article-filter-form label:first-child{flex:1 1 16rem}
+.article-filter-form input,.article-filter-form select{width:100%;max-width:100%}
+.article-filter-form button,.article-filter-form a{margin:0}
+.article-list-filters .field-help{margin:.6rem 0 0}
+@media(max-width:540px){.article-filter-form label{flex:1 1 100%}.article-filter-form button,.article-filter-form a{flex:1 1 auto;text-align:center}}
