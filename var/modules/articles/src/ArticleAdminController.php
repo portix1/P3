@@ -363,12 +363,7 @@ final class ArticleAdminController
                 }
                 if($saveReading)$this->articles->editorial()->saveReading($id,$tocEnabled,$relatedIds);
                 });
-                // Continue editing only after an existing article was saved successfully.
-                if (!$isNew && $id !== null && isset($_POST['save_continue'])) {
-                    header('Location: Admin-articles-edit-' . $id . '.html?status=saved', true, 303);
-                } else {
-                    header('Location: Admin-articles.html', true, 303);
-                }
+                header('Location: Admin-articles.html');
                 exit;
             } catch (RuntimeException $error) {
                 $message = $this->translator->exception($error);
@@ -391,10 +386,6 @@ final class ArticleAdminController
         $template->set('review_required', !$user->isAdmin() && !$user->articlePermissions()['publish'] ? '1' : '0');
         $template->set('review_is_pending', ($existing['status'] ?? '') === 'pending' ? '1' : '0');
         $template->set('review_note_value', (string) ($existing['review_note'] ?? ''));
-        $template->set('articles_is_edit', $isNew ? '0' : '1');
-        if (!$isNew && ($_GET['status'] ?? null) === 'saved') {
-            $message = $this->translator->text('articles_saved_continue');
-        }
         $template->set('articles_form_title', $this->translator->text(
             $isNew ? 'articles_form_new' : 'articles_form_edit'
         ));
