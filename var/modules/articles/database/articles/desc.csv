@@ -12,3 +12,4 @@ featured_image; text; null; ; ; ; ; ;
 published_at; date; null; ; ; index; ; ;
 created_at; date; notnull; ; ; ; ; ;
 updated_at; date; notnull; ; ; index; ; ;
+review_note; text; null; ; ; ; ; ;
