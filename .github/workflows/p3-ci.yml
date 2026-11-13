@@ -32,12 +32,16 @@ jobs:
           php -m
 
       - name: Validate release
+        env:
+          P3_DEVELOPMENT_VALIDATION: ${{ github.event_name == 'pull_request' && '1' || '0' }}
         run: php tools/validate_release.php
 
       - name: Validate public search index reuse
         run: php var/modules/search/tests/smoke_test_text_fragments.php
 
       - name: Verify reproducible official Articles package
+        env:
+          P3_DEVELOPMENT_VALIDATION: ${{ github.event_name == 'pull_request' && '1' || '0' }}
         run: python3 tools/test_catalogue_distribution.py
 
   home-browser:
