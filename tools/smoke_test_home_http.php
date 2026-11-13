@@ -254,6 +254,27 @@ try {
     echo "Statistiques HTTP : empreinte quotidienne, exclusions, article, entrée, référent et export vérifiés.\n";
 
     if (in_array('--browser',$argv,true)) {
+        // Start Chromium against a fresh HTTP process, not the fixture server
+        // already used for dozens of PHP integration requests. The same
+        // isolated SQLite fixture is retained; no assertions are skipped.
+        if (is_resource($server)) {
+            proc_terminate($server);
+            proc_close($server);
+        }
+        $server = proc_open(
+            [PHP_BINARY,'-S',$address,'-t',$fixture,$fixture.'/router.php'],
+            [['pipe','r'],['file',$fixture.'/server.log','a'],['file',$fixture.'/server.log','a']],
+            $browserPipes,$fixture
+        );
+        $check(is_resource($server), 'Fresh browser fixture server starts');
+        fclose($browserPipes[0]);
+        $ready = false;
+        for ($attempt=0; $attempt<30; $attempt++) {
+            usleep(100000);
+            $response = $request('/');
+            if ($response[0] === 200) { $ready = true; break; }
+        }
+        $check($ready, 'Fresh browser fixture server is ready');
         putenv('HOME_TEST_URL='.$base);
         passthru('node '.escapeshellarg($source.'/tools/test_home_browser.cjs'),$exit);
         $check($exit===0,'Browser validation');
