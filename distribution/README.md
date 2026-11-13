@@ -1,14 +1,24 @@
-# Extensions P3
+# Catalogue officiel des extensions P3
 
-Ces archives contiennent les versions livrées avec P3 0.8.1. Elles sont également disponibles séparément. Leur installation a été vérifiée avec P3 0.8.1 sous PHP 8.4.
+Ce répertoire contient les archives autonomes disponibles par le canal vérifié de **P3 0.9.1**. Il ne constitue pas une liste exhaustive des modules inclus dans la distribution complète du moteur.
 
-| Extension | Version | Téléchargement |
-| --- | --- | --- |
-| Articles | 1.4.6 | [ZIP](P3-articles-1.4.6.zip?raw=true) |
-| Six Cordes UX Clair | 0.1.7 | [ZIP](P3-six-cordes-ux-clair-0.1.7.zip?raw=true) |
+| Extension autonome | Version | Compatibilité | Téléchargement |
+| --- | --- | --- | --- |
+| Articles | 1.4.8 | P3 0.9.0 ou ultérieur, PHP 8.2+ | [ZIP](P3-articles-1.4.8.zip?raw=true) |
+| Six Cordes UX Clair (thème de référence) | 0.1.7 | P3 0.8.1 ou ultérieur, PHP 8.2+ | [ZIP](P3-six-cordes-ux-clair-0.1.7.zip?raw=true) |
 
-Pour Articles, extraire le dossier `articles` dans `var/modules/`, puis utiliser l’installation des modules depuis l’administration. Pour Six Cordes UX Clair, importer le ZIP dans la gestion des thèmes. Si la version indiquée est déjà installée, aucun import n’est nécessaire.
+Le module **Articles 1.4.8** appelle les fonctions d'images responsives du moteur P3 0.9.0. Sa mise à jour depuis un moteur antérieur est refusée par le manifeste `MinimumP3`.
 
-Le [catalogue](catalogue.json) donne les versions, les prérequis et les empreintes SHA-256. Les noms de fichiers sont relatifs au catalogue.
+**Choix explicite pour cette publication :** Accueil 1.1.0, Menu principal 1.0.1, Recherche 1.0.5, Statistiques 2.0.3 et les autres modules de référence restent distribués avec l'archive complète de P3. Leur packaging autonome, leur compatibilité et leur canal de mise à jour devront être testés avant de les ajouter au catalogue. Ils ne sont donc pas annoncés comme téléchargeables séparément par le canal officiel.
 
-[Archive complète de P3 0.8.1](https://github.com/portix1/P3/releases/tag/v0.8.1)
+## Installer une mise à jour
+
+L'administrateur peut télécharger l'archive référencée dans Configuration → Gestion des modules ou Gestion des thèmes, puis importer le ZIP dans l'interface prévue. **L'installation du moteur P3 n'est pas encore automatisée depuis le tableau de bord.**
+
+Le [catalogue](catalogue.json) contient les versions, les prérequis, les noms de fichiers et les empreintes SHA-256. Les ZIP sont servis depuis un commit Git **figé**, dont l'identifiant complet et l'empreinte du catalogue sont inscrits dans le moteur. Voir [TRUST.md](TRUST.md).
+
+Une installation P3 0.9.0 garde volontairement l'ancien catalogue jusqu'à sa mise à jour vers P3 0.9.1. La nouvelle version d'Articles ne doit donc pas être présentée comme disponible automatiquement depuis P3 0.9.0.
+
+Ne jamais écraser la base SQLite, les médias, les thèmes personnalisés ou le `.htaccess` spécifique au serveur lors d'une mise à jour du moteur.
+
+[Versions complètes de P3](https://github.com/portix1/P3/releases)
