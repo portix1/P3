@@ -6,8 +6,8 @@ Cette organisation s’applique à toute création ou modification du moteur, d�
 
 - Le tableau de bord présente l’état du moteur, des modules et du thème actif, puis dirige vers trois pages distinctes.
 - Rédaction regroupe uniquement les fonctions éditoriales et utilise le bleu. Le rôle Rédacteur ne donne accès qu’aux contenus autorisés.
-- Administration regroupe la gestion courante du site, dont les menus principal et de bas de page, les comptes et les droits. Elle utilise l’orange et est réservée aux administrateurs.
-- Configuration regroupe les interventions rares qui définissent le site : composition de l’accueil, identité, thèmes, modules, diagnostics et réglages techniques. Elle utilise le violet et est réservée aux administrateurs.
+- Administration regroupe la gestion courante du site, dont les comptes et les droits. Elle utilise l’orange et est réservée aux administrateurs.
+- Configuration regroupe les interventions rares qui définissent le site : composition de l’accueil, menus principal et de bas de page, identité, thèmes, modules, diagnostics et réglages techniques. Elle utilise le violet et est réservée aux administrateurs.
 - Les thèmes, leur choix et leur installation appartiennent à Configuration.
 - Le menu latéral est limité à l’espace ouvert. Les trois accès d’espace restent disponibles selon les droits.
 - Chaque entrée possède un libellé et une icône. La couleur accompagne les libellés.
@@ -23,3 +23,13 @@ Toute modification de navigation doit vérifier administrateur, rédacteur et vi
 Actualiser UX-BACK-OFFICE.md et la documentation fonctionnelle concernée dans src/Installation/default-content.json lorsqu’un parcours change. Le guide de développement des modules doit conserver ces règles pour les nouveaux composants.
 
 Le code fait référence sur GitHub. Les décisions et l’état d’avancement sont reportés dans le référentiel Google Drive lorsque cet accès est disponible. Distinguer décision validée, code testé et validation visuelle par Marc.
+
+## Publication des articles selon le rédacteur
+
+L’administrateur fixe individuellement le niveau de confiance de chaque rédacteur. Deux options sont présentées en français : « Relecture obligatoire » (par défaut) et « Publication directe ». La seconde active ensemble les permissions internes `publish` et `edit_published`, afin que le rédacteur puisse aussi corriger un article qu’il a publié. La première les désactive ensemble.
+
+Les états possibles d’un article sont brouillon (`draft`), en attente de relecture (`pending`) et publié (`published`). Un rédacteur sans permission de publication ne peut demander la relecture que pour un article qu’il est autorisé à modifier. L’administrateur peut approuver et publier, ou renvoyer en brouillon avec une explication. Modifier un article en attente le replace en brouillon ; il faut soumettre à nouveau. Les permissions sont impérativement vérifiées côté serveur pour chaque transition, y compris si l’utilisateur modifie les valeurs envoyées par son navigateur. Les images et les articles existants ne sont pas modifiés automatiquement par cette évolution.
+
+Une fonctionnalité destinée au rédacteur ne doit pas exiger qu’il comprenne les termes PHP, SEO, slug ou droits binaires. Les messages doivent nommer l’action concrète (« Enregistrer le brouillon », « Demander la publication », « Accepter et publier »), sans jargon inexpliqué.
+
+Ce travail est soumis à un accord explicite de Marc avant toute fusion dans `main` et avant une mise à jour de production. Les branches de test ne sont pas des versions publiées.
