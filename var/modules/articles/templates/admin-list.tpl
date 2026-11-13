@@ -10,10 +10,6 @@
     <p><strong>{{ articles_published }}</strong> {{ articles_admin_published_total }}</p>
     <p><strong>{{ review_pending_count }}</strong> {{ articles_admin_pending_total }}</p>
     <div class="news-admin-actions">
-        {% if articles_can_configure_menu == "1" %}<a class="button button-quiet" href="Admin-articles-series.html">{{ articles_series }}</a>{% endif %}
-        {% if articles_can_configure_menu == "1" %}<a class="button button-quiet" href="Admin-articles-menu.html">{{ articles_manage_menu }}</a>{% endif %}
-        {% if articles_can_configure_menu == "1" %}<a class="button button-quiet" href="Admin-articles-order.html">{{ articles_manage_order }}</a>{% endif %}
-        {% if articles_can_configure_menu == "1" %}<a class="button button-quiet" href="Admin-articles-categories.html">{{ articles_manage_categories }}</a>{% endif %}
         {% if articles_can_create == "1" %}<a class="button" href="Admin-articles-new.html">{{ articles_new }}</a>{% endif %}
     </div>
 </section>
