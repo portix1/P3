@@ -44,6 +44,8 @@ try {
     navigationCheck(count($managerEntry) === 1 && $managerEntry[0]['current'] === 'is-current', 'Gestion des modules active dans Configuration');
     navigationCheck(!in_array('Admin-modmgr.html', array_column($moduleManager['management'], 'url'), true), 'Ancienne adresse de gestion des modules absente d’Administration');
     navigationCheck(!in_array('Admin-config-modules.html', array_column($moduleManager['management'], 'url'), true), 'Gestion des modules absente d’Administration');
+    navigationCheck(in_array('Admin-config-updates.html', array_column($moduleManager['configuration'], 'url'), true),
+        'Mises à jour P3 présentes dans Configuration');
     navigationCheck(in_array('Admin-safety.html', array_column($moduleManager['configuration'], 'url'), true), 'Protection des contenus dans Configuration');
 
     // Article structure belongs to Administration, article menu settings to Configuration.
@@ -69,6 +71,8 @@ try {
     navigationCheck($editor['management'] === [], 'Administration masquée au rédacteur');
     $editorConfiguration = array_column($editor['configuration'], 'url');
     navigationCheck($editorConfiguration === [], 'Configuration inaccessible au rédacteur');
+    navigationCheck(!in_array('Admin-config-updates.html', array_column($editor['writing'], 'url'), true),
+        'Mises à jour du noyau invisibles aux rédacteurs');
     navigationCheck(!in_array('Admin-menu.html', array_column($editor['writing'], 'url'), true), 'Menu principal masqué au rédacteur');
     navigationCheck(!in_array('Admin-footer.html', array_column($editor['writing'], 'url'), true), 'Menu de bas de page masqué au rédacteur');
 

@@ -666,3 +666,11 @@ $_LANG['users_publication_direct_help'] = 'Le rédacteur peut publier ses articl
 $_LANG['ux_articles_categories'] = 'Catégories des articles';
 $_LANG['ux_articles_series'] = 'Séries d’articles';
 $_LANG['ux_articles_order'] = 'Ordre des articles';
+
+$_LANG['core_update_heading'] = 'Mise à jour de P3';
+$_LANG['core_update_action'] = 'Mettre à jour vers';
+$_LANG['core_update_confirm'] = 'Je confirme la mise à jour et la création préalable d’un point de restauration.';
+$_LANG['core_update_help'] = 'P3 télécharge l’archive officielle, contrôle son empreinte, crée un point de restauration puis installe les fichiers du moteur. Les données, le .htaccess de l’hébergement et les thèmes personnalisés sont conservés. Cette opération peut interrompre brièvement le site.';
+$_LANG['core_update_current'] = 'Version installée';
+$_LANG['core_update_available'] = 'Version disponible';
+$_LANG['core_update_none'] = 'P3 est à jour, ou la vérification des versions est momentanément indisponible.';

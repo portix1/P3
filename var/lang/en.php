@@ -666,3 +666,11 @@ $_LANG['users_publication_direct_help'] = 'The author may publish and correct th
 $_LANG['ux_articles_categories'] = 'Article categories';
 $_LANG['ux_articles_series'] = 'Article series';
 $_LANG['ux_articles_order'] = 'Article order';
+
+$_LANG['core_update_heading'] = 'Update P3';
+$_LANG['core_update_action'] = 'Update to';
+$_LANG['core_update_confirm'] = 'I confirm the update and creation of a restore point first.';
+$_LANG['core_update_help'] = 'P3 downloads the official archive, verifies its checksum, creates a restore point, then updates core files. Site data, hosting-specific .htaccess files and custom themes remain unchanged. The site may be briefly unavailable.';
+$_LANG['core_update_current'] = 'Installed version';
+$_LANG['core_update_available'] = 'Available version';
+$_LANG['core_update_none'] = 'P3 is up to date, or the version check is temporarily unavailable.';

@@ -80,6 +80,7 @@ $tests = [
     'smoke_test_seo.php',
     'smoke_test_image_storage.php',
     'smoke_test_production_update.php',
+    'smoke_test_core_updater.php',
     'smoke_test_ziparchive.php',
     'smoke_test_installer.php',
 ];
