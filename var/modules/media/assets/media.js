@@ -167,6 +167,39 @@
     }
     async function load(){var current=++generation;var result=await api('list',{family:section.querySelector('[data-media-family]').value,search:section.querySelector('[data-media-search]').value});if(current===generation){rows=result;render();}}
     section.querySelector('[data-media-add]').addEventListener('click',function(){pickFile(async function(file){await api('upload',{},file);analysis=null;await load();report('Fichier ajouté.');});});
+    var auditButton=section.querySelector('[data-media-alt-audit]');
+    if(auditButton){
+        auditButton.addEventListener('click',function(){run(async function(){
+            report('Analyse des articles en cours…');
+            var result=await api('alt_audit');
+            var output=section.querySelector('[data-media-alt-results]');
+            var summary=output.querySelector('[data-media-alt-summary]');
+            var list=output.querySelector('[data-media-alt-list]');
+            list.replaceChildren();
+            summary.textContent=result.articles+' article(s) examinés, '+result.images
+                +' image(s) : '+result.described+' décrite(s), '+result.decorative
+                +' décorative(s) déclarée(s), '+result.issues.length+' à vérifier.';
+            result.issues.forEach(function(row){
+                var entry=document.createElement('article');entry.className='media-alt-issue';
+                var heading=document.createElement('h3');heading.textContent=row.title+' — image '+row.position;
+                var meta=document.createElement('p');
+                meta.textContent=(row.status==='published'?'Publié':'Brouillon')
+                    +' · attribut alt '+row.reason+' · '+row.src;
+                var caption=document.createElement('p');
+                caption.textContent=row.caption ? 'Légende : '+row.caption : 'Sans légende.';
+                var link=document.createElement('a');
+                link.href='Admin-articles-edit-'+row.id+'.html';
+                link.textContent='Ouvrir cet article';
+                link.title='Modifier les propriétés de l’image dans le WYSIWYG';
+                entry.append(heading,meta,caption,link);list.appendChild(entry);
+            });
+            (result.errors || []).forEach(function(error){
+                var line=document.createElement('p');line.textContent=error;list.appendChild(line);
+            });
+            output.hidden=false;
+            report('Audit terminé. Aucun article n’a été modifié.');
+        });});
+    }
     section.querySelector('[data-media-family]').addEventListener('change',function(){run(load);});
     var timer;section.querySelector('[data-media-search]').addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(function(){run(load);},250);});
     if(admin){

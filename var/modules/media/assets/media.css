@@ -8,3 +8,9 @@
 .media-selector .media-card{align-items:stretch;justify-content:flex-start;text-align:left}
 .media-selector .media-card > img{display:block;flex:none;width:100%;height:110px;min-height:110px;max-height:110px;object-fit:contain}
 .media-selector .media-card > strong,.media-selector .media-card > small{flex:none}
+
+.media-alt-audit{margin:1rem 0 1.5rem;padding:1rem;border:1px solid #c7d1dc;border-radius:.4rem;background:#fff;color:#243448}
+.media-alt-audit[hidden]{display:none!important}
+.media-alt-issue{padding:.7rem 0;border-bottom:1px solid #e3e8ee;overflow-wrap:anywhere}
+.media-alt-issue h3{font-size:1rem;margin:0 0 .35rem}
+.media-alt-issue p{margin:.3rem 0;font-size:.9rem}
