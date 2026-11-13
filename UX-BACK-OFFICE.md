@@ -7,11 +7,11 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 | Composant | Rédaction | Administration | Configuration |
 | --- | --- | --- | --- |
 | Moteur | — | Comptes et droits | Identité, gestion des modules, diagnostics, référencement, messagerie, apparence |
-| Articles | Édition et publication des articles | Catégories, séries et ordre de lecture (administrateurs) | Navigation des articles |
+| Articles | Brouillons, demande de publication et édition autorisée | Validation et retour pour correction, catégories, séries et ordre (administrateurs) | Navigation des articles |
 | Actualités | Rédaction et publication | — | — |
 | Médiathèque | Fichiers, images, insertion et gestion des médias | — | — |
-| Menu principal | — | Organisation des liens | — |
-| Menu de bas de page | — | Organisation des liens | — |
+| Menu principal | — | — | Organisation des liens |
+| Menu de bas de page | — | — | Organisation des liens |
 | Accueil | — | — | Composition, réglages et résultats pour les administrateurs seulement |
 | Téléchargements | Fichiers et catégories | — | — |
 | Contact | Messagerie pour les rédacteurs disposant déjà de cet accès | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
@@ -70,3 +70,13 @@ Les nouveaux modules déclarent leurs contributions dans `desc.xml`, bloc `Admin
 ## Composition de l’accueil — 1.1.0
 
 Configuration → Composer l’accueil conserve son accès administrateur uniquement. La composition propose les derniers articles, un choix visuel de médias, un ordre par glisser-déposer ou boutons clavier, un aperçu sans publication et un enregistrement global atomique. Les raisons de masquage des zones sont visibles uniquement dans cet écran. L’aperçu montre les contenus et styles du module, sans le thème public. Les fichiers à téléverser doivent être enregistrés dans la zone avant l’aperçu. La pondération statistique reste inchangée.
+
+## Relecture des articles : choix individuel
+
+Le profil de chaque rédacteur comporte deux choix : **Relecture obligatoire**, sélectionné par défaut, ou **Publication directe**. Ce dernier donne également le droit de corriger ses propres articles publiés. L’administrateur peut choisir un autre mode pour chaque rédacteur sans modifier les droits des collègues.
+
+Le rédacteur prépare un brouillon. S’il est soumis à relecture, il choisit « Demander la publication ». L’article passe en attente de relecture et reste invisible pour le public. L’administrateur peut l’accepter ou le renvoyer avec une explication ; le rédacteur lit celle-ci dans sa liste et son formulaire d’article. Dès qu’un article en attente est modifié, il redevient brouillon, et une nouvelle demande sera nécessaire. La publication et le renvoi sont protégés par des contrôles d’autorisation côté serveur, indépendants de l’affichage des boutons.
+
+La migration du socle SQLite ajoute `review_note` (texte facultatif) à la table des articles sans en supprimer les données. Le numéro du schéma passe de 8 à 9. Les archives officielles d’Articles et de P3 restent à reconstruire avant diffusion ; une branche GitHub n’est pas une mise à jour du serveur.
+
+Critère pratique de vérification : un rédacteur peut créer un brouillon, demander sa publication et retrouver une éventuelle demande de correction sans devoir comprendre des termes techniques. La refonte générale de la fiche utilisateur, l’ordre des champs de l’éditeur, le tableau de bord et les liens des thèmes restent des travaux distincts à vérifier en navigateur.
