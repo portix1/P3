@@ -2125,6 +2125,7 @@
             if (!image) { figure.remove(); return; }
             var caption = figure.querySelector('figcaption');
             image.setAttribute('data-caption', caption ? caption.textContent.trim() : '');
+            if (figure.getAttribute('data-decorative') === '1') { image.setAttribute('data-decorative', '1'); image.setAttribute('alt', ''); }
             image.setAttribute('data-wrap', figure.classList.contains('portix-image-wrap-none') ? 'none' : 'square');
             if (figure.hasAttribute('data-width')) { image.setAttribute('data-width', figure.getAttribute('data-width')); }
             imageSizes.forEach(function (size) {
@@ -2335,6 +2336,9 @@
         var alignmentSelect = document.createElement('select');
         var altLabel = document.createElement('label');
         var altInput = document.createElement('input');
+        var decorativeLabel = document.createElement('label');
+        var decorativeInput = document.createElement('input');
+        var accessibilityHint = document.createElement('small');
         var widthLabel = document.createElement('label');
         var widthInput = document.createElement('input');
         widthInput.type = 'number'; widthInput.min = '10'; widthInput.max = '100';
@@ -2368,6 +2372,10 @@
         altInput.type = 'text';
         altInput.maxLength = 250;
         altLabel.appendChild(altInput);
+        decorativeInput.type = 'checkbox'; decorativeInput.title = 'Image décorative : aucune description nécessaire';
+        decorativeLabel.append(decorativeInput, document.createTextNode(' Image décorative (sans description vocale)'));
+        decorativeLabel.title = 'À cocher uniquement si l’image n’apporte aucune information utile au contenu.';
+        accessibilityHint.textContent = 'Pour une image informative, décrivez ce qu’elle montre. La légende reste indépendante du texte alternatif.';
         captionLabel.append(document.createTextNode(message('editor-image-caption', 'Légende')));
         captionInput.type = 'text';
         captionInput.maxLength = 500;
@@ -2410,7 +2418,7 @@
         properties.setAttribute('data-image-properties', 'true');
         properties.textContent = 'Propriétés';
         var propertyDialog = makeEditorDialog('Propriétés de l’image');
-        propertyDialog.body.append(captionLabel, altLabel, widthLabel, sizeLabel);
+        propertyDialog.body.append(captionLabel, altLabel, decorativeLabel, accessibilityHint, widthLabel, sizeLabel);
         var closeProperties = makeRichButton('Fermer', 'button');
         propertyDialog.actions.appendChild(closeProperties);
         closeProperties.addEventListener('click', propertyDialog.close);
@@ -2457,6 +2465,8 @@
 
             alignButtons.forEach(function (button) { button.setAttribute('aria-pressed', button.getAttribute('data-image-align') === alignmentSelect.value ? 'true' : 'false'); });
             altInput.value = image.getAttribute('alt') || '';
+            decorativeInput.checked = image.getAttribute('data-decorative') === '1';
+            altInput.disabled = decorativeInput.checked;
             captionInput.value = image.getAttribute('data-caption') || '';
             widthInput.value = image.getAttribute('data-width') || imageFormat(image, 'portix-image-size-', imageSizes) || '100';
             var blot = imageBlot(image);
@@ -2561,7 +2571,16 @@
             wrapMenu.open = false;
         });
         altInput.addEventListener('input', function () {
+            if (decorativeInput.checked) { return; }
             applyFormat('alt', altInput.value, false);
+        });
+        decorativeInput.addEventListener('change', function () {
+            applyFormat('image-decorative', decorativeInput.checked ? '1' : '', false);
+            if (decorativeInput.checked) { altInput.value = ''; applyFormat('alt', '', false); }
+            altInput.disabled = decorativeInput.checked;
+            accessibilityHint.textContent = decorativeInput.checked
+                ? 'Cette image sera ignorée par le lecteur d’écran. Ne cochez pas cette option si elle explique une opération.'
+                : 'Pour une image informative, renseignez le texte alternatif. Une légende peut compléter cette description.';
         });
         captionInput.addEventListener('input', function () {
             applyFormat('image-caption', captionInput.value, false);
@@ -2880,6 +2899,7 @@
         return {
             src: image.getAttribute('src') || '',
             alt: image.getAttribute('alt') || '',
+            'image-decorative': image.getAttribute('data-decorative') === '1' ? '1' : '',
             'image-size': imageFormat(image, 'portix-image-size-', imageSizes),
             'image-align': imageFormat(image, 'portix-image-align-', imageAlignments),
             'image-caption': image.getAttribute('data-caption') || '',
@@ -2893,7 +2913,10 @@
         var selected = node.classList.contains('is-portix-selected') || (image && image.classList.contains('is-portix-selected'));
         if (!image) { image = document.createElement('img'); node.appendChild(image); }
         image.setAttribute('src', safeImageSource(data.src) ? data.src : '');
-        image.setAttribute('alt', String(data.alt || '').slice(0, 250));
+        var decorative = data['image-decorative'] === '1';
+        image.setAttribute('alt', decorative ? '' : String(data.alt || '').slice(0, 250));
+        if (decorative) { image.setAttribute('data-decorative', '1'); }
+        else { image.removeAttribute('data-decorative'); }
         image.setAttribute('data-caption', String(data['image-caption'] || '').slice(0, 500));
         image.setAttribute('data-wrap', data['image-wrap'] === 'none' ? 'none' : 'square');
         image.className = '';
@@ -2940,6 +2963,7 @@
         clone.setAttribute('src', data.src); clone.setAttribute('alt', data.alt);
         clone.className = 'portix-content-image';
         var figure = document.createElement('figure'); figure.className = 'portix-image-figure';
+        if (data['image-decorative'] === '1') { figure.setAttribute('data-decorative', '1'); }
         if (data['image-size']) { figure.classList.add('portix-image-size-' + data['image-size']); }
         if (data['image-align']) { figure.classList.add('portix-image-align-' + data['image-align']); }
         if (data['image-width']) { figure.setAttribute('data-width', data['image-width']); }
@@ -2965,7 +2989,7 @@
             static value(node) { var img = node.querySelector('img'); return { src: img ? img.getAttribute('src') : '' }; }
             static formats(node) { var img = node.querySelector('img'); var data = img ? imageData(img) : {}; delete data.src; return data; }
             format(name, value) {
-                if (['alt', 'image-size', 'image-align', 'image-caption', 'image-wrap', 'image-width'].indexOf(name) !== -1) {
+                if (['alt', 'image-decorative', 'image-size', 'image-align', 'image-caption', 'image-wrap', 'image-width'].indexOf(name) !== -1) {
                     var data = imageData(this.domNode.querySelector('img')); data[name] = value || '';
                     paintImageObject(this.domNode, data); return;
                 }
