@@ -3275,7 +3275,7 @@
                 formats: [
                     'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
                     'list', 'link', 'link-target', 'image', 'align', 'color', 'size', 'portix-break',
-                    'image-size', 'image-align', 'alt', 'image-caption', 'formula', 'portix-video', 'table',
+                    'image-size', 'image-align', 'alt', 'image-decorative', 'image-caption', 'formula', 'portix-video', 'table',
                     'portix-image', 'image-wrap', 'image-width', 'portix-divider', 'background', 'font', 'code', 'code-block',
                     'callout', 'callout-title', 'script', 'indent', 'direction', 'table-header', 'table-width', 'cell-vertical', 'cell-width', 'cell-colspan', 'cell-rowspan', 'table-caption', 'table-section'
                 ],
