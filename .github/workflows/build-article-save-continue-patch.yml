@@ -1,0 +1,54 @@
+name: Patch P3 - enregistrer et continuer
+on:
+  push:
+    branches:
+      - feature/relecture-articles-chatgpt-20261113
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verifier et construire le correctif
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\r\n' < VERSION)" = "0.9.1"
+          sudo apt-get update -qq
+          sudo apt-get install -y php-xml php-mbstring php-sqlite3 php-gd php-zip >/dev/null
+          php -l var/modules/articles/src/ArticleAdminController.php
+          php -l var/modules/articles/lang/fr.php
+          php -l var/modules/articles/lang/en.php
+          php tools/smoke_test_article_form_ux.php
+          php tools/smoke_test_template.php
+          php tools/smoke_test_editor_workflow.php
+          mkdir -p patch
+          for file in \
+            var/modules/articles/src/ArticleAdminController.php \
+            var/modules/articles/templates/admin-form.tpl \
+            var/modules/articles/lang/fr.php \
+            var/modules/articles/lang/en.php; do
+            mkdir -p "patch/$(dirname "$file")"
+            cp "$file" "patch/$file"
+          done
+          cat > patch/LISEZ-MOI-PATCH.txt <<'EOF'
+          P3 0.9.1 — Enregistrer et continuer
+          Patch incrementiel a appliquer apres les correctifs precedents.
+          Sauvegarder les fichiers du site avant remplacement.
+          Copier uniquement var/ a la racine de P3 avec FileZilla.
+          Aucune reinstallation ni modification de la base SQLite.
+          Verifier : ouvrir un article existant, le modifier, cliquer sur
+          Enregistrer et continuer. L'article doit etre enregistre puis
+          rouvert, avec un message de confirmation.
+          Le bouton Enregistrer habituel renvoie a la liste.
+          Le formulaire Nouvel article ne propose pas ce nouveau bouton.
+          EOF
+          (cd patch && zip -qr ../P3-patch-enregistrer-continuer-0.9.1.zip .)
+          unzip -t P3-patch-enregistrer-continuer-0.9.1.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P3-patch-enregistrer-continuer-0.9.1
+          path: P3-patch-enregistrer-continuer-0.9.1.zip
+          if-no-files-found: error
