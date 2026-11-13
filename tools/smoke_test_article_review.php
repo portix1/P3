@@ -27,6 +27,21 @@ function reviewAssert(bool $valid, string $reason): void
     if (!$valid) { throw new RuntimeException($reason); }
 }
 
+require dirname(__DIR__) . '/var/modules/articles/src/ArticleListFilter.php';
+
+$sampleArticles = [
+    ['title'=>'Manche en érable', 'category_name'=>'Fabrication', 'slug'=>'manche-erable', 'status'=>'draft'],
+    ['title'=>'Chevalet', 'category_name'=>'Réglages', 'slug'=>'chevalet', 'status'=>'pending'],
+    ['title'=>'Finition', 'category_name'=>'Atelier', 'slug'=>'finition', 'status'=>'published'],
+];
+$filterClass = \PortixModule\Articles\ArticleListFilter::class;
+reviewAssert(count($filterClass::apply($sampleArticles, 'pending', '')) === 1, 'Filtre relecture');
+reviewAssert(count($filterClass::apply($sampleArticles, 'draft', 'ÉRABLE')) === 1, 'Recherche UTF-8 insensible à la casse');
+reviewAssert(count($filterClass::apply($sampleArticles, '', 'atelier')) === 1, 'Recherche par catégorie');
+reviewAssert(count($filterClass::apply($sampleArticles, '', 'chevalet')) === 1, 'Recherche par adresse');
+reviewAssert(count($filterClass::apply($sampleArticles, 'published', 'sans résultat')) === 0, 'Aucun résultat');
+reviewAssert(count($filterClass::apply($sampleArticles, 'invalide', '')) === 3, 'État inconnu ignoré');
+
 $default = Rights::DEFAULTS;
 reviewAssert(!$default['publish'] && !$default['edit_published'], 'New rédacteur starts with mandatory review');
 $direct = Rights::withPublicationChoice($default, 'direct');
