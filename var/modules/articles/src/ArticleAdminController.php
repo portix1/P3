@@ -122,7 +122,7 @@ final class ArticleAdminController
             $action = '';
             if ($published && $canPublish) {
                 $canAct = true; $next = 'draft'; $action = 'articles_make_draft';
-            } elseif ($pending && $canPublish) {
+            } elseif ($pending && $canPublish && $user->isAdmin()) {
                 $canAct = true; $next = 'published'; $action = 'articles_review_approve';
             } elseif (!$pending && !$published && $canPublish) {
                 $canAct = true; $next = 'published'; $action = 'articles_publish';
