@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Package only tracked files belonging to a module, with one root folder."""
+"""Build a reproducible ZIP containing only tracked files of a P3 module."""
 import argparse
 import hashlib
 from pathlib import Path
 import re
+import stat
 import subprocess
 import xml.etree.ElementTree as ET
 import zipfile
@@ -32,9 +33,14 @@ def build(module):
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as package:
         for path in paths:
             file = ROOT / path
-            if file.is_symlink() or not file.is_file() or file.suffix in {'.sqlite', '.log', '.pyc'}:
+            if file.is_symlink() or not file.is_file() or not stat.S_ISREG(file.stat().st_mode) or file.suffix in {'.sqlite', '.log', '.pyc'}:
                 raise ValueError('Unexpected runtime or non-regular module file')
-            package.write(file, module + '/' + path[len(prefix):])
+            # A fixed DOS timestamp and mode make ZIP bytes repeatable on different machines.
+            info = zipfile.ZipInfo(module + '/' + path[len(prefix):], (1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3
+            info.external_attr = 0o100644 << 16
+            package.writestr(info, file.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
     with zipfile.ZipFile(archive) as package:
         if package.testzip() is not None:
             raise ValueError('Corrupt module archive')

@@ -1,34 +1,33 @@
-# P3 0.9.0 — version stable
+# P3 0.9.1 — catalogue d'extensions cohérent et figé
 
-**Publication : 12 novembre 2026.** Cette version stabilise le moteur P3 après la série 0.8.4-rc4 et les correctifs validés en production sur Univers Guitare. Elle remplace la 0.8.1 comme dernière version stable.
+**Version stable corrective du 13 novembre 2026.** Cette distribution remplace P3 0.9.0. Le moteur, les modules de référence et les thèmes sont inclus.
 
-## Changements depuis P3 0.8.1
+## Correctifs
 
-- **Back-office :** séparation explicite des espaces Rédaction (contenus), Administration (gestion courante) et Configuration (structure et interventions rares). Gestion des modules, thèmes, diagnostics et paramètres techniques organisée dans Configuration ; contrôle des droits des rédacteurs.
-- **Moteur et modules :** accueil configurable (Accueil 1.1.0), Articles 1.4.8, Menu principal 1.0.1, Recherche 1.0.5, Statistiques 2.0.3 et optimisations des lectures de données. L'état des modules installés reste distinct des fichiers distribués.
-- **Sécurité HTTP :** règles empêchant l'accès direct aux répertoires internes, aux outils et aux tests, et routage des URL PHP non publiques. Les adaptations de l'hébergement LWS doivent être conservées lors de la mise à jour.
-- **Mises à jour d'extensions :** contrôle SHA-256 des ZIP référencés dans le catalogue, refus des rétrogradations ou changements d'identité de module, signalement des imports manuels non vérifiés. Le catalogue officiel et ses archives sont référencés par un commit Git figé dont l'empreinte de catalogue est intégrée dans le moteur.
-- **Lecture et performance mobile :** variantes WebP 400/800/1200 px et `srcset/sizes` pour les illustrations des articles, chargement différé et dimensions intrinsèques, figures 25/33/50 % lisibles sur téléphone, lignes de lecture plafonnées sur tablette, en-tête mobile compact, recherche repliable et polices locales préchargées. Les personnalisations du thème ne sont pas écrasées par les correctifs ciblés.
+- **Articles 1.4.8 officiellement téléchargeable** : le canal de mises à jour des extensions propose désormais la version 1.4.8 au lieu de 1.4.6, avec son ZIP autonome contrôlé par SHA-256. Le module embarqué et l'archive officielle portent la même version.
+- **Compatibilité obligatoire** : Articles 1.4.8 exige au minimum **P3 0.9.0**, car il utilise le moteur des images responsives. L'import du ZIP est refusé sur les noyaux plus anciens, avant remplacement des fichiers.
+- **Chaîne de confiance actualisée** : catalogue et ZIP publiés depuis le commit Git figé `c8b0db7f35da9a02a51ebe1c45c8319469beabda`. Le moteur vérifie l'empreinte SHA-256 exacte du catalogue (`6f91dd6af62fe91d62068eb65a7c99bce6d60df309073b9d41041fc5fc50d4e2`) avant d'utiliser ses annonces. Les URL de téléchargement visent le même commit.
+- **Reproductibilité** : le constructeur de ZIP de modules emploie des horodatages et permissions normalisés ; la CI reconstruit deux fois Articles 1.4.8, compare les octets, les sources et les empreintes.
+- **Documentation corrigée** : le catalogue distingue les extensions autonomes (Articles 1.4.8 et thème Six Cordes UX Clair 0.1.7) des modules inclus dans l'archive complète (dont Accueil 1.1.0, Menu 1.0.1, Recherche 1.0.5 et Statistiques 2.0.3).
 
-## Installation et migration
+Aucune modification éditoriale ou de mise en page n'est introduite dans ce correctif. Les correctifs mobiles validés dans 0.9.0 restent présents.
 
-La distribution complète contient le moteur, les modules et les thèmes de référence. Elle **n'inclut pas** les bases SQLite en exploitation, sessions, sauvegardes, fichiers confidentiels, médias importés et données générées.
+## Important pour les installations existantes
 
-- **Installation neuve :** décompresser `P3-0.9.0.zip`, transférer le contenu du dossier `P3` sur le serveur, puis ouvrir `install.php`. Prérequis : PHP 8.2 ou ultérieur, PDO SQLite et extensions nécessaires, dont GD/WebP.
-- **Installation existante :** faire une sauvegarde de la base SQLite et des fichiers personnalisés ; comparer les fichiers avec la distribution, puis essayer la mise à jour sur une copie. **Ne pas synchroniser avec suppression** : cela pourrait effacer des médias ou des fichiers propres au site.
-- **Univers Guitare :** les correctifs successifs de P3 0.8.4-rc4 ayant déjà été transférés et validés, la mise à jour du numéro affiché doit rester distincte d'une réinstallation complète. Ne pas remplacer le `.htaccess` adapté à LWS, le thème actif personnalisé, les données ou le module Accueil configuré.
+Le catalogue est intentionnellement **figé** dans le moteur. Une installation en P3 0.9.0 continue d'utiliser l'ancien catalogue (Articles 1.4.6) tant qu'elle n'a pas reçu les fichiers moteur de 0.9.1. Les anciennes installations ne reçoivent pas silencieusement un nouveau catalogue.
 
-La publication sur GitHub ne déploie rien automatiquement sur un site existant. Le fichier `P3-0.9.0.sha256` permet de contrôler l'intégrité de l'archive complète.
+**Sur Univers Guitare :** Articles 1.4.8 est déjà installé et validé. Il est inutile de réinstaller le module ou de remplacer le thème. Pour afficher la version 0.9.1 et accéder au nouveau catalogue, mettre à jour uniquement les fichiers nécessaires, après sauvegarde, et conserver `.htaccess` adapté à LWS, la configuration, la base SQLite, les médias et le thème personnalisé.
 
-## Vérifications
+Les mises à jour du noyau depuis le tableau de bord restent **à développer** ; cette version ne les automatise pas.
 
-La validation de publication est réalisée sur PHP 8.2, 8.3, 8.4 et 8.5, avec tests des modules, routage, sécurité, installation, médias, moteur de templates, et tests Chromium de l'accueil et du rendu mobile à plusieurs largeurs.
+## Installation neuve
 
-## Limites connues et suites
+Décompresser `P3-0.9.1.zip`, transférer le contenu du dossier `P3` à la racine du serveur et ouvrir `install.php`. PHP 8.2 ou plus récent et PDO SQLite sont requis, ainsi que les extensions précisées par le contrôle d'environnement. Le fichier `P3-0.9.1.sha256` permet de vérifier le téléchargement.
 
-- Le catalogue est **figé et vérifié par SHA-256**, mais n'emploie pas de signature externe : l'authenticité repose sur les références embarquées dans le code installé. Une nouvelle publication d'extensions exige de réviser ces références dans une version ultérieure du moteur.
-- Les variantes WebP des articles sont générées progressivement. Une génération anticipée dès l'ajout ou le remplacement d'un média reste au programme.
-- Les scores LCP et CLS publiés pour Univers Guitare proviennent d'essais de laboratoire, non de statistiques terrain. Une campagne répétée reste à réaliser.
-- La version stable n'implique pas que tous les éléments de la feuille de route éditoriale, SEO ou ergonomique soient terminés.
+## Tests et sécurité
 
-**Historique de la série 0.8 :** `docs/releases/notes-0.8-series.md`.
+La validation automatique couvre PHP 8.2, 8.3, 8.4, 8.5, les installations et mises à jour des modules, les archives des extensions, la chaîne de confiance, les accès, les tests HTTP et Chromium.
+
+La chaîne de confiance **n'emploie pas encore de signature externe**. Une clé publique intégrée au noyau et un catalogue signé devront être étudiés pour autoriser de nouvelles publications d'extensions sans mise à jour du noyau.
+
+Historique des corrections de la version précédente : `docs/releases/notes-0.9.0.md`.

@@ -37,6 +37,9 @@ jobs:
       - name: Validate public search index reuse
         run: php var/modules/search/tests/smoke_test_text_fragments.php
 
+      - name: Verify reproducible official Articles package
+        run: python3 tools/test_catalogue_distribution.py
+
   home-browser:
     name: Accueil — navigateur et HTTP
     runs-on: ubuntu-24.04

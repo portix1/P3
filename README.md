@@ -1,38 +1,35 @@
 # P3 — CMS PHP modulaire
 
-**Version stable actuelle :** `0.9.0`  
-**Version stable précédente :** `0.8.1`  
-**Dernière version candidate de la série 0.8 :** `0.8.4-rc4`  
-**Archive source historique :** `0.8.01-beta1-preview5`  
+**Version stable actuelle :** `0.9.1`  
+**Version stable précédente :** `0.9.0`  
+**Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
 **Licence :** `GPL-3.0-or-later`
 
-## État du dépôt
+P3 est un CMS PHP modulaire avec des espaces distincts pour la Rédaction, l'Administration courante et la Configuration du site.
 
-Ce dépôt contient le moteur P3, les modules, les thèmes de référence, les scripts de validation et les outils de distribution. La version `0.9.0` stabilise les corrections de sécurité, de gestion des modules et d'ergonomie mobile intégrées après `0.8.4-rc4`.
+## Distribution
 
-Les distributions complètes sont publiées dans les [versions GitHub](https://github.com/portix1/P3/releases). Les changements et la procédure de mise à jour figurent dans [RELEASE-NOTES.md](RELEASE-NOTES.md).
+Les versions complètes sont publiées dans [GitHub Releases](https://github.com/portix1/P3/releases). Voir [RELEASE-NOTES.md](RELEASE-NOTES.md) pour les modifications de 0.9.1, la procédure de mise à jour et les limites connues.
 
-La distribution exclut les bases SQLite d'exploitation, les sessions, sauvegardes, médias importés, configurations privées et fichiers générés. Les protections des répertoires sont conservées, mais les `.htaccess` propres à l'hébergeur et les thèmes personnalisés doivent être comparés et préservés lors de tout transfert.
+L'archive complète inclut le moteur, les modules et les thèmes de référence. Elle exclut les bases SQLite d'exploitation, les sessions, sauvegardes, médias importés, configurations privées et données générées. Les archives de modules et le catalogue d'extensions autonomes sont gérés séparément dans [distribution/](distribution/README.md).
 
 ## Prérequis
 
-PHP 8.2 ou plus récent ; PDO SQLite et les extensions utilisées par P3, notamment `mbstring`, `dom`, `gd` avec WebP, `fileinfo` et `zip`. Les prérequis précis sont contrôlés par `src/Installation/EnvironmentPreflight.php`.
+PHP 8.2 ou ultérieur ; PDO SQLite et les extensions requises par P3, notamment `mbstring`, `dom`, `gd` avec WebP, `fileinfo` et `zip`. La vérification précise est réalisée par `src/Installation/EnvironmentPreflight.php`.
 
-## Distribution et tests
-
-La validation automatisée couvre PHP 8.2, 8.3, 8.4 et 8.5, les tests de modules et de sécurité, les tests HTTP ainsi que des contrôles Chromium de l'accueil et du rendu mobile.
-
-Pour construire une distribution à partir des sources :
+## Publication et tests
 
 ```sh
+php tools/validate_release.php
 python3 tools/test_distribution.py
+python3 tools/test_catalogue_distribution.py
 python3 tools/build_distribution.py
 ```
 
-L'archive complète et son empreinte SHA-256 sont écrites dans `dist/`. Un commit de publication commence par `Release P3 ` ; GitHub Actions ne publie la version qu'après réussite des contrôles.
+La CI exécute les contrôles sous PHP 8.2 à 8.5 et les tests HTTP/Chromium. Une publication stable exige la réussite de ces contrôles. Un commit dont le message commence par `Release P3 ` déclenche la construction de `P3-<version>.zip`, son SHA-256 et la publication officielle.
 
-**Une publication GitHub n'installe ni ne met à jour automatiquement un site.** Pour une installation existante, sauvegarder les fichiers et la base, essayer la mise à jour sur une copie et conserver les adaptations locales. Ne pas relancer l'installateur et ne jamais supprimer les fichiers absents de l'archive lors d'une synchronisation FTP.
+**GitHub ne déploie pas la production automatiquement.** Pour mettre à jour un site existant, réaliser une sauvegarde, vérifier les différences, conserver le `.htaccess` propre à l'hébergeur, le thème personnalisé, la configuration, les médias et la base SQLite. Ne pas relancer l'installateur et ne pas synchroniser des fichiers FTP avec suppression des fichiers absents du ZIP.
 
 ## Licence
 
-P3 est distribué sous les termes de la GNU General Public License, version 3 ou ultérieure (`GPL-3.0-or-later`). Conserver les notices de licence propres aux composants tiers.
+P3 est distribué sous les termes de la GNU General Public License, version 3 ou ultérieure (`GPL-3.0-or-later`). Les licences et notices tierces doivent être conservées.
