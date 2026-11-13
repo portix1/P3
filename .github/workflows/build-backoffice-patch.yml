@@ -30,28 +30,28 @@ jobs:
                 cp "$file" "patch/$file"
                 ;;
             esac
-          done < <(git diff --name-only --diff-filter=ACMRT 33efc9fd0f89142a9f44d63c41292e6e5d9861f6...HEAD)
-          test -f patch/var/admin/templates/users-form.tpl
+          done < <(git diff --name-only --diff-filter=ACMRT b464bda75182af2cd7bba92dcadffeee0ebb24a4...HEAD)
+          test -f patch/src/Navigation/AdminNavigation.php
           cat > patch/LISEZ-MOI-PATCH.txt <<'EOF'
-          PATCH P3 — Ergonomie rédaction et droits
-          Version de départ obligatoire : P3 0.9.1 et correctif de relecture déjà appliqué.
+          PATCH P3 — Navigation des articles
+          Version de départ obligatoire : P3 0.9.1 avec correctifs de relecture et d'ergonomie déjà appliqués.
           Ce ZIP n'est pas un installateur.
           Ne pas appliquer sur P3 0.8.4 ou sur une autre version.
           1. Sauvegarder les fichiers du site et sa base SQLite.
           2. Vérifier que VERSION contient 0.9.1.
           3. Envoyer uniquement les dossiers src/ et var/ de cette archive à la racine du site,
              en conservant l'arborescence et en remplaçant les fichiers existants.
-          4. Vérifier la fiche utilisateur et l'enregistrement des brouillons.
+          4. Vérifier les catégories, séries et l'ordre dans Administration.\n          5. Vérifier que les réglages du menu des articles sont dans Configuration.\n          6. Vérifier que la liste des articles reste limitée aux tâches de rédaction.
           Ce correctif n'effectue aucune migration de base de données.
           Attention : aucun fichier de base de données, d'upload ou de configuration
           privée n'est inclus.
           Ceci est une version de test, non validée pour la production.
           EOF
-          (cd patch && zip -qr ../P3-patch-ux-redaction-0.9.1-test.zip .)
-          unzip -t P3-patch-ux-redaction-0.9.1-test.zip
+          (cd patch && zip -qr ../P3-patch-navigation-articles-0.9.1-test.zip .)
+          unzip -t P3-patch-navigation-articles-0.9.1-test.zip
       - name: Publier le patch ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: P3-patch-ux-redaction-0.9.1-test
-          path: P3-patch-ux-redaction-0.9.1-test.zip
+          name: P3-patch-navigation-articles-0.9.1-test
+          path: P3-patch-navigation-articles-0.9.1-test.zip
           if-no-files-found: error
