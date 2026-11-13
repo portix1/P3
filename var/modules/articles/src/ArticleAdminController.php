@@ -46,7 +46,7 @@ final class ArticleAdminController
                     $hasCategory = $hasCategory || $this->categoryAllowed($user, (int)$category['id']);
                 }
                 if (!$user->articlePermissions()['create'] || !$hasCategory) { $this->deny($template); return; }
-            } elseif (!$this->allowed($user, $action === 'delete' ? 'delete' : ($action === 'status' ? 'publish' : 'edit'), $targetArticle, $targetCategory)) {
+            } elseif (!$this->allowed($user, $action === 'delete' ? 'delete' : 'edit', $targetArticle, $targetCategory)) {
                 $this->deny($template); return;
             }
         }
@@ -99,28 +99,52 @@ final class ArticleAdminController
     private function listing(\Portix\View\Template $template, UserAccount $user): void
     {
         $template->setSlot('main', './var/modules/articles/templates/admin-list.tpl');
-        $visibleRows = array_values(array_filter($this->articles->allForAdministration(), fn(array $row): bool => $this->allowed($user, 'edit', $row, $row['category_id'] === null ? null : (int)$row['category_id'])));
-        $template->set('articles_total', (string)count($visibleRows));
-        $template->set('articles_published', (string)count(array_filter($visibleRows, static fn(array $row): bool => $row['status'] === 'published')));
+        $visibleRows = array_values(array_filter(
+            $this->articles->allForAdministration(),
+            fn (array $row): bool => $this->allowed($user, 'edit', $row, $row['category_id'] === null ? null : (int)$row['category_id'])
+        ));
+        $template->set('articles_total', (string) count($visibleRows));
+        $template->set('articles_published', (string) count(array_filter($visibleRows, static fn (array $row): bool => $row['status'] === 'published')));
+        $template->set('articles_pending', (string) count(array_filter($visibleRows, static fn (array $row): bool => $row['status'] === 'pending')));
+        $template->set('articles_has_rows', $visibleRows === [] ? '0' : '1');
+        $template->set('articles_empty_help', $this->translator->text($user->isAdmin() ? 'articles_empty_admin' : 'articles_empty_redactor'));
         $template->set('articles_can_create', $user->isAdmin() || $user->articlePermissions()['create'] ? '1' : '0');
+
         foreach ($visibleRows as $row) {
-            $published = (string) $row['status'] === 'published';
+            $status = (string) $row['status'];
+            $published = $status === 'published';
+            $pending = $status === 'pending';
+            $categoryId = $row['category_id'] === null ? null : (int) $row['category_id'];
+            $canPublish = $this->allowed($user, 'publish', $row, $categoryId);
+            $canEdit = $this->allowed($user, 'edit', $row, $categoryId);
+            $canAct = false;
+            $next = '';
+            $action = '';
+            if ($published && $canPublish) {
+                $canAct = true; $next = 'draft'; $action = 'articles_make_draft';
+            } elseif ($pending && $canPublish) {
+                $canAct = true; $next = 'published'; $action = 'articles_review_approve';
+            } elseif (!$pending && !$published && $canPublish) {
+                $canAct = true; $next = 'published'; $action = 'articles_publish';
+            } elseif (!$pending && !$published && $canEdit) {
+                $canAct = true; $next = 'pending'; $action = 'articles_review_request';
+            }
             $template->addRow('articlerow', [
                 'id' => (string) $row['id'],
                 'title' => (string) $row['title'],
                 'slug' => (string) $row['slug'],
                 'category' => (string) ($row['category_name'] ?: $this->translator->text('articles_uncategorized')),
-                'status' => $this->translator->text($published ? 'articles_status_published' : 'articles_status_draft'),
-                'status_class' => $published ? 'state-enabled' : 'state-draft',
+                'status' => $this->translator->text('articles_status_' . $status, $status),
+                'status_class' => $pending ? 'state-pending' : ($published ? 'state-enabled' : 'state-draft'),
                 'date' => (string) $row['updated_at'],
                 'public_url' => $published ? (string) $row['slug'] . '.html' : '',
-                'can_delete' => $this->allowed($user, 'delete', $row, $row['category_id'] === null ? null : (int)$row['category_id']) ? '1' : '0',
-                'can_publish' => $this->allowed($user, 'publish', $row, $row['category_id'] === null ? null : (int)$row['category_id']) ? '1' : '0',
-                'next_status' => $published ? 'draft' : 'published',
-                'status_action' => $this->translator->text(
-                    $published ? 'articles_make_draft' : 'articles_publish'
-                ),
-                'status_action_class' => $published ? 'button-make-draft' : 'button-publish',
+                'can_delete' => $this->allowed($user, 'delete', $row, $categoryId) ? '1' : '0',
+                'can_publish' => $canAct ? '1' : '0',
+                'next_status' => $next,
+                'status_action' => $action !== '' ? $this->translator->text($action) : '',
+                'status_action_class' => $next === 'draft' ? 'button-make-draft' : 'button-publish',
+                'can_send_back' => $pending && $user->isAdmin() ? '1' : '0',
+                'review_note' => (string) ($row['review_note'] ?? ''),
             ]);
         }
     }
@@ -212,7 +236,12 @@ final class ArticleAdminController
                     throw new RuntimeException('articles_invalid_title');
                 }
                 $categoryId = $this->optionalNumericId($_POST['category_id'] ?? null);
-                $status = ($_POST['status'] ?? '') === 'published' ? 'published' : 'draft';
+                $requestedStatus = is_scalar($_POST['status'] ?? null) ? (string) $_POST['status'] : '';
+                if (!in_array($requestedStatus, ['draft', 'published'], true)) {
+                    throw new RuntimeException('articles_invalid_status');
+                }
+                // Changes to an article awaiting review require a new request.
+                $status = ($existing['status'] ?? '') === 'pending' ? 'draft' : $requestedStatus;
                 if (!$this->allowed($user, 'edit', $existing, $categoryId)
                     || (($status === 'published' || ($existing['status'] ?? '') === 'published') && !$this->allowed($user, 'publish', $existing, $categoryId))) {
                     throw new RuntimeException('security_access_denied');
@@ -292,6 +321,9 @@ final class ArticleAdminController
                         $summary
                     );
                 }
+                if ($existing !== null) {
+                    $this->articles->saveReviewNote($id, null);
+                }
                 if($saveReading)$this->articles->editorial()->saveReading($id,$tocEnabled,$relatedIds);
                 });
                 header('Location: Admin-articles.html');
@@ -314,6 +346,8 @@ final class ArticleAdminController
 
         $template->setSlot('main', './var/modules/articles/templates/admin-form.tpl');
         $template->set('articles_can_publish', $user->isAdmin() || $user->articlePermissions()['publish'] ? '1' : '0');
+        $template->set('articles_is_pending', ($existing['status'] ?? '') === 'pending' ? '1' : '0');
+        $template->set('articles_review_note', (string) ($existing['review_note'] ?? ''));
         $template->set('articles_form_title', $this->translator->text(
             $isNew ? 'articles_form_new' : 'articles_form_edit'
         ));
@@ -454,12 +488,40 @@ final class ArticleAdminController
         $id = $this->numericId($arguments[3] ?? null);
         $existing = $this->articles->find($id);
         if ($existing === null) { throw new RuntimeException('articles_not_found'); }
-        if ($this->safety !== null) { $this->safety->captureRevision('article', $id, $existing, $user->pseudo()); }
-        $this->articles->updateArticleStatus(
-            $id,
-            $status,
-            gmdate('Y-m-d H:i:s')
-        );
+        $current = (string) $existing['status'];
+        $categoryId = $existing['category_id'] === null ? null : (int) $existing['category_id'];
+        $canPublish = $this->allowed($user, 'publish', $existing, $categoryId);
+        $canEdit = $this->allowed($user, 'edit', $existing, $categoryId);
+        $note = null;
+
+        if ($status === 'published') {
+            if (!$canPublish || !in_array($current, ['draft', 'pending'], true)) {
+                throw new RuntimeException('security_access_denied');
+            }
+        } elseif ($status === 'pending') {
+            if (!$canEdit || $current !== 'draft') {
+                throw new RuntimeException('security_access_denied');
+            }
+        } elseif ($status === 'draft') {
+            if ($current === 'pending' && $user->isAdmin()) {
+                $note = trim(strip_tags((string) ($_POST['review_note'] ?? '')));
+                if ($note === '' || mb_strlen($note, 'UTF-8') > 2000) {
+                    throw new RuntimeException('articles_review_note_required');
+                }
+            } elseif (!$canPublish || $current !== 'published') {
+                throw new RuntimeException('security_access_denied');
+            }
+        } else {
+            throw new RuntimeException('articles_invalid_status');
+        }
+
+        $this->articles->transaction(function () use ($id, $existing, $user, $status, $note): void {
+            if ($this->safety !== null) {
+                $this->safety->captureRevision('article', $id, $existing, $user->pseudo());
+            }
+            $this->articles->updateArticleStatus($id, $status, gmdate('Y-m-d H:i:s'));
+            $this->articles->saveReviewNote($id, $note);
+        });
         header('Location: Admin-articles.html');
         exit;
     }
