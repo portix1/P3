@@ -1,0 +1,57 @@
+<?php
+declare(strict_types=1);
+
+if (PHP_SAPI !== 'cli') { http_response_code(403); exit(1); }
+
+require dirname(__DIR__) . '/bootstrap/autoload.php';
+require dirname(__DIR__) . '/var/modules/articles/src/ArticleReviewPolicy.php';
+
+use PortixModule\Articles\ArticleReviewPolicy as Review;
+
+function allowTransition(string $from, string $to, bool $admin, bool $edit, bool $publish, string $note = ''): ?string
+{
+    return Review::transition($from, $to, $admin, $edit, $publish, $note);
+}
+function refuseTransition(string $from, string $to, bool $admin, bool $edit, bool $publish, string $note = ''): void
+{
+    try {
+        allowTransition($from, $to, $admin, $edit, $publish, $note);
+    } catch (RuntimeException $error) {
+        return;
+    }
+    throw new RuntimeException('Transition interdite autorisée : ' . $from . ' → ' . $to);
+}
+function reviewAssert(bool $valid, string $reason): void
+{
+    if (!$valid) { throw new RuntimeException($reason); }
+}
+
+reviewAssert(allowTransition('draft', 'pending', false, true, false) === null, 'Le rédacteur peut demander la relecture');
+refuseTransition('draft', 'published', false, true, false);
+refuseTransition('pending', 'published', false, true, false);
+refuseTransition('pending', 'draft', false, true, false);
+refuseTransition('published', 'draft', false, true, false);
+refuseTransition('draft', 'pending', false, false, false);
+refuseTransition('pending', 'pending', false, true, false);
+refuseTransition('draft', 'garbage', false, true, true);
+reviewAssert(allowTransition('draft', 'published', false, true, true) === null, 'Publication directe autorisée');
+reviewAssert(allowTransition('published', 'draft', false, true, true) === null, 'L’auteur de confiance peut dépublier');
+reviewAssert(allowTransition('pending', 'published', true, true, true) === null, 'Administrateur approuve');
+refuseTransition('pending', 'draft', true, true, true);
+reviewAssert(allowTransition('pending', 'draft', true, true, true, '  Corriger les cotes.  ') === 'Corriger les cotes.',
+    'Le retour exige une explication');
+refuseTransition('pending', 'draft', true, true, true, str_repeat('a', 2001));
+refuseTransition('draft', 'draft', false, true, false);
+refuseTransition('published', 'pending', false, true, true);
+
+$db = new Portix\Infrastructure\Database(':memory:');
+(new Portix\Infrastructure\Migrator($db))->migrate();
+$pdo = $db->connection();
+$columns = array_column($pdo->query('PRAGMA table_info(users)')->fetchAll(PDO::FETCH_ASSOC), 'name');
+reviewAssert(in_array('article_permissions', $columns, true), 'Permissions conservées lors de la migration');
+$version = (int) $pdo->query('SELECT MAX(version) FROM schema_migrations')->fetchColumn();
+reviewAssert($version === 9, 'La base neuve est en version 9');
+(new Portix\Infrastructure\Migrator($db))->migrate();
+reviewAssert((int) $pdo->query('SELECT MAX(version) FROM schema_migrations')->fetchColumn() === 9,
+    'Migration sans effet à la seconde ouverture');
+echo "Relecture : permissions, transitions et migration 9 vérifiées.\n";
