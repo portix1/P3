@@ -54,4 +54,17 @@ reviewAssert($version === 9, 'La base neuve est en version 9');
 (new Portix\Infrastructure\Migrator($db))->migrate();
 reviewAssert((int) $pdo->query('SELECT MAX(version) FROM schema_migrations')->fetchColumn() === 9,
     'Migration sans effet à la seconde ouverture');
+$oldDb = new Portix\Infrastructure\Database(':memory:');
+$oldPdo = $oldDb->connection();
+$oldPdo->exec('CREATE TABLE schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)');
+$oldPdo->exec("INSERT INTO schema_migrations VALUES (8, '2026-11-12')");
+$oldPdo->exec('CREATE TABLE articles (id INTEGER PRIMARY KEY, title TEXT NOT NULL, status TEXT NOT NULL)');
+$oldPdo->exec("INSERT INTO articles (id,title,status) VALUES (42,'Contenu préservé','draft')");
+(new Portix\Infrastructure\Migrator($oldDb))->migrate();
+$names = array_column($oldPdo->query('PRAGMA table_info(articles)')->fetchAll(PDO::FETCH_ASSOC), 'name');
+reviewAssert(in_array('review_note', $names, true), 'Migration depuis 8 ajoute le commentaire sans reconstruire la table');
+reviewAssert($oldPdo->query('SELECT title FROM articles WHERE id = 42')->fetchColumn() === 'Contenu préservé',
+    'La migration conserve les données des articles');
+reviewAssert((int) $oldPdo->query('PRAGMA user_version')->fetchColumn() === 9,
+    'Migration existante vers version 9');
 echo "Relecture : permissions, transitions et migration 9 vérifiées.\n";
