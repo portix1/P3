@@ -61,10 +61,11 @@ try {
         navigationCheck(in_array($url, array_column($sections['configuration'], 'url'), true), 'Accueil regroupé dans Configuration');
         navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['management']], 'url'), true), 'Accueil absent des autres espaces');
     }
-    navigationCheck(in_array('Admin-footer.html', array_column($sections['management'], 'url'), true), 'Menu de bas de page dans Administration');
-    navigationCheck(in_array('Admin-menu.html', array_column($sections['management'], 'url'), true), 'Menu principal dans Administration');
-    navigationCheck(!in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Menu de bas de page exclu de Configuration');
+    navigationCheck(in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Menu de bas de page dans Configuration');
+    navigationCheck(in_array('Admin-menu.html', array_column($sections['configuration'], 'url'), true), 'Menu principal dans Configuration');
+    navigationCheck(!in_array('Admin-footer.html', array_column($sections['management'], 'url'), true), 'Menu de bas de page absent d’Administration');
     navigationCheck(!in_array('Admin-menu.html', array_column($sections['writing'], 'url'), true), 'Menu principal exclu de Rédaction');
+    navigationCheck(!in_array('Admin-menu.html', array_column($sections['management'], 'url'), true), 'Menu principal absent d’Administration');
     navigationCheck(in_array('Admin-diagnostics.html', array_column($sections['configuration'], 'url'), true), 'Diagnostics dans Configuration');
     $homeDisabled = array_map(static function (array $module): array { if ($module['prefix'] === 'home') { $module['enabled'] = false; } return $module; }, $modules);
     $homeHidden = AdminNavigation::sections($root, $homeDisabled, true, false, ['Admin'], $translator);
