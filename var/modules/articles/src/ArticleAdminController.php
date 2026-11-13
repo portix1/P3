@@ -347,7 +347,7 @@ final class ArticleAdminController
         $template->setSlot('main', './var/modules/articles/templates/admin-form.tpl');
         $template->set('articles_can_publish', $user->isAdmin() || $user->articlePermissions()['publish'] ? '1' : '0');
         $template->set('articles_is_pending', ($existing['status'] ?? '') === 'pending' ? '1' : '0');
-        $template->set('articles_review_note', (string) ($existing['review_note'] ?? ''));
+        $template->set('review_note_value', (string) ($existing['review_note'] ?? ''));
         $template->set('articles_form_title', $this->translator->text(
             $isNew ? 'articles_form_new' : 'articles_form_edit'
         ));
