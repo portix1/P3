@@ -26,6 +26,7 @@
             </select>
         </label>
     </div>
+    {% if review_required == "1" %}<p class="field-help">{{ articles_review_next_step }}</p>{% endif %}
 
     <label>{{ articles_field_category }}
         <select name="category_id">
