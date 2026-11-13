@@ -5,13 +5,13 @@
       "kind": "module",
       "id": "articles",
       "name": "Articles",
-      "version": "1.4.8",
-      "file": "P3-articles-1.4.8.zip",
-      "sha256": "79a03256df1528cdc5e8508f7c37a2a907a5e103c37566128362533bbd9caea8",
-      "p3_min": "0.9.0",
+      "version": "1.4.9",
+      "file": "P3-articles-1.4.9.zip",
+      "sha256": "704dc54b27e282e797569b25f5123e259fb22d1ac26d1c3d31edfacf672de83c",
+      "p3_min": "0.9.2-rc1",
       "php_min": "8.2",
       "tested_on": {
-        "p3": "0.9.0",
+        "p3": "0.9.2-rc1",
         "php": "8.5"
       }
     },
