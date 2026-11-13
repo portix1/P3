@@ -1019,3 +1019,10 @@ input[type="submit"]:hover,
 .article-pagination p{margin:0}
 .article-pagination-links{display:flex;gap:.5rem;flex-wrap:wrap}
 @media(max-width:540px){.article-pagination{align-items:stretch}.article-pagination-links{width:100%}.article-pagination-links>a{flex:1 1 auto;text-align:center}}
+
+
+/* Keep the article body visible before secondary metadata. */
+.article-optional-metadata{margin:1rem 0;padding:.65rem .85rem;border:1px solid #d5dce5;border-radius:.4rem}
+.article-optional-metadata>summary{cursor:pointer;font-weight:600}
+.article-optional-metadata[open]>summary{margin-bottom:.65rem}
+.article-optional-metadata .news-form-grid{margin-top:.5rem}
