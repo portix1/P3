@@ -105,7 +105,9 @@ final class ArticleAdminController
         ));
         $template->set('articles_total', (string) count($visibleRows));
         $template->set('articles_published', (string) count(array_filter($visibleRows, static fn (array $row): bool => $row['status'] === 'published')));
-        $template->set('review_pending_count', (string) count(array_filter($visibleRows, static fn (array $row): bool => $row['status'] === 'pending')));
+        $pendingCount = count(array_filter($visibleRows, static fn (array $row): bool => $row['status'] === 'pending'));
+        $template->set('review_pending_count', (string) $pendingCount);
+        $template->set('articles_review_admin_shortcut', $user->isAdmin() && $pendingCount > 0 ? '1' : '0');
         $template->set('review_has_rows', $visibleRows === [] ? '0' : '1');
         $template->set('review_empty_help', $this->translator->text($user->isAdmin() ? 'articles_empty_admin' : 'articles_empty_redactor'));
         $template->set('articles_can_create', $user->isAdmin() || $user->articlePermissions()['create'] ? '1' : '0');
@@ -152,6 +154,7 @@ final class ArticleAdminController
                 'category' => (string) ($row['category_name'] ?: $this->translator->text('articles_uncategorized')),
                 'status' => $this->translator->text('articles_status_' . $status, $status),
                 'status_class' => $pending ? 'state-pending' : ($published ? 'state-enabled' : 'state-draft'),
+                'row_class' => $pending ? 'article-row-pending' : '',
                 'date' => (string) $row['updated_at'],
                 'public_url' => $published ? (string) $row['slug'] . '.html' : '',
                 'can_delete' => $this->allowed($user, 'delete', $row, $categoryId) ? '1' : '0',
