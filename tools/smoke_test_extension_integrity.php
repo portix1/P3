@@ -133,6 +133,40 @@ try {
             'Contrôle du paquet officiel refusé : ' . $package['file']
         );
     }
+    // Keep the official Articles package aligned with the currently shipped source.
+    $articlesEntries = array_values(array_filter($manifest['packages'],
+        static fn (array $entry): bool => $entry['kind'] === 'module' && $entry['id'] === 'articles'
+    ));
+    integrityCheck(count($articlesEntries) === 1, 'Une seule version officielle du module Articles');
+    $articlesEntry = $articlesEntries[0];
+    $articlesRoot = $root . '/var/modules/articles';
+    $articlesManifest = ModuleManifest::fromXml($articlesRoot . '/desc.xml', 'articles');
+    integrityCheck($articlesEntry['version'] === $articlesManifest['version'],
+        'Catalogue Articles désynchronisé du manifeste embarqué');
+    integrityCheck($articlesEntry['version'] === trim((string) file_get_contents($articlesRoot . '/MODULE-VERSION')),
+        'Catalogue Articles désynchronisé de MODULE-VERSION');
+    integrityCheck($articlesEntry['p3_min'] === $articlesManifest['minimum_p3'],
+        'Version minimale P3 du catalogue incohérente');
+    ModuleManifest::assertCompatible($articlesManifest, '0.9.0');
+    integrityRefuses(static fn () => ModuleManifest::assertCompatible($articlesManifest, '0.8.4-rc4'),
+        'Articles 1.4.8 doit exiger un moteur avec ResponsiveImages');
+    $zip = new ZipArchive();
+    integrityCheck($zip->open($root . '/distribution/' . $articlesEntry['file']) === true,
+        'Archive officielle Articles illisible');
+    try {
+        foreach (['desc.xml', 'MODULE-VERSION', 'index.php', 'templates/index.tpl'] as $relative) {
+            integrityCheck($zip->getFromName('articles/' . $relative) ===
+                file_get_contents($articlesRoot . '/' . $relative),
+                'Archive Articles différente des sources pour ' . $relative);
+        }
+    } finally {
+        $zip->close();
+    }
+    $reflection = new ReflectionClass(ExtensionUpdates::class);
+    $anchor = $reflection->getReflectionConstant('TRUSTED_REF');
+    $trustedRef = $anchor !== false ? $anchor->getValue() : '';
+    integrityCheck(is_string($trustedRef) && preg_match('/\\A[a-f0-9]{40}\\z/D', $trustedRef) === 1,
+        'La référence Git figée doit être un SHA-1 Git complet');
     $official = ExtensionUpdates::available($published, [
         'module' => ['articles' => ['version' => '1.4.0', 'name' => 'Articles']],
         'theme' => ['six-cordes-ux-clair' => ['version' => '0.1.0', 'name' => 'Six Cordes']],
@@ -140,7 +174,7 @@ try {
     integrityCheck(count($official) === 2, 'Catalogue publié doit contenir deux mises à jour');
     foreach ($official as $row) {
         integrityCheck(
-            str_contains($row['url'], '/2b571d17b2c3563e5590c12eee37a7e2fd8c7d8f/distribution/')
+            str_contains($row['url'], '/' . $trustedRef . '/distribution/')
                 && !str_contains($row['url'], '/main/'),
             'Le lien du ZIP ne pointe pas sur le commit figé.'
         );
