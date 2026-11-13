@@ -155,9 +155,9 @@ try {
     }
     integrityCheck($articlesEntry['p3_min'] === $articlesManifest['minimum_p3'],
         'Version minimale P3 du catalogue incohérente');
-    ModuleManifest::assertCompatible($articlesManifest, '0.9.0');
-    integrityRefuses(static fn () => ModuleManifest::assertCompatible($articlesManifest, '0.8.4-rc4'),
-        'Articles 1.4.8 doit exiger un moteur avec ResponsiveImages');
+    ModuleManifest::assertCompatible($articlesManifest, trim((string)file_get_contents($root . '/VERSION')));
+    integrityRefuses(static fn () => ModuleManifest::assertCompatible($articlesManifest, '0.9.1'),
+        'Articles 1.4.9 exige P3 0.9.2 ou sa candidate');
     $zip = new ZipArchive();
     integrityCheck($zip->open($root . '/distribution/' . $articlesEntry['file']) === true,
         'Archive officielle Articles illisible');

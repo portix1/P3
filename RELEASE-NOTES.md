@@ -1,33 +1,38 @@
-# P3 0.9.1 — catalogue d'extensions cohérent et figé
+# P3 0.9.2-rc1 — candidate de consolidation
 
-**Version stable corrective du 13 novembre 2026.** Cette distribution remplace P3 0.9.0. Le moteur, les modules de référence et les thèmes sont inclus.
+**Candidate de préparation, non publiée.** La version stable reste **P3 0.9.1**.
+La compilation et les tests automatisés ne constituent pas une autorisation de déploiement.
 
-## Correctifs
+## Changements depuis 0.9.1
 
-- **Articles 1.4.8 officiellement téléchargeable** : le canal de mises à jour des extensions propose désormais la version 1.4.8 au lieu de 1.4.6, avec son ZIP autonome contrôlé par SHA-256. Le module embarqué et l'archive officielle portent la même version.
-- **Compatibilité obligatoire** : Articles 1.4.8 exige au minimum **P3 0.9.0**, car il utilise le moteur des images responsives. L'import du ZIP est refusé sur les noyaux plus anciens, avant remplacement des fichiers.
-- **Chaîne de confiance actualisée** : catalogue et ZIP publiés depuis le commit Git figé `c8b0db7f35da9a02a51ebe1c45c8319469beabda`. Le moteur vérifie l'empreinte SHA-256 exacte du catalogue (`6f91dd6af62fe91d62068eb65a7c99bce6d60df309073b9d41041fc5fc50d4e2`) avant d'utiliser ses annonces. Les URL de téléchargement visent le même commit.
-- **Reproductibilité** : le constructeur de ZIP de modules emploie des horodatages et permissions normalisés ; la CI reconstruit deux fois Articles 1.4.8, compare les octets, les sources et les empreintes.
-- **Documentation corrigée** : le catalogue distingue les extensions autonomes (Articles 1.4.8 et thème Six Cordes UX Clair 0.1.7) des modules inclus dans l'archive complète (dont Accueil 1.1.0, Menu 1.0.1, Recherche 1.0.5 et Statistiques 2.0.3).
+- Espaces **Rédaction**, **Administration** et **Configuration** strictement distincts : la rédaction reste limitée au contenu ; la configuration et la structure du site sont réservées aux administrateurs.
+- Choix individuel des droits : **relecture obligatoire** ou **publication directe** pour chaque rédacteur. Le choix de publication directe autorise aussi la correction de ses articles publiés.
+- Circuit de relecture : demande de publication, validation par l'administrateur, retour motivé en brouillon, visibilité de la demande de correction.
+- Recherche et filtres d'articles, pagination à 25 éléments, conservation du contexte de liste après modification.
+- Formulaire simplifié, sauvegarde automatique privée toutes les 30 secondes et proposition de récupération d'un brouillon. La sauvegarde automatique **ne change jamais le statut de publication**.
+- Migration SQLite de schéma **8 vers 9**, non destructive : ajout du champ `articles.review_note`. La sauvegarde automatique crée sa table privée `article_autosaves` au premier usage.
 
-Aucune modification éditoriale ou de mise en page n'est introduite dans ce correctif. Les correctifs mobiles validés dans 0.9.0 restent présents.
+## Module autonome et provenance
 
-## Important pour les installations existantes
+- Module **Articles 1.4.9** inclus dans cette candidate ; compatible avec **P3 0.9.2-rc1 ou version ultérieure**.
+- Catalogue de cette candidate et ZIP autonome Articles reconstruits ensemble, avec empreintes SHA-256 et référence Git de confiance figée.
+- Il ne faut pas remplacer séparément le catalogue, le module et la référence de confiance.
+- Le canal stable de P3 0.9.1 reste inchangé tant que la 0.9.2 n'est pas approuvée et publiée.
 
-Le catalogue est intentionnellement **figé** dans le moteur. Une installation en P3 0.9.0 continue d'utiliser l'ancien catalogue (Articles 1.4.6) tant qu'elle n'a pas reçu les fichiers moteur de 0.9.1. Les anciennes installations ne reçoivent pas silencieusement un nouveau catalogue.
+## Mise à jour d'une installation existante
 
-**Sur Univers Guitare :** Articles 1.4.8 est déjà installé et validé. Il est inutile de réinstaller le module ou de remplacer le thème. Pour afficher la version 0.9.1 et accéder au nouveau catalogue, mettre à jour uniquement les fichiers nécessaires, après sauvegarde, et conserver `.htaccess` adapté à LWS, la configuration, la base SQLite, les médias et le thème personnalisé.
+**Sauvegarder les fichiers et la base SQLite avant toute mise à jour.** Les sites en production ayant reçu des correctifs individuels ne doivent pas réinstaller P3 ni écraser leur base.
 
-Les mises à jour du noyau depuis le tableau de bord restent **à développer** ; cette version ne les automatise pas.
+Sur LWS, **conserver le `.htaccess` adapté à l'hébergement**, les redirections canoniques, `var/sys`, `var/private`, `database`, `sessions`, `var/uploads`, les médias et les thèmes personnalisés. Vérifier la file FileZilla avant tout transfert.
 
-## Installation neuve
+L'archive complète est destinée à une installation neuve ou à une mise à jour contrôlée sur copie. Aucun transfert automatique n'est déclenché depuis GitHub.
 
-Décompresser `P3-0.9.1.zip`, transférer le contenu du dossier `P3` à la racine du serveur et ouvrir `install.php`. PHP 8.2 ou plus récent et PDO SQLite sont requis, ainsi que les extensions précisées par le contrôle d'environnement. Le fichier `P3-0.9.1.sha256` permet de vérifier le téléchargement.
+## Tests de validation prévus
 
-## Tests et sécurité
+- PHP 8.2, 8.3, 8.4 et 8.5, permissions, migrations, templates, traduction et sauvegarde automatique.
+- Navigation, HTTP et Chromium, y compris les droits du rédacteur et de l'administrateur.
+- Reproductibilité du ZIP Articles et cohérence catalogue ↔ fichiers ↔ empreintes.
+- Distribution sans bases de production, sessions, sauvegardes, configurations privées ni médias importés.
+- Contrôle d'une installation neuve et de la conservation des données d'une installation existante.
 
-La validation automatique couvre PHP 8.2, 8.3, 8.4, 8.5, les installations et mises à jour des modules, les archives des extensions, la chaîne de confiance, les accès, les tests HTTP et Chromium.
-
-La chaîne de confiance **n'emploie pas encore de signature externe**. Une clé publique intégrée au noyau et un catalogue signé devront être étudiés pour autoriser de nouvelles publications d'extensions sans mise à jour du noyau.
-
-Historique des corrections de la version précédente : `docs/releases/notes-0.9.0.md`.
+La publication stable `0.9.2` et la fusion dans `main` demandent une autorisation explicite.

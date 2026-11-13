@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import subprocess
 import zipfile
+import xml.etree.ElementTree as ET
 
 from build_module import ROOT, build
 
@@ -28,7 +29,7 @@ if unreleased:
     # published immutable catalogue. This is forbidden for the stable build.
     assert os.environ.get('P3_DEVELOPMENT_VALIDATION') == '1'
     assert tuple(map(int, work_version.split('.'))) > tuple(map(int, official_version.split('.')))
-assert package['p3_min'] == '0.9.0'
+assert package['p3_min'] == ET.parse(ROOT / PREFIX / 'desc.xml').getroot().findtext('MinimumP3')
 
 tracked = sorted(
     p for p in subprocess.check_output(
