@@ -32,6 +32,23 @@ try {
     $pdo->exec('CREATE TABLE news (id INTEGER PRIMARY KEY, title TEXT, body TEXT, intro TEXT, status TEXT)');
     $pdo->exec('CREATE TABLE content_revisions (id INTEGER PRIMARY KEY, snapshot_json TEXT)');
     $pdo->exec('CREATE TABLE content_trash (id INTEGER PRIMARY KEY, snapshot_json TEXT)');
+    // Simulate an existing installed P3 0.9.1 media catalog: preserve rows while
+    // ModuleSchemaInstaller adds the two accessibility fields.
+    $legacyDb = new Database($fixture . '/database/legacy.sqlite');
+    $legacyPdo = $legacyDb->connection();
+    $legacyPdo->exec('CREATE TABLE module_schema_tables '
+        . '(module_prefix TEXT NOT NULL, table_name TEXT PRIMARY KEY, installed_at TEXT NOT NULL)');
+    $legacyPdo->exec("INSERT INTO module_schema_tables VALUES ('media', 'media_items', '2026-11-12')");
+    $legacyPdo->exec('CREATE TABLE media_items '
+        . '(id INTEGER PRIMARY KEY, public_path TEXT NOT NULL, original_name TEXT NOT NULL, family TEXT NOT NULL)');
+    $legacyPdo->exec("INSERT INTO media_items VALUES (7, 'var/uploads/images/legacy.webp', 'Legacy', 'image')");
+    (new ModuleSchemaInstaller($legacyDb))->install('media', dirname(__DIR__) . '/var/modules/media/database');
+    $legacyRow = $legacyPdo->query('SELECT id, original_name, alt_text, is_decorative FROM media_items WHERE id = 7')
+        ->fetch(PDO::FETCH_ASSOC);
+    mediaCheck((int) $legacyRow['id'] === 7 && $legacyRow['original_name'] === 'Legacy'
+        && $legacyRow['alt_text'] === null && (int) $legacyRow['is_decorative'] === 0,
+        'additive migration preserves existing media rows');
+    unset($legacyRow, $legacyPdo, $legacyDb);
     echo 'START schema' . PHP_EOL;
     $installer = new ModuleSchemaInstaller($database);
     $installer->install('media', dirname(__DIR__) . '/var/modules/media/database');
