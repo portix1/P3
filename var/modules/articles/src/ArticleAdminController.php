@@ -105,9 +105,9 @@ final class ArticleAdminController
         ));
         $template->set('articles_total', (string) count($visibleRows));
         $template->set('articles_published', (string) count(array_filter($visibleRows, static fn (array $row): bool => $row['status'] === 'published')));
-        $template->set('articles_pending', (string) count(array_filter($visibleRows, static fn (array $row): bool => $row['status'] === 'pending')));
-        $template->set('articles_has_rows', $visibleRows === [] ? '0' : '1');
-        $template->set('articles_empty_help', $this->translator->text($user->isAdmin() ? 'articles_empty_admin' : 'articles_empty_redactor'));
+        $template->set('review_pending_count', (string) count(array_filter($visibleRows, static fn (array $row): bool => $row['status'] === 'pending')));
+        $template->set('review_has_rows', $visibleRows === [] ? '0' : '1');
+        $template->set('review_empty_help', $this->translator->text($user->isAdmin() ? 'articles_empty_admin' : 'articles_empty_redactor'));
         $template->set('articles_can_create', $user->isAdmin() || $user->articlePermissions()['create'] ? '1' : '0');
 
         foreach ($visibleRows as $row) {
@@ -346,7 +346,7 @@ final class ArticleAdminController
 
         $template->setSlot('main', './var/modules/articles/templates/admin-form.tpl');
         $template->set('articles_can_publish', $user->isAdmin() || $user->articlePermissions()['publish'] ? '1' : '0');
-        $template->set('articles_is_pending', ($existing['status'] ?? '') === 'pending' ? '1' : '0');
+        $template->set('review_is_pending', ($existing['status'] ?? '') === 'pending' ? '1' : '0');
         $template->set('review_note_value', (string) ($existing['review_note'] ?? ''));
         $template->set('articles_form_title', $this->translator->text(
             $isNew ? 'articles_form_new' : 'articles_form_edit'
