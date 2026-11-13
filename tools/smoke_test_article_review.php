@@ -49,6 +49,7 @@ refuseTransition('pending', 'pending', false, true, false);
 refuseTransition('draft', 'garbage', false, true, true);
 reviewAssert(allowTransition('draft', 'published', false, true, true) === null, 'Publication directe autorisée');
 reviewAssert(allowTransition('published', 'draft', false, true, true) === null, 'L’auteur de confiance peut dépublier');
+refuseTransition('pending', 'published', false, true, true);
 reviewAssert(allowTransition('pending', 'published', true, true, true) === null, 'Administrateur approuve');
 refuseTransition('pending', 'draft', true, true, true);
 reviewAssert(allowTransition('pending', 'draft', true, true, true, '  Corriger les cotes.  ') === 'Corriger les cotes.',
