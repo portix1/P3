@@ -44,9 +44,20 @@ try {
     fclose($pipes[0]);
     $request=static function(string $path,string $method='GET',string $body='',array $headers=[])use($base):array {
         $context=stream_context_create(['http'=>['method'=>$method,'header'=>implode("\r\n",$headers),'content'=>$body,'ignore_errors'=>true,'follow_location'=>0,'timeout'=>10]]);
-        $text=@file_get_contents($base.$path,false,$context);$responseHeaders=$http_response_header??[];
-        preg_match('~HTTP/\S+ (\d+)~',$responseHeaders[0]??'',$match);
-        return [(int)($match[1]??0),$text===false?'':$text,$responseHeaders];
+        // The disposable PHP test server can transiently refuse a connection
+        // under CI load. Retry safe reads only when there was no HTTP response.
+        // Never retry POST, which could repeat a state-changing operation.
+        for ($attempt = 0; $attempt < 3; $attempt++) {
+            $text = @file_get_contents($base . $path, false, $context);
+            $responseHeaders = $http_response_header ?? [];
+            preg_match('~HTTP/\S+ (\d+)~', $responseHeaders[0] ?? '', $match);
+            $code = (int) ($match[1] ?? 0);
+            if ($code !== 0 || !in_array($method, ['GET', 'HEAD'], true) || $attempt === 2) {
+                return [$code, $text === false ? '' : $text, $responseHeaders];
+            }
+            usleep(150000 * ($attempt + 1));
+        }
+        throw new RuntimeException('Réponse HTTP absente après trois tentatives.');
     };
     for ($attempt=0;$attempt<40;$attempt++) { $response=$request('/');if ($response[0]!==0) { break; }usleep(100000); }
     $check=static function(bool $value,string $message):void { if (!$value) { throw new RuntimeException($message); } };
