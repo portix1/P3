@@ -1,0 +1,81 @@
+name: Correctif P3 0.9.2 - mise a jour depuis tableau de bord
+on:
+  push:
+    branches:
+      - feature/mise-a-jour-noyau-tableau-de-bord
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, dom, gd, iconv, fileinfo, mbstring, zip
+          coverage: none
+      - name: Verify integration and build installable patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\r\n' < VERSION)" = "0.9.2"
+          php -l src/Maintenance/CoreUpdater.php
+          php -l includes/updates.php
+          php -l includes/engine.php
+          php tools/smoke_test_core_updater.php
+          php tools/smoke_test_template.php
+          php tools/smoke_test_localization.php
+          php tools/smoke_test_production_update.php
+          mkdir -p patch
+          for file in \
+            src/Maintenance/CoreUpdater.php \
+            includes/engine.php \
+            includes/updates.php \
+            var/admin/templates/dashboard.tpl \
+            var/admin/templates/updates.tpl \
+            var/lang/fr.php \
+            var/lang/en.php \
+            var/private/.htaccess; do
+            mkdir -p "patch/$(dirname "$file")"
+            cp "$file" "patch/$file"
+          done
+          cat > patch/LISEZ-MOI-PATCH.txt <<'EOF'
+          Correctif pour P3 0.9.2 : mise a jour du moteur depuis le tableau de bord.
+
+          AVANT INSTALLATION :
+          Sauvegarder les fichiers du site et la base SQLite.
+          Conserver le fichier .htaccess propre a LWS, la configuration,
+          les images, les medias et les themes personnalises.
+
+          INSTALLATION :
+          Copier les dossiers includes/, src/ et var/ du ZIP a la racine
+          de P3 avec FileZilla, en conservant les autres fichiers.
+          Ce patch ajoute un fichier de protection sous var/private/,
+          sans modifier le .htaccess de la racine du site.
+
+          UTILISATION :
+          Quand une nouvelle version officielle de P3 existe, le tableau
+          de bord propose "Mettre a jour vers X". Ce lien ouvre
+          Configuration > Mises a jour. L'administrateur doit confirmer.
+          P3 telecharge l'archive de Github, verifie son SHA-256 et cree
+          un point de restauration avant de remplacer les fichiers du moteur.
+
+          L'application conserve la base SQLite, les medias, les themes
+          personnalises, la configuration privee et le .htaccess LWS.
+          Aucun lancement de mise a jour n'est automatique.
+
+          REMARQUE : cette fonctionnalite necessite un hebergement autorisant
+          les connexions HTTPS sortantes et l'ecriture dans le dossier du site.
+          Une interruption peut necessiter une restauration avec FileZilla.
+          EOF
+          (cd patch && zip -qr ../P3-0.9.2-patch-mise-a-jour-noyau.zip .)
+          unzip -t P3-0.9.2-patch-mise-a-jour-noyau.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P3-0.9.2-patch-mise-a-jour-noyau
+          path: P3-0.9.2-patch-mise-a-jour-noyau.zip
+          if-no-files-found: error
