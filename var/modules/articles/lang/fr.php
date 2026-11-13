@@ -178,3 +178,5 @@ $_LANG['articles_filter_apply'] = 'Filtrer';
 $_LANG['articles_filter_clear'] = 'Effacer les filtres';
 $_LANG['articles_filter_result_label'] = 'article(s) affiché(s)';
 $_LANG['articles_filter_no_matches_label'] = 'Aucun article ne correspond à cette recherche.';
+
+$_LANG['articles_review_view_pending'] = 'Voir les demandes';
