@@ -10,3 +10,5 @@ height; numeric; notnull; 0; ; ; ; ;
 created_at; date; notnull; ; ; ; ; ;
 created_by; text; notnull; ; ; ; ; ;
 updated_at; date; notnull; ; ; ; ; ;
+alt_text; text; null; ; ; ; ; ;
+is_decorative; bool; notnull; 0; ; ; ; ;
