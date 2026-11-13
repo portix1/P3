@@ -43,6 +43,20 @@ try {
     $image = imagecreatetruecolor(12, 8); imagepng($image, $fixture . '/' . $path); imagedestroy($image);
     $media = $manager->register($path, 'Vue.png', 'Marc'); $id = (int) $media['id'];
     mediaCheck($media['width'] === 12 && $media['height'] === 8, 'real image metadata');
+    mediaCheck(array_key_exists('alt_text', $media) && array_key_exists('is_decorative', $media)
+        && (int) $media['is_decorative'] === 0, 'image metadata columns created');
+    $described = $manager->setAccessibility($id, 'Rainure du truss rod avant collage', false);
+    mediaCheck($described['alt_text'] === 'Rainure du truss rod avant collage'
+        && (int) $described['is_decorative'] === 0, 'alternative text stored');
+    $decorative = $manager->setAccessibility($id, 'should be cleared', true);
+    mediaCheck($decorative['alt_text'] === '' && (int) $decorative['is_decorative'] === 1,
+        'explicit decorative choice empties alt');
+    mediaRefused(fn()=> $manager->setAccessibility($id, '', false),
+        'informative image requires nonempty alt');
+    mediaRefused(fn()=> $manager->setAccessibility($id, str_repeat('x', 251), false),
+        'alternative text limited to 250 characters');
+    mediaCheck(hash_file('sha256', $fixture . '/' . $path) === $media['sha256'],
+        'metadata change does not change media bytes');
     $manager->register($path, 'Other.png');
     mediaCheck(count($manager->listing('', 'Vue')) === 1, 'same path reuses catalogue item');
     $statement = $pdo->prepare('INSERT INTO articles VALUES (1,:title,:body,:image,:status)');
