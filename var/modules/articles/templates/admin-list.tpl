@@ -14,6 +14,25 @@
     </div>
 </section>
 
+<section class="admin-section article-list-filters" aria-label="{{ articles_filter_heading }}">
+    <form method="get" action="Admin-articles.html" class="article-filter-form">
+        <label for="articles-filter-query">{{ articles_filter_search }}
+            <input id="articles-filter-query" type="search" name="q" value="{{ articles_filter_query }}" maxlength="120" placeholder="{{ articles_filter_placeholder }}" />
+        </label>
+        <label for="articles-filter-state">{{ articles_filter_status }}
+            <select id="articles-filter-state" name="state">
+                <option value="" {{ articles_filter_all_selected }}>{{ articles_filter_all }}</option>
+                <option value="draft" {{ articles_filter_draft_selected }}>{{ articles_status_draft }}</option>
+                <option value="pending" {{ articles_filter_pending_selected }}>{{ articles_status_pending }}</option>
+                <option value="published" {{ articles_filter_published_selected }}>{{ articles_status_published }}</option>
+            </select>
+        </label>
+        <button type="submit">{{ articles_filter_apply }}</button>
+        {% if articles_filter_active == "1" %}<a class="button button-quiet" href="Admin-articles.html">{{ articles_filter_clear }}</a>{% endif %}
+    </form>
+    <p class="field-help" role="status">{{ articles_filter_count }} {{ articles_filter_result_label }}</p>
+</section>
+
 <section class="admin-section news-admin-list">
     <div class="news-admin-header" aria-hidden="true">
         <span>{{ articles_admin_title }}</span><span>{{ ui_state }}</span><span>{{ ui_actions }}</span>
@@ -52,7 +71,8 @@
     </article>
     {% endfor %}
 </section>
-{% if review_has_rows == "0" %}<p class="empty-state">{{ review_empty_help }}</p>{% endif %}
+{% if articles_filter_no_matches == "1" && articles_filter_active == "1" %}<p class="empty-state">{{ articles_filter_no_matches_label }}</p>{% endif %}
+{% if review_has_rows == "0" && articles_filter_active == "0" %}<p class="empty-state">{{ review_empty_help }}</p>{% endif %}
 
 <dialog class="confirm-dialog" id="confirm-delete-dialog" aria-labelledby="articles-delete-dialog-title">
     <form method="dialog">
