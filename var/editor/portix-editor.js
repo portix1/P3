@@ -320,10 +320,8 @@
         sequence.then(function () {
             showStatus(
                 wrapper,
-                files.length > 1
-                    ? message('editor-images-added', 'Images added.')
-                    : message('editor-image-added', 'Image added.'),
-                'success'
+                'Image ajoutée : sélectionnez-la, ouvrez Propriétés et renseignez son texte alternatif ou cochez « Image décorative » avant publication.',
+                'warning'
             );
         }).catch(function (error) {
             showStatus(wrapper, error.message || message('editor-image-failed', 'Unable to add image.'), 'error');
