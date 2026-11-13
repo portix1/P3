@@ -104,6 +104,21 @@ if (class_exists('DOMDocument')) {
     if (PortixHtmlSanitizer::clean($rich) !== $rich) { fwrite(STDERR, "Le nettoyage enrichi doit être idempotent.\n"); exit(1); }
 }
 
+$decorativeHtml = PortixHtmlSanitizer::clean(
+    '<figure class="portix-image-figure" data-decorative="1" onclick="bad()">'
+    . '<img src="var/uploads/images/0123456789abcdef0123456789abcdef.png" alt="Ne doit pas être annoncé">'
+    . '<figcaption>Légende toujours visible</figcaption></figure>'
+);
+if (class_exists('DOMDocument')) {
+    if (!str_contains($decorativeHtml, 'data-decorative="1"')
+        || !str_contains($decorativeHtml, 'alt=""')
+        || !str_contains($decorativeHtml, '<figcaption>Légende toujours visible</figcaption>')
+        || str_contains($decorativeHtml, 'onclick')
+        || PortixHtmlSanitizer::clean($decorativeHtml) !== $decorativeHtml) {
+        throw new RuntimeException('Accessibilité : image décorative non conservée ou assainissement non idempotent.');
+    }
+}
+
 $editorScript = (string) file_get_contents(dirname(__DIR__) . '/var/editor/portix-editor.js');
 $editorStyles = (string) file_get_contents(dirname(__DIR__) . '/var/editor/portix-editor.css');
 foreach (array(
