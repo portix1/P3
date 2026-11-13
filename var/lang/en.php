@@ -662,3 +662,7 @@ $_LANG['users_publication_review'] = 'Review required';
 $_LANG['users_publication_review_help'] = 'The author requests publication. An administrator approves the article or asks for changes.';
 $_LANG['users_publication_direct_label'] = 'Publish directly';
 $_LANG['users_publication_direct_help'] = 'The author may publish and correct their own published articles without further approval.';
+
+$_LANG['ux_articles_categories'] = 'Article categories';
+$_LANG['ux_articles_series'] = 'Article series';
+$_LANG['ux_articles_order'] = 'Article order';
