@@ -21,6 +21,7 @@ if (($argument[2] ?? '') === 'api') {
     try {
         if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || !PortixSecurity::csrfIsValid()) { throw new RuntimeException('Jeton ou méthode invalide. Rechargez la page.', 403); }
         $operation = (string) ($_POST['operation'] ?? 'list');
+        if ($operation === 'alt_audit' && !$user->isAdmin()) { throw new RuntimeException('Audit global réservé à l’administrateur.', 403); }
         $id = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if (in_array($operation, ['replace', 'delete', 'restore', 'analyse', 'inventory', 'recover', 'webp_candidates', 'webp_migrate'], true)) {
             if (!$user->isAdmin()) { throw new RuntimeException('Action réservée à l’administrateur.', 403); }
@@ -36,6 +37,10 @@ if (($argument[2] ?? '') === 'api') {
             'list' => $mediaManager->listing((string) ($_POST['family'] ?? ''), (string) ($_POST['search'] ?? '')),
             'upload' => $mediaManager->upload($_FILES['file'] ?? [], $user->pseudo()),
             'usages' => $mediaManager->usages((int) $id),
+            'alt_audit' => (static function () use ($database): array {
+                require_once __DIR__ . '/src/ArticleImageAudit.php';
+                return (new \Portix\Media\ArticleImageAudit($database->connection()))->report();
+            })(),
             'set_accessibility' => $mediaManager->setAccessibility((int) $id, (string) ($_POST['alt_text'] ?? ''), ($_POST['is_decorative'] ?? '') === '1'),
             'inventory' => $mediaManager->inventory(),
             'analyse' => $mediaManager->analyse(),
@@ -45,7 +50,7 @@ if (($argument[2] ?? '') === 'api') {
             'recover' => $mediaManager->recover(),
             default => throw new RuntimeException('Opération inconnue.'),
         };
-        if (!in_array($operation, ['list', 'usages', 'analyse', 'webp_candidates'], true)) {
+        if (!in_array($operation, ['list', 'usages', 'analyse', 'webp_candidates', 'alt_audit'], true)) {
             (new EventLogger($database->connection()))->audit($user->pseudo(), 'media.' . $operation, 'media:' . (string) $id, [], $requestId);
         }
         echo json_encode(['ok' => true, 'result' => $result], JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE);
