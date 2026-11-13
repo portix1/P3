@@ -71,8 +71,8 @@
     </article>
     {% endfor %}
 </section>
-{% if articles_filter_no_matches == "1" && articles_filter_active == "1" %}<p class="empty-state">{{ articles_filter_no_matches_label }}</p>{% endif %}
-{% if review_has_rows == "0" && articles_filter_active == "0" %}<p class="empty-state">{{ review_empty_help }}</p>{% endif %}
+{% if articles_filter_active == "1" %}{% if articles_filter_no_matches == "1" %}<p class="empty-state">{{ articles_filter_no_matches_label }}</p>{% endif %}{% endif %}
+{% if articles_filter_active == "0" %}{% if review_has_rows == "0" %}<p class="empty-state">{{ review_empty_help }}</p>{% endif %}{% endif %}
 
 <dialog class="confirm-dialog" id="confirm-delete-dialog" aria-labelledby="articles-delete-dialog-title">
     <form method="dialog">
