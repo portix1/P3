@@ -168,3 +168,13 @@ $_LANG['articles_public_edit'] = 'Modifier cet article';
 
 $_LANG['articles_save_draft'] = 'Enregistrer le brouillon';
 $_LANG['articles_review_next_step'] = 'Enregistrez votre brouillon. Dans la liste des articles, choisissez ensuite « Demander la publication ». Un administrateur le relira avant sa mise en ligne.';
+
+$_LANG['articles_filter_heading'] = 'Rechercher dans les articles';
+$_LANG['articles_filter_search'] = 'Rechercher';
+$_LANG['articles_filter_placeholder'] = 'Titre, catégorie ou adresse…';
+$_LANG['articles_filter_status'] = 'État de l’article';
+$_LANG['articles_filter_all'] = 'Tous les états';
+$_LANG['articles_filter_apply'] = 'Filtrer';
+$_LANG['articles_filter_clear'] = 'Effacer les filtres';
+$_LANG['articles_filter_result_label'] = 'article(s) affiché(s)';
+$_LANG['articles_filter_no_matches_label'] = 'Aucun article ne correspond à cette recherche.';
