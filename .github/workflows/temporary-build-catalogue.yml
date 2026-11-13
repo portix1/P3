@@ -1,0 +1,73 @@
+name: Construction ponctuelle du catalogue officiel Articles 1.4.8
+
+on:
+  push:
+    branches:
+      - release/catalogue-articles-1.4.8-p3-0.9.1
+    paths:
+      - .github/workflows/temporary-build-catalogue.yml
+
+permissions:
+  contents: write
+
+jobs:
+  catalogue:
+    if: github.event.head_commit.message == 'ci: build official catalogue Articles 1.4.8'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build reproducible Articles 1.4.8 ZIP
+        run: python3 tools/build_module.py articles
+      - name: Update catalogue and its SHA-256
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, hashlib, pathlib, shutil
+          root = pathlib.Path('distribution')
+          f = root / 'catalogue.json'
+          data = json.loads(f.read_text(encoding='utf-8'))
+          entries = [p for p in data['packages'] if p['kind'] == 'module' and p['id'] == 'articles']
+          assert len(entries) == 1 and entries[0]['version'] == '1.4.6'
+          e = entries[0]
+          source = pathlib.Path('dist/P3-articles-1.4.8.zip')
+          target = root / source.name
+          shutil.copyfile(source, target)
+          e.update({
+              'version': '1.4.8',
+              'file': source.name,
+              'sha256': hashlib.sha256(target.read_bytes()).hexdigest(),
+              'p3_min': '0.9.0',
+              'tested_on': {'p3': '0.9.0', 'php': '8.5'},
+          })
+          old = root / 'P3-articles-1.4.6.zip'
+          assert old.is_file()
+          old.unlink()
+          for p in data['packages']:
+              zipfile = root / p['file']
+              assert zipfile.is_file() and hashlib.sha256(zipfile.read_bytes()).hexdigest() == p['sha256']
+          f.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          digest = hashlib.sha256(f.read_bytes()).hexdigest()
+          (root / 'catalogue.sha256').write_text(digest + '  catalogue.json\n', encoding='utf-8')
+          print('TRUSTED_CATALOGUE_SHA256=' + digest)
+          print('ARTICLES_ZIP_SHA256=' + e['sha256'])
+          PY
+      - name: Verify reproducibility and exact source bytes
+        run: python3 tools/test_catalogue_distribution.py
+      - name: Commit only the official distribution
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- distribution/
+          git diff --cached --check
+          git diff --cached --stat
+          git commit -m 'distribution: freeze Articles 1.4.8 catalogue and SHA-256'
+          git push origin HEAD:release/catalogue-articles-1.4.8-p3-0.9.1
+          echo "IMMUTABLE_CATALOGUE_COMMIT=$(git rev-parse HEAD)"
+          cat distribution/catalogue.sha256
