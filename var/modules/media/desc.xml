@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <modules>
-<Name>Médiathèque</Name><Prefix>media</Prefix><Version>0.1.0-rc4</Version>
+<Name>Médiathèque</Name><Prefix>media</Prefix><Version>0.1.1</Version>
 <Type>plugin</Type><Priority>10</Priority><DefLang>fr</DefLang><Path>media</Path>
 <Enabled>1</Enabled><AdminAccess>editor</AdminAccess><SchemaFormat>desc-csv</SchemaFormat>
 </modules>
