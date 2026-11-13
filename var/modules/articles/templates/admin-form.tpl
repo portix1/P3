@@ -21,7 +21,7 @@
         <label>{{ articles_field_status }}
             <select name="status">
                 <option value="draft" {{ articles_draft_selected }}>{{ articles_status_draft }}</option>
-                {% if articles_is_pending == "1" %}<option value="pending" selected disabled>{{ articles_status_pending }}</option>{% endif %}
+                
                 {% if articles_can_publish == "1" %}<option value="published" {{ articles_published_selected }}>{{ articles_status_published }}</option>{% endif %}
             </select>
         </label>
