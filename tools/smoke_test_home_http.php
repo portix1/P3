@@ -209,7 +209,14 @@ try {
     $articleUrl = '/' . $slug . '.html';
     $visitor = ['User-Agent: Firefox test visitor', 'Referer: https://example.test/path?private=1'];
     $first = $request('/', 'GET', '', $visitor);
-    $check($first[0] === 200 && !preg_grep('/^Set-Cookie:/i', $first[2]), 'Daily fingerprint sets no cookie');
+    $unexpectedCookies = array_values(preg_grep('/^Set-Cookie:/i', $first[2]) ?: []);
+    $check($first[0] === 200 && $unexpectedCookies === [],
+        'Daily fingerprint sets no cookie (HTTP ' . $first[0]
+        . ', cookie headers: ' . count($unexpectedCookies)
+        . ', response path: /; cookie names: '
+        . implode(', ', array_map(static function (string $header): string {
+            return preg_replace('/^Set-Cookie:\s*([^=;]+).*/i', '$1', $header) ?? '';
+        }, $unexpectedCookies)) . ')');
     $check($request($articleUrl, 'GET', '', $visitor)[0] === 200, 'Public article is measurable');
     $request($articleUrl, 'GET', '', ['User-Agent: Googlebot']);
     $request($articleUrl, 'GET', '', [...$visitor, 'DNT: 1']);
