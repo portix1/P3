@@ -94,6 +94,7 @@
 
     <div class="form-actions news-form-actions">
         <button type="submit">{% if review_required == "1" %}{{ articles_save_draft }}{% else %}{{ ui_save }}{% endif %}</button>
+        {% if articles_is_edit == "1" %}<button class="button button-quiet" type="submit" name="save_continue" value="1">{{ articles_save_continue }}</button>{% endif %}
         <button class="button button-quiet" type="submit" formaction="{{ articles_preview_action }}" formtarget="_blank" formnovalidate data-preview-submit="1">{{ ui_preview }}</button>
         <a class="button button-quiet" href="Admin-articles.html">{{ ui_cancel }}</a>
     </div>
