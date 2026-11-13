@@ -42,3 +42,15 @@ Les huit workflows temporaires générant des ZIP séparés après chaque commit
 ## Travaux distincts à ne pas confondre avec cette version
 
 Les anomalies de lecture grand écran, de textes alternatifs et de métadonnées sociales du site Univers Guitare, ainsi que le durcissement des sessions ou la documentation nginx, restent à planifier séparément selon l'audit OpenCode du 13 novembre 2026.
+
+## Candidate de distribution — 13 novembre 2026
+
+La branche isolée `release/0.9.2-rc1` fixe `VERSION=0.9.2-rc1` et le module Articles 1.4.9. Le ZIP du module et le catalogue sont reconstruits et committés ensemble au commit `7f5b7f66dc34055dae5f2f4f46575d2c7b723392`.
+
+- Empreinte SHA-256 du ZIP Articles 1.4.9 : `704dc54b27e282e797569b25f5123e259fb22d1ac26d1c3d31edfacf672de83c`.
+- Empreinte SHA-256 du catalogue candidat : `aaffc4dbeca57869fdd9510765b9218ebb044bffe4b727b28f82306df8e6dd8f`.
+- L'ancrage de confiance de la candidate pointe sur ce commit exact. Le catalogue stable de 0.9.1 conserve sa propre référence.
+- La CI est exécutée sur la branche candidate en mode **strict** : aucune exception de version réservée aux pull requests n'est nécessaire, puisque catalogue et sources correspondent.
+- Un workflow de construction **en lecture seule** produit l'archive complète et son empreinte comme artefacts CI, sans publication GitHub Release ni déploiement.
+
+La candidate reste distincte d'une version stable et de la production. La fusion dans `main` exige une autorisation explicite.

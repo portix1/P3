@@ -9,8 +9,8 @@ final class ExtensionUpdates
 {
     // Trust anchor: audited Git commit and SHA-256 of its complete catalogue.
     // Advance both together only when publishing a reviewed distribution.
-    private const TRUSTED_REF = 'c8b0db7f35da9a02a51ebe1c45c8319469beabda';
-    private const TRUSTED_CATALOGUE_SHA256 = '6f91dd6af62fe91d62068eb65a7c99bce6d60df309073b9d41041fc5fc50d4e2';
+    private const TRUSTED_REF = '7f5b7f66dc34055dae5f2f4f46575d2c7b723392';
+    private const TRUSTED_CATALOGUE_SHA256 = 'aaffc4dbeca57869fdd9510765b9218ebb044bffe4b727b28f82306df8e6dd8f';
     private const BASE_URL = 'https://raw.githubusercontent.com/portix1/P3/' . self::TRUSTED_REF . '/distribution/';
     private const MAX_BYTES = 131072;
 
