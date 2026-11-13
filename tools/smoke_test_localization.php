@@ -91,6 +91,15 @@ try {
         'articles_slug_value', 'articles_body_value', 'articles_author_value', 'articles_featured_image_value',
         'articles_summary_value',
         'articles_preview_action', 'articles_toc',
+        // Controller-provided values, never translation keys.
+        'articles_autosave_url', 'articles_autosave_base', 'articles_autosave_snapshot',
+        'articles_return_url', 'articles_return_page', 'articles_return_state', 'articles_return_q',
+        'articles_new_url', 'articles_filter_query', 'articles_filter_count',
+        'articles_filter_all_selected', 'articles_filter_draft_selected',
+        'articles_filter_pending_selected', 'articles_filter_published_selected',
+        'articles_page_from', 'articles_page_to', 'articles_page_current', 'articles_page_total',
+        'articles_page_previous_url', 'articles_page_next_url',
+
         'articles_draft_selected', 'articles_published_selected',
         'articles_category_form_title', 'articles_category_form_action',
         'articles_category_name_value', 'articles_category_slug_value', 'articles_category_description_value',
