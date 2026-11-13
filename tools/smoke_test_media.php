@@ -40,8 +40,12 @@ try {
         . '(module_prefix TEXT NOT NULL, table_name TEXT PRIMARY KEY, installed_at TEXT NOT NULL)');
     $legacyPdo->exec("INSERT INTO module_schema_tables VALUES ('media', 'media_items', '2026-11-12')");
     $legacyPdo->exec('CREATE TABLE media_items '
-        . '(id INTEGER PRIMARY KEY, public_path TEXT NOT NULL, original_name TEXT NOT NULL, family TEXT NOT NULL)');
-    $legacyPdo->exec("INSERT INTO media_items VALUES (7, 'var/uploads/images/legacy.webp', 'Legacy', 'image')");
+        . '(id INTEGER PRIMARY KEY, public_path TEXT NOT NULL UNIQUE, original_name TEXT NOT NULL, '
+        . 'family TEXT NOT NULL, mime_type TEXT NOT NULL, size_bytes INTEGER NOT NULL DEFAULT 0, '
+        . 'sha256 TEXT NOT NULL, width INTEGER NOT NULL DEFAULT 0, height INTEGER NOT NULL DEFAULT 0, '
+        . 'created_at TEXT NOT NULL, created_by TEXT NOT NULL, updated_at TEXT NOT NULL)');
+    $legacyPdo->exec("INSERT INTO media_items VALUES (7, 'var/uploads/images/legacy.webp', "
+        . "'Legacy', 'image', 'image/webp', 1, 'abc', 1, 1, '2026-11-12', 'Marc', '2026-11-12')");
     (new ModuleSchemaInstaller($legacyDb))->install('media', dirname(__DIR__) . '/var/modules/media/database');
     $legacyRow = $legacyPdo->query('SELECT id, original_name, alt_text, is_decorative FROM media_items WHERE id = 7')
         ->fetch(PDO::FETCH_ASSOC);
