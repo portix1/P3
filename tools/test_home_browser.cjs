@@ -13,7 +13,21 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    const response = await page.goto(base);
+    // The disposable PHP server sometimes closes a connection while the
+    // headless browser establishes its first session. Retry only that transient
+    // transport error; HTTP errors, missing content and page errors still fail.
+    let response;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        response = await page.goto(base, {waitUntil: 'load', timeout: 15000});
+        break;
+      } catch (error) {
+        const transient = /ERR_EMPTY_RESPONSE|ERR_CONNECTION_RESET/.test(String(error.message));
+        if (!transient || attempt === 2) throw error;
+        await page.waitForTimeout(350 * (attempt + 1));
+      }
+    }
+    assert(response, 'Browser did not receive an HTTP response');
     assert.equal(response.status(), 200);
     await page.locator('.home-zone').first().waitFor();
     assert((await page.locator('.home-zone').count()) >= 2);
