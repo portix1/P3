@@ -188,3 +188,6 @@ $_LANG['articles_page_next'] = 'Page suivante';
 
 $_LANG['articles_optional_metadata'] = 'Auteur et image principale';
 $_LANG['articles_optional_metadata_help'] = 'Champs facultatifs. Sans indication, P3 utilise l’auteur du site et la première image de l’article.';
+
+$_LANG['articles_save_continue'] = 'Enregistrer et continuer';
+$_LANG['articles_saved_continue'] = 'Article enregistré. Vous pouvez poursuivre les modifications.';
