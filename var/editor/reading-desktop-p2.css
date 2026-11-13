@@ -1,0 +1,22 @@
+/* P3 — Lecture desktop Six Cordes UX Clair (> 1024 px).
+   Complément de rendu injecté par le moteur : le thème personnalisé et
+   le ZIP officiel d'Articles 1.4.8 demeurent inchangés. */
+@media screen and (min-width: 1025px) {
+  body.theme-six-cordes-clair .article-reading > .news-body.news-rich-text {
+    box-sizing: border-box;
+    width: min(100%, 68ch, 640px) !important;
+    max-width: 640px !important;
+    margin-inline: auto !important;
+    text-align: start !important;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  /* Un alignement « justifié » enregistré dans Quill ne doit pas
+     réintroduire les espaces anormalement étirés sur grand écran. */
+  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li).ql-align-justify,
+  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align: justify"],
+  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align:justify"] {
+    text-align: start !important;
+  }
+}
