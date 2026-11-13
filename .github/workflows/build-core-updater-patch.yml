@@ -33,6 +33,7 @@ jobs:
           mkdir -p patch
           for file in \
             src/Maintenance/CoreUpdater.php \
+            src/Navigation/AdminNavigation.php \
             includes/engine.php \
             includes/updates.php \
             var/admin/templates/dashboard.tpl \
