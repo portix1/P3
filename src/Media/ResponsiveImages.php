@@ -308,7 +308,8 @@ final class ResponsiveImages
             $value = $parent->getAttribute('data-width');
             if (preg_match('/^(?:[1-9]|[1-9][0-9]|100)$/D', $value) === 1) {
                 $percent = (int) $value;
-                $desktop = max(20, (int) round(760 * $percent / 100));
+                $desktopBasis = self::isClairTheme($theme) ? 640 : 760;
+                $desktop = max(20, (int) round($desktopBasis * $percent / 100));
                 $mobile = self::isClairTheme($theme) && in_array($percent, [25, 33, 50], true)
                     ? 'min(94vw, 432px)' : "{$percent}vw";
                 return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, {$desktop}px";
@@ -327,11 +328,13 @@ final class ResponsiveImages
         }
         if (preg_match('/^(?:[1-9]|[1-9][0-9]|100)$/D', $value) === 1) {
             $percent = (int) $value;
-            $desktop = max(20, (int) round(760 * $percent / 100));
+            $desktopBasis = self::isClairTheme($theme) ? 640 : 760;
+            $desktop = max(20, (int) round($desktopBasis * $percent / 100));
             $mobile = self::isClairTheme($theme) && in_array($percent, [25, 33, 50], true)
                     ? 'min(94vw, 432px)' : "{$percent}vw";
                 return "(max-width: 640px) {$mobile}, (max-width: 1024px) {$percent}vw, {$desktop}px";
         }
-        return '(max-width: 640px) 90vw, (max-width: 1024px) 78vw, 760px';
+        $desktopWidth = self::isClairTheme($theme) ? 640 : 760;
+        return "(max-width: 640px) 90vw, (max-width: 1024px) 78vw, {$desktopWidth}px";
     }
 }
