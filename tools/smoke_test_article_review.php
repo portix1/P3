@@ -7,6 +7,7 @@ require dirname(__DIR__) . '/bootstrap/autoload.php';
 require dirname(__DIR__) . '/var/modules/articles/src/ArticleReviewPolicy.php';
 
 use PortixModule\Articles\ArticleReviewPolicy as Review;
+use Portix\Domain\ArticlePermissions as Rights;
 
 function allowTransition(string $from, string $to, bool $admin, bool $edit, bool $publish, string $note = ''): ?string
 {
@@ -26,6 +27,18 @@ function reviewAssert(bool $valid, string $reason): void
     if (!$valid) { throw new RuntimeException($reason); }
 }
 
+$default = Rights::DEFAULTS;
+reviewAssert(!$default['publish'] && !$default['edit_published'], 'New rédacteur starts with mandatory review');
+$direct = Rights::withPublicationChoice($default, 'direct');
+reviewAssert($direct['publish'] && $direct['edit_published'], 'Direct publishing grants editing of published articles');
+$review = Rights::withPublicationChoice($direct, 'review');
+reviewAssert(!$review['publish'] && !$review['edit_published'], 'Mandatory review revokes both rights together');
+try {
+    Rights::withPublicationChoice($default, 'forged');
+    throw new RuntimeException('Invalid publication radio accepted');
+} catch (RuntimeException $exception) {
+    reviewAssert($exception->getMessage() === 'users_permissions_invalid', 'Invalid radio rejected');
+}
 reviewAssert(allowTransition('draft', 'pending', false, true, false) === null, 'Le rédacteur peut demander la relecture');
 refuseTransition('draft', 'published', false, true, false);
 refuseTransition('pending', 'published', false, true, false);
