@@ -1,5 +1,5 @@
 <header class="page-heading"><h1 data-admin-icon="images">Médiathèque</h1><p>Images, PDF et ZIP réutilisables dans les articles et les actualités.</p></header>
-<link rel="stylesheet" href="var/modules/media/assets/media.css?v=0.1.0-rc2" />
+<link rel="stylesheet" href="var/modules/media/assets/media.css?v=0.1.2" />
 <section data-media-manager data-media-admin="{{ media_admin }}">
     <div class="media-actions">
         <label>Rechercher <input type="search" data-media-search maxlength="200" /></label>
