@@ -83,7 +83,7 @@ async function run(engine, origin) {
         await page.screenshot({path:'/tmp/p3-rc15-image.png',fullPage:true});
         await page.locator('[data-image-properties]').click();
         const properties=page.locator('dialog[open]');
-        assert.equal(await properties.locator('input[type="checkbox"]').count(),0,'no additional wrap choice');
+        assert.equal(await properties.locator('input[type="checkbox"]').count(),1,'explicit decorative image option in properties');
         const caption=properties.locator('input[maxlength="500"]'); await caption.fill('Légende test'); await caption.dispatchEvent('input');
         const number=properties.locator('input[type="number"]'); await number.fill('40'); await number.press('Tab');
         await properties.getByRole('button',{name:'Fermer',exact:true}).click();
@@ -102,11 +102,22 @@ async function run(engine, origin) {
         assert.equal(await page.locator('dialog[open] input[type="number"]').inputValue(),width,'handle resize updates width property');
         await page.locator('dialog[open]').getByRole('button',{name:'Fermer',exact:true}).click();
         assert.match(await page.locator('.portix-editor-source').inputValue(),new RegExp('data-width="'+width+'"'));
+        await page.locator('[data-image-properties]').click();
+        const decorativeCheck=page.locator('dialog[open] input[type="checkbox"]');
+        await decorativeCheck.check();
+        assert.equal(await page.locator('dialog[open] input[maxlength="250"]').isDisabled(),true,
+            'decorative image disables alt input');
+        await page.locator('dialog[open]').getByRole('button',{name:'Fermer',exact:true}).click();
+        const decoratedHtml=await page.locator('.portix-editor-source').inputValue();
+        assert.match(decoratedHtml,/data-decorative="1"/,'decorative choice survives serialization');
+        assert.match(decoratedHtml,/alt=""/,'decorative image has empty alt');
+        assert.match(decoratedHtml,/<figcaption>Légende test<\/figcaption>/,'caption is preserved when decorative');
         // Native gestures, including an image that has not been selected first.
         await page.locator('.ql-editor p').last().click();
         await page.locator('.ql-editor img').dragTo(page.locator('.ql-editor td').last());
         assert.equal(await page.locator('.ql-editor td img').count(),1,'native image drag reaches a cell');
         assert.equal(await page.locator('.ql-editor .portix-image-caption').textContent(),'Légende test');
+        assert.equal(await page.locator('.ql-editor img').getAttribute('data-decorative'),'1','decorative intent persists on re-edit');
         assert.equal(await page.locator('.ql-editor img').getAttribute('data-width'),width);
         await page.evaluate(()=>Quill.find(document.querySelector('.ql-container')).getModule('history').undo());
         assert.equal(await page.locator('.ql-editor td img').count(),0,'single undo restores image');
