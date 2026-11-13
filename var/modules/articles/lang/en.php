@@ -186,3 +186,6 @@ $_LANG['articles_page_navigation'] = 'Article list pages';
 $_LANG['articles_page_items'] = 'Articles';
 $_LANG['articles_page_previous'] = 'Previous page';
 $_LANG['articles_page_next'] = 'Next page';
+
+$_LANG['articles_optional_metadata'] = 'Author and featured image';
+$_LANG['articles_optional_metadata_help'] = 'Optional fields. If left blank, P3 uses the site author and the first image in the article.';
