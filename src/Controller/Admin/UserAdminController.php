@@ -63,11 +63,7 @@ final class UserAdminController
                 }
                 if (!isset($_POST['permissions_reset'])) {
                     $publication = (string) ($_POST['permission_publication'] ?? '');
-                    if (!in_array($publication, ['direct', 'review'], true)) {
-                        throw new RuntimeException('users_permissions_invalid');
-                    }
-                    $permissions['publish'] = $publication === 'direct';
-                    $permissions['edit_published'] = $publication === 'direct';
+                    $permissions = \Portix\Domain\ArticlePermissions::withPublicationChoice($permissions, $publication);
                 }
                 if (isset($_POST['permissions_reset'])) { $permissions = []; }
                 $this->users->saveArticlePermissions($pseudo, $permissions);
