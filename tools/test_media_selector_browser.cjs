@@ -47,7 +47,8 @@ const server = http.createServer((req, res) => {
 
 (async()=>{
     await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-    const browser=await playwright.firefox.launch({headless:true,env:{...process.env,MOZ_DISABLE_CONTENT_SANDBOX:'1',MOZ_DISABLE_GMP_SANDBOX:'1',MOZ_DISABLE_RDD_SANDBOX:'1'},firefoxUserPrefs:{'security.sandbox.content.level':0}});
+    const engine=process.argv.includes('chromium')?'chromium':'firefox';
+    const browser=await playwright[engine].launch({headless:true,...(engine==='firefox'?{env:{...process.env,MOZ_DISABLE_CONTENT_SANDBOX:'1',MOZ_DISABLE_GMP_SANDBOX:'1',MOZ_DISABLE_RDD_SANDBOX:'1'},firefoxUserPrefs:{'security.sandbox.content.level':0}}:{})});
     try{
         const page=await browser.newPage({viewport:{width:1280,height:950}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
         const origin='http://127.0.0.1:'+server.address().port;
@@ -69,13 +70,22 @@ const server = http.createServer((req, res) => {
         await modal.getByRole('button',{name:'Annuler',exact:true}).click();assert.equal(await page.locator('.portix-editor-source').inputValue(),beforeCancel,'cancel preserves contents');
         await page.locator('.ql-image').click();modal=page.locator('dialog[open].media-selector');await modal.locator('.media-card').first().waitFor();
         assert.equal(await modal.locator('.media-card').count(),1,'image selector excludes PDF/ZIP');
-        assert.equal(await modal.locator('.media-document-label').isVisible(),false,'link-label field hidden for images');
+        assert.equal(await modal.locator('input[title="Texte du lien"]').isVisible(),false,'link-label field hidden for images');
+        assert.equal(await modal.locator('input[placeholder="Décrivez les informations visibles dans l’image"]').isVisible(),true,'image alt editor visible');
         await page.screenshot({path:'/tmp/p3-media-selector.png',fullPage:true});
-        await modal.locator('.media-card').first().dblclick();assert.equal(await page.locator('.ql-editor img').count(),2,'double click inserts existing image');
+        await modal.locator('.media-card').first().dblclick();
+        assert.equal(await page.locator('dialog[open].media-selector').count(),1,'empty alt cannot insert image silently');
+        await modal.locator('input[placeholder="Décrivez les informations visibles dans l’image"]').fill('Vue détaillée du chevalet');
+        await modal.getByRole('button',{name:'Insérer',exact:true}).click();
+        assert.equal(await page.locator('.ql-editor img').count(),2,'described existing image inserts');
+        assert.match(await page.locator('.portix-editor-source').inputValue(),/alt="Vue détaillée du chevalet"/,'alt is preserved in public HTML');
         await page.locator('[data-command="undo"]').click();
         await page.evaluate(()=>{const q=Quill.find(document.querySelector('.ql-container'));const cell=document.querySelector('td');q.setSelection(q.getIndex(Quill.find(cell)),0);});
         await page.locator('.ql-image').click();modal=page.locator('dialog[open].media-selector');await modal.locator('.media-card').first().waitFor();await modal.locator('.media-card').first().dblclick();
-        assert.equal(await page.locator('.ql-editor td img').count(),1,'existing image inserted in table');
+        await modal.locator('input[type="checkbox"]').check();
+        await modal.getByRole('button',{name:'Insérer',exact:true}).click();
+        assert.equal(await page.locator('.ql-editor td img').count(),1,'decorative image inserted in table');
+        assert.match(await page.locator('.portix-editor-source').inputValue(),/data-decorative="1"/,'decorative state persisted after table insertion');
         await page.locator('[data-command="undo"]').click();
         failList=true;await page.locator('[data-command="file"]').click();modal=page.locator('dialog[open].media-selector');await modal.getByText('Test : catalogue indisponible',{exact:true}).waitFor();
         assert.equal(await modal.getByRole('button',{name:'Insérer',exact:true}).isDisabled(),true,'failure does not insert');await modal.getByRole('button',{name:'Annuler',exact:true}).click();failList=false;
@@ -101,6 +111,6 @@ const server = http.createServer((req, res) => {
         await modal.getByRole('button',{name:'Annuler',exact:true}).click();await page.setViewportSize({width:1280,height:950});
         mediaOn=false;await page.reload();await page.locator('.is-enhanced').waitFor();assert.equal(await page.locator('[data-command="file"]').count(),0,'disabled module hides file button');
         const fallback=page.waitForEvent('filechooser');await page.locator('.ql-image').click();await(await fallback).setFiles([]);assert.equal(await page.locator('dialog[open].media-selector').count(),0,'native upload fallback');
-        assert.deepEqual(errors,[]);console.log('Firefox media selector: type filters, selected text, one-step undo, cancel, double-click, table, upload, error and disabled fallback: OK (mock API).');
+        assert.deepEqual(errors,[]);console.log(engine+' media selector: type filters, selected text, one-step undo, cancel, double-click, table, upload, error and disabled fallback: OK (mock API).');
     }finally{await browser.close();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;});
