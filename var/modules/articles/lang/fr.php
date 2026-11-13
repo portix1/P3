@@ -180,3 +180,8 @@ $_LANG['articles_filter_result_label'] = 'article(s) affiché(s)';
 $_LANG['articles_filter_no_matches_label'] = 'Aucun article ne correspond à cette recherche.';
 
 $_LANG['articles_review_view_pending'] = 'Voir les demandes';
+
+$_LANG['articles_page_navigation'] = 'Pages de la liste des articles';
+$_LANG['articles_page_items'] = 'Articles';
+$_LANG['articles_page_previous'] = 'Page précédente';
+$_LANG['articles_page_next'] = 'Page suivante';
