@@ -977,3 +977,18 @@ input[type="submit"]:hover,
     .ux-area-shortcuts { order: 3; flex: 1 0 100%; }
     .ux-area-shortcuts > a { flex: 1 1 auto; justify-content: center; }
 }
+
+/* Back-office editorial review: restrained, readable statuses and actions. */
+.state-pending{display:inline-block;padding:.2rem .5rem;border:1px solid #a77c35;border-radius:.35rem;color:#704f20;background:#fff8ea}
+.review-note,.review-note-banner{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.92rem}
+.review-note-banner{margin:0 0 1rem;padding:.75rem 1rem;border-inline-start:3px solid #a77c35;background:#fff8ea}
+.review-banner{margin:0 0 1rem;padding:.75rem 1rem;border-inline-start:3px solid #55779c;background:#eef4fb}
+.article-review-form{display:flex;flex-direction:column;gap:.4rem;max-width:22rem;margin:.45rem 0}
+.article-review-form label{display:flex;flex-direction:column;gap:.25rem;font-size:.9rem}
+.article-review-form textarea{min-height:4rem;width:100%;resize:vertical}
+.article-review-form button{align-self:flex-start}
+.empty-state{padding:1rem;border:1px solid #d8dfe7;border-radius:.4rem}
+.publication-trust{display:flex;flex-direction:column;gap:.7rem;margin:.8rem 0;padding:.8rem;border:1px solid #d5dce5;border-radius:.4rem}
+.publication-trust .role-option{display:flex;align-items:start;gap:.6rem}
+.publication-trust .role-option span{display:flex;flex-direction:column;gap:.2rem}
+.publication-trust input[type=radio]{margin-top:.35rem}
