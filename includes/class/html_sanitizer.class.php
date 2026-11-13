@@ -259,6 +259,15 @@ final class PortixHtmlSanitizer
             }
         }
 
+        // Explicit, editorially chosen decorative images retain their intent
+        // across save/re-edit. Never infer this flag from an empty alt.
+        if ($tag === 'figure' && ($attributes['data-decorative'] ?? '') === '1') {
+            $node->setAttribute('data-decorative', '1');
+            foreach ($node->getElementsByTagName('img') as $decorativeImage) {
+                $decorativeImage->setAttribute('alt', '');
+            }
+        }
+
         if ($tag === 'figcaption') {
             $caption = self::shortAttribute($node->textContent, 500);
             while ($node->firstChild) {

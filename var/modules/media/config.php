@@ -6,6 +6,14 @@ use Portix\Observability\EventLogger;
 
 if (!$user->isAdmin() && !$user->isRedactor()) { throw new RuntimeException('Accès refusé.'); }
 require_once __DIR__ . '/src/MediaManager.php';
+// The media module owns its schema. Install additive accessibility columns on
+// first access after this update, without touching existing images or content.
+// The installer is transactional and rejects tables owned by another module.
+$mediaColumns = $database->connection()->query('PRAGMA table_info(media_items)')->fetchAll(\PDO::FETCH_ASSOC);
+$mediaColumnNames = array_column($mediaColumns, 'name');
+if (!in_array('alt_text', $mediaColumnNames, true) || !in_array('is_decorative', $mediaColumnNames, true)) {
+    (new \Portix\Module\ModuleSchemaInstaller($database))->install('media', __DIR__ . '/database');
+}
 $mediaManager = new MediaManager($database->connection(), dirname(__DIR__, 3));
 if (($argument[2] ?? '') === 'api') {
     header('Content-Type: application/json; charset=UTF-8');
@@ -17,7 +25,7 @@ if (($argument[2] ?? '') === 'api') {
         if (in_array($operation, ['replace', 'delete', 'restore', 'analyse', 'inventory', 'recover', 'webp_candidates', 'webp_migrate'], true)) {
             if (!$user->isAdmin()) { throw new RuntimeException('Action réservée à l’administrateur.', 403); }
         }
-        if (in_array($operation, ['replace', 'delete', 'restore', 'usages'], true) && $id === false) {
+        if (in_array($operation, ['replace', 'delete', 'restore', 'usages', 'set_accessibility'], true) && $id === false) {
             throw new RuntimeException('Identifiant invalide.');
         }
         require_once __DIR__ . '/src/WebpMigration.php';
@@ -28,6 +36,7 @@ if (($argument[2] ?? '') === 'api') {
             'list' => $mediaManager->listing((string) ($_POST['family'] ?? ''), (string) ($_POST['search'] ?? '')),
             'upload' => $mediaManager->upload($_FILES['file'] ?? [], $user->pseudo()),
             'usages' => $mediaManager->usages((int) $id),
+            'set_accessibility' => $mediaManager->setAccessibility((int) $id, (string) ($_POST['alt_text'] ?? ''), ($_POST['is_decorative'] ?? '') === '1'),
             'inventory' => $mediaManager->inventory(),
             'analyse' => $mediaManager->analyse(),
             'replace' => $mediaManager->replace((int) $id, $_FILES['file'] ?? [], ($_POST['confirm_dimensions'] ?? '') === '1'),

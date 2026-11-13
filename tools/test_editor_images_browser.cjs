@@ -56,7 +56,7 @@ async function run(engine, origin) {
         await page.goto(origin+'/p3/Admin.html',{waitUntil:'domcontentloaded'});
         await page.locator('.is-enhanced').waitFor();
         await page.waitForFunction(() => [...document.querySelectorAll('link[data-portix-editor-style]')].filter(e=>e.dataset.portixEditorStyle!=='katex').every(e=>e.sheet));
-        assert.match(await page.locator('link[data-portix-editor-style="portix"]').getAttribute('href'), /\?v=image-fix-1$/);
+        assert.match(await page.locator('link[data-portix-editor-style="portix"]').getAttribute('href'), /\?v=image-fix-1-tables-0\.1\.0$/);
         await page.evaluate(()=>{const q=Quill.find(document.querySelector('.ql-container'));q.setSelection(q.getLength()-1,0);});
         await page.locator('[data-command="divider"]').click();
         assert.equal(await page.locator('.ql-editor hr').count(),1,'divider command inserts hr');
@@ -78,12 +78,12 @@ async function run(engine, origin) {
             assert.equal(await button.innerText(),'','icon command without text'); assert.equal(await button.locator('svg').count(),1);
         }
         assert.equal(await page.locator('button:not([title])').count(),0,'all buttons have tooltips');
-        assert.equal(await page.locator('.portix-image-tools button').count(),4,'image palette has only three positions and properties');
-        assert.equal(await page.locator('.portix-image-tools input,.portix-image-tools select').count(),0,'no image settings panel');
+        assert.equal(await page.locator('.portix-image-tools button').count(),7,'image palette keeps positions, move tools and properties');
+        assert.equal(await page.locator('.portix-image-tools input[type="text"]').count(),0,'alt and caption remain inside properties dialog');
         await page.screenshot({path:'/tmp/p3-rc15-image.png',fullPage:true});
         await page.locator('[data-image-properties]').click();
         const properties=page.locator('dialog[open]');
-        assert.equal(await properties.locator('input[type="checkbox"]').count(),0,'no additional wrap choice');
+        assert.equal(await properties.locator('input[type="checkbox"]').count(),1,'explicit decorative image option in properties');
         const caption=properties.locator('input[maxlength="500"]'); await caption.fill('Légende test'); await caption.dispatchEvent('input');
         const number=properties.locator('input[type="number"]'); await number.fill('40'); await number.press('Tab');
         await properties.getByRole('button',{name:'Fermer',exact:true}).click();
@@ -102,11 +102,22 @@ async function run(engine, origin) {
         assert.equal(await page.locator('dialog[open] input[type="number"]').inputValue(),width,'handle resize updates width property');
         await page.locator('dialog[open]').getByRole('button',{name:'Fermer',exact:true}).click();
         assert.match(await page.locator('.portix-editor-source').inputValue(),new RegExp('data-width="'+width+'"'));
+        await page.locator('[data-image-properties]').click();
+        const decorativeCheck=page.locator('dialog[open] input[type="checkbox"]');
+        await decorativeCheck.check();
+        assert.equal(await page.locator('dialog[open] input[maxlength="250"]').isDisabled(),true,
+            'decorative image disables alt input');
+        await page.locator('dialog[open]').getByRole('button',{name:'Fermer',exact:true}).click();
+        const decoratedHtml=await page.locator('.portix-editor-source').inputValue();
+        assert.match(decoratedHtml,/data-decorative="1"/,'decorative choice survives serialization');
+        assert.match(decoratedHtml,/alt=""/,'decorative image has empty alt');
+        assert.match(decoratedHtml,/<figcaption>Légende test<\/figcaption>/,'caption is preserved when decorative');
         // Native gestures, including an image that has not been selected first.
         await page.locator('.ql-editor p').last().click();
         await page.locator('.ql-editor img').dragTo(page.locator('.ql-editor td').last());
         assert.equal(await page.locator('.ql-editor td img').count(),1,'native image drag reaches a cell');
         assert.equal(await page.locator('.ql-editor .portix-image-caption').textContent(),'Légende test');
+        assert.equal(await page.locator('.ql-editor img').getAttribute('data-decorative'),'1','decorative intent persists on re-edit');
         assert.equal(await page.locator('.ql-editor img').getAttribute('data-width'),width);
         await page.evaluate(()=>Quill.find(document.querySelector('.ql-container')).getModule('history').undo());
         assert.equal(await page.locator('.ql-editor td img').count(),0,'single undo restores image');
@@ -116,7 +127,7 @@ async function run(engine, origin) {
         version='image-fix-2';
         await page.reload({waitUntil:'domcontentloaded'}); await page.locator('.is-enhanced').waitFor();
         await page.waitForFunction(()=>document.querySelector('link[data-portix-editor-style="portix"]').sheet);
-        assert.match(await page.locator('link[data-portix-editor-style="portix"]').getAttribute('href'),/\?v=image-fix-2$/,'update changes CSS URL in a warm cache');
+        assert.match(await page.locator('link[data-portix-editor-style="portix"]').getAttribute('href'),/\?v=image-fix-2-tables-0\.1\.0$/,'update changes CSS URL in a warm cache');
         assert.equal(await page.locator('.ql-editor img').count(),1); assert.equal(await page.locator('.ql-editor img').getAttribute('data-width'),width);
         assert.equal(await page.locator('.ql-editor .portix-image-caption').textContent(),'Légende test');
         await page.locator('.ql-editor td').first().click();

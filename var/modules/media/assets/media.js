@@ -112,6 +112,39 @@
             var size=document.createElement('small');size.textContent=(row.size_bytes<1000000?(row.size_bytes/1000).toFixed(1)+' ko':(row.size_bytes/1000000).toFixed(2)+' Mo')+(row.width?' · '+row.width+' × '+row.height:'');
             var actions=document.createElement('div');actions.className='media-card-actions';
             actions.appendChild(button('Voir les utilisations',async function(){showUsage(card,await api('usages',{id:row.id}));}));
+            if(row.family==='image'){
+                var a11y=button('Accessibilité',async function(){
+                    var editor=document.createElement('div');editor.className='media-a11y';
+                    var alt=document.createElement('input');alt.type='text';alt.maxLength=250;
+                    alt.value=row.alt_text || '';alt.title='Description utile à une personne qui ne voit pas l’image';
+                    var label=document.createElement('label');label.textContent='Texte alternatif';label.appendChild(alt);
+                    var decorative=document.createElement('input');decorative.type='checkbox';
+                    decorative.checked=row.is_decorative===1 || row.is_decorative==='1';
+                    decorative.title='Cochez seulement si cette image est purement décorative';
+                    alt.disabled=decorative.checked;
+                    var decorativeLabel=document.createElement('label');
+                    decorativeLabel.append(decorative,document.createTextNode(' Image décorative'));
+                    decorative.addEventListener('change',function(){
+                        alt.disabled=decorative.checked;
+                        if(decorative.checked){alt.value='';}
+                    });
+                    var help=document.createElement('small');
+                    help.textContent='Le texte enregistré sera proposé à la prochaine insertion. Chaque article peut le personnaliser.';
+                    var save=document.createElement('button');save.type='button';save.textContent='Enregistrer';
+                    save.title='Enregistrer le texte alternatif de ce média';
+                    save.addEventListener('click',function(){run(async function(){
+                        if(!decorative.checked && !alt.value.trim()){report('Renseignez une description ou cochez « Image décorative ».');return;}
+                        var updated=await api('set_accessibility',{id:row.id,alt_text:alt.value.trim(),is_decorative:decorative.checked?'1':'0'});
+                        row.alt_text=updated.alt_text;row.is_decorative=updated.is_decorative;
+                        report('Accessibilité du média enregistrée. Les articles existants ne sont pas modifiés.');
+                        render();
+                    });});
+                    editor.append(label,decorativeLabel,help,save);
+                    card.appendChild(editor);alt.focus();
+                });
+                actions.appendChild(a11y);
+            }
+
             if(admin){
                 actions.appendChild(button('Remplacer',function(){pickFile(async function(file){
                     var current=await api('usages',{id:row.id});

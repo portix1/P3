@@ -348,9 +348,25 @@
         var status = document.createElement('p'); status.className = 'media-status'; status.setAttribute('role', 'status');
         var label = document.createElement('input'); label.type = 'text'; label.maxLength = 250; label.title = 'Texte du lien'; label.value = savedText;
         var labelField = labelledField('Texte du lien', label); labelField.classList.add('media-document-label'); labelField.hidden = family === 'image';
+        var imageAltInput = document.createElement('input'); imageAltInput.type = 'text'; imageAltInput.maxLength = 250;
+        imageAltInput.placeholder = 'Décrivez les informations visibles dans l’image';
+        var imageAltField = labelledField('Texte alternatif (lecteur d’écran)', imageAltInput);
+        imageAltField.classList.add('media-document-label'); imageAltField.hidden = family !== 'image';
+        var imageDecorative = document.createElement('input'); imageDecorative.type = 'checkbox';
+        imageDecorative.title = 'L’image n’apporte aucune information utile au texte.';
+        var decorativeField = document.createElement('label');
+        decorativeField.append(imageDecorative, document.createTextNode(' Image décorative — texte alternatif vide'));
+        decorativeField.hidden = family !== 'image';
+        var imageA11yHelp = document.createElement('small');
+        imageA11yHelp.textContent = 'Renseignez le texte alternatif ou cochez « Image décorative » avant d’insérer.';
+        imageA11yHelp.hidden = family !== 'image';
+        imageDecorative.addEventListener('change',function(){
+            imageAltInput.disabled = imageDecorative.checked;
+            if(imageDecorative.checked){imageAltInput.value='';}
+        });
         var insert = makeRichButton('Insérer'); insert.disabled = true;
         var cancel = makeRichButton('Annuler');
-        actions.append(search, add); dialog.body.append(actions,status,grid,labelField); dialog.actions.append(cancel,insert);
+        actions.append(search, add); dialog.body.append(actions,status,grid,labelField,imageAltField,decorativeField,imageA11yHelp); dialog.actions.append(cancel,insert);
         var selected = null, serial = 0, closed = false, busy = false, timer;
         function close() { closed=true;clearTimeout(timer);dialog.close();dialog.dialog.remove();quill.focus(); }
         cancel.addEventListener('click', close);
@@ -371,6 +387,11 @@
             selected=row;insert.disabled=false;
             grid.querySelectorAll('.media-card').forEach(function(node){node.classList.toggle('is-selected',node===card);node.setAttribute('aria-pressed',node===card?'true':'false');});
             if(family!=='image' && !savedText){label.value=row.original_name;}
+            if(family==='image'){
+                imageAltInput.value = row.alt_text || '';
+                imageDecorative.checked = row.is_decorative === 1 || row.is_decorative === '1';
+                imageAltInput.disabled = imageDecorative.checked;
+            }
         }
         async function load() {
             var current=++serial;status.textContent='Chargement…';
@@ -408,6 +429,10 @@
             if(!selected || busy){return;}
             var row=selected;var text=label.value.trim();
             if(family!=='image' && !text){status.textContent='Indiquez le texte du lien.';label.focus();return;}
+            if(family==='image' && !imageDecorative.checked && !imageAltInput.value.trim()){
+                status.textContent='Renseignez un texte alternatif ou indiquez explicitement que l’image est décorative.';
+                imageAltInput.focus();return;
+            }
             // Validate against the same local allow-list as the editor, even for server responses.
             if(family==='image' ? !safeImageSource(row.public_path) : !/^var\/uploads\/media\/[a-f0-9]{32}\.(?:pdf|zip)$/.test(row.public_path)){
                 status.textContent='Adresse de média refusée.';return;
@@ -420,9 +445,14 @@
                 var imageCallout=!insideTable?imageCalloutAttributes(quill,range.index):{};
                 var delta=new Delta().retain(range.index).delete(range.length);
                 if(prefix){delta.insert(prefix,imageCallout);}
-                delta.insert({'portix-image':{src:row.public_path}});
+                delta.insert({'portix-image':{src:row.public_path,alt:imageDecorative.checked?'':imageAltInput.value.trim(),'image-decorative':imageDecorative.checked?'1':''}});
                 if(!insideTable){delta.insert('\n',imageCallout);}
                 quill.updateContents(delta,'user');
+                // Quill retains the embed src, but may normalize custom fields in
+                // a Delta insert. Apply accessibility metadata as blot formats.
+                var imageIndex=range.index+prefix.length;
+                quill.formatText(imageIndex,1,'alt',imageDecorative.checked?'':imageAltInput.value.trim(),'user');
+                if(imageDecorative.checked){quill.formatText(imageIndex,1,'image-decorative','1','user');}
                 // Keep the image inside the selected callout on save and reopen.
                 if (!insideTable && imageCallout.callout) {
                     quill.formatLine(range.index + prefix.length, 1, 'callout', imageCallout.callout, 'user');
@@ -2125,6 +2155,7 @@
             if (!image) { figure.remove(); return; }
             var caption = figure.querySelector('figcaption');
             image.setAttribute('data-caption', caption ? caption.textContent.trim() : '');
+            if (figure.getAttribute('data-decorative') === '1') { image.setAttribute('data-decorative', '1'); image.setAttribute('alt', ''); }
             image.setAttribute('data-wrap', figure.classList.contains('portix-image-wrap-none') ? 'none' : 'square');
             if (figure.hasAttribute('data-width')) { image.setAttribute('data-width', figure.getAttribute('data-width')); }
             imageSizes.forEach(function (size) {
@@ -2335,6 +2366,9 @@
         var alignmentSelect = document.createElement('select');
         var altLabel = document.createElement('label');
         var altInput = document.createElement('input');
+        var decorativeLabel = document.createElement('label');
+        var decorativeInput = document.createElement('input');
+        var accessibilityHint = document.createElement('small');
         var widthLabel = document.createElement('label');
         var widthInput = document.createElement('input');
         widthInput.type = 'number'; widthInput.min = '10'; widthInput.max = '100';
@@ -2368,6 +2402,10 @@
         altInput.type = 'text';
         altInput.maxLength = 250;
         altLabel.appendChild(altInput);
+        decorativeInput.type = 'checkbox'; decorativeInput.title = 'Image décorative : aucune description nécessaire';
+        decorativeLabel.append(decorativeInput, document.createTextNode(' Image décorative (sans description vocale)'));
+        decorativeLabel.title = 'À cocher uniquement si l’image n’apporte aucune information utile au contenu.';
+        accessibilityHint.textContent = 'Pour une image informative, décrivez ce qu’elle montre. La légende reste indépendante du texte alternatif.';
         captionLabel.append(document.createTextNode(message('editor-image-caption', 'Légende')));
         captionInput.type = 'text';
         captionInput.maxLength = 500;
@@ -2410,7 +2448,7 @@
         properties.setAttribute('data-image-properties', 'true');
         properties.textContent = 'Propriétés';
         var propertyDialog = makeEditorDialog('Propriétés de l’image');
-        propertyDialog.body.append(captionLabel, altLabel, widthLabel, sizeLabel);
+        propertyDialog.body.append(captionLabel, altLabel, decorativeLabel, accessibilityHint, widthLabel, sizeLabel);
         var closeProperties = makeRichButton('Fermer', 'button');
         propertyDialog.actions.appendChild(closeProperties);
         closeProperties.addEventListener('click', propertyDialog.close);
@@ -2457,6 +2495,8 @@
 
             alignButtons.forEach(function (button) { button.setAttribute('aria-pressed', button.getAttribute('data-image-align') === alignmentSelect.value ? 'true' : 'false'); });
             altInput.value = image.getAttribute('alt') || '';
+            decorativeInput.checked = image.getAttribute('data-decorative') === '1';
+            altInput.disabled = decorativeInput.checked;
             captionInput.value = image.getAttribute('data-caption') || '';
             widthInput.value = image.getAttribute('data-width') || imageFormat(image, 'portix-image-size-', imageSizes) || '100';
             var blot = imageBlot(image);
@@ -2561,7 +2601,16 @@
             wrapMenu.open = false;
         });
         altInput.addEventListener('input', function () {
+            if (decorativeInput.checked) { return; }
             applyFormat('alt', altInput.value, false);
+        });
+        decorativeInput.addEventListener('change', function () {
+            applyFormat('image-decorative', decorativeInput.checked ? '1' : '', false);
+            if (decorativeInput.checked) { altInput.value = ''; applyFormat('alt', '', false); }
+            altInput.disabled = decorativeInput.checked;
+            accessibilityHint.textContent = decorativeInput.checked
+                ? 'Cette image sera ignorée par le lecteur d’écran. Ne cochez pas cette option si elle explique une opération.'
+                : 'Pour une image informative, renseignez le texte alternatif. Une légende peut compléter cette description.';
         });
         captionInput.addEventListener('input', function () {
             applyFormat('image-caption', captionInput.value, false);
@@ -2880,6 +2929,7 @@
         return {
             src: image.getAttribute('src') || '',
             alt: image.getAttribute('alt') || '',
+            'image-decorative': image.getAttribute('data-decorative') === '1' ? '1' : '',
             'image-size': imageFormat(image, 'portix-image-size-', imageSizes),
             'image-align': imageFormat(image, 'portix-image-align-', imageAlignments),
             'image-caption': image.getAttribute('data-caption') || '',
@@ -2893,7 +2943,10 @@
         var selected = node.classList.contains('is-portix-selected') || (image && image.classList.contains('is-portix-selected'));
         if (!image) { image = document.createElement('img'); node.appendChild(image); }
         image.setAttribute('src', safeImageSource(data.src) ? data.src : '');
-        image.setAttribute('alt', String(data.alt || '').slice(0, 250));
+        var decorative = data['image-decorative'] === '1';
+        image.setAttribute('alt', decorative ? '' : String(data.alt || '').slice(0, 250));
+        if (decorative) { image.setAttribute('data-decorative', '1'); }
+        else { image.removeAttribute('data-decorative'); }
         image.setAttribute('data-caption', String(data['image-caption'] || '').slice(0, 500));
         image.setAttribute('data-wrap', data['image-wrap'] === 'none' ? 'none' : 'square');
         image.className = '';
@@ -2940,6 +2993,7 @@
         clone.setAttribute('src', data.src); clone.setAttribute('alt', data.alt);
         clone.className = 'portix-content-image';
         var figure = document.createElement('figure'); figure.className = 'portix-image-figure';
+        if (data['image-decorative'] === '1') { figure.setAttribute('data-decorative', '1'); }
         if (data['image-size']) { figure.classList.add('portix-image-size-' + data['image-size']); }
         if (data['image-align']) { figure.classList.add('portix-image-align-' + data['image-align']); }
         if (data['image-width']) { figure.setAttribute('data-width', data['image-width']); }
@@ -2965,7 +3019,7 @@
             static value(node) { var img = node.querySelector('img'); return { src: img ? img.getAttribute('src') : '' }; }
             static formats(node) { var img = node.querySelector('img'); var data = img ? imageData(img) : {}; delete data.src; return data; }
             format(name, value) {
-                if (['alt', 'image-size', 'image-align', 'image-caption', 'image-wrap', 'image-width'].indexOf(name) !== -1) {
+                if (['alt', 'image-decorative', 'image-size', 'image-align', 'image-caption', 'image-wrap', 'image-width'].indexOf(name) !== -1) {
                     var data = imageData(this.domNode.querySelector('img')); data[name] = value || '';
                     paintImageObject(this.domNode, data); return;
                 }
@@ -3226,7 +3280,7 @@
                 formats: [
                     'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
                     'list', 'link', 'link-target', 'image', 'align', 'color', 'size', 'portix-break',
-                    'image-size', 'image-align', 'alt', 'image-caption', 'formula', 'portix-video', 'table',
+                    'image-size', 'image-align', 'alt', 'image-decorative', 'image-caption', 'formula', 'portix-video', 'table',
                     'portix-image', 'image-wrap', 'image-width', 'portix-divider', 'background', 'font', 'code', 'code-block',
                     'callout', 'callout-title', 'script', 'indent', 'direction', 'table-header', 'table-width', 'cell-vertical', 'cell-width', 'cell-colspan', 'cell-rowspan', 'table-caption', 'table-section'
                 ],

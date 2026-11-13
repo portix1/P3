@@ -32,6 +32,27 @@ try {
     $pdo->exec('CREATE TABLE news (id INTEGER PRIMARY KEY, title TEXT, body TEXT, intro TEXT, status TEXT)');
     $pdo->exec('CREATE TABLE content_revisions (id INTEGER PRIMARY KEY, snapshot_json TEXT)');
     $pdo->exec('CREATE TABLE content_trash (id INTEGER PRIMARY KEY, snapshot_json TEXT)');
+    // Simulate an existing installed P3 0.9.1 media catalog: preserve rows while
+    // ModuleSchemaInstaller adds the two accessibility fields.
+    $legacyDb = new Database($fixture . '/database/legacy.sqlite');
+    $legacyPdo = $legacyDb->connection();
+    $legacyPdo->exec('CREATE TABLE module_schema_tables '
+        . '(module_prefix TEXT NOT NULL, table_name TEXT PRIMARY KEY, installed_at TEXT NOT NULL)');
+    $legacyPdo->exec("INSERT INTO module_schema_tables VALUES ('media', 'media_items', '2026-11-12')");
+    $legacyPdo->exec('CREATE TABLE media_items '
+        . '(id INTEGER PRIMARY KEY, public_path TEXT NOT NULL UNIQUE, original_name TEXT NOT NULL, '
+        . 'family TEXT NOT NULL, mime_type TEXT NOT NULL, size_bytes INTEGER NOT NULL DEFAULT 0, '
+        . 'sha256 TEXT NOT NULL, width INTEGER NOT NULL DEFAULT 0, height INTEGER NOT NULL DEFAULT 0, '
+        . 'created_at TEXT NOT NULL, created_by TEXT NOT NULL, updated_at TEXT NOT NULL)');
+    $legacyPdo->exec("INSERT INTO media_items VALUES (7, 'var/uploads/images/legacy.webp', "
+        . "'Legacy', 'image', 'image/webp', 1, 'abc', 1, 1, '2026-11-12', 'Marc', '2026-11-12')");
+    (new ModuleSchemaInstaller($legacyDb))->install('media', dirname(__DIR__) . '/var/modules/media/database');
+    $legacyRow = $legacyPdo->query('SELECT id, original_name, alt_text, is_decorative FROM media_items WHERE id = 7')
+        ->fetch(PDO::FETCH_ASSOC);
+    mediaCheck((int) $legacyRow['id'] === 7 && $legacyRow['original_name'] === 'Legacy'
+        && $legacyRow['alt_text'] === null && (int) $legacyRow['is_decorative'] === 0,
+        'additive migration preserves existing media rows');
+    unset($legacyRow, $legacyPdo, $legacyDb);
     echo 'START schema' . PHP_EOL;
     $installer = new ModuleSchemaInstaller($database);
     $installer->install('media', dirname(__DIR__) . '/var/modules/media/database');
@@ -43,6 +64,20 @@ try {
     $image = imagecreatetruecolor(12, 8); imagepng($image, $fixture . '/' . $path); imagedestroy($image);
     $media = $manager->register($path, 'Vue.png', 'Marc'); $id = (int) $media['id'];
     mediaCheck($media['width'] === 12 && $media['height'] === 8, 'real image metadata');
+    mediaCheck(array_key_exists('alt_text', $media) && array_key_exists('is_decorative', $media)
+        && (int) $media['is_decorative'] === 0, 'image metadata columns created');
+    $described = $manager->setAccessibility($id, 'Rainure du truss rod avant collage', false);
+    mediaCheck($described['alt_text'] === 'Rainure du truss rod avant collage'
+        && (int) $described['is_decorative'] === 0, 'alternative text stored');
+    $decorative = $manager->setAccessibility($id, 'should be cleared', true);
+    mediaCheck($decorative['alt_text'] === '' && (int) $decorative['is_decorative'] === 1,
+        'explicit decorative choice empties alt');
+    mediaRefused(fn()=> $manager->setAccessibility($id, '', false),
+        'informative image requires nonempty alt');
+    mediaRefused(fn()=> $manager->setAccessibility($id, str_repeat('x', 251), false),
+        'alternative text limited to 250 characters');
+    mediaCheck(hash_file('sha256', $fixture . '/' . $path) === $media['sha256'],
+        'metadata change does not change media bytes');
     $manager->register($path, 'Other.png');
     mediaCheck(count($manager->listing('', 'Vue')) === 1, 'same path reuses catalogue item');
     $statement = $pdo->prepare('INSERT INTO articles VALUES (1,:title,:body,:image,:status)');
