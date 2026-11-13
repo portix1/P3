@@ -42,6 +42,24 @@ reviewAssert(count($filterClass::apply($sampleArticles, '', 'chevalet')) === 1, 
 reviewAssert(count($filterClass::apply($sampleArticles, 'published', 'sans résultat')) === 0, 'Aucun résultat');
 reviewAssert(count($filterClass::apply($sampleArticles, 'invalide', '')) === 3, 'État inconnu ignoré');
 
+require dirname(__DIR__) . '/var/modules/articles/src/ArticleListPagination.php';
+$pager = \PortixModule\Articles\ArticleListPagination::class;
+$many = array_map(static fn (int $i): array => ['id' => $i], range(1, 53));
+$firstPage = $pager::paginate($many, 1);
+reviewAssert(count($firstPage['rows']) === 25 && $firstPage['from'] === 1 && $firstPage['to'] === 25,
+    'Première page de 25 articles');
+$lastPage = $pager::paginate($many, 1000);
+reviewAssert(count($lastPage['rows']) === 3 && $lastPage['page'] === 3
+    && $lastPage['from'] === 51 && $lastPage['to'] === 53, 'Dernière page et numéro hors bornes');
+$emptyPage = $pager::paginate([], 5);
+reviewAssert($emptyPage['page'] === 1 && $emptyPage['from'] === 0 && $emptyPage['to'] === 0,
+    'Pagination vide sans décalage');
+$link = $pager::pageUrl(2, 'pending', 'érable & acajou');
+reviewAssert(str_contains($link, 'state=pending') && str_contains($link, 'q=%C3%A9rable%20%26%20acajou'),
+    'Filtres conservés avec encodage des liens');
+reviewAssert(count($pager::paginate($filterClass::apply($sampleArticles, 'pending', ''), 9)['rows']) === 1,
+    'Les filtres sont appliqués avant la pagination');
+
 $default = Rights::DEFAULTS;
 reviewAssert(!$default['publish'] && !$default['edit_published'], 'New rédacteur starts with mandatory review');
 $direct = Rights::withPublicationChoice($default, 'direct');
