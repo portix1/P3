@@ -8,6 +8,7 @@
 <section class="news-admin-summary" aria-label="{{ articles_admin_summary }}">
     <p><strong>{{ articles_total }}</strong> {{ articles_admin_total }}</p>
     <p><strong>{{ articles_published }}</strong> {{ articles_admin_published_total }}</p>
+    <p><strong>{{ articles_pending }}</strong> {{ articles_admin_pending_total }}</p>
     <div class="news-admin-actions">
         {% if articles_can_configure_menu == "1" %}<a class="button button-quiet" href="Admin-articles-series.html">{{ articles_series }}</a>{% endif %}
         {% if articles_can_configure_menu == "1" %}<a class="button button-quiet" href="Admin-articles-menu.html">{{ articles_manage_menu }}</a>{% endif %}
@@ -28,12 +29,20 @@
             <p>{{ articlerow.category }} · <code>{{ articlerow.slug }}.html</code></p>
             <p class="news-internal-meta">{{ articles_last_update }} {{ articlerow.date }}</p>
         </div>
-        <div><span class="{{ articlerow.status_class }}">{{ articlerow.status }}</span></div>
+        <div><span class="{{ articlerow.status_class }}">{{ articlerow.status }}</span>{% if articlerow.review_note %}<p class="review-note">{{ articles_review_returned }} : {{ articlerow.review_note }}</p>{% endif %}</div>
         <div class="news-row-actions article-row-actions">
             {% if articlerow.can_publish == "1" %}<form method="post" action="Admin-articles-status-{{ articlerow.id }}.html" class="inline-action article-action-slot">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
                 <input type="hidden" name="status" value="{{ articlerow.next_status }}" />
                 <button class="button {{ articlerow.status_action_class }}" type="submit">{{ articlerow.status_action }}</button>
+            </form>{% endif %}
+            {% if articlerow.can_send_back == "1" %}<form method="post" action="Admin-articles-status-{{ articlerow.id }}.html" class="article-review-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                <input type="hidden" name="status" value="draft" />
+                <label>{{ articles_review_note_label }}
+                    <textarea name="review_note" rows="2" maxlength="2000" required></textarea>
+                </label>
+                <button class="button button-quiet button-review" type="submit">{{ articles_review_send_back }}</button>
             </form>{% endif %}
             <span class="article-action-slot"><a class="button button-quiet" href="Admin-articles-edit-{{ articlerow.id }}.html">{{ ui_edit }}</a></span>
             <span class="article-action-slot">{% if articlerow.public_url %}<a class="button button-quiet" href="{{ articlerow.public_url }}">{{ ui_view }}</a>{% endif %}{% if articlerow.public_url == "" %}<form method="post" action="Admin-articles-preview-{{ articlerow.id }}.html" class="inline-action" target="_blank"><input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><button class="button button-quiet" type="submit">{{ ui_preview }}</button></form>{% endif %}</span>
@@ -47,6 +56,7 @@
     </article>
     {% endfor %}
 </section>
+{% if articles_has_rows == "0" %}<p class="empty-state">{{ articles_empty_help }}</p>{% endif %}
 
 <dialog class="confirm-dialog" id="confirm-delete-dialog" aria-labelledby="articles-delete-dialog-title">
     <form method="dialog">
