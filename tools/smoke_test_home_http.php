@@ -214,7 +214,10 @@ try {
     $db->connection()->exec('DELETE FROM analytics_v2_counts');
     $db->connection()->exec('DELETE FROM analytics_v2_daily');
     $empty = $request('/Admin-insights.html', 'GET', '', $auth);
-    $check($empty[0] === 200 && str_contains($empty[1], 'Aucune mesure sur cette période.'), 'Empty dashboard is readable');
+    $check($empty[0] === 200 && str_contains($empty[1], 'Aucune mesure sur cette période.'),
+        'Empty dashboard is readable (HTTP ' . $empty[0]
+        . ', has expected text: ' . (str_contains($empty[1], 'Aucune mesure sur cette période.') ? 'yes' : 'no')
+        . ', body bytes: ' . strlen($empty[1]) . ')');
     PortixSettings::write('insights', ['mode' => 'daily'], $fixture);
     $slug = $db->connection()->query("SELECT slug FROM articles WHERE status = 'published' ORDER BY id LIMIT 1")->fetchColumn();
     $articleUrl = '/' . $slug . '.html';
@@ -260,6 +263,12 @@ try {
     echo "Accueil HTTP : public, rôles, CSRF, persistance, signature, port local et absence de nouveau cookie : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR,$error->getMessage()."\n");
+    if (is_resource($server)) {
+        $serverState = proc_get_status($server);
+        fwrite(STDERR, 'Fixture PHP server running: '
+            . (($serverState['running'] ?? false) ? 'yes' : 'no')
+            . ', exit code: ' . ($serverState['exitcode'] ?? 'unknown') . "\n");
+    }
     if (is_file($fixture.'/server.log')) { fwrite(STDERR,substr((string)file_get_contents($fixture.'/server.log'),-2400)); }
     $status=1;
 } finally {
