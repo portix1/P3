@@ -245,6 +245,7 @@ if ($canAccessAdmin && $route === 'Admin') {
                     ? 'dashboard_updates_none' : 'dashboard_updates_unavailable')
                 : '');
             $template->set('extension_updates_download', $translator->text('extension_updates_download'));
+            $template->set('core_update_action', $translator->text('core_update_action'));
             $template->set('admin_core_update', $coreUpdate);
             $template->set('admin_module_count', (string) $visibleModuleCount);
             $template->set('admin_enabled_module_count', (string) $enabledModuleCount);
