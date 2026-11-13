@@ -662,3 +662,7 @@ $_LANG['users_publication_review'] = 'Relecture obligatoire';
 $_LANG['users_publication_review_help'] = 'Le rédacteur prépare son article et demande sa publication. Un administrateur l’accepte ou demande des corrections.';
 $_LANG['users_publication_direct_label'] = 'Publication directe';
 $_LANG['users_publication_direct_help'] = 'Le rédacteur peut publier ses articles et corriger ses articles déjà publiés, sans autorisation supplémentaire.';
+
+$_LANG['ux_articles_categories'] = 'Catégories des articles';
+$_LANG['ux_articles_series'] = 'Séries d’articles';
+$_LANG['ux_articles_order'] = 'Ordre des articles';
