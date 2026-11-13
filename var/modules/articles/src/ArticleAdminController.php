@@ -387,6 +387,11 @@ final class ArticleAdminController
         }
 
         $autosaved = $this->articles->autosaves()->load($user->pseudo(), $id ?? 0);
+        // Do not offer a recovery copy based on an older saved revision.
+        if ($autosaved !== null && $existing !== null
+            && !hash_equals((string) $existing['updated_at'], $autosaved['base_updated_at'])) {
+            $autosaved = null;
+        }
         $template->set('articles_autosave_url', 'Admin-articles-autosave'
             . ($id === null ? '' : '-' . $id) . '.html');
         $template->set('articles_autosave_base', (string) ($existing['updated_at'] ?? ''));
