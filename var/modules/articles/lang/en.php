@@ -169,3 +169,13 @@ $_LANG['articles_empty_redactor'] = 'No articles available to edit. You can crea
 
 $_LANG['articles_save_draft'] = 'Save draft';
 $_LANG['articles_review_next_step'] = 'Save your draft first. In the article list, choose “Request publication”. An administrator will review it before it appears online.';
+
+$_LANG['articles_filter_heading'] = 'Find articles';
+$_LANG['articles_filter_search'] = 'Search';
+$_LANG['articles_filter_placeholder'] = 'Title, category or address…';
+$_LANG['articles_filter_status'] = 'Article status';
+$_LANG['articles_filter_all'] = 'All statuses';
+$_LANG['articles_filter_apply'] = 'Filter';
+$_LANG['articles_filter_clear'] = 'Clear filters';
+$_LANG['articles_filter_result_label'] = 'article(s) shown';
+$_LANG['articles_filter_no_matches_label'] = 'No articles match these filters.';
