@@ -56,6 +56,7 @@ $tests = [
     'smoke_test_theme_packages.php',
     'smoke_test_theme_admin.php',
     'smoke_test_article_permissions.php',
+    'smoke_test_article_review.php',
     'smoke_test_static_cache.php',
     'smoke_test_accessibility.php',
     'smoke_test_security.php',
