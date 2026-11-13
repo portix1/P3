@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const stylesheet = resolve(root, 'var/templates/six-cordes-ux-clair/style.min.css');
 const mobile = resolve(root, 'var/modules/articles/reading-mobile-lot2.css');
+const desktop = resolve(root, 'var/editor/reading-desktop-p2.css');
 const template = readFileSync(resolve(root, 'var/modules/articles/templates/index.tpl'), 'utf8');
 if (!template.includes('reading-mobile-lot2.css?v=')) {
   throw new Error('Module Articles does not load the mobile reading stylesheet.');
@@ -41,12 +42,13 @@ const html = [
 
 const browser = await chromium.launch({ headless: true });
 try {
-  for (const width of [320, 360, 390, 414, 768, 1024, 1280]) {
+  for (const width of [320, 360, 390, 414, 768, 1024, 1280, 1440]) {
     const page = await browser.newPage({ viewport: { width, height: 844 }, deviceScaleFactor: 2 });
     try {
       await page.setContent(html);
       await page.addStyleTag({ path: stylesheet });
       await page.addStyleTag({ path: mobile });
+      await page.addStyleTag({ path: desktop });
       await page.waitForFunction(() => Array.from(document.images).every(img => img.complete));
       const measured = await page.evaluate(() => {
         const rect = sel => document.querySelector(sel).getBoundingClientRect();
@@ -54,6 +56,8 @@ try {
         return {
           scroll: document.documentElement.scrollWidth,
           reading: rect('.article-reading > .news-body.news-rich-text').width,
+          readingAlign: style('.article-reading > .news-body.news-rich-text').textAlign,
+          readingHyphens: style('.article-reading > .news-body.news-rich-text').hyphens,
           figures: ['#f25','#f33','#f50'].map(sel => rect(sel).width),
           figureImages: ['#f25 > img','#f33 > img','#f50 > img'].map(sel => rect(sel).width),
           float: style('#f25').float,
@@ -85,13 +89,28 @@ try {
         }
       } else if (width <= 1024) {
         if (measured.reading > 660) throw new Error('Tablet line too wide at ' + width + ': ' + measured.reading);
-      } else if (measured.figures[0] > measured.reading * .36) {
-        throw new Error('Desktop 25% figure enlarged: ' + JSON.stringify(measured));
+      } else {
+        if (measured.reading > 660 || measured.reading < 400) {
+          throw new Error('Desktop reading column outside 400–660px at ' + width + ': ' + JSON.stringify(measured));
+        }
+        if (!['start','left'].includes(measured.readingAlign)
+            || !['start','left'].includes(measured.textAlign)
+            || !['start','left'].includes(measured.inlineAlign)) {
+          throw new Error('Desktop text remains justified at ' + width + ': ' + JSON.stringify(measured));
+        }
+        if (measured.readingHyphens !== 'auto') {
+          throw new Error('Desktop hyphenation not enabled: ' + JSON.stringify(measured));
+        }
+        if (measured.figures[0] > measured.reading * .36
+            || measured.figures[1] > measured.reading * .46
+            || measured.figures[2] > measured.reading * .63) {
+          throw new Error('Desktop percentage figure enlarged: ' + JSON.stringify(measured));
+        }
       }
       if (!measured.captions.includes('Manche de guitare — figure 25 %')) {
         throw new Error('Figure caption lost.');
       }
-      if ([320,390,768].includes(width)) {
+      if ([320,390,768,1280,1440].includes(width)) {
         mkdirSync(resolve(root, 'home-browser-previews'), { recursive: true });
         await page.screenshot({
           path: resolve(root, 'home-browser-previews/article-reading-' + width + '.png'),
