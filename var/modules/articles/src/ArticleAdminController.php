@@ -147,6 +147,7 @@ final class ArticleAdminController
         $template->set('articles_page_next_visible', $pagination['page'] < $pagination['pages'] ? '1' : '0');
         $template->set('articles_page_previous_url', ArticleListPagination::pageUrl(max(1, $pagination['page'] - 1), $state, $query));
         $template->set('articles_page_next_url', ArticleListPagination::pageUrl(min($pagination['pages'], $pagination['page'] + 1), $state, $query));
+        $template->set('articles_new_url', ArticleListPagination::editorUrl(null, $pagination['page'], $state, $query));
 
 
         foreach ($visibleRows as $row) {
@@ -170,6 +171,7 @@ final class ArticleAdminController
             }
             $template->addRow('articlerow', [
                 'id' => (string) $row['id'],
+                'edit_url' => ArticleListPagination::editorUrl((int)$row['id'], $pagination['page'], $state, $query),
                 'title' => (string) $row['title'],
                 'slug' => (string) $row['slug'],
                 'category' => (string) ($row['category_name'] ?: $this->translator->text('articles_uncategorized')),
@@ -246,6 +248,13 @@ final class ArticleAdminController
     private function editArticle(\Portix\View\Template $template, array $arguments, UserAccount $user, bool $isNew, ?array $targetArticle): void
     {
         $id = $isNew ? null : $this->numericId($arguments[3] ?? null);
+        require_once __DIR__ . '/ArticleListPagination.php';
+        $returnContext = ArticleListPagination::context(
+            ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' ? $_POST : $_GET
+        );
+        $returnUrl = ArticleListPagination::pageUrl(
+            $returnContext['page'], $returnContext['state'], $returnContext['query']
+        );
         $existing = $isNew ? null : $targetArticle;
         if (!$isNew && $existing === null) {
             throw new RuntimeException('articles_not_found');
@@ -368,7 +377,7 @@ final class ArticleAdminController
                 });
                 // Saving the article replaces its private recovery copy.
                 $this->articles->autosaves()->delete($user->pseudo(), $id ?? 0);
-                header('Location: Admin-articles.html');
+                header('Location: ' . $returnUrl, true, 303);
                 exit;
             } catch (RuntimeException $error) {
                 $message = $this->translator->exception($error);
@@ -397,6 +406,10 @@ final class ArticleAdminController
         $template->set('articles_autosave_base', (string) ($existing['updated_at'] ?? ''));
         $template->set('articles_autosave_snapshot', $autosaved === null ? ''
             : json_encode($autosaved, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE));
+        $template->set('articles_return_url', $returnUrl);
+        $template->set('articles_return_page', (string)$returnContext['page']);
+        $template->set('articles_return_state', $returnContext['state']);
+        $template->set('articles_return_q', $returnContext['query']);
         $template->setSlot('main', './var/modules/articles/templates/admin-form.tpl');
         $template->set('articles_can_publish', $user->isAdmin() || $user->articlePermissions()['publish'] ? '1' : '0');
         $template->set('review_required', !$user->isAdmin() && !$user->articlePermissions()['publish'] ? '1' : '0');
