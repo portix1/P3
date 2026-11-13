@@ -6,7 +6,7 @@
 
 {% if articles_message %}<p class="status-message" role="status">{{ articles_message }}</p>{% endif %}
 {% if articles_is_pending == "1" %}<p class="review-banner" role="status">{{ articles_review_pending_edit_notice }}</p>{% endif %}
-{% if articles_review_note %}<p class="review-note-banner">{{ articles_review_returned }} : {{ articles_review_note }}</p>{% endif %}
+{% if review_note_value %}<p class="review-note-banner">{{ articles_review_returned }} : {{ review_note_value }}</p>{% endif %}
 
 <form method="post" action="{{ articles_form_action }}" class="news-editor-form" data-unsaved-warning="1">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
