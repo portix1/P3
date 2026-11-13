@@ -10,7 +10,7 @@
     <p><strong>{{ articles_published }}</strong> {{ articles_admin_published_total }}</p>
     <p><strong>{{ review_pending_count }}</strong> {{ articles_admin_pending_total }}{% if articles_review_admin_shortcut == "1" %} <a href="Admin-articles.html?state=pending" class="article-review-shortcut">{{ articles_review_view_pending }}</a>{% endif %}</p>
     <div class="news-admin-actions">
-        {% if articles_can_create == "1" %}<a class="button" href="Admin-articles-new.html">{{ articles_new }}</a>{% endif %}
+        {% if articles_can_create == "1" %}<a class="button" href="{{ articles_new_url }}">{{ articles_new }}</a>{% endif %}
     </div>
 </section>
 
@@ -62,7 +62,7 @@
                 <button class="button button-quiet button-review" type="submit">{{ articles_review_send_back }}</button>
                 </form>
             </details>{% endif %}
-            <span class="article-action-slot"><a class="button button-quiet" href="Admin-articles-edit-{{ articlerow.id }}.html">{{ ui_edit }}</a></span>
+            <span class="article-action-slot"><a class="button button-quiet" href="{{ articlerow.edit_url }}">{{ ui_edit }}</a></span>
             <span class="article-action-slot">{% if articlerow.public_url %}<a class="button button-quiet" href="{{ articlerow.public_url }}">{{ ui_view }}</a>{% endif %}{% if articlerow.public_url == "" %}<form method="post" action="Admin-articles-preview-{{ articlerow.id }}.html" class="inline-action" target="_blank"><input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><button class="button button-quiet" type="submit">{{ ui_preview }}</button></form>{% endif %}</span>
             <span class="article-action-slot">{% if articlerow.can_delete == "1" %}
             <form method="post" action="Admin-articles-delete-{{ articlerow.id }}.html" class="inline-action" data-confirm-delete data-confirm-title="{{ articlerow.title }}">
