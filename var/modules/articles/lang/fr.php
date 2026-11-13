@@ -185,3 +185,6 @@ $_LANG['articles_page_navigation'] = 'Pages de la liste des articles';
 $_LANG['articles_page_items'] = 'Articles';
 $_LANG['articles_page_previous'] = 'Page précédente';
 $_LANG['articles_page_next'] = 'Page suivante';
+
+$_LANG['articles_optional_metadata'] = 'Auteur et image principale';
+$_LANG['articles_optional_metadata_help'] = 'Champs facultatifs. Sans indication, P3 utilise l’auteur du site et la première image de l’article.';
