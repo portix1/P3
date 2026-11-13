@@ -8,7 +8,7 @@
 <section class="news-admin-summary" aria-label="{{ articles_admin_summary }}">
     <p><strong>{{ articles_total }}</strong> {{ articles_admin_total }}</p>
     <p><strong>{{ articles_published }}</strong> {{ articles_admin_published_total }}</p>
-    <p><strong>{{ articles_pending }}</strong> {{ articles_admin_pending_total }}</p>
+    <p><strong>{{ review_pending_count }}</strong> {{ articles_admin_pending_total }}</p>
     <div class="news-admin-actions">
         {% if articles_can_configure_menu == "1" %}<a class="button button-quiet" href="Admin-articles-series.html">{{ articles_series }}</a>{% endif %}
         {% if articles_can_configure_menu == "1" %}<a class="button button-quiet" href="Admin-articles-menu.html">{{ articles_manage_menu }}</a>{% endif %}
@@ -56,7 +56,7 @@
     </article>
     {% endfor %}
 </section>
-{% if articles_has_rows == "0" %}<p class="empty-state">{{ articles_empty_help }}</p>{% endif %}
+{% if review_has_rows == "0" %}<p class="empty-state">{{ review_empty_help }}</p>{% endif %}
 
 <dialog class="confirm-dialog" id="confirm-delete-dialog" aria-labelledby="articles-delete-dialog-title">
     <form method="dialog">
