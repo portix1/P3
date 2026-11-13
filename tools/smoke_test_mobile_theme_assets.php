@@ -31,7 +31,7 @@ $articleMarkup = str_replace('<h1>Univers Guitare</h1>',
     '<article class="news-detail article-reading"><div class="news-body news-rich-text">Texte</div></article>', $markup);
 $articleRendered = MobileThemeAssets::inject($articleMarkup, $tpl, $root);
 mobileAssetAssert(str_contains($articleRendered,
-    'var/editor/reading-desktop-p2.css?v=20261113'),
+    'var/editor/reading-desktop-p2.css?v=20261113b'),
     'correction de lecture desktop non injectée sur les articles');
 mobileAssetAssert(str_contains($articleRendered, 'media="screen and (min-width: 1025px)"'),
     'feuille de lecture desktop non limitée au grand écran');

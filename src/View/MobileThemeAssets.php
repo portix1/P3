@@ -10,7 +10,7 @@ namespace Portix\View;
 final class MobileThemeAssets
 {
     private const CSS_URL = 'var/editor/mobile-header-p1.css?v=20261112';
-    private const DESKTOP_READING_CSS_URL = 'var/editor/reading-desktop-p2.css?v=20261113';
+    private const DESKTOP_READING_CSS_URL = 'var/editor/reading-desktop-p2.css?v=20261113b';
     private const JS_URL = 'var/editor/mobile-header-p1.js?v=20261112';
     private const MOBILE_MEDIA = '(max-width: 640px), (max-width: 900px) and (max-height: 500px)';
 

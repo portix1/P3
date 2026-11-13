@@ -42,8 +42,8 @@ const html = [
 
 const browser = await chromium.launch({ headless: true });
 try {
-  for (const width of [320, 360, 390, 414, 768, 1024, 1280, 1440]) {
-    const page = await browser.newPage({ viewport: { width, height: 844 }, deviceScaleFactor: 2 });
+  for (const width of [320, 360, 390, 414, 768, 1024, 1056, 1280, 1440, 1920]) {
+    const page = await browser.newPage({ viewport: { width, height: width === 1920 ? 1080 : 844 }, deviceScaleFactor: 2 });
     try {
       await page.setContent(html);
       await page.addStyleTag({ path: stylesheet });
@@ -90,8 +90,9 @@ try {
       } else if (width <= 1024) {
         if (measured.reading > 660) throw new Error('Tablet line too wide at ' + width + ': ' + measured.reading);
       } else {
-        if (measured.reading > 660 || measured.reading < 400) {
-          throw new Error('Desktop reading column outside 400–660px at ' + width + ': ' + JSON.stringify(measured));
+        const maxWidth = width >= 1700 ? 940 : width >= 1400 ? 820 : 700;
+        if (measured.reading > maxWidth + 1 || measured.reading < maxWidth - 55) {
+          throw new Error('Desktop reading column should approach ' + maxWidth + 'px at ' + width + ': ' + JSON.stringify(measured));
         }
         if (!['start','left'].includes(measured.readingAlign)
             || !['start','left'].includes(measured.textAlign)
@@ -110,7 +111,7 @@ try {
       if (!measured.captions.includes('Manche de guitare — figure 25 %')) {
         throw new Error('Figure caption lost.');
       }
-      if ([320,390,768,1280,1440].includes(width)) {
+      if ([320,390,768,1280,1440,1920].includes(width)) {
         mkdirSync(resolve(root, 'home-browser-previews'), { recursive: true });
         await page.screenshot({
           path: resolve(root, 'home-browser-previews/article-reading-' + width + '.png'),

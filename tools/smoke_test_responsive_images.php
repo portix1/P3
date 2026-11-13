@@ -103,16 +103,22 @@ try {
         'les petites figures élargies demandent une résolution mobile suffisante'
     );
     responsiveCheck(
-        str_ends_with($clairImages[0]->getAttribute('sizes'), '160px')
-            && str_ends_with($clairImages[1]->getAttribute('sizes'), '211px'),
-        'la taille des figures 25/33 % suit une colonne de lecture desktop de 640px'
+        str_contains($clairImages[0]->getAttribute('sizes'), '(max-width: 1399px) 175px')
+            && str_contains($clairImages[0]->getAttribute('sizes'), '(max-width: 1699px) 205px')
+            && str_ends_with($clairImages[0]->getAttribute('sizes'), '235px')
+            && str_contains($clairImages[1]->getAttribute('sizes'), '(max-width: 1399px) 231px')
+            && str_contains($clairImages[1]->getAttribute('sizes'), '(max-width: 1699px) 271px')
+            && str_ends_with($clairImages[1]->getAttribute('sizes'), '310px'),
+        'les figures 25/33 % suivent les trois largeurs de lecture desktop'
     );
     $fullWidthClair = ResponsiveImages::enhance(
         '<img src="var/uploads/images/' . $first . '" alt="Grand schéma">',
         $root, 'six-cordes-ux-clair'
     );
-    responsiveCheck(str_ends_with(responsiveImages($fullWidthClair)[0]->getAttribute('sizes'), '640px'),
-        'une illustration pleine largeur doit déclarer 640px au-delà de 1024px');
+    responsiveCheck(
+        str_contains(responsiveImages($fullWidthClair)[0]->getAttribute('sizes'),
+            '(max-width: 1399px) 700px, (max-width: 1699px) 820px, 940px'),
+        'une illustration pleine largeur suit 700/820/940px sur desktop');
     $versionedTheme = ResponsiveImages::enhance($html, $root, 'six-cordes-ux-clair-v018');
     $versionedImages = responsiveImages($versionedTheme);
     responsiveCheck(
