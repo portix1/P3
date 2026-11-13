@@ -10,6 +10,9 @@
 
 <form method="post" action="{{ articles_form_action }}" class="news-editor-form" data-unsaved-warning="1" data-article-autosave="{{ articles_autosave_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+    <input type="hidden" name="from_page" value="{{ articles_return_page }}" />
+    <input type="hidden" name="from_state" value="{{ articles_return_state }}" />
+    <input type="hidden" name="from_q" value="{{ articles_return_q }}" />
     <input type="hidden" name="base_updated_at" value="{{ articles_autosave_base }}" />
     <textarea id="article-autosave-snapshot" hidden aria-hidden="true">{{ articles_autosave_snapshot }}</textarea>
     <p class="article-autosave-status" id="article-autosave-status" role="status" aria-live="polite"></p>
@@ -99,6 +102,6 @@
         <button type="submit">{% if review_required == "1" %}{{ articles_save_draft }}{% else %}{{ ui_save }}{% endif %}</button>
 
         <button class="button button-quiet" type="submit" formaction="{{ articles_preview_action }}" formtarget="_blank" formnovalidate data-preview-submit="1">{{ ui_preview }}</button>
-        <a class="button button-quiet" href="Admin-articles.html">{{ ui_cancel }}</a>
+        <a class="button button-quiet" href="{{ articles_return_url }}">{{ ui_cancel }}</a>
     </div>
 </form>
