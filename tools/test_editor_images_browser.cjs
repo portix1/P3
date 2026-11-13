@@ -56,7 +56,7 @@ async function run(engine, origin) {
         await page.goto(origin+'/p3/Admin.html',{waitUntil:'domcontentloaded'});
         await page.locator('.is-enhanced').waitFor();
         await page.waitForFunction(() => [...document.querySelectorAll('link[data-portix-editor-style]')].filter(e=>e.dataset.portixEditorStyle!=='katex').every(e=>e.sheet));
-        assert.match(await page.locator('link[data-portix-editor-style="portix"]').getAttribute('href'), /\?v=image-fix-1$/);
+        assert.match(await page.locator('link[data-portix-editor-style="portix"]').getAttribute('href'), /\?v=image-fix-1-tables-0\.1\.0$/);
         await page.evaluate(()=>{const q=Quill.find(document.querySelector('.ql-container'));q.setSelection(q.getLength()-1,0);});
         await page.locator('[data-command="divider"]').click();
         assert.equal(await page.locator('.ql-editor hr').count(),1,'divider command inserts hr');
@@ -127,7 +127,7 @@ async function run(engine, origin) {
         version='image-fix-2';
         await page.reload({waitUntil:'domcontentloaded'}); await page.locator('.is-enhanced').waitFor();
         await page.waitForFunction(()=>document.querySelector('link[data-portix-editor-style="portix"]').sheet);
-        assert.match(await page.locator('link[data-portix-editor-style="portix"]').getAttribute('href'),/\?v=image-fix-2$/,'update changes CSS URL in a warm cache');
+        assert.match(await page.locator('link[data-portix-editor-style="portix"]').getAttribute('href'),/\?v=image-fix-2-tables-0\.1\.0$/,'update changes CSS URL in a warm cache');
         assert.equal(await page.locator('.ql-editor img').count(),1); assert.equal(await page.locator('.ql-editor img').getAttribute('data-width'),width);
         assert.equal(await page.locator('.ql-editor .portix-image-caption').textContent(),'Légende test');
         await page.locator('.ql-editor td').first().click();
