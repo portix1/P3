@@ -1,0 +1,53 @@
+name: Patch P3 - filtres des articles
+on:
+  push:
+    branches:
+      - feature/relecture-articles-chatgpt-20261113
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Construire le patch de filtrage P3 0.9.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\r\n' < VERSION)" = "0.9.1"
+          mkdir -p patch
+          while IFS= read -r file; do
+            case "$file" in
+              src/*|var/*)
+                test -f "$file" || continue
+                mkdir -p "patch/$(dirname "$file")"
+                cp "$file" "patch/$file"
+                ;;
+            esac
+          done < <(git diff --name-only --diff-filter=ACMRT d6efbaa58078e6be9ccf3005b1f40cb3541c943c...HEAD)
+          test -f patch/var/modules/articles/src/ArticleListFilter.php
+          test -f patch/var/modules/articles/templates/admin-list.tpl
+          cat > patch/LISEZ-MOI-PATCH.txt <<'EOF'
+          PATCH P3 — Filtres de la liste des articles
+          Compatibilité : P3 0.9.1, avec les trois correctifs précédents appliqués.
+          Ce ZIP est un correctif de fichiers et non une réinstallation.
+          1. Sauvegarder les fichiers et la base SQLite.
+          2. Vérifier VERSION = 0.9.1 et les correctifs relecture, ergonomie et navigation.
+          3. Copier les dossiers var/ et src/ de cette archive à la racine du site.
+          4. Ouvrir Rédaction > Articles, puis tester la recherche et les trois états.
+          5. Vérifier les droits avec un compte rédacteur.
+          Aucun fichier SQLite, aucun média et aucune configuration privée n'est fourni.
+          Ce patch ne modifie pas la structure de la base de données.
+          EOF
+          (cd patch && zip -qr ../P3-patch-filtres-articles-0.9.1.zip .)
+          unzip -t P3-patch-filtres-articles-0.9.1.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P3-patch-filtres-articles-0.9.1
+          path: P3-patch-filtres-articles-0.9.1.zip
+          if-no-files-found: error
