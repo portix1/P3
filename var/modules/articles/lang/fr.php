@@ -165,3 +165,5 @@ $_LANG['articles_series_batch_failed'] = 'La création des séries n’a pas abo
 $_LANG['articles_series_batch_backup_failed'] = 'Impossible de sauvegarder les séries existantes. Aucune modification appliquée.';
 
 $_LANG['articles_public_edit'] = 'Modifier cet article';
+
+$_LANG['articles_review_next_step'] = 'Enregistrez votre brouillon. Dans la liste des articles, choisissez ensuite « Demander la publication ». Un administrateur le relira avant sa mise en ligne.';
