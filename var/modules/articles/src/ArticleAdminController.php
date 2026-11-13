@@ -128,6 +128,24 @@ final class ArticleAdminController
         $template->set('articles_filter_no_matches', $visibleRows === [] ? '1' : '0');
         $template->set('articles_filter_active', $state !== '' || $query !== '' ? '1' : '0');
 
+        require_once __DIR__ . '/ArticleListPagination.php';
+        $rawPage = $_GET['page'] ?? '1';
+        $requestedPage = is_string($rawPage) && ctype_digit($rawPage)
+            ? (int) min((float) $rawPage, 1000000000)
+            : 1;
+        $pagination = ArticleListPagination::paginate($visibleRows, $requestedPage);
+        $visibleRows = $pagination['rows'];
+        $template->set('articles_page_current', (string) $pagination['page']);
+        $template->set('articles_page_total', (string) $pagination['pages']);
+        $template->set('articles_page_from', (string) $pagination['from']);
+        $template->set('articles_page_to', (string) $pagination['to']);
+        $template->set('articles_pages_visible', $pagination['pages'] > 1 ? '1' : '0');
+        $template->set('articles_page_previous_visible', $pagination['page'] > 1 ? '1' : '0');
+        $template->set('articles_page_next_visible', $pagination['page'] < $pagination['pages'] ? '1' : '0');
+        $template->set('articles_page_previous_url', ArticleListPagination::pageUrl(max(1, $pagination['page'] - 1), $state, $query));
+        $template->set('articles_page_next_url', ArticleListPagination::pageUrl(min($pagination['pages'], $pagination['page'] + 1), $state, $query));
+
+
         foreach ($visibleRows as $row) {
             $status = (string) $row['status'];
             $published = $status === 'published';
