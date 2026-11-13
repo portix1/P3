@@ -1,0 +1,35 @@
+name: Validation ciblée relecture des articles
+
+on:
+  push:
+    branches: [feature/relecture-articles-chatgpt-20261113]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-review:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_sqlite, dom, gd, iconv, fileinfo, mbstring, zip
+      - name: Permissions, publication, migrations, navigation et restauration
+        run: |
+          php tools/check_php_syntax.php
+          php tools/smoke_test_database.php
+          php tools/smoke_test_admin_navigation.php
+          php tools/smoke_test_article_permissions.php
+          php tools/smoke_test_article_review.php
+          php tools/smoke_test_content_safety.php
+          php tools/smoke_test_localization.php
+          php tools/smoke_test_module_packages.php
+      - name: Vérifier la cohérence du catalogue officiel Articles
+        run: python3 tools/test_catalogue_distribution.py
