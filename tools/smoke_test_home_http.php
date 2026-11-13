@@ -197,6 +197,11 @@ try {
         $staffHome=$request('/','GET','',$headers);
         $check(!str_contains($staffHome[1],'home/assets/home.js'),'Staff measurement excluded');
     }
+    // The preceding HTTP exercises may generate real minimal measurements.
+    // Reset only this isolated fixture so the empty-dashboard assertion remains
+    // deterministic across PHP versions and request timings.
+    $db->connection()->exec('DELETE FROM analytics_v2_counts');
+    $db->connection()->exec('DELETE FROM analytics_v2_daily');
     $empty = $request('/Admin-insights.html', 'GET', '', $auth);
     $check($empty[0] === 200 && str_contains($empty[1], 'Aucune mesure sur cette période.'), 'Empty dashboard is readable');
     PortixSettings::write('insights', ['mode' => 'daily'], $fixture);
