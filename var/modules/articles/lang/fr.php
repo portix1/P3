@@ -166,4 +166,5 @@ $_LANG['articles_series_batch_backup_failed'] = 'Impossible de sauvegarder les s
 
 $_LANG['articles_public_edit'] = 'Modifier cet article';
 
+$_LANG['articles_save_draft'] = 'Enregistrer le brouillon';
 $_LANG['articles_review_next_step'] = 'Enregistrez votre brouillon. Dans la liste des articles, choisissez ensuite « Demander la publication ». Un administrateur le relira avant sa mise en ligne.';
