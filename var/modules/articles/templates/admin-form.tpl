@@ -14,7 +14,7 @@
     <input type="hidden" name="from_state" value="{{ articles_return_state }}" />
     <input type="hidden" name="from_q" value="{{ articles_return_q }}" />
     <input type="hidden" name="base_updated_at" value="{{ articles_autosave_base }}" />
-    <textarea id="article-autosave-snapshot" hidden aria-hidden="true">{{ articles_autosave_snapshot }}</textarea>
+    <textarea id="article-autosave-snapshot" hidden aria-hidden="true" aria-label="Sauvegarde de récupération privée">{{ articles_autosave_snapshot }}</textarea>
     <p class="article-autosave-status" id="article-autosave-status" role="status" aria-live="polite"></p>
     <div class="news-form-grid">
         <label>{{ articles_field_title }}
