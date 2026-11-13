@@ -179,3 +179,5 @@ $_LANG['articles_filter_apply'] = 'Filter';
 $_LANG['articles_filter_clear'] = 'Clear filters';
 $_LANG['articles_filter_result_label'] = 'article(s) shown';
 $_LANG['articles_filter_no_matches_label'] = 'No articles match these filters.';
+
+$_LANG['articles_review_view_pending'] = 'View requests';
