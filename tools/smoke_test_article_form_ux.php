@@ -13,7 +13,7 @@ $source = (string) file_get_contents($templatePath);
 $required = ['name="title"', 'name="slug"', 'name="status"', 'name="category_id"',
     'name="content"', 'name="summary"', 'name="author_name"', 'name="featured_image"',
     'name="reading_settings_present"', 'name="toc_enabled"', 'data-unsaved-warning="1"',
-    'data-preview-submit="1"', 'articles_optional_metadata'];
+    'data-preview-submit="1"', 'articles_optional_metadata', 'name="save_continue"', 'articles_is_edit == "1"'];
 foreach ($required as $item) {
     if (!str_contains($source, $item)) { throw new RuntimeException('Champ de rédaction manquant : ' . $item); }
 }
@@ -26,5 +26,14 @@ if ($bodyPos === false || $summaryPos === false || $authorPos === false
 }
 if (preg_match('/\{%\s*if\s+[^%]*(?:&&|\|\|)[^%]*%\}/', $source) === 1) {
     throw new RuntimeException('Condition de template non prise en charge.');
+}
+$controller = (string) file_get_contents($root . '/var/modules/articles/src/ArticleAdminController.php');
+foreach (["isset(\$_POST['save_continue'])", "'articles_is_edit'", "'articles_saved_continue'", "'Location: Admin-articles-edit-'"] as $expected) {
+    if (!str_contains($controller, $expected)) {
+        throw new RuntimeException('Sauvegarde avec poursuite absente : ' . $expected);
+    }
+}
+if (!str_contains($controller, "!\$isNew && \$id !== null && isset(\$_POST['save_continue'])")) {
+    throw new RuntimeException('Enregistrer et continuer doit être limité aux articles existants.');
 }
 echo "Formulaire rédaction : champs, ordre, aperçu et syntaxe du template OK\n";
