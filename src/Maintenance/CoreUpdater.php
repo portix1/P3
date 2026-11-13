@@ -186,7 +186,7 @@ final class CoreUpdater
             }
 
             // Extract and validate all files before touching the site.
-            $staged = $work . '/staged';
+            $staged = $work . '/staged-' . bin2hex(random_bytes(5));
             if (!mkdir($staged, 0700)) {
                 throw new RuntimeException('Impossible de préparer les fichiers de mise à jour.');
             }
@@ -212,7 +212,7 @@ final class CoreUpdater
             // Complete private rollback point, including DB and existing application.
             $rollbackPath = UpdateSafety::createRollbackPoint($root);
             $rollbackName = basename($rollbackPath);
-            $previous = $work . '/previous';
+            $previous = $work . '/previous-' . bin2hex(random_bytes(5));
             if (!mkdir($previous, 0700)) {
                 throw new RuntimeException('Sauvegarde temporaire indisponible.');
             }
