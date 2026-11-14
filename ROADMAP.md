@@ -25,6 +25,8 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 
 - Diagnostics et thèmes : accès clavier aux zones de défilement des tableaux, avec un nom et un focus visible.
 
+- Contrôles à 320 px sur la liste des comptes, la création et l’édition d’un compte, les modules et les mises à jour. Vérification au clavier du choix individuel de publication.
+
 ## 0.9.5 — installation, mises à jour et restauration
 
 - Restauration sur installation isolée après interruption simulée : vérifier SQLite, médias, thème, clé publique, maintenance et règles HTTP racine. Les règles racine présentes sont préservées pendant la restauration.

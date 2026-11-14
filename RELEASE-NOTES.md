@@ -1,4 +1,6 @@
-# P3 0.9.6-dev — accessibilité du back-office
+# P3 0.9.6 — accessibilité du back-office
+
+- Dans la fiche de compte, le lecteur d’écran peut lire les aides du pseudonyme et de l’adresse e-mail après le nom du champ.
 
 - Les tableaux des diagnostics et de l’inventaire des thèmes ont une zone de défilement nommée, accessible avec Tab et signalée par un contour visible.
 

@@ -151,6 +151,19 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         }
       }
       if (actor === 'admin') {
+        for (const url of ['/Admin-users.html', '/Admin-users-new.html', '/Admin-users-edit-editor.html',
+          '/Admin-config-modules.html', '/Admin-config-updates.html']) {
+          assert.equal((await tab.goto(base + url)).status(), 200, url + ' is accessible');
+          assert.equal(await tab.locator('main h1').count(), 1, url + ' has one main heading');
+          assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), url + ' fits at 320 px');
+        }
+        await tab.goto(base + '/Admin-users-edit-editor.html');
+        const reviewChoice = tab.locator('input[name=permission_publication][value=review]');
+        assert(await reviewChoice.isChecked(), 'Review is the default publication choice');
+        await reviewChoice.press('ArrowRight');
+        assert(await tab.locator('input[name=permission_publication][value=direct]').isChecked(), 'Publication choices are keyboard operable');
+      }
+      if (actor === 'admin') {
         for (const [url, selector] of [
           ['/Admin-diagnostics.html', '.diagnostics-table-wrap'],
           ['/Admin-config-themes.html', '.table-scroll']

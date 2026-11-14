@@ -1,7 +1,7 @@
 # P3 — CMS PHP modulaire
 
 **Dernière version stable publiée :** `0.9.5`\
-**Version de développement :** `0.9.6-dev` (non publiée)\
+**Version préparée pour signature :** `0.9.6` (non publiée)\
 **Version stable précédente :** `0.9.4`\
 **Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
 **Licence :** `GPL-3.0-or-later`

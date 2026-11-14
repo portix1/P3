@@ -20,8 +20,8 @@
         <div class="form-grid">
             {% if users_is_new == "1" %}
             <label>{{ users_username }}
-                <input name="pseudo" value="{{ users_pseudo_value }}" required pattern="[A-Za-z0-9_.-]{2,64}" maxlength="64" autocomplete="username" />
-                <small>{{ users_username_help }}</small>
+                <input name="pseudo" aria-describedby="user-username-help" value="{{ users_pseudo_value }}" required pattern="[A-Za-z0-9_.-]{2,64}" maxlength="64" autocomplete="username" />
+                <small id="user-username-help">{{ users_username_help }}</small>
             </label>
             {% endif %}
             {% if users_is_edit == "1" %}
@@ -38,8 +38,8 @@
                 <input name="last_name" value="{{ users_last_name_value }}" maxlength="100" autocomplete="family-name" />
             </label>
             <label>{{ users_email }}
-                <input type="email" name="email" value="{{ users_email_value }}" maxlength="254" autocomplete="email" />
-                <small>{{ users_email_help }}</small>
+                <input type="email" name="email" aria-describedby="user-email-help" value="{{ users_email_value }}" maxlength="254" autocomplete="email" />
+                <small id="user-email-help">{{ users_email_help }}</small>
             </label>
         </div>
     </section>
