@@ -8,7 +8,7 @@ Version de développement non publiée. La version stable 0.9.3 est publiée et 
 - Sessions et formulaires : jetons vides refusés, identifiants de session stricts, réponses avec session non mises en cache, Vary: Cookie et réinitialisation sans référent ; accès anonyme à l’administration renvoie 403.
 - Aperçus privés : association au compte authentifié et à la version de ses droits ; suppression lors des changements d’authentification. Les anciens liens d’aperçu deviennent invalides, sans modification des articles ou actualités enregistrés.
 - Restauration : préservation de la clé officielle vérifiée dans le fichier local lorsque la version restaurée ne la fournit pas ; conservation de la clé locale et du verrou de mise à jour existants.
-- Vérification de version unifiée avec CoreUpdater ; message distinct lorsque la vérification est indisponible. Tests des trois états ajoutés.
+- Vérification de version unifiée avec CoreUpdater ; message distinct lorsque la vérification est indisponible. Tests des trois états validés ; cache ancien, expiré, absent ou incohérent refusé, tests de régression ajoutés.
 - Contact : accès non autorisé aux réglages et à la purge refusé avant toute opération.
 - Médiathèque : consultation des usages réservée aux administrateurs pour protéger les références aux brouillons et les chemins internes. Ajout, sélection et description des images toujours accessibles aux rédacteurs.
 - Restauration et mise à jour ne peuvent plus modifier simultanément l’installation ; verrou partagé et test de refus concurrent.

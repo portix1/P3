@@ -96,10 +96,22 @@ final class ExtensionUpdates
         return $updates;
     }
 
+    /** Reject legacy, malformed or expired release-check session entries. */
+    private static function validCoreCache(mixed $cached): bool
+    {
+        if (!is_array($cached) || !is_int($cached['expires'] ?? null)
+            || $cached['expires'] <= time() || !is_string($cached['version'] ?? null)) {
+            return false;
+        }
+        return (($cached['error'] ?? null) === ''
+                && preg_match('/\A[0-9]+\.[0-9]+\.[0-9]+\z/D', $cached['version']) === 1)
+            || (($cached['error'] ?? null) === 'extension_updates_failed' && $cached['version'] === '');
+    }
+
     public static function core(string $installed): string
     {
         $cached = $_SESSION['p3_core_release'] ?? [];
-        if (($cached['expires'] ?? 0) <= time()) {
+        if (!self::validCoreCache($cached)) {
             try {
                 $version = CoreUpdater::latest();
                 $error = '';
@@ -110,13 +122,14 @@ final class ExtensionUpdates
             $cached = ['version' => $version, 'error' => $error, 'expires' => time() + ($version === '' ? 60 : 300)];
             $_SESSION['p3_core_release'] = $cached;
         }
-        $version = $cached['version'] ?? '';
-        return is_string($version) && preg_match('/\\A[0-9]+\\.[0-9]+\\.[0-9]+\\z/D', $version) === 1 && version_compare($version, $installed, '>') ? $version : '';
+        $version = $cached['version'];
+        return $cached['error'] === '' && version_compare($version, $installed, '>') ? $version : '';
     }
 
     public static function coreCheckFailed(): bool
     {
-        return ($_SESSION['p3_core_release']['error'] ?? '') === 'extension_updates_failed';
+        $cached = $_SESSION['p3_core_release'] ?? [];
+        return !self::validCoreCache($cached) || $cached['error'] !== '';
     }
 
     /**

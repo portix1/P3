@@ -168,7 +168,19 @@ try {
     coreTestAssert(\Portix\Maintenance\ExtensionUpdates::core('0.9.4')==='' && !\Portix\Maintenance\ExtensionUpdates::coreCheckFailed(),'installed release current');
     $_SESSION['p3_core_release'] = ['version'=>'','error'=>'extension_updates_failed','expires'=>time()+60];
     coreTestAssert(\Portix\Maintenance\ExtensionUpdates::core('0.9.3')==='' && \Portix\Maintenance\ExtensionUpdates::coreCheckFailed(),'release check unavailable');
+    foreach ([
+        ['version'=>'0.9.4','expires'=>time()+60],
+        ['version'=>'invalid','error'=>'','expires'=>time()+60],
+        ['version'=>'0.9.4','error'=>'','expires'=>time()-1],
+        ['version'=>'0.9.4','error'=>'extension_updates_failed','expires'=>time()+60],
+        ['version'=>'','error'=>'','expires'=>time()+60],
+        'invalid',
+    ] as $invalid) {
+        $_SESSION['p3_core_release'] = $invalid;
+        coreTestAssert(\Portix\Maintenance\ExtensionUpdates::coreCheckFailed(), 'invalid or expired cache cannot imply current version');
+    }
     unset($_SESSION['p3_core_release']);
+    coreTestAssert(\Portix\Maintenance\ExtensionUpdates::coreCheckFailed(), 'missing cache cannot imply current version');
     // A rollback to a pre-bundled-key release must keep the currently trusted key.
     $official = file_get_contents($source . '/src/Maintenance/core-release-public.pem');
     unlink($site . '/var/sys/core-release-public.pem');
