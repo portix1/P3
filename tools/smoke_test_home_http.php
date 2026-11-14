@@ -234,6 +234,27 @@ try {
     $slug = $db->connection()->query("SELECT slug FROM articles WHERE status = 'published' ORDER BY id LIMIT 1")->fetchColumn();
     $articleUrl = '/' . $slug . '.html';
     $visitor = ['User-Agent: Firefox test visitor', 'Referer: https://example.test/path?private=1'];
+    $restartServer = static function () use (&$server, $address, $fixture, $request, $check): void {
+        if (is_resource($server)) {
+            proc_terminate($server);
+            proc_close($server);
+        }
+        $server = proc_open(
+            [PHP_BINARY,'-S',$address,'-t',$fixture,$fixture.'/router.php'],
+            [['pipe','r'],['file',$fixture.'/server.log','a'],['file',$fixture.'/server.log','a']],
+            $browserPipes,$fixture
+        );
+        $check(is_resource($server), 'Fresh browser fixture server starts');
+        fclose($browserPipes[0]);
+        $ready = false;
+        for ($attempt=0; $attempt<30; $attempt++) {
+            usleep(100000);
+            $response = $request('/');
+            if ($response[0] === 200) { $ready = true; break; }
+        }
+        $check($ready, 'Fresh browser fixture server is ready');
+    };
+    $restartServer();
     $first = $request('/', 'GET', '', $visitor);
     $unexpectedCookies = array_values(preg_grep('/^Set-Cookie:/i', $first[2]) ?: []);
     $check($first[0] === 200 && $unexpectedCookies === [],
@@ -269,24 +290,7 @@ try {
         // Start Chromium against a fresh HTTP process, not the fixture server
         // already used for dozens of PHP integration requests. The same
         // isolated SQLite fixture is retained; no assertions are skipped.
-        if (is_resource($server)) {
-            proc_terminate($server);
-            proc_close($server);
-        }
-        $server = proc_open(
-            [PHP_BINARY,'-S',$address,'-t',$fixture,$fixture.'/router.php'],
-            [['pipe','r'],['file',$fixture.'/server.log','a'],['file',$fixture.'/server.log','a']],
-            $browserPipes,$fixture
-        );
-        $check(is_resource($server), 'Fresh browser fixture server starts');
-        fclose($browserPipes[0]);
-        $ready = false;
-        for ($attempt=0; $attempt<30; $attempt++) {
-            usleep(100000);
-            $response = $request('/');
-            if ($response[0] === 200) { $ready = true; break; }
-        }
-        $check($ready, 'Fresh browser fixture server is ready');
+        $restartServer();
         putenv('HOME_TEST_URL='.$base);
         passthru('node '.escapeshellarg($source.'/tools/test_home_browser.cjs'),$exit);
         $check($exit===0,'Browser validation');
