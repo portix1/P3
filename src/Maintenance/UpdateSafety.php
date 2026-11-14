@@ -310,6 +310,7 @@ final class UpdateSafety
             throw new RuntimeException('Ce point de restauration correspond à un autre fichier SQLite.');
         }
         $version = self::rollbackVersion($source, $manifest);
+        ReleaseSignature::preserveBeforeRestore($root);
         self::createRollbackPointUnlocked($root); // point de secours avant restauration, sous le même verrou
         self::enableMaintenance($root, $version !== '' ? $version : 'rollback');
         try {
@@ -317,7 +318,7 @@ final class UpdateSafety
             foreach(['admin','editor','lang','modules','templates'] as $dir){ self::removeTree($root.'/var/'.$dir); self::copyTree($source.'/application/var/'.$dir,$root.'/var/'.$dir); }
             foreach(($manifest['root_files']??[]) as $entry){ if(!is_string($entry)||basename($entry)!==$entry) continue; if(is_file($source.'/application/'.$entry)&&!copy($source.'/application/'.$entry,$root.'/'.$entry)) throw new RuntimeException('Impossible de restaurer '.$entry); }
             if(!copy($source.'/database/portix2.sqlite',$root.'/'.SiteConfiguration::load($root)->databasePath())) throw new RuntimeException('Impossible de restaurer la base SQLite.');
-            self::replaceTree($source.'/var/sys',$root.'/var/sys',['maintenance.lock','core-release-public.pem','.htaccess']);
+            self::replaceTree($source.'/var/sys',$root.'/var/sys',['maintenance.lock','core-update.lock','core-release-public.pem','.htaccess']);
             self::replaceTree($source.'/var/uploads/images',$root.'/var/uploads/images',['.htaccess']);
             self::replaceTree($source.'/var/private',$root.'/var/private',['update-backups','core-update-staging','.htaccess']);
             if(is_dir($source.'/download')) self::replaceTree($source.'/download',$root.'/download');
