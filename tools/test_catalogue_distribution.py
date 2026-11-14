@@ -12,7 +12,10 @@ from build_module import ROOT, build
 
 MODULE = 'articles'
 PREFIX = 'var/modules/articles/'
-catalogue = json.loads((ROOT / 'distribution/catalogue.json').read_text())
+catalogue_bytes = (ROOT / 'distribution/catalogue.json').read_bytes()
+expected_checksum = hashlib.sha256(catalogue_bytes).hexdigest() + '  catalogue.json\n'
+assert (ROOT / 'distribution/catalogue.sha256').read_text() == expected_checksum, 'Stale catalogue checksum'
+catalogue = json.loads(catalogue_bytes)
 assert catalogue['schema'] == 1
 packages = [
     p for p in catalogue['packages']
