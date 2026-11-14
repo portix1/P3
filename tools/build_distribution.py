@@ -16,7 +16,7 @@ PLACEHOLDERS = {'.gitkeep', '.htaccess', 'web.config'}
 
 
 def include(name):
-    if name in {'.gitignore', '.gitattributes', 'AGENTS.md'} or name.startswith(EXCLUDED):
+    if name in {'.gitignore', '.gitattributes', 'AGENTS.md', 'PREPARATION-P3-0.9.2.md'} or name.startswith(EXCLUDED):
         return False
     return not name.startswith(RUNTIME) or Path(name).name in PLACEHOLDERS
 
@@ -31,7 +31,7 @@ def build(excluded_modules=()):
             raise RuntimeError('Unknown module exclusion')
     paths = sorted(name for name in tracked if name and include(name) and not any(name.startswith('var/modules/' + module + '/') for module in excluded_modules))
     required = {'VERSION', 'LICENSE', 'index.php', 'install.php', '.htaccess', 'bootstrap/app.php',
-                'src/Maintenance/UpdateSafety.php', 'var/modules/safety/templates/rollback.tpl'}
+                'var/private/.htaccess', 'src/Maintenance/UpdateSafety.php', 'var/modules/safety/templates/rollback.tpl'}
     if not required.issubset(paths):
         raise RuntimeError('Distribution is missing required source files')
     output = ROOT / 'dist'
