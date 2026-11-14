@@ -50,8 +50,8 @@
     </div>
 
     <label for="article-summary">{{ articles_field_summary }}</label>
-    <textarea id="article-summary" name="summary" aria-describedby="article-summary-help" rows="3" maxlength="170">{{ articles_summary_value }}</textarea>
-    <small id="article-summary-help">{{ articles_field_summary_help }}</small>
+    <textarea id="article-summary" name="summary" rows="3" maxlength="170">{{ articles_summary_value }}</textarea>
+    <small>{{ articles_field_summary_help }}</small>
 
     <fieldset>
         <legend>{{ articles_reading_settings }}</legend>

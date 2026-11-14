@@ -67,7 +67,7 @@ $_LANG = array_merge($_LANG, array(
     'articles_invalid_summary' => 'La description ne peut pas dépasser 170 caractères.',
     'articles_invalid_seo_fields' => 'Les informations de référencement de l’article sont trop longues.',
     'articles_field_body' => 'Contenu',
-    'articles_body_help' => 'Le contenu complet de l’article. Les images sont optimisées et stockées localement. Dans un tableau, appuyez sur Échap puis Tab pour passer au champ suivant.',
+    'articles_body_help' => 'Le contenu complet de l’article. Les images sont optimisées et stockées localement.',
 
     'articles_menu_settings' => 'Menu des articles',
     'articles_menu_introduction' => 'Chaque catégorie principale peut devenir une entrée du menu du header, avec ses sous-catégories sur plusieurs niveaux.',

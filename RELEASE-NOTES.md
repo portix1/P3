@@ -1,6 +1,6 @@
 # P3 0.9.6-dev — accessibilité du back-office
 
-- Tab permet de quitter l’éditeur d’article. Dans un tableau, Échap puis Tab passe au champ suivant. Le focus de l’éditeur est visible et les aides du contenu et de la description sont associées aux champs correspondants.
+- Tab permet de quitter l’éditeur d’article. Dans un tableau, Échap puis Tab passe au champ suivant. Le focus de l’éditeur est visible et son texte d’aide est associé au champ de contenu.
 
 # P3 0.9.5 — installation, mise à jour et restauration
 
