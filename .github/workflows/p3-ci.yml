@@ -23,7 +23,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: pdo_sqlite, dom, gd, iconv, fileinfo, mbstring, zip
+          extensions: pdo_sqlite, dom, gd, iconv, fileinfo, mbstring, zip, openssl
           coverage: none
 
       - name: Environment
@@ -55,7 +55,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: pdo_sqlite, dom, gd, iconv, fileinfo, mbstring, zip
+          extensions: pdo_sqlite, dom, gd, iconv, fileinfo, mbstring, zip, openssl
           coverage: none
       - uses: actions/setup-node@v4
         with:
@@ -110,12 +110,11 @@ jobs:
             echo "Version already tagged; refusing publication" >&2
             exit 1
           fi
-          flags=()
-          if [[ "$version" == *-* ]]; then
-            flags+=(--prerelease)
-          fi
+          # Signing is performed off GitHub; do not publish unsigned archives.
+          echo "Publication automatique désactivée : signature hors dépôt requise." >&2
+          exit 1
           gh release create "v$version" \
             "dist/P3-$version.zip" "dist/P3-$version.sha256" \
             --target "$GITHUB_SHA" --title "P3 $version" \
-            --notes-file RELEASE-NOTES.md "${flags[@]}"
+            --notes-file RELEASE-NOTES.md
 
