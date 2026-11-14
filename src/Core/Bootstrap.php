@@ -92,6 +92,10 @@ final class Bootstrap
         if (is_writable($directory)) {
             session_save_path($directory);
         }
+        // Refuse client-supplied session identifiers not already created by PHP.
+        if (ini_set('session.use_strict_mode', '1') === false || ini_set('session.use_only_cookies', '1') === false) {
+            throw new RuntimeException('Impossible de sécuriser les identifiants de session.');
+        }
         session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
