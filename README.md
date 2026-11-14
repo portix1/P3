@@ -35,6 +35,8 @@ Les sessions sont isolées par installation. Après la mise à jour vers 0.9.4, 
 
 Lors d’une restauration, les fichiers `.htaccess` et `web.config` déjà présents à la racine sont conservés. Si l’un d’eux manque, P3 le récupère depuis le point de restauration lorsqu’il y figure.
 
+Si une mise à jour ou une restauration est interrompue et que le back-office répond 503, conservez le site en maintenance. Depuis le panneau de l’hébergeur ou par FTP, récupérez le dernier point de restauration complet sous `var/private/update-backups/` et sauvegardez l’état courant. Rétablissez la copie applicative et, si nécessaire, les données du point de restauration en conservant les règles HTTP locales et la clé publique de confiance. Retirez `var/sys/maintenance.lock` uniquement après avoir rétabli un ensemble cohérent de fichiers et de données. Sur un hébergement avec accès en ligne de commande, la restauration peut aussi passer par `UpdateSafety::restoreRollbackPoint()` après chargement de `bootstrap/autoload.php`.
+
 ## Licence
 
 P3 est distribué sous les termes de la GNU General Public License, version 3 ou ultérieure (`GPL-3.0-or-later`). Les licences et notices tierces doivent être conservées.

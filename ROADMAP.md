@@ -20,7 +20,7 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 ## 0.9.5 — installation, mises à jour et restauration
 
 - Restauration sur installation isolée après interruption simulée : vérifier SQLite, médias, thème, clé publique, maintenance et règles HTTP racine. Les règles racine présentes sont préservées pendant la restauration.
-- Vérifier la reprise depuis le back-office lorsqu’un verrou de maintenance persiste, ainsi que la restauration après échec en cours d’opération.
+- Un point de restauration à la base SQLite endommagée est refusé avant remplacement. Une restauration interrompue en cours d’écriture conserve la maintenance. La récupération passe par le panneau d’hébergement ou FTP lorsque le back-office répond 503. La reprise autonome depuis le navigateur reste à examiner.
 - Examiner les migrations SQLite à chaque requête et les accès concurrents. Vérifier les protections HTTP sur les configurations prises en charge.
 
 ## 0.9.4 — sécurité et permissions

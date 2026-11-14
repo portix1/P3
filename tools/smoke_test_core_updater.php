@@ -196,6 +196,30 @@ try {
         coreTestAssert($blocked, 'restauration concurrente refusée');
         coreTestAssert(is_file($site . '/src/Maintenance/core-release-public.pem'), 'application intacte pendant le refus');
     } finally { flock($lock, LOCK_UN); fclose($lock); }
+    $damagedPoint = UpdateSafety::createRollbackPoint($site);
+    file_put_contents($damagedPoint . '/database/portix2.sqlite', 'not a SQLite database');
+    $refused = false;
+    try { UpdateSafety::restoreRollbackPoint($site, basename($damagedPoint)); }
+    catch (RuntimeException $error) { $refused = true; }
+    coreTestAssert($refused, 'snapshot SQLite corrompu refusé');
+    coreTestAssert(file_get_contents($site . '/includes/engine.php') === '<?php // new engine', 'moteur intact après refus');
+    coreTestAssert(!is_file($site . '/var/sys/maintenance.lock'), 'site ouvert après refus préventif');
+
+    // Force a write error after application files have been copied.
+    coreTestWrite($damagedPoint, 'database/portix2.sqlite',
+        file_get_contents($site . '/var/private/update-backups/' . $oldPoint . '/database/portix2.sqlite'));
+    mkdir($site . '/index.php.obstacle', 0700);
+    $manifestPath = $damagedPoint . '/manifest.json';
+    $manifest = json_decode(file_get_contents($manifestPath), true, 512, JSON_THROW_ON_ERROR);
+    $manifest['root_files'][] = 'index.php.obstacle';
+    file_put_contents($manifestPath, json_encode($manifest, JSON_THROW_ON_ERROR));
+    coreTestWrite($damagedPoint, 'application/index.php.obstacle', 'file cannot replace directory');
+    $failed = false;
+    try { @UpdateSafety::restoreRollbackPoint($site, basename($damagedPoint)); }
+    catch (RuntimeException $error) { $failed = str_contains($error->getMessage(), 'reste en maintenance'); }
+    coreTestAssert($failed && is_file($site . '/var/sys/maintenance.lock'), 'restauration partielle maintenue hors ligne');
+    rmdir($site . '/index.php.obstacle');
+
     // Reproduce the on-disk state after the process stops before its cleanup.
     UpdateSafety::enableMaintenance($site, '0.9.4');
     coreTestWrite($site, 'includes/engine.php', '<?php // partially replaced engine');
