@@ -317,9 +317,9 @@ final class UpdateSafety
             foreach(['admin','editor','lang','modules','templates'] as $dir){ self::removeTree($root.'/var/'.$dir); self::copyTree($source.'/application/var/'.$dir,$root.'/var/'.$dir); }
             foreach(($manifest['root_files']??[]) as $entry){ if(!is_string($entry)||basename($entry)!==$entry) continue; if(is_file($source.'/application/'.$entry)&&!copy($source.'/application/'.$entry,$root.'/'.$entry)) throw new RuntimeException('Impossible de restaurer '.$entry); }
             if(!copy($source.'/database/portix2.sqlite',$root.'/'.SiteConfiguration::load($root)->databasePath())) throw new RuntimeException('Impossible de restaurer la base SQLite.');
-            self::replaceTree($source.'/var/sys',$root.'/var/sys',['maintenance.lock']);
+            self::replaceTree($source.'/var/sys',$root.'/var/sys',['maintenance.lock','core-release-public.pem']);
             self::replaceTree($source.'/var/uploads/images',$root.'/var/uploads/images');
-            self::replaceTree($source.'/var/private',$root.'/var/private',['update-backups']);
+            self::replaceTree($source.'/var/private',$root.'/var/private',['update-backups','.htaccess']);
             if(is_dir($source.'/download')) self::replaceTree($source.'/download',$root.'/download');
             if ($version !== '') { self::markRelease($root, $version, 'restore'); }
         } finally { self::disableMaintenance($root); }
@@ -362,7 +362,7 @@ final class UpdateSafety
         if(is_dir($destination)) {
             foreach(scandir($destination)?:[] as $entry){ if($entry==='.'||$entry==='..'||in_array($entry,$preserve,true)) continue; self::removeTree($destination.'/'.$entry); }
         }
-        self::copyTree($source,$destination);
+        self::copyTree($source,$destination,$preserve);
     }
 
     private static function removeTree(string $path): void
