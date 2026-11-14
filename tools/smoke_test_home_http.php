@@ -27,7 +27,8 @@ try {
         if ($manifest['schema_format']==='desc-csv' && !is_dir(dirname($file).'/database')) { mkdir(dirname($file).'/database',0770,true); }
         $installer->installDirectory(dirname($file));
     }
-    foreach (['admin','editor'] as $actor) { $repos->users()->create($actor,password_hash('test-home-password',PASSWORD_DEFAULT),$actor.'@example.test','Test',$actor,$actor==='admin',true); }
+    foreach (['admin','editor','publisher'] as $actor) { $repos->users()->create($actor,password_hash('test-home-password',PASSWORD_DEFAULT),$actor.'@example.test','Test',$actor,$actor==='admin',true); }
+    $repos->users()->saveArticlePermissions('publisher', ['publish' => true, 'edit_published' => true]);
     (new Portix\Installation\DefaultContentSeeder())->seed($db->connection(),'admin',gmdate('Y-m-d H:i:s'));
     $config=Portix\Configuration\SiteConfiguration::load($fixture);
     $config->update(['database_file'=>'home-test.sqlite','defaultpage'=>'home','template'=>'six-cordes-ux-clair','title'=>'Home test','debug'=>true]);

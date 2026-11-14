@@ -120,7 +120,7 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
     assert(!(await denied.text()).includes('home_action'), 'Anonymous sees no composition controls');
     assert.deepEqual(errors, []);
     await context.close();
-    for (const actor of ['editor', 'admin']) {
+    for (const actor of ['editor', 'publisher', 'admin']) {
       const ctx = await browser.newContext(visitorOptions); const tab = await ctx.newPage();
       await tab.goto(base + '/login.html');
       const csrf = await tab.locator('input[name="csrf_token"]').first().inputValue();
@@ -132,11 +132,28 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
       await body.waitFor();
       assert.equal(await body.getAttribute('aria-describedby'), 'article-body-help');
       const statusOptions = await tab.locator('select[name=status] option').evaluateAll(options => options.map(option => option.value));
-      assert.equal(statusOptions.includes('published'), actor === 'admin');
+      assert.equal(statusOptions.includes('published'), actor !== 'editor');
       await body.focus();
       await tab.keyboard.press('Tab');
       assert.equal(await tab.evaluate(() => document.activeElement.id), 'article-summary');
       assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Article form fits at 320 px');
+      if (actor !== 'admin') {
+        const title = 'Article clavier ' + actor;
+        await tab.locator('input[name=title]').fill(title);
+        await body.fill('Un article de test rédigé au clavier.');
+        const save = tab.locator('.news-editor-form .form-actions button[type=submit]').first();
+        await Promise.all([tab.waitForURL(/Admin-articles\.html/), save.press('Enter')]);
+        const row = tab.locator('.news-admin-row').filter({has: tab.getByRole('heading', {name: title, exact: true})});
+        const targetStatus = actor === 'editor' ? 'pending' : 'published';
+        const action = row.locator('.inline-action').filter({has: tab.locator('input[name=status][value=' + targetStatus + ']')});
+        const submit = action.getByRole('button');
+        await Promise.all([tab.waitForNavigation(), submit.press('Enter')]);
+        const expectedLabel = actor === 'editor' ? 'En attente de relecture' : 'Publié';
+        assert((await row.innerText()).includes(expectedLabel), 'Article status after keyboard submission');
+        const slug = (await row.locator('code').innerText()).trim();
+        const publicResponse = await context.request.get(base + '/' + slug);
+        assert.equal(publicResponse.status(), actor === 'editor' ? 404 : 200, 'Only direct publication makes the article public');
+      }
       await tab.setViewportSize({width: 1280, height: 900});
       const adminResponse = await tab.goto(base + '/Admin-home.html');
       assert.equal(adminResponse.status(), actor === 'admin' ? 200 : 403, `${actor}: Home composition permissions`);
