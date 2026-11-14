@@ -25,8 +25,39 @@ try {
     $pdo = $database->connection();
     $repositories = new RepositoryRegistry($database);
 
-    assertSameValue(9, (int) $pdo->query('PRAGMA user_version')->fetchColumn(), 'version du schéma');
-    assertSameValue(9, (int) $pdo->query('SELECT MAX(version) FROM schema_migrations')->fetchColumn(), 'migration enregistrée');
+    $pdo->exec('PRAGMA query_only = ON');
+    (new Migrator($database))->migrate();
+    $pdo->exec('PRAGMA query_only = OFF');
+
+    // Two worker processes upgrade the same version-9 database.
+    $concurrent = new Database($temporaryRoot . '/concurrent.sqlite');
+    $connection = $concurrent->connection();
+    $connection->exec('CREATE TABLE schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)');
+    $connection->exec("INSERT INTO schema_migrations VALUES (9, 'fixture')");
+    $connection->exec('BEGIN IMMEDIATE');
+    $workerCode = 'require ' . var_export(dirname(__DIR__) . '/bootstrap/autoload.php', true)
+        . '; (new Portix\Infrastructure\Migrator(new Portix\Infrastructure\Database($argv[1])))->migrate();';
+    $workers = [];
+    try {
+        for ($i = 0; $i < 2; $i++) {
+            $worker = proc_open([PHP_BINARY, '-r', $workerCode, $concurrent->file()],
+                [0 => ['pipe', 'r'], 1 => ['file', $temporaryRoot . '/workers.log', 'a'],
+                    2 => ['file', $temporaryRoot . '/workers.log', 'a']], $pipes);
+            assertTrue(is_resource($worker), 'démarrage du processus de migration');
+            fclose($pipes[0]);
+            $workers[] = $worker;
+        }
+    } finally {
+        $connection->exec('COMMIT');
+        $statuses = array_map('proc_close', $workers);
+    }
+    assertSameValue([0, 0], $statuses, 'migrations concurrentes : ' . file_get_contents($temporaryRoot . '/workers.log'));
+    assertSameValue(1, (int) $connection->query('SELECT COUNT(*) FROM schema_migrations WHERE version = 10')->fetchColumn(), 'migration 10 enregistrée une fois');
+    $connection = null;
+    $concurrent->close();
+
+    assertSameValue(10, (int) $pdo->query('PRAGMA user_version')->fetchColumn(), 'version du schéma');
+    assertSameValue(10, (int) $pdo->query('SELECT MAX(version) FROM schema_migrations')->fetchColumn(), 'migration enregistrée');
     foreach (['users', 'modules', 'menu_items', 'news', 'rate_limits', 'content_revisions', 'content_trash'] as $table) {
         assertTrue(tableExists($pdo, $table), 'table native ' . $table);
     }
@@ -109,7 +140,7 @@ try {
     $legacyPdo->exec("INSERT INTO download_categories (name, description) VALUES ('Congés annuels', 'Documents')");
     $legacyPdo->exec("INSERT INTO downloads (title, stored_name, description, download_count, category_id) VALUES ('Guide.pdf', 'legacy.pdf', 'Guide', 4, 1)");
     (new Migrator($legacy))->migrate();
-    assertSameValue(9, (int) $legacyPdo->query('PRAGMA user_version')->fetchColumn(), 'migration directe depuis la version 2');
+    assertSameValue(10, (int) $legacyPdo->query('PRAGMA user_version')->fetchColumn(), 'migration directe depuis la version 2');
     assertSameValue('conges-annuels', (string) $legacyPdo->query('SELECT slug FROM download_categories')->fetchColumn(), 'slug des téléchargements migré');
     assertSameValue('dwl', (string) $legacyPdo->query("SELECT module_prefix FROM module_schema_tables WHERE table_name = 'downloads'")->fetchColumn(), 'propriété modulaire des téléchargements');
     $legacyPdo = null;
@@ -163,7 +194,7 @@ try {
     $versionFourPdo->exec("INSERT INTO modules VALUES ('UserGroup', 'GRP', 'plugin', 1, 'fr', 1, 'group')");
     $versionFourPdo->exec("INSERT INTO menu_items (name, url) VALUES ('Agenda', 'agenda.html')");
     (new Migrator($versionFour))->migrate();
-    assertSameValue(9, (int) $versionFourPdo->query('PRAGMA user_version')->fetchColumn(), 'migration depuis la version 4');
+    assertSameValue(10, (int) $versionFourPdo->query('PRAGMA user_version')->fetchColumn(), 'migration depuis la version 4');
     foreach (['agenda_items', 'groups', 'group_memberships'] as $retiredTable) {
         assertSameValue(false, tableExists($versionFourPdo, $retiredTable), 'suppression de ' . $retiredTable);
     }
@@ -186,7 +217,7 @@ try {
         "INSERT INTO users VALUES ('preserved-admin', 'hash', 'admin@example.test', '', '', 1, 1, 3)"
     );
     (new Migrator($versionFive))->migrate();
-    assertSameValue(9, (int) $versionFivePdo->query('PRAGMA user_version')->fetchColumn(), 'migration depuis la version 5');
+    assertSameValue(10, (int) $versionFivePdo->query('PRAGMA user_version')->fetchColumn(), 'migration depuis la version 5');
     assertTrue(tableExists($versionFivePdo, 'rate_limits'), 'table du limiteur après migration depuis la version 5');
     assertSameValue(
         3,

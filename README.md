@@ -1,8 +1,8 @@
 # P3 — CMS PHP modulaire
 
-**Dernière version stable publiée :** `0.9.3`  
-**Version préparée pour signature :** `0.9.4` (non publiée)\
-**Version stable précédente :** `0.9.2`  
+**Dernière version stable publiée :** `0.9.4`\
+**Version préparée pour signature :** `0.9.5` (non publiée)\
+**Version stable précédente :** `0.9.3`\
 **Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
 **Licence :** `GPL-3.0-or-later`
 
@@ -32,6 +32,10 @@ La CI exécute les contrôles sous PHP 8.2 à 8.5 et les tests HTTP/Chromium. Un
 **GitHub ne déploie pas la production automatiquement.** Pour mettre à jour un site existant, réaliser une sauvegarde, vérifier les différences, conserver le `.htaccess` propre à l'hébergeur, le thème personnalisé, la configuration, les médias et la base SQLite. Ne pas relancer l'installateur et ne pas synchroniser des fichiers FTP avec suppression des fichiers absents du ZIP.
 
 Les sessions sont isolées par installation. Après la mise à jour vers 0.9.4, reconnectez-vous au back-office et rouvrez les formulaires ou aperçus restés ouverts.
+
+Lors d’une restauration, les fichiers `.htaccess` et `web.config` déjà présents à la racine sont conservés. Si l’un d’eux manque, P3 le récupère depuis le point de restauration lorsqu’il y figure.
+
+Si une mise à jour ou une restauration est interrompue et que le back-office répond 503, conservez le site en maintenance. Depuis le panneau de l’hébergeur ou par FTP, récupérez le dernier point de restauration complet sous `var/private/update-backups/` et sauvegardez l’état courant. Rétablissez la copie applicative et, si nécessaire, les données du point de restauration en conservant les règles HTTP locales et la clé publique de confiance. Retirez `var/sys/maintenance.lock` uniquement après avoir rétabli un ensemble cohérent de fichiers et de données. Sur un hébergement avec accès en ligne de commande, la restauration peut aussi passer par `UpdateSafety::restoreRollbackPoint()` après chargement de `bootstrap/autoload.php`.
 
 ## Licence
 

@@ -322,6 +322,19 @@ final class UpdateSafety
         if (!$backupConfig->isInstalled() || $backupConfig->databasePath() !== $activeConfig->databasePath()) {
             throw new RuntimeException('Ce point de restauration correspond à un autre fichier SQLite.');
         }
+        $backupDatabase = $source . '/database/portix2.sqlite';
+        if (!is_file($backupDatabase) || is_link($backupDatabase) || filesize($backupDatabase) === 0) {
+            throw new RuntimeException('La base SQLite du point de restauration est absente ou vide.');
+        }
+        $snapshot = new PDO('sqlite:' . $backupDatabase, null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::SQLITE_ATTR_OPEN_FLAGS => PDO::SQLITE_OPEN_READONLY,
+        ]);
+        $integrity = $snapshot->query('PRAGMA quick_check')->fetchColumn();
+        $snapshot = null;
+        if ($integrity !== 'ok') {
+            throw new RuntimeException('La base SQLite du point de restauration est endommagée.');
+        }
         $version = self::rollbackVersion($source, $manifest);
         ReleaseSignature::preserveBeforeRestore($root);
         self::createRollbackPointUnlocked($root); // point de secours avant restauration, sous le même verrou
@@ -329,14 +342,35 @@ final class UpdateSafety
         try {
             foreach(['bootstrap','includes','src','tools'] as $dir){ self::removeTree($root.'/'.$dir); self::copyTree($source.'/application/'.$dir,$root.'/'.$dir); }
             foreach(['admin','editor','lang','modules','templates'] as $dir){ self::removeTree($root.'/var/'.$dir); self::copyTree($source.'/application/var/'.$dir,$root.'/var/'.$dir); }
-            foreach(($manifest['root_files']??[]) as $entry){ if(!is_string($entry)||basename($entry)!==$entry) continue; if(is_file($source.'/application/'.$entry)&&!copy($source.'/application/'.$entry,$root.'/'.$entry)) throw new RuntimeException('Impossible de restaurer '.$entry); }
-            if(!copy($source.'/database/portix2.sqlite',$root.'/'.SiteConfiguration::load($root)->databasePath())) throw new RuntimeException('Impossible de restaurer la base SQLite.');
+            foreach (($manifest['root_files'] ?? []) as $entry) {
+                if (!is_string($entry) || basename($entry) !== $entry) {
+                    continue;
+                }
+                $destination = $root . '/' . $entry;
+                // Hosting rules may have changed since the rollback point was created.
+                if (in_array($entry, ['.htaccess', 'web.config'], true) && is_file($destination)) {
+                    continue;
+                }
+                $backup = $source . '/application/' . $entry;
+                if (is_file($backup) && !copy($backup, $destination)) {
+                    throw new RuntimeException('Impossible de restaurer ' . $entry);
+                }
+            }
+            if(!copy($backupDatabase,$root.'/'.SiteConfiguration::load($root)->databasePath())) throw new RuntimeException('Impossible de restaurer la base SQLite.');
             self::replaceTree($source.'/var/sys',$root.'/var/sys',['maintenance.lock','core-update.lock','core-release-public.pem','.htaccess']);
             self::replaceTree($source.'/var/uploads/images',$root.'/var/uploads/images',['.htaccess']);
             self::replaceTree($source.'/var/private',$root.'/var/private',['update-backups','core-update-staging','.htaccess']);
             if(is_dir($source.'/download')) self::replaceTree($source.'/download',$root.'/download');
             if ($version !== '') { self::markRelease($root, $version, 'restore'); }
-        } finally { self::disableMaintenance($root); }
+        } catch (Throwable $error) {
+            // Some files may already have been restored. Keep the site offline.
+            throw new RuntimeException(
+                'La restauration a échoué. Le site reste en maintenance. ' . $error->getMessage(),
+                0,
+                $error
+            );
+        }
+        self::disableMaintenance($root);
     }
 
     public static function deleteRollbackPoint(string $root, string $name): void
