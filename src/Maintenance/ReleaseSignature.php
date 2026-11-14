@@ -52,6 +52,34 @@ final class ReleaseSignature
         return $pem;
     }
 
+    /** Persist the verified bundled anchor before replacing the application tree.
+     * Never import a key from a rollback point or overwrite a local anchor.
+     */
+    public static function preserveBeforeRestore(string $root): void
+    {
+        $root = rtrim($root, '/\\');
+        foreach (['var', 'var/sys', self::KEY_FILE, 'src', 'src/Maintenance', self::BUNDLED_KEY] as $relative) {
+            if (is_link($root . '/' . $relative)) {
+                throw new RuntimeException('Clé de confiance : lien symbolique refusé.');
+            }
+        }
+        $local = $root . '/' . self::KEY_FILE;
+        if (file_exists($local)) {
+            if (!is_file($local)) { throw new RuntimeException('Clé locale invalide.'); }
+            return; // preserve even invalid local bytes; updates will refuse them.
+        }
+        if (!file_exists($root . '/' . self::BUNDLED_KEY)) { return; }
+        $pem = self::trustedKey($root);
+        $handle = @fopen($local, 'xb');
+        if ($handle === false) { throw new RuntimeException('Impossible de préserver la clé de confiance.'); }
+        $written = fwrite($handle, $pem);
+        fclose($handle);
+        if ($written !== strlen($pem)) {
+            @unlink($local);
+            throw new RuntimeException('Écriture incomplète de la clé de confiance.');
+        }
+    }
+
     private static function parseKey(string $pem): \OpenSSLAsymmetricKey
     {
         if (!function_exists('openssl_verify')) {
