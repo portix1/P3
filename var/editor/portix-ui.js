@@ -21,6 +21,16 @@
     toggle('.nav-toggle', '#main-navigation');
     toggle('.admin-nav-toggle', '#admin-sidebar', true);
 
+    var adminSkipLink = document.querySelector('.skip-link[href="#admin-content"]');
+    var adminContent = document.getElementById('admin-content');
+    if (adminSkipLink && adminContent) {
+        adminSkipLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            adminContent.focus();
+            adminContent.scrollIntoView();
+        });
+    }
+
     document.querySelectorAll('[data-auto-submit]').forEach(function (control) {
         control.addEventListener('change', function () {
             if (control.form) { control.form.requestSubmit(); }
