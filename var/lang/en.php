@@ -673,4 +673,5 @@ $_LANG['core_update_confirm'] = 'I confirm the update and creation of a restore 
 $_LANG['core_update_help'] = 'P3 downloads the official archive, verifies its signature and checksum, creates a restore point, then updates core files. Site data, root hosting rules and custom themes remain unchanged. P3-managed directory protection files are updated. P3 includes the official public key. A locally configured trusted key, if present, takes precedence. The site may be briefly unavailable.';
 $_LANG['core_update_current'] = 'Installed version';
 $_LANG['core_update_available'] = 'Available version';
-$_LANG['core_update_none'] = 'P3 is up to date, or the version check is temporarily unavailable.';
+$_LANG['core_update_none'] = 'P3 is up to date.';
+$_LANG['core_update_unavailable'] = 'Unable to check the latest official version. Try again later.';
