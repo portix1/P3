@@ -17,6 +17,12 @@ final class CoreUpdater
     private const RELEASE_BASE = 'https://github.com/portix1/P3/releases/download/';
     private const MAX_ZIP_BYTES = 62914560; // 60 MiB, abort before extraction.
     private const MAX_FILES = 4000;
+    // Only these P3-owned directory policies may be replaced. Root routing and
+    // unknown hosting/module overrides require an explicit manual review.
+    private const MANAGED_HTTP_FILES = [
+        'database/.htaccess', 'sessions/.htaccess', 'tmp/.htaccess',
+        'var/sys/.htaccess', 'var/private/.htaccess', 'var/uploads/images/.htaccess',
+    ];
 
     public static function latest(): string
     {
@@ -191,7 +197,7 @@ final class CoreUpdater
                     $files[$relative] = $i;
                 }
             }
-            foreach (['VERSION', 'index.php', 'src/Core/Application.php', 'includes/engine.php', 'var/private/.htaccess'] as $required) {
+            foreach (array_merge(['VERSION', 'index.php', 'src/Core/Application.php', 'includes/engine.php'], self::MANAGED_HTTP_FILES) as $required) {
                 if (!isset($files[$required])) {
                     throw new RuntimeException('L’archive ne contient pas tous les fichiers du moteur.');
                 }
@@ -299,7 +305,8 @@ final class CoreUpdater
     private static function isApplicationFile(string $relative): bool
     {
         if (in_array($relative, ['VERSION', 'index.php', 'install.php',
-            'README.md', 'RELEASE-NOTES.md', 'LICENSE', 'var/private/.htaccess'], true)) { return true; }
+            'README.md', 'RELEASE-NOTES.md', 'SIGNED-RELEASES.md', 'LICENSE'], true)
+            || in_array($relative, self::MANAGED_HTTP_FILES, true)) { return true; }
         foreach (['bootstrap/', 'includes/', 'src/', 'tools/',
             'var/admin/', 'var/editor/', 'var/lang/', 'var/modules/'] as $prefix) {
             if (str_starts_with($relative, $prefix)) {
@@ -307,7 +314,7 @@ final class CoreUpdater
                 if (preg_match('~(?:^|/)(?:uploads|private|cache|sessions)/~', $relative)) {
                     return false;
                 }
-                return !str_ends_with($relative, '/.htaccess');
+                return !in_array(basename($relative), ['.htaccess', 'web.config'], true);
             }
         }
         return false;
