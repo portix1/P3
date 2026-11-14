@@ -40,6 +40,9 @@ function permissionRun(): void {
     permissionAssert(P::allows(permissionUser([],true),'delete',$other,4,$cats),'admin bypass');
     permissionAssert(!P::allows(new U(['pseudo'=>'x','is_admin'=>false,'is_redactor'=>false]),'edit',$own,2,$cats),'non writer denied');
     permissionAssert(!P::decode('{broken')['create'],'corrupt persisted rights fail closed');
+    $_SESSION=['csrf_token'=>'']; permissionAssert(!PortixSecurity::csrfIsValid(''),'empty CSRF token refused');
+    $_SESSION=['csrf_token'=>123]; permissionAssert(!PortixSecurity::csrfIsValid('123'),'non-string CSRF token refused');
+    $_SESSION=['csrf_token'=>'fixture']; permissionAssert(PortixSecurity::csrfIsValid('fixture')&&!PortixSecurity::csrfIsValid('wrong'),'valid and invalid CSRF token');
     $newsOwn = ['created_by'=>'writer','status'=>'draft'];
     $newsOther = array_replace($newsOwn,['created_by'=>'admin']);
     $newsLive = array_replace($newsOwn,['status'=>'published']);
@@ -75,6 +78,27 @@ function permissionRun(): void {
     $translator=new Portix\Support\Translator($_LANG);
     $controller=new PortixModule\Articles\ArticleAdminController($articles,$root,$translator);
     $user=$repo->find('writer');
+    $newsRepo = new Portix\Repository\NewsRepository($pdo);
+    $newsId = $newsRepo->create('Own news','own-news','writer','Intro','Body','draft',null,$now);
+    $otherNewsId = $newsRepo->create('Private news','private-news','admin','Intro','Body','draft',null,$now);
+    $newsController = new Portix\Controller\Admin\NewsAdminController($newsRepo,$root,[],$translator,new Portix\Repository\ContentSafetyRepository($pdo));
+    foreach ([['edit',$otherNewsId],['preview',$otherNewsId],['delete',$newsId]] as $route) {
+        foreach (['GET','POST'] as $method) {
+            $_SERVER['REQUEST_METHOD']=$method; $_POST=['csrf_token'=>'fixture']; http_response_code(200);
+            $newsTpl=new Portix\View\Template($root.'/var/admin/templates/news-form.tpl');
+            $newsController->handle($newsTpl,array_merge(['Admin','news'],$route),$user);
+            permissionAssert(http_response_code()===403,'news forbidden '.$method.' '.implode('/',$route));
+        }
+    }
+    $_SESSION=['csrf_token'=>'fixture']; $_SERVER['REQUEST_METHOD']='POST';
+    $_POST=['csrf_token'=>'fixture','title'=>'Forged news','status'=>'published','is_pinned'=>'1','intro'=>'','content'=>''];
+    $newsTpl=new Portix\View\Template($root.'/var/admin/templates/news-form.tpl');
+    $newsController->handle($newsTpl,['Admin','news','edit',(string)$newsId],$user);
+    permissionAssert($newsRepo->find($newsId)['status']==='draft'&&$newsRepo->find($newsId)['title']==='Own news','news forged publication has no effect');
+    $_SERVER['REQUEST_METHOD']='GET'; $_POST=[];
+    $newsTpl=new Portix\View\Template($root.'/var/admin/templates/news-list.tpl');
+    $newsController->handle($newsTpl,['Admin','news'],$user);
+    permissionAssert(count($newsTpl->rows('newsrow'))===1&&$newsTpl->rows('newsrow')[0]['title']==='Own news','news list hides unauthorized drafts');
     foreach ([['edit',$otherId],['preview',$otherId],['delete',$id],['category','new'],['order']] as $route) {
         $_SERVER['REQUEST_METHOD']='GET'; $_POST=[]; http_response_code(200);
         $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');
