@@ -23,4 +23,4 @@
     <div class="media-grid" data-media-grid></div>
     <p>Les médias utilisés actuellement sont protégés. L’analyse ne supprime rien. Les usages uniquement historiques exigent une confirmation spécifique. Les 300 résultats les plus récents sont affichés : utilisez la recherche pour affiner.</p>
 </section>
-<script src="var/modules/media/assets/media.js?v=0.1.2" defer></script>
+<script src="var/modules/media/assets/media.js?v=0.1.3" defer></script>
