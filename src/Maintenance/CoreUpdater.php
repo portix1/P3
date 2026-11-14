@@ -128,7 +128,7 @@ final class CoreUpdater
 
     /**
      * Called only after the ZIP has been downloaded from the fixed official
-     * release endpoint and verified against its independent checksum file.
+     * release endpoint and verified against its published checksum file (integrity only).
      * Exposed for isolated fixture tests using a local test ZIP.
      */
     public static function applyVerifiedArchive(
@@ -176,7 +176,7 @@ final class CoreUpdater
                     $files[$relative] = $i;
                 }
             }
-            foreach (['VERSION', 'index.php', 'src/Core/Application.php', 'includes/engine.php'] as $required) {
+            foreach (['VERSION', 'index.php', 'src/Core/Application.php', 'includes/engine.php', 'var/private/.htaccess'] as $required) {
                 if (!isset($files[$required])) {
                     throw new RuntimeException('L’archive ne contient pas tous les fichiers du moteur.');
                 }
@@ -284,7 +284,7 @@ final class CoreUpdater
     private static function isApplicationFile(string $relative): bool
     {
         if (in_array($relative, ['VERSION', 'index.php', 'install.php',
-            'README.md', 'RELEASE-NOTES.md', 'LICENSE'], true)) { return true; }
+            'README.md', 'RELEASE-NOTES.md', 'LICENSE', 'var/private/.htaccess'], true)) { return true; }
         foreach (['bootstrap/', 'includes/', 'src/', 'tools/',
             'var/admin/', 'var/editor/', 'var/lang/', 'var/modules/'] as $prefix) {
             if (str_starts_with($relative, $prefix)) {
