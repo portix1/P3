@@ -1,8 +1,8 @@
 # P3 — CMS PHP modulaire
 
-**Dernière version stable publiée :** `0.9.2`  
-**Version en validation avant publication :** `0.9.3` (non publiée)  
-**Version stable précédente :** `0.9.1`  
+**Dernière version stable publiée :** `0.9.3`  
+**Version de développement :** `0.9.4-dev` (non publiée)  
+**Version stable précédente :** `0.9.2`  
 **Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
 **Licence :** `GPL-3.0-or-later`
 
@@ -16,7 +16,7 @@ L'archive complète inclut le moteur, les modules et les thèmes de référence.
 
 ## Prérequis
 
-PHP 8.2 ou ultérieur ; PDO SQLite et les extensions requises par P3, notamment `mbstring`, `dom`, `gd` avec WebP, `fileinfo` et `zip`. Les mises à jour signées nécessitent également PHP OpenSSL et une clé publique provisionnée indépendamment. La vérification précise est réalisée par `src/Installation/EnvironmentPreflight.php`.
+PHP 8.2 ou ultérieur ; PDO SQLite et les extensions requises par P3, notamment `mbstring`, `dom`, `gd` avec WebP, `fileinfo` et `zip`. Les mises à jour signées nécessitent également PHP OpenSSL et une clé publique de confiance. Depuis 0.9.4, la clé officielle est fournie avec le moteur ; une clé locale déjà configurée reste prioritaire. Vérifier l’empreinte de la clé et la provenance du premier paquet par un canal indépendant. La vérification précise est réalisée par `src/Installation/EnvironmentPreflight.php`.
 
 ## Publication et tests
 
