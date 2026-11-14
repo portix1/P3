@@ -28,7 +28,7 @@ final class Bootstrap
 
         $request = Request::fromGlobals();
         if (self::requestNeedsSession($request, $root)) {
-            self::startSession($root, $request);
+            self::startSession($root, $request, $configuration);
         }
 
         if ($installationDatabase !== null && $configuration->isInstalled()) {
@@ -80,7 +80,7 @@ final class Bootstrap
         return false;
     }
 
-    private static function startSession(string $root, Request $request): void
+    private static function startSession(string $root, Request $request, SiteConfiguration $configuration): void
     {
         if (session_status() !== PHP_SESSION_NONE) {
             return;
@@ -96,13 +96,15 @@ final class Bootstrap
         if (ini_set('session.use_strict_mode', '1') === false || ini_set('session.use_only_cookies', '1') === false) {
             throw new RuntimeException('Impossible de sécuriser les identifiants de session.');
         }
-        session_set_cookie_params([
+        if (!session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
-            'secure' => $request->isSecure(),
+            'secure' => $request->secureSessionCookie((string) $configuration->get('site_url', '')),
             'httponly' => true,
             'samesite' => 'Lax',
-        ]);
+        ])) {
+            throw new RuntimeException('Impossible de sécuriser le cookie de session.');
+        }
         if (!session_start()) {
             throw new RuntimeException('Impossible de démarrer la session.');
         }

@@ -40,6 +40,20 @@ function permissionRun(): void {
     permissionAssert(P::allows(permissionUser([],true),'delete',$other,4,$cats),'admin bypass');
     permissionAssert(!P::allows(new U(['pseudo'=>'x','is_admin'=>false,'is_redactor'=>false]),'edit',$own,2,$cats),'non writer denied');
     permissionAssert(!P::decode('{broken')['create'],'corrupt persisted rights fail closed');
+    $serverBefore = $_SERVER;
+    try {
+        foreach ([
+            [['HTTPS'=>'on'], '', true],
+            [['HTTPS'=>'OFF'], '', false],
+            [['SERVER_PORT'=>'443'], '', true],
+            [['HTTP_X_FORWARDED_PROTO'=>'https'], '', false],
+            [['HTTP_X_FORWARDED_PROTO'=>'http'], 'https://example.test', true],
+            [['SERVER_PORT'=>'80'], 'http://localhost:8080', false],
+        ] as [$server, $siteUrl, $expected]) {
+            $_SERVER = $server;
+            permissionAssert(Portix\Http\Request::fromGlobals()->secureSessionCookie($siteUrl) === $expected, 'cookie secure policy');
+        }
+    } finally { $_SERVER = $serverBefore; }
     session_start();
     $firstCsrf = PortixSecurity::csrfToken();
     $secondCsrf = PortixSecurity::rotateCsrfToken();

@@ -44,7 +44,16 @@ final class Request
 
     public function isSecure(): bool
     {
-        return !empty($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off';
+        return in_array(strtolower((string) ($this->server['HTTPS'] ?? '')), ['on', '1', 'true'], true);
+    }
+
+    /** Cookie security uses trusted server state or administrator configuration,
+     * never client-supplied forwarding headers. */
+    public function secureSessionCookie(string $configuredSiteUrl): bool
+    {
+        return $this->isSecure()
+            || (string) ($this->server['SERVER_PORT'] ?? '') === '443'
+            || strtolower((string) parse_url($configuredSiteUrl, PHP_URL_SCHEME)) === 'https';
     }
 
     /**

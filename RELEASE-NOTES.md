@@ -16,6 +16,8 @@ Version de développement non publiée. La version stable 0.9.3 est publiée et 
 
 - Suivi de l’audit OpenCode : rotation des jetons CSRF après connexion et réinitialisation, refus des anciens jetons ; écriture atomique privée de config.json (0600 sur Unix) ; accès Contact réservé aux administrateurs, y compris requêtes directes. Tests ajoutés ; CI à confirmer. Les comptes rédacteurs perdent volontairement l’accès aux correspondances privées.
 
+- Cookies de session Secure si HTTPS direct ou URL HTTPS configurée, y compris derrière un proxy ; aucune confiance dans X-Forwarded-Proto pour cette décision. Le serveur doit rediriger HTTP vers HTTPS ; l’environnement local HTTP reste compatible.
+
 ## Historique 0.9.3
 
 Publiée le 14 novembre 2026 et installation confirmée par le mainteneur. Validation automatisée finale : run 43589468620.
