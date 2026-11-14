@@ -230,7 +230,7 @@ final class Application
         $template->set('meta_json_ld', \Portix\View\Html::trusted($pageMetadata->jsonLd()));
         $template->set('meta_has_json_ld', $pageMetadata->jsonLd() !== '' ? '1' : '0');
         if (!headers_sent()) {
-            if ($isAdministrationRequest || !empty($isAuthenticated)) {
+            if ($isAdministrationRequest || !empty($isAuthenticated) || in_array(strtolower($requestedRoute), ['login', 'personnal', 'forgot-password', 'reset-password', 'disconnect'], true)) {
                 header('Cache-Control: private, no-store, max-age=0');
             } elseif (!$this->hasResponseHeader('Cache-Control')) {
                 if (in_array($this->request->method(), ['GET', 'HEAD'], true)) {
