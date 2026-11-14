@@ -1,12 +1,15 @@
-# P3 0.9.5 — développement
+# P3 0.9.5 — installation, mise à jour et restauration
 
 - La restauration préserve les règles Apache ou IIS présentes à la racine du site. Un test reproduit l’état laissé par une interruption et vérifie le rétablissement des données et la levée de la maintenance.
 
 - Une sauvegarde SQLite endommagée est refusée avant le remplacement des fichiers. Si une restauration échoue après avoir commencé, le site reste en maintenance.
 
+- Le schéma SQLite 10 s’installe une seule fois sous verrou SQLite. Les requêtes suivantes vérifient sa version en lecture seule.
+- P3 conserve la maintenance si le retour arrière automatique échoue. Les protections racine et les protections des dossiers sont testées séparément sous Apache.
+
 # P3 0.9.4 — sécurité et permissions
 
-Version préparée pour signature, non publiée. La version stable 0.9.3 est publiée et installée en production selon le mainteneur.
+Version publiée le 14 novembre 2026. La version stable 0.9.3 est publiée et installée en production selon le mainteneur.
 
 - Clé publique officielle intégrée au moteur : aucune opération FTP pour les nouvelles installations ; contrôle de son empreinte SHA-256. Une clé locale existante reste prioritaire et ne peut pas être remplacée par le nouvel updater. Une clé locale invalide provoque un refus. La clé privée reste exclusivement hors dépôt.
 - Distribution : exclusion des fichiers de clés usuels, sauf la clé publique officielle à son chemin exact ; tests de régression ajoutés. Les installations 0.9.3 nécessitent encore une installation ponctuelle de la clé locale pour effectuer leur première mise à jour signée.

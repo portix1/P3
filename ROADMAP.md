@@ -21,7 +21,7 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 
 - Restauration sur installation isolée après interruption simulée : vérifier SQLite, médias, thème, clé publique, maintenance et règles HTTP racine. Les règles racine présentes sont préservées pendant la restauration.
 - Un point de restauration à la base SQLite endommagée est refusé avant remplacement. Une restauration interrompue en cours d’écriture conserve la maintenance. La récupération passe par le panneau d’hébergement ou FTP lorsque le back-office répond 503. La reprise autonome depuis le navigateur reste à examiner.
-- Examiner les migrations SQLite à chaque requête et les accès concurrents. Vérifier les protections HTTP sur les configurations prises en charge.
+- SQLite : migration transactionnelle vers le schéma 10, contrôle en lecture seule après migration et test à deux processus. Apache : essais distincts des règles racine et des protections locales. IIS, nginx et LWS requièrent leurs propres vérifications.
 
 ## 0.9.4 — sécurité et permissions
 

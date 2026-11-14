@@ -210,7 +210,7 @@ function permissionRun(): void {
     permissionAssert(!str_contains($html,'>Outside</option>')&&!str_contains($html,'value="published"'),'form filters category and publish');
     // Migration from the exact previous schema preserves user/content data.
     $pdo->exec('ALTER TABLE users DROP COLUMN article_permissions');
-    $pdo->exec("UPDATE schema_migrations SET version=7 WHERE version=9");$pdo->exec('PRAGMA user_version=7');
+    $pdo->exec("UPDATE schema_migrations SET version=7 WHERE version=10");$pdo->exec('PRAGMA user_version=7');
     (new Portix\Infrastructure\Migrator($db))->migrate();
     permissionAssert($repo->find('writer')->articlePermissions()===P::DEFAULTS,'old users inherit defaults');
     permissionAssert($articles->find($id)['title']==='Own','upgrade preserves content');
