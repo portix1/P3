@@ -21,9 +21,9 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 
 La 0.9.3 est publiée et déployée selon le mainteneur. Branche distincte `fix/0.9.4-security` ; aucune fusion ni publication avant autorisation.
 
-- [ ] Fournir la clé publique officielle dans la distribution initiale, contrôler son empreinte, préserver les clés configurées lors des mises à jour et restaurations. Code et tests ajoutés ; validation CI en attente. La clé privée reste hors dépôt.
-- [ ] Auditer les contrôleurs et routes côté serveur selon les rôles visiteur, rédacteur et administrateur ; vérifier accès directs GET/POST et droits individuels de publication.
-- [ ] Vérifier CSRF, sessions, opérations structurelles et endpoints d’administration ; ajouter tests de refus pour chaque défaut reproduit.
+- [ ] Fournir la clé publique officielle dans la distribution initiale, contrôler son empreinte, préserver les clés configurées lors des mises à jour et restaurations. Code et tests ajoutés ; CI 43593007028 réussie (7 tâches) ; empreinte DER de la clé Drive recalculée et concordante. La clé privée reste hors dépôt.
+- [ ] Auditer les contrôleurs et routes côté serveur selon les rôles visiteur, rédacteur et administrateur ; vérifier accès directs GET/POST et droits individuels de publication. Actualités : contrôles côté serveur et tests de routes interdites, publication forgée et liste des brouillons ajoutés. Articles : contrôles existants examinés ; reste des modules à inventorier.
+- [ ] Vérifier CSRF, sessions, opérations structurelles et endpoints d’administration ; ajouter tests de refus pour chaque défaut reproduit. Jetons CSRF vides, mode strict de session, isolation du cache et statut 403 anonyme corrigés ; validation de ce lot en attente. Contact : exception historique pour l’accès rédacteur à la messagerie, conservée à ce stade ; les réglages restent administrateur.
 - [ ] Réconcilier les anciens constats OpenCode à partir des rapports complets, puis documenter les corrections et limites.
 
 ## 0.9.3 — dette technique : suivi de l'audit OpenCode 0.9.2
