@@ -44,7 +44,11 @@ def build(excluded_modules=()):
                 source = ROOT / name
                 if not stat.S_ISREG(source.lstat().st_mode) or source.is_symlink():
                     raise RuntimeError(f'Non-regular tracked file: {name}')
-                package.write(source, 'P3/' + name)
+                info = zipfile.ZipInfo('P3/' + name, (1980, 1, 1, 0, 0, 0))
+                info.create_system = 3
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = 0o100644 << 16
+                package.writestr(info, source.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
         with zipfile.ZipFile(temporary) as package:
             if package.testzip() is not None:
                 raise RuntimeError('Corrupt ZIP')
