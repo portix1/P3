@@ -52,6 +52,7 @@ final class CoreUpdater
         if (self::latest() !== $requestedVersion) {
             throw new RuntimeException('Une nouvelle version est disponible : rechargez la page.');
         }
+        $trustedKey = ReleaseSignature::trustedKey($root);
         $lockFile = $root . '/var/sys/core-update.lock';
         if (is_link($lockFile)) {
             throw new RuntimeException('Verrou de mise à jour invalide.');
@@ -74,6 +75,7 @@ final class CoreUpdater
             $name = 'P3-' . $requestedVersion . '.zip';
             $url = self::RELEASE_BASE . 'v' . $requestedVersion . '/' . $name;
             $checksum = self::fetchChecksum($url, $name);
+            ReleaseSignature::verify($trustedKey, $requestedVersion, $checksum, self::fetchSignature($url));
             $archive = $work . '/' . $name;
             self::download($url, $archive);
             $actual = hash_file('sha256', $archive);
@@ -103,6 +105,19 @@ final class CoreUpdater
         return $matches[1];
     }
 
+    private static function fetchSignature(string $url): string
+    {
+        $context = stream_context_create(['http' => [
+            'timeout' => 20, 'follow_location' => 1, 'max_redirects' => 5,
+            'header' => "User-Agent: Portix-P3\r\n",
+        ]]);
+        $signature = @file_get_contents(substr($url, 0, -4) . '.sig', false, $context, 0, 1025);
+        if (!is_string($signature) || strlen($signature) > 1024) {
+            throw new RuntimeException('Signature officielle absente ou incorrecte.');
+        }
+        return $signature;
+    }
+
     private static function download(string $url, string $target): void
     {
         $context = stream_context_create(['http' => [
@@ -128,7 +143,7 @@ final class CoreUpdater
 
     /**
      * Called only after the ZIP has been downloaded from the fixed official
-     * release endpoint and verified against its published checksum file (integrity only).
+     * release endpoint and verified against its independently signed checksum.
      * Exposed for isolated fixture tests using a local test ZIP.
      */
     public static function applyVerifiedArchive(
