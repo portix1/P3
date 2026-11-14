@@ -71,6 +71,7 @@ try {
         'P3/var/admin/templates/dashboard.tpl' => 'after update',
         'P3/var/modules/articles/database/articles/desc.csv' => 'new schema',
         'P3/.htaccess' => 'do not replace hosting rules',
+        'P3/var/private/.htaccess' => 'Require all denied',
         'P3/robots.txt' => 'do not replace local rules',
         'P3/var/templates/custom/style.css' => 'do not replace custom theme',
         'P3/var/sys/config.json' => 'do not replace local config',
@@ -86,6 +87,7 @@ try {
     coreTestAssert(file_get_contents($site . '/robots.txt') === 'local rules', 'robots personnalisé conservé');
     coreTestAssert(file_get_contents($site . '/var/templates/custom/style.css') === 'custom theme', 'thème personnalisé conservé');
     coreTestAssert(file_get_contents($site . '/var/uploads/images/local.webp') === 'local image', 'médias conservés');
+    coreTestAssert(file_get_contents($site . '/var/private/.htaccess') === 'Require all denied', 'protection privée installée');
     coreTestAssert(file_get_contents($site . '/var/private/sample.bin') === 'private data', 'données privées conservées');
     coreTestAssert(file_get_contents($site . '/var/sys/config.json') === "{\"database_file\":\"test.sqlite\"}\n", 'configuration conservée');
     $pdo = new PDO('sqlite:' . $site . '/database/test.sqlite');
@@ -98,6 +100,7 @@ try {
         ['P3/VERSION' => '0.9.4', 'P3/../../attack.php' => 'unsafe', 'P3/index.php' => 'bad', 'P3/includes/engine.php' => 'bad', 'P3/src/Core/Application.php' => 'bad'],
         ['P3/VERSION' => '0.9.4', 'P3/index.php' => 'bad', 'P3/includes/engine.php' => 'bad', 'P3/src/Core/Application.php' => 'bad'],
     ] as $i => $candidate) {
+        $candidate['P3/var/private/.htaccess'] = 'Require all denied';
         if ($i === 1) { $candidate['P3/VERSION'] = '0.9.1'; }
         coreTestZip($archive, $candidate);
         try {
@@ -118,6 +121,7 @@ try {
         'P3/includes/engine.php' => 'unexpected new engine',
         'P3/src/Core/Application.php' => 'unexpected new app',
         'P3/var/admin/templates/dashboard.tpl' => 'unexpected new dashboard',
+        'P3/var/private/.htaccess' => 'new protection',
         'P3/var/modules/safety/obstacle.php' => 'destination is a directory',
         'P3/VERSION' => '0.9.4',
     ];
@@ -131,6 +135,7 @@ try {
     coreTestAssert(trim((string)file_get_contents($site . '/VERSION')) === '0.9.3', 'version restaurée après échec');
     coreTestAssert(file_get_contents($site . '/includes/engine.php') === '<?php // new engine', 'moteur restauré après échec');
     coreTestAssert(file_get_contents($site . '/var/admin/templates/dashboard.tpl') === 'preserve after failed install', 'interface restaurée après échec');
+    coreTestAssert(file_get_contents($site . '/var/private/.htaccess') === 'Require all denied', 'protection privée restaurée');
     coreTestAssert(!is_file($site . '/var/sys/maintenance.lock'), 'maintenance coupée après échec');
     echo "Mise à jour P3 : sauvegarde, installation, données conservées, ZIP hostile et retour arrière : OK\n";
 } finally {
