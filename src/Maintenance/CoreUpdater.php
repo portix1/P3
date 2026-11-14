@@ -266,7 +266,10 @@ final class CoreUpdater
                         }
                     }
                     $tmp = $destination . '.p3-update-' . bin2hex(random_bytes(5));
-                    if (!copy($from, $tmp)) { throw new RuntimeException('Écriture impossible : ' . $relative); }
+                    if (!copy($from, $tmp)) {
+                        @unlink($tmp);
+                        throw new RuntimeException('Écriture impossible : ' . $relative);
+                    }
                     if (!rename($tmp, $destination)) {
                         @unlink($tmp);
                         throw new RuntimeException('Remplacement impossible : ' . $relative);
@@ -278,9 +281,18 @@ final class CoreUpdater
             } catch (Throwable $error) {
                 // Roll back only files changed in this request; the comprehensive
                 // restoration point remains available in Configuration.
+                $reverted = true;
                 foreach (array_reverse($changed) as [$destination, $old, $existed]) {
-                    if ($existed) { @copy($old, $destination); }
-                    else { @unlink($destination); }
+                    $restored = $existed ? @copy($old, $destination) : @unlink($destination);
+                    $reverted = $restored && $reverted;
+                }
+                if (!$reverted) {
+                    $maintenance = false; // Leave the marker in place for manual recovery.
+                    throw new RuntimeException(
+                        'La mise à jour a échoué et le retour arrière est incomplet. Le site reste en maintenance.',
+                        0,
+                        $error
+                    );
                 }
                 throw $error;
             } finally {

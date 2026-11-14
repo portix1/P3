@@ -9,7 +9,7 @@ use RuntimeException;
 
 final class Migrator
 {
-    private const VERSION = 9;
+    private const VERSION = 10;
 
     public function __construct(private readonly Database $database)
     {
@@ -18,76 +18,66 @@ final class Migrator
     public function migrate(): void
     {
         $pdo = $this->database->connection();
-        if (!$this->tableExists($pdo, 'schema_migrations')) {
+        if ($this->currentVersion($pdo) === self::VERSION) {
+            return;
+        }
+
+        $pdo->exec('BEGIN IMMEDIATE');
+        try {
+            $this->migrateLocked($pdo);
+            $pdo->exec('COMMIT');
+        } catch (\Throwable $error) {
+            $pdo->exec('ROLLBACK');
+            throw $error;
+        }
+    }
+
+    private function currentVersion(PDO $pdo): ?int
+    {
+        return $this->tableExists($pdo, 'schema_migrations')
+            ? (int) $pdo->query('SELECT COALESCE(MAX(version), 0) FROM schema_migrations')->fetchColumn()
+            : null;
+    }
+
+    private function migrateLocked(PDO $pdo): void
+    {
+        // Another request may have completed the migration while we waited.
+        $current = $this->currentVersion($pdo);
+        if ($current === self::VERSION) {
+            return;
+        }
+        if ($current === null) {
             if ($this->hasApplicationTables($pdo)) {
                 throw new RuntimeException(
                     'Cette base précède le socle SQLite natif de P3 0.7.x et n’est plus prise en charge.'
                 );
             }
-            $this->database->transaction(function (PDO $pdo): void {
-                $this->createMigrationTable($pdo);
-                $this->createCurrentSchema($pdo);
-                $this->recordVersion($pdo, self::VERSION);
-            });
+            $this->createMigrationTable($pdo);
+            $this->createCurrentSchema($pdo);
+            $this->recordVersion($pdo, self::VERSION);
             return;
         }
-
-        $current = (int) $pdo->query('SELECT COALESCE(MAX(version), 0) FROM schema_migrations')->fetchColumn();
-        if ($current === 2) {
-            $this->database->transaction(function (PDO $pdo): void {
-                $this->migrateDownloadsToModuleSchema($pdo);
-                $this->recordVersion($pdo, 3);
-            });
-            $current = 3;
-        }
-        if ($current === 3) {
-            $this->database->transaction(function (PDO $pdo): void {
-                $this->addUserAuthenticationVersion($pdo);
-                $this->recordVersion($pdo, 4);
-            });
-            $current = 4;
-        }
-        if ($current === 4) {
-            $this->database->transaction(function (PDO $pdo): void {
-                $this->removeRetiredAgendaAndGroups($pdo);
-                $this->recordVersion($pdo, 5);
-            });
-            $current = 5;
-        }
-        if ($current === 5) {
-            $this->database->transaction(function (PDO $pdo): void {
-                $this->createRateLimitSchema($pdo);
-                $this->recordVersion($pdo, 6);
-            });
-            $current = 6;
-        }
-        if ($current === 6) {
-            $this->database->transaction(function (PDO $pdo): void {
-                $this->createContentSafetySchema($pdo);
-                $this->recordVersion($pdo, 7);
-            });
-            $current = 7;
-        }
-        if ($current === 7) {
-            $this->database->transaction(function (PDO $pdo): void {
-                if ($this->tableExists($pdo, 'users')) {
-                    $pdo->exec("ALTER TABLE users ADD COLUMN article_permissions TEXT NOT NULL DEFAULT '{}'");
-                }
-                $this->recordVersion($pdo, 8);
-            });
-            $current = 8;
-        }
-        if ($current === 8) {
-            $this->database->transaction(function (PDO $pdo): void {
-                $this->addArticleReviewNote($pdo);
-                $this->recordVersion($pdo, self::VERSION);
-            });
-            $current = self::VERSION;
-        }
-        if ($current !== self::VERSION) {
+        if ($current < 2 || $current > self::VERSION) {
             throw new RuntimeException('Version de schéma SQLite non prise en charge : ' . $current . '.');
         }
-        $this->createCurrentSchema($pdo);
+
+        for ($next = $current + 1; $next <= self::VERSION; $next++) {
+            switch ($next) {
+                case 3: $this->migrateDownloadsToModuleSchema($pdo); break;
+                case 4: $this->addUserAuthenticationVersion($pdo); break;
+                case 5: $this->removeRetiredAgendaAndGroups($pdo); break;
+                case 6: $this->createRateLimitSchema($pdo); break;
+                case 7: $this->createContentSafetySchema($pdo); break;
+                case 8:
+                    if ($this->tableExists($pdo, 'users')) {
+                        $pdo->exec("ALTER TABLE users ADD COLUMN article_permissions TEXT NOT NULL DEFAULT '{}'");
+                    }
+                    break;
+                case 9: $this->addArticleReviewNote($pdo); break;
+                case 10: $this->createCurrentSchema($pdo); break;
+            }
+            $this->recordVersion($pdo, $next);
+        }
     }
 
     private function addArticleReviewNote(PDO $pdo): void

@@ -17,6 +17,12 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## 0.9.5 — installation, mises à jour et restauration
+
+- Restauration sur installation isolée après interruption simulée : vérifier SQLite, médias, thème, clé publique, maintenance et règles HTTP racine. Les règles racine présentes sont préservées pendant la restauration.
+- Un point de restauration à la base SQLite endommagée est refusé avant remplacement. Une restauration interrompue en cours d’écriture conserve la maintenance. La récupération passe par le panneau d’hébergement ou FTP lorsque le back-office répond 503. La reprise autonome depuis le navigateur reste à examiner.
+- SQLite : migration transactionnelle vers le schéma 10, contrôle en lecture seule après migration et test à deux processus. Apache : essais distincts des règles racine et des protections locales. IIS, nginx et LWS requièrent leurs propres vérifications.
+
 ## 0.9.4 — sécurité et permissions
 
 La 0.9.3 est publiée et déployée selon le mainteneur. Branche distincte `fix/0.9.4-security` ; aucune fusion ni publication avant autorisation.
