@@ -33,3 +33,13 @@ Les états possibles d’un article sont brouillon (`draft`), en attente de rele
 Une fonctionnalité destinée au rédacteur ne doit pas exiger qu’il comprenne les termes PHP, SEO, slug ou droits binaires. Les messages doivent nommer l’action concrète (« Enregistrer le brouillon », « Demander la publication », « Accepter et publier »), sans jargon inexpliqué.
 
 Ce travail est soumis à un accord explicite de Marc avant toute fusion dans `main` et avant une mise à jour de production. Les branches de test ne sont pas des versions publiées.
+
+## Discipline de développement — consolidation vers 1.0
+
+- Avant toute intervention, consulter ROADMAP.md, les décisions existantes, les contrats entre composants et le code concerné. Vérifier la branche et la version réellement déployée ; ne pas supposer leur identité.
+- Identifier la cause des défauts, préférer une correction localisée et réutiliser les composants existants. Éviter les doublons, contournements permanents et refontes hors périmètre. Retirer le code devenu inutile après vérification des compatibilités et migrations.
+- Chaque changement fonctionnel ou technique doit inclure, dans la même intervention, les tests pertinents, la mise à jour de la documentation utilisateur et développeur concernée, des notes de version et de la feuille de route si leur état change. Si une documentation n'est pas affectée, le signaler. Aucun travail ne peut être déclaré terminé si ces éléments restent à faire.
+- Ajouter un test de non-régression pour chaque défaut reproductible. Vérifier les impacts sur le moteur, les modules, les thèmes, les permissions, les installations existantes et la distribution selon le périmètre. Consigner les tests exécutés, leurs résultats et les limites de validation.
+- GitHub est la référence du code et des règles ; synchroniser les documents de suivi sur Drive lorsque possible. Les décisions validées, les travaux en cours, les tests automatisés et les confirmations en production doivent rester distincts. Les audits OpenCode et les retours des bêta-testeurs alimentent une liste de défauts priorisés, sans déclencher de modifications concurrentes non coordonnées.
+- Jusqu'à 1.0, privilégier la consolidation. Pas de nouveau module sauf nécessité démontrée et accord explicite. Ne pas fusionner dans main ni publier ou déployer sans autorisation explicite.
+- En cas de contexte incomplet, consulter le dépôt et signaler les contradictions ; ne pas inventer d'état, de résultats de tests ni de décisions. Les règles doivent s'appliquer quel que soit l'assistant chargé du travail.
