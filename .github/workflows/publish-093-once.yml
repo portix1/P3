@@ -1,0 +1,95 @@
+name: Publication unique P3 0.9.3 signée
+on:
+  push:
+    branches: [publish/0.9.3]
+    paths: ['.github/workflows/publish-093-once.yml']
+permissions:
+  contents: read
+concurrency:
+  group: p3-publish-0.9.3
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'portix1/P3' && github.ref == 'refs/heads/publish/0.9.3'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 4318cab720ff1c5e47cccf50a5cedde535ef4c9e
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Vérifier la provenance, l’intégrité et la signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=4318cab720ff1c5e47cccf50a5cedde535ef4c9e
+          source=2f6f360fd0d070abb91f069b4722d878c204f0d8
+          test "$(git rev-parse HEAD)" = "$target"
+          # Compare Git trees, including the synthetic merge used by CI.
+          git fetch origin "$source"
+          test "$(git rev-parse "$target^{tree}")" = "$(git rev-parse "$source^{tree}")"
+          dir="$RUNNER_TEMP/p3-signed-release"
+          mkdir -p "$dir"
+          gh run download 43589468620 --repo portix1/P3 --name p3-validated-distribution --dir "$dir"
+          cd "$dir"
+          test "$(cat SOURCE-COMMIT)" = "$source"
+          printf '%s\n' '9f8842162fa973a84e6ef517fe247a29c2c233a8250f0905b200ec47cda50eb6  P3-0.9.3.zip' > expected.sha256
+          cmp expected.sha256 P3-0.9.3.sha256
+          sha256sum -c P3-0.9.3.sha256
+          test "$(unzip -p P3-0.9.3.zip P3/VERSION)" = '0.9.3'
+          cat > release-public.pem <<'PEM'
+          -----BEGIN PUBLIC KEY-----
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAq+NalXsHXZB64rURTWM/
+          jZqOW8jHP/rIY/EWv+XRq4a8NMfnsaJ59we+ayOeIFuJJaxrGS1hrTn3p4lsJzW9
+          QYEyVKxIGvYhLXRYf/9ZOqmoOHEWtn2eaJHjaEjMxabW/boKhIaHrJdhdmNUXPv/
+          4dXmh3w9Xenl2vAqzpQtTsm/HOwObvyT4vIU3lhOUmkt8lv6RaatJpFZExM7VymW
+          dHesbSjvVD8YpSqQCVkpwdoqbftMU6nDi82QKBP+glFV+Qs2ZcMYVSSHGgY4Q0W1
+          JsgEVGd1OiEeWjg5Nj++CmVxLe7swM3dbspjgRLgfcam5ONVpqD31mF6LCRTom53
+          i0FNR00iwkp5rJzTAOMKltzEuN9Pq48vqFk1Ip/NhePBMpfVgRIEoBSDdk2Uyc/O
+          +lP+d5J04liF9r02NxmUK0soCOpl2AAILDn2mNr3oyJwBSPcZcx1VHukvQ7m9gBV
+          VDOBoGIHLGRXCJU/ik5D6aNI+wfyNAHCHzC1OwO56OKFAgMBAAE=
+          -----END PUBLIC KEY-----
+          PEM
+          test "$(openssl pkey -pubin -in release-public.pem -outform DER | sha256sum | cut -d' ' -f1)" = '26aa2418c7795362ef7c258f688f0190707972466deea7631b50f9bb7586cda6'
+          printf '%s' 'Kk1rE13FigycP/YmVwn9bgAeaJJpboxjqRtWdMaXls1oe+R4wGeKgR1c1vMc82lKME65BX/vbLuuj14uXVsbKm+E6pCiuYp/c4P6bo7T592rAp3Iob0WC9/Z9+8CZ8HXnL5hWRkThSVrxZvWzT9wYGoSQfWyFI2XIoe6B6L1CLb00hswjRsYFFq9L8LbzlEziOU/xQEKq9xmMWIoxG7X21FkI3fX3xsdw0okTiC3NxrweHmTF2gXHOJ3/fyYWuYmgIDjdXeuLZQK0vkK1WXqWpriWdEfslYU0BBWQ/5/QLY8lkF0/oNK7U4sw0BDfbZ35rqKL5Lpil79OCH/sXxrzUB3yZ82Bb+bpNttUCFhAJgniUpFCNUtcHjB6ZrdiWgwaaWM9QnpoOO8M7AxNAfaHG/kZn/c/Jd6Sx3nFAOdCNVxEWPLvQYeuj48rDU3/fOB2N3fPjj9yOnYf3i7FxyiLzaA9uwkoAUzaQD7D4ycmwhjCs3LHWwXnghZLxCnundB' | base64 -d > P3-0.9.3.sig
+          openssl dgst -sha256 -verify release-public.pem -signature P3-0.9.3.sig P3-0.9.3.sha256
+      - name: Publier les trois fichiers validés sans reconstruction
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git ls-remote --tags origin refs/tags/v0.9.3)"
+          if gh release view v0.9.3 --repo portix1/P3 >/dev/null 2>&1; then
+            echo "Cette version existe déjà ; aucun remplacement autorisé."
+            exit 1
+          fi
+          dir="$RUNNER_TEMP/p3-signed-release"
+          cat > "$dir/release-notes.md" <<'NOTES'
+          # P3 0.9.3 — consolidation technique
+          
+          Protections HTTP Apache des six répertoires gérés, conservation des règles d’hébergement et de la clé de confiance lors des restaurations, exclusion des fichiers temporaires des sauvegardes, authentification RSA/SHA-256 des mises à jour du moteur et contrôle reproductible de la distribution.
+          
+          Validations PHP 8.2 à 8.5, navigateur, Apache et tests d’archive réussies. Installation confirmée par le mainteneur. Publication explicitement autorisée.
+          
+          Le premier passage depuis une version antérieure doit se faire à partir de l’archive vérifiée manuellement. Préserver les données, la configuration, les médias, les thèmes personnalisés et les règles racine de l’hébergeur. La clé publique officielle doit être provisionnée par un canal de confiance indépendant avant les mises à jour intégrées. Voir SIGNED-RELEASES.md. Sur nginx ou un autre serveur ignorant .htaccess, installer les protections équivalentes. Le test HTTP de l’hébergement réel reste à confirmer.
+          
+          Empreinte SHA-256 DER de la clé publique : `26aa2418c7795362ef7c258f688f0190707972466deea7631b50f9bb7586cda6`.
+          NOTES
+          gh release create v0.9.3 "$dir/P3-0.9.3.zip" "$dir/P3-0.9.3.sha256" "$dir/P3-0.9.3.sig" --repo portix1/P3 --target 4318cab720ff1c5e47cccf50a5cedde535ef4c9e --title 'P3 0.9.3' --notes-file "$dir/release-notes.md" --latest
+      - name: Vérifier les fichiers publiés
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/p3-signed-release"
+          mkdir "$dir/published"
+          gh release download v0.9.3 --repo portix1/P3 --pattern 'P3-0.9.3.*' --dir "$dir/published"
+          for file in P3-0.9.3.zip P3-0.9.3.sha256 P3-0.9.3.sig; do
+            cmp "$dir/$file" "$dir/published/$file"
+          done
+          cd "$dir/published"
+          sha256sum -c P3-0.9.3.sha256
+          openssl dgst -sha256 -verify "$dir/release-public.pem" -signature P3-0.9.3.sig P3-0.9.3.sha256
