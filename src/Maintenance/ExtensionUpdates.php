@@ -100,17 +100,23 @@ final class ExtensionUpdates
     {
         $cached = $_SESSION['p3_core_release'] ?? [];
         if (($cached['expires'] ?? 0) <= time()) {
-            $context = stream_context_create(['http' => [
-                'timeout' => 3, 'follow_location' => 0, 'user_agent' => 'Portix-P3',
-            ]]);
-            $json = @file_get_contents('https://api.github.com/repos/portix1/P3/releases/latest', false, $context, 0, self::MAX_BYTES);
-            $release = $json === false ? null : json_decode($json, true, 32);
-            $tag = $release['tag_name'] ?? '';
-            $version = is_string($tag) && preg_match('/\Av?[0-9]+\.[0-9]+\.[0-9]+\z/', $tag) ? ltrim($tag, 'v') : '';
-            $cached = ['version' => $version, 'expires' => time() + ($version === '' ? 60 : 300)];
+            try {
+                $version = CoreUpdater::latest();
+                $error = '';
+            } catch (RuntimeException $failure) {
+                $version = '';
+                $error = 'extension_updates_failed';
+            }
+            $cached = ['version' => $version, 'error' => $error, 'expires' => time() + ($version === '' ? 60 : 300)];
             $_SESSION['p3_core_release'] = $cached;
         }
-        return $cached['version'] !== '' && version_compare($cached['version'], $installed, '>') ? $cached['version'] : '';
+        $version = $cached['version'] ?? '';
+        return is_string($version) && preg_match('/\\A[0-9]+\\.[0-9]+\\.[0-9]+\\z/D', $version) === 1 && version_compare($version, $installed, '>') ? $version : '';
+    }
+
+    public static function coreCheckFailed(): bool
+    {
+        return ($_SESSION['p3_core_release']['error'] ?? '') === 'extension_updates_failed';
     }
 
     /**
