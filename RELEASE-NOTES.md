@@ -4,7 +4,9 @@ Version de développement non publiée. La version stable 0.9.3 est publiée et 
 
 - Clé publique officielle intégrée au moteur : aucune opération FTP pour les nouvelles installations ; contrôle de son empreinte SHA-256. Une clé locale existante reste prioritaire et ne peut pas être remplacée par le nouvel updater. Une clé locale invalide provoque un refus. La clé privée reste exclusivement hors dépôt.
 - Distribution : exclusion des fichiers de clés usuels, sauf la clé publique officielle à son chemin exact ; tests de régression ajoutés. Les installations 0.9.3 nécessitent encore une installation ponctuelle de la clé locale pour effectuer leur première mise à jour signée.
-- Tests CI et audit d’autorisations à poursuivre avant publication.
+- Actualités : contrôle des droits individuels de création, modification et publication ; filtrage des brouillons inaccessibles ; épinglage réservé aux administrateurs. Les brouillons sont publiés par l’administrateur si le rédacteur n’a pas la publication directe.
+- Sessions et formulaires : jetons vides refusés, identifiants de session stricts, réponses avec session non mises en cache, Vary: Cookie et réinitialisation sans référent ; accès anonyme à l’administration renvoie 403.
+- Tests CI du premier lot réussis (43593007028, sept tâches). Validation du second lot et reste de l’audit à poursuivre avant publication.
 
 ## Historique 0.9.3
 
