@@ -17,6 +17,15 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## 0.9.4 — sécurité et permissions
+
+La 0.9.3 est publiée et déployée selon le mainteneur. Branche distincte `fix/0.9.4-security` ; aucune fusion ni publication avant autorisation.
+
+- [ ] Fournir la clé publique officielle dans la distribution initiale, contrôler son empreinte, préserver les clés configurées lors des mises à jour et restaurations. Code et tests ajoutés ; validation CI en attente. La clé privée reste hors dépôt.
+- [ ] Auditer les contrôleurs et routes côté serveur selon les rôles visiteur, rédacteur et administrateur ; vérifier accès directs GET/POST et droits individuels de publication.
+- [ ] Vérifier CSRF, sessions, opérations structurelles et endpoints d’administration ; ajouter tests de refus pour chaque défaut reproduit.
+- [ ] Réconcilier les anciens constats OpenCode à partir des rapports complets, puis documenter les corrections et limites.
+
 ## 0.9.3 — dette technique : suivi de l'audit OpenCode 0.9.2
 
 Source : synthèse transmise par Marc le 14 novembre 2026 ; audit statique, sans exécution des tests PHP. Rapport complet AUDIT-P3-0.9.2.md non fourni à ce stade. Références auditées selon OpenCode : release v0.9.2 au commit b608a8e et main au commit 3c68ae6 (+18 commits). Vérifier l'état réel du dépôt avant intervention. Bilan initial : 5 fermés, 2 partiels (5, 13), 6 ouverts (6, 7, 9, 10, 11, 12), 1 acceptable. Récupérer les rapports complets pour qualifier les constats anciens sans les inventer.
