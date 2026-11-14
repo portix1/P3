@@ -73,8 +73,12 @@ try {
     coreTestWrite($site, 'web.config', 'local IIS routing');
     coreTestWrite($site, 'var/modules/articles/.htaccess', 'local module policy');
     coreTestWrite($site, 'var/modules/articles/web.config', 'local module IIS policy');
+    coreTestWrite($site, 'src/Maintenance/core-release-public.pem', 'existing bundled anchor');
+    coreTestWrite($site, 'var/sys/core-release-public.pem', 'existing local anchor');
     $normal = [
         'P3/VERSION' => "0.9.3\n",
+        'P3/src/Maintenance/core-release-public.pem' => 'replacement refused',
+        'P3/var/sys/core-release-public.pem' => 'replacement refused',
         'P3/index.php' => '<?php echo "new";',
         'P3/includes/engine.php' => '<?php // new engine',
         'P3/src/Core/Application.php' => '<?php // new application',
@@ -94,6 +98,8 @@ try {
     coreTestZip($archive, $normal + $managedRules);
     $point = CoreUpdater::applyVerifiedArchive($site, $archive, '0.9.3', $work);
     coreTestAssert(trim((string)file_get_contents($site . '/VERSION')) === '0.9.3', 'version installée');
+    coreTestAssert(file_get_contents($site . '/src/Maintenance/core-release-public.pem') === 'existing bundled anchor', 'clé intégrée conservée');
+    coreTestAssert(file_get_contents($site . '/var/sys/core-release-public.pem') === 'existing local anchor', 'clé locale conservée');
     coreTestAssert(file_get_contents($site . '/var/admin/templates/dashboard.tpl') === 'after update', 'écran actualisé');
     coreTestAssert(file_get_contents($site . '/var/modules/articles/database/articles/desc.csv') === 'new schema', 'schéma du module actualisé');
     coreTestAssert(file_get_contents($site . '/.htaccess') === 'LWS production rewrite', 'règles LWS conservées');
