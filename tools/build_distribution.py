@@ -18,6 +18,8 @@ PLACEHOLDERS = {'.gitkeep', '.htaccess', 'web.config'}
 def include(name):
     if name in {'.gitignore', '.gitattributes', 'AGENTS.md', 'PREPARATION-P3-0.9.2.md'} or name.startswith(EXCLUDED):
         return False
+    if name.lower().endswith(('.pem', '.key', '.p12', '.pfx')) and name != 'src/Maintenance/core-release-public.pem':
+        return False
     return not name.startswith(RUNTIME) or Path(name).name in PLACEHOLDERS
 
 
@@ -32,7 +34,7 @@ def build(excluded_modules=()):
     paths = sorted(name for name in tracked if name and include(name) and not any(name.startswith('var/modules/' + module + '/') for module in excluded_modules))
     required = {'VERSION', 'LICENSE', 'index.php', 'install.php', '.htaccess', 'bootstrap/app.php',
                 'database/.htaccess', 'sessions/.htaccess', 'tmp/.htaccess', 'var/sys/.htaccess',
-                'var/private/.htaccess', 'var/uploads/images/.htaccess', 'src/Maintenance/UpdateSafety.php', 'var/modules/safety/templates/rollback.tpl'}
+                'var/private/.htaccess', 'var/uploads/images/.htaccess', 'src/Maintenance/core-release-public.pem', 'src/Maintenance/UpdateSafety.php', 'var/modules/safety/templates/rollback.tpl'}
     if not required.issubset(paths):
         raise RuntimeError('Distribution is missing required source files')
     output = ROOT / 'dist'
