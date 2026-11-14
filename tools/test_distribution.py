@@ -25,6 +25,8 @@ class DistributionTests(unittest.TestCase):
                 'database/.htaccess': 'Require all denied',
                 'database/live.sqlite': 'fake private database',
                 'var/sys/config.json': 'fake private configuration',
+                'var/private/.htaccess': 'Require all denied',
+                'PREPARATION-P3-0.9.2.md': 'obsolete preparation',
                 'var/private/backup/manifest.json': 'fake backup',
                 'var/uploads/images/private.webp': 'fake media',
                 'sessions/sess_example': 'fake session', 'tmp/example.txt': 'fake runtime data',
@@ -45,8 +47,15 @@ class DistributionTests(unittest.TestCase):
                 self.assertEqual(set(package.namelist()), expected)
                 self.assertIn('P3/var/modules/articles/database/schema.sql', package.namelist())
                 self.assertIn('P3/database/.htaccess', package.namelist())
+                self.assertEqual(package.read('P3/var/private/.htaccess'), b'Require all denied')
+                self.assertNotIn('P3/var/private/backup/manifest.json', package.namelist())
+                self.assertNotIn('P3/PREPARATION-P3-0.9.2.md', package.namelist())
                 self.assertNotIn('P3/database/live.sqlite', package.namelist())
             self.assertTrue((root / 'dist/P3-0.8.3-rc4.sha256').read_text().endswith('  P3-0.8.3-rc4.zip\n'))
+            (root / 'var/private/.htaccess').unlink()
+            subprocess.run(['git', '-C', str(root), 'add', '-u'], check=True, capture_output=True)
+            with patch.object(build_distribution, 'ROOT', root), self.assertRaises(RuntimeError):
+                build_distribution.build()
             (root / 'VERSION').write_text('../invalid')
             with patch.object(build_distribution, 'ROOT', root), self.assertRaises(RuntimeError):
                 build_distribution.build()
