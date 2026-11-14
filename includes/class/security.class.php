@@ -48,8 +48,9 @@ final class PortixSecurity
             $token = isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '';
         }
         return isset($_SESSION['csrf_token'])
+            && is_string($_SESSION['csrf_token']) && $_SESSION['csrf_token'] !== ''
             && is_string($token)
-            && hash_equals((string) $_SESSION['csrf_token'], $token);
+            && hash_equals($_SESSION['csrf_token'], $token);
     }
 
     public static function requirePostWithCsrf()
