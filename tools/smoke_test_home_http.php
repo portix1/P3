@@ -249,7 +249,7 @@ try {
         $ready = false;
         for ($attempt=0; $attempt<30; $attempt++) {
             usleep(100000);
-            $response = $request('/');
+            $response = $request('/', 'HEAD');
             if ($response[0] === 200) { $ready = true; break; }
         }
         $check($ready, 'Fresh browser fixture server is ready');
