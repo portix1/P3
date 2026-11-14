@@ -25,16 +25,16 @@ Source : synthèse transmise par Marc le 14 novembre 2026 ; audit statique, sans
 - [ ] N2 : distinguer les protections HTTP gérées par P3 des réglages propres à l'hébergeur ; appliquer les correctifs de sécurité sans écraser les redirections ou réglages LWS ; sauvegarde, tests et rollback.
 - [ ] N3 : identifier distinctement code de développement et artefact publié ; vérifier tag, version, commit et provenance ; interdire la publication de deux contenus différents sous une même version.
 - [ ] N4 : définir et implémenter une authentification indépendante des artefacts du cœur (signature avec clé de confiance ancrée, gestion des clés et procédure de rotation) ; valider les modalités avant activation. SHA-256 de même origine ne garantit pas l'authenticité.
-- [ ] N5 : régénérer l'empreinte du catalogue et vérifier automatiquement sa cohérence.
+- [x] N5 : régénérer l'empreinte du catalogue et vérifier automatiquement sa cohérence.
 - [ ] N6 : réconcilier documentation, versions de modules, notes de version et état de publication ; exclure les documents préparatoires obsolètes de l'archive.
-- [ ] N7 : supprimer le workflow candidat 0.9.2 après vérification de son absence de dépendances.
-- [ ] N8 : ajouter un test de distribution des protections privées et des tests de mise à jour, refus HTTP et préservation des règles locales.
+- [x] N7 : supprimer le workflow candidat 0.9.2 après vérification de son absence de dépendances.
+- [x] N8 : ajouter un test de distribution des protections privées et des tests de mise à jour, refus HTTP et préservation des règles locales.
 
 Priorité proposée : N1/N2/N3/N8 avant publication ; N4 avant de considérer la mise à jour automatique comme digne de confiance ; N5/N6/N7 dans la même consolidation. Ne pas fusionner ni publier sans accord. Audit statique : aucune preuve d'exploitation distante ni validation dynamique par OpenCode. Les constats anciens restent ouverts jusqu'à preuve de correction. La synthèse présente une incohérence de comptage des sévérités N1–N8 (table : quatre moyens et quatre faibles).
 
 ### Première intervention 0.9.3-dev
 
-Code et tests proposés pour N1, N3, N5, N6, N7 et N8 ; N2 limité au fichier de protection privée appartenant à P3. Aucun écrasement global des règles HTTP locales. N4 : vérificateur de signature, procédure de signature hors dépôt et arrêt de la publication automatique implémentés ; initialisation de la clé officielle et validation de bout en bout restent ouvertes. Protection privée et clé locale préservées par la restauration ; test Apache isolé ajouté. La vérification HTTP sur LWS reste ouverte. La première migration depuis un updater antérieur doit installer manuellement la protection privée si elle manque. Première passe validée par la CI (run 43581882348, PHP 8.2–8.5 et Chromium). Les nouveaux tests de signature, restauration et Apache doivent encore être validés sur le dernier commit. Aucun déploiement confirmé.
+Code et tests proposés pour N1, N3, N5, N6, N7 et N8 ; N2 étendu aux six .htaccess gérés par P3 (database, sessions, tmp, var/sys, var/private, var/uploads/images) ; tests de conservation des règles racine et locales des modules. Aucun écrasement global des règles HTTP locales. N4 : vérificateur de signature, procédure de signature hors dépôt et arrêt de la publication automatique implémentés ; initialisation de la clé officielle et validation de bout en bout restent ouvertes. Protection privée et clé locale préservées par la restauration ; test Apache isolé ajouté. La vérification HTTP sur LWS reste ouverte. La première migration depuis un updater antérieur doit installer manuellement la protection privée si elle manque. Première passe validée par la CI (run 43581882348, PHP 8.2–8.5 et Chromium). Deuxième passe CI réussie (run 43582976427, signature, restauration, Apache, PHP et Chromium). Les tests étendus aux six protections et à l’exclusion du staging nécessitent une nouvelle validation. Les cases cochées correspondent aux travaux implémentés et déjà couverts par les deux premières passes ; la validation finale demeure distincte. Aucun déploiement confirmé.
 
 
 ## Première distribution autonome
