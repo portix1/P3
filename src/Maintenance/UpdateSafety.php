@@ -293,9 +293,22 @@ final class UpdateSafety
 
     public static function restoreRollbackPoint(string $root,string $name): void
     {
-        self::withRollbackLock($root, static function () use ($root, $name): void {
-            self::restoreRollbackPointUnlocked($root, $name);
-        });
+        // Same lock as CoreUpdater, acquired before the rollback lock.
+        $file = rtrim($root, '/\\') . '/var/sys/core-update.lock';
+        if (is_link($file)) { throw new RuntimeException('Verrou de mise à jour invalide.'); }
+        $lock = @fopen($file, 'c');
+        if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) {
+            if (is_resource($lock)) { fclose($lock); }
+            throw new RuntimeException('Une mise à jour ou restauration est déjà en cours.');
+        }
+        try {
+            self::withRollbackLock($root, static function () use ($root, $name): void {
+                self::restoreRollbackPointUnlocked($root, $name);
+            });
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
     }
 
     private static function restoreRollbackPointUnlocked(string $root,string $name): void

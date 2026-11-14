@@ -11,6 +11,7 @@ Version de développement non publiée. La version stable 0.9.3 est publiée et 
 - Vérification de version unifiée avec CoreUpdater ; message distinct lorsque la vérification est indisponible. Tests des trois états ajoutés.
 - Contact : accès non autorisé aux réglages et à la purge refusé avant toute opération.
 - Médiathèque : consultation des usages réservée aux administrateurs pour protéger les références aux brouillons et les chemins internes. Ajout, sélection et description des images toujours accessibles aux rédacteurs.
+- Restauration et mise à jour ne peuvent plus modifier simultanément l’installation ; verrou partagé et test de refus concurrent.
 - CI réussies jusqu’au lot médiathèque (43597818241). Test explicite de la politique des médias ajouté ensuite ; validation finale et audit à compléter avant publication.
 
 ## Historique 0.9.3

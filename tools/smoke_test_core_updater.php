@@ -175,6 +175,15 @@ try {
     unlink($site . '/src/Maintenance/core-release-public.pem');
     $oldPoint = basename(UpdateSafety::createRollbackPoint($site));
     coreTestWrite($site, 'src/Maintenance/core-release-public.pem', $official);
+    $lock = fopen($site . '/var/sys/core-update.lock', 'c');
+    coreTestAssert(is_resource($lock) && flock($lock, LOCK_EX | LOCK_NB), 'verrou de mise à jour acquis');
+    try {
+        $blocked = false;
+        try { UpdateSafety::restoreRollbackPoint($site, $oldPoint); }
+        catch (RuntimeException $error) { $blocked = str_contains($error->getMessage(), 'déjà en cours'); }
+        coreTestAssert($blocked, 'restauration concurrente refusée');
+        coreTestAssert(is_file($site . '/src/Maintenance/core-release-public.pem'), 'application intacte pendant le refus');
+    } finally { flock($lock, LOCK_UN); fclose($lock); }
     UpdateSafety::restoreRollbackPoint($site, $oldPoint);
     coreTestAssert(file_get_contents($site . '/var/sys/core-release-public.pem') === $official, 'clé officielle persistée avant restauration ancienne');
     coreTestAssert(\Portix\Maintenance\ReleaseSignature::trustedKey($site) === $official, 'confiance conservée après restauration');
