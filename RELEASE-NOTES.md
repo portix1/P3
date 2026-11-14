@@ -18,6 +18,8 @@ Version de développement non publiée. La version stable 0.9.3 est publiée et 
 
 - Cookies de session Secure si HTTPS direct ou URL HTTPS configurée, y compris derrière un proxy ; aucune confiance dans X-Forwarded-Proto pour cette décision. Le serveur doit rediriger HTTP vers HTTPS ; l’environnement local HTTP reste compatible.
 
+- Anciens mots de passe MD5 : détection centralisée et comptage agrégé sans divulgation des empreintes ; conversion au premier login conservée et testée. Compatibilité transitoire maintenue pour éviter de bloquer les comptes anciens ; suppression prévue après migration ou réinitialisation.
+
 ## Historique 0.9.3
 
 Publiée le 14 novembre 2026 et installation confirmée par le mainteneur. Validation automatisée finale : run 43589468620.

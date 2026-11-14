@@ -127,6 +127,17 @@ function permissionRun(): void {
     (new Portix\Infrastructure\Migrator($db))->migrate();
     $pdo = $db->connection();
     $repo = new Portix\Repository\UserRepository($pdo);
+    $legacyCount = $repo->countLegacyPasswordHashes();
+    $repo->create('legacy-fixture', md5('legacy-fixture-secret'), '', '', '', false, true);
+    $legacyUser = $repo->find('legacy-fixture');
+    permissionAssert($legacyUser->hasLegacyPasswordHash() && $legacyUser->passwordNeedsUpgrade(), 'legacy password detected');
+    permissionAssert($legacyUser->verifyPassword('legacy-fixture-secret') && !$legacyUser->verifyPassword('incorrect'), 'legacy password compatibility');
+    permissionAssert($repo->countLegacyPasswordHashes() === $legacyCount + 1, 'legacy password count');
+    $repo->updatePassword('legacy-fixture', password_hash('legacy-fixture-secret', PASSWORD_DEFAULT));
+    $legacyUser = $repo->find('legacy-fixture');
+    permissionAssert(!$legacyUser->hasLegacyPasswordHash() && $legacyUser->verifyPassword('legacy-fixture-secret'), 'legacy password upgraded');
+    permissionAssert($repo->countLegacyPasswordHashes() === $legacyCount, 'legacy count decreases');
+    $repo->delete('legacy-fixture');
     $repo->create('writer','hash','','','',false,true);
     $repo->saveArticlePermissions('writer',['all_categories'=>false,'categories'=>[1],'include_children'=>true]);
     permissionAssert($repo->find('writer')->authVersion()===2,'rights invalidate old sessions');
