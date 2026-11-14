@@ -111,7 +111,7 @@
             var filename=document.createElement('small');filename.textContent=row.public_path.split('/').pop();filename.title=row.public_path;
             var size=document.createElement('small');size.textContent=(row.size_bytes<1000000?(row.size_bytes/1000).toFixed(1)+' ko':(row.size_bytes/1000000).toFixed(2)+' Mo')+(row.width?' · '+row.width+' × '+row.height:'');
             var actions=document.createElement('div');actions.className='media-card-actions';
-            actions.appendChild(button('Voir les utilisations',async function(){showUsage(card,await api('usages',{id:row.id}));}));
+            if(admin){actions.appendChild(button('Voir les utilisations',async function(){showUsage(card,await api('usages',{id:row.id}));}));}
             if(row.family==='image'){
                 var a11y=button('Accessibilité',async function(){
                     var editor=document.createElement('div');editor.className='media-a11y';
