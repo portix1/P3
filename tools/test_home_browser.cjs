@@ -151,7 +151,9 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         const expectedLabel = actor === 'editor' ? 'En attente de relecture' : 'Publié';
         assert((await row.innerText()).includes(expectedLabel), 'Article status after keyboard submission');
         const slug = (await row.locator('code').innerText()).trim();
-        const publicResponse = await context.request.get(base + '/' + slug);
+        const visitor = await browser.newContext(visitorOptions);
+        const publicResponse = await visitor.request.get(base + '/' + slug);
+        await visitor.close();
         assert.equal(publicResponse.status(), actor === 'editor' ? 404 : 200, 'Only direct publication makes the article public');
       }
       await tab.setViewportSize({width: 1280, height: 900});
