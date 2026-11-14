@@ -126,6 +126,30 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
       const csrf = await tab.locator('input[name="csrf_token"]').first().inputValue();
       await ctx.request.post(base + '/login.html', {form: {pseudo: actor, pass: 'test-home-password', csrf_token: csrf}});
       await tab.setViewportSize({width: 320, height: 800});
+      const pages = actor === 'admin'
+        ? ['/Admin.html', '/Admin-writing.html', '/Admin-management.html', '/Admin-configuration.html']
+        : ['/Admin.html', '/Admin-writing.html'];
+      for (const url of pages) {
+        assert.equal((await tab.goto(base + url)).status(), 200);
+        assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), url + ' fits at 320 px');
+        const toggle = tab.locator('.admin-nav-toggle');
+        await toggle.press('Enter');
+        assert.equal(await toggle.getAttribute('aria-expanded'), 'true');
+        assert(await tab.evaluate(() => !!document.activeElement.closest('#admin-sidebar')), 'Focus moved to the sidebar');
+        if (url === '/Admin.html') {
+          assert.equal(await tab.locator('#admin-sidebar a[href="Admin.html"]').getAttribute('aria-current'), 'page');
+        }
+        await tab.keyboard.press('Escape');
+        assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
+        assert(await toggle.evaluate(button => button === document.activeElement), 'Escape returns focus to the menu button');
+        await tab.locator('.skip-link').press('Enter');
+        assert.equal(await tab.evaluate(() => document.activeElement.id), 'admin-content');
+      }
+      if (actor !== 'admin') {
+        for (const url of ['/Admin-management.html', '/Admin-configuration.html']) {
+          assert.equal((await ctx.request.get(base + url)).status(), 403);
+        }
+      }
       const articleResponse = await tab.goto(base + '/Admin-articles-new.html');
       assert.equal(articleResponse.status(), 200);
       const body = tab.locator('.portix-editor .ql-editor[role="textbox"]').first();

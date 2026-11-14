@@ -80,3 +80,5 @@ Le rédacteur prépare un brouillon. S’il est soumis à relecture, il choisit 
 La migration du socle SQLite ajoute `review_note` (texte facultatif) à la table des articles sans en supprimer les données. Le numéro du schéma passe de 8 à 9. Les archives officielles d’Articles et de P3 restent à reconstruire avant diffusion ; une branche GitHub n’est pas une mise à jour du serveur.
 
 Critère pratique de vérification : un rédacteur peut créer un brouillon, demander sa publication et retrouver une éventuelle demande de correction sans devoir comprendre des termes techniques. La refonte générale de la fiche utilisateur, l’ordre des champs de l’éditeur, le tableau de bord et les liens des thèmes restent des travaux distincts à vérifier en navigateur.
+
+Sur petit écran, ouvrez le menu avec Entrée ou Espace. Le focus passe au premier lien du menu. Échap referme le menu et replace le focus sur son bouton.

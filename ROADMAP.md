@@ -20,7 +20,8 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 ## 0.9.6 — accessibilité et homogénéisation
 
 - Premier lot : navigation au clavier dans le formulaire d’article, accès aux aides avec lecteur d’écran, focus visible et contrôle à 320 px avec les droits du rédacteur et de l’administrateur.
-- À poursuivre : parcours complet au clavier jusqu’à la demande de publication, vérification de la publication directe avec un compte rédacteur autorisé, audit des autres écrans.
+- Chromium à 320 px : brouillon, demande de publication et publication directe vérifiés avec deux profils rédacteurs. Visibilité publique vérifiée en session anonyme.
+- Navigation commune : le menu mobile place le focus dans le panneau à l’ouverture et Échap le rend au bouton. Vérification du tableau de bord et des trois espaces selon les droits.
 
 ## 0.9.5 — installation, mises à jour et restauration
 

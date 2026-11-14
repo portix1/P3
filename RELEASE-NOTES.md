@@ -1,5 +1,6 @@
 # P3 0.9.6-dev — accessibilité du back-office
 
+- Le menu mobile place le focus sur son premier lien à l’ouverture. Échap ferme le menu et redonne le focus au bouton. Le tableau de bord courant est annoncé dans le menu.
 - Tab permet de quitter l’éditeur d’article. Dans un tableau, Échap puis Tab passe au champ suivant. Le focus de l’éditeur est visible et son texte d’aide est associé au champ de contenu.
 
 # P3 0.9.5 — installation, mise à jour et restauration
