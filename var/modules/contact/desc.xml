@@ -23,7 +23,7 @@
 	<Enabled>
 		1
 	</Enabled>
-	<AdminAccess>editor</AdminAccess>
+	<AdminAccess>admin</AdminAccess>
 	<SchemaFormat>desc-csv</SchemaFormat>
 	<PublicSitemap>sitemap.php</PublicSitemap>
 </modules>

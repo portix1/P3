@@ -4,9 +4,7 @@ declare(strict_types=1);
 use Portix\Mail\NativeMailTransport;
 use Portix\Observability\EventLogger;
 
-if ((!$user->isAdmin() && !$user->isRedactor())
-    || (!$user->isAdmin() && (($argument[2] ?? '') === 'settings'
-        || in_array($_POST['contact_admin_action'] ?? '', ['settings', 'purge'], true)))) {
+if (!$user->isAdmin()) {
     http_response_code(403);
     $template->setSlot('main', './var/admin/templates/access-denied.tpl');
     return;

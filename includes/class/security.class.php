@@ -36,10 +36,18 @@ final class PortixSecurity
         if (session_status() !== PHP_SESSION_ACTIVE) {
             return '';
         }
-        if (empty($_SESSION['csrf_token'])) {
+        if (!is_string($_SESSION['csrf_token'] ?? null) || $_SESSION['csrf_token'] === '') {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
         return (string) $_SESSION['csrf_token'];
+    }
+
+    public static function rotateCsrfToken(): string
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            throw new RuntimeException('Session inactive.');
+        }
+        return $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 
     public static function csrfIsValid($token = null)

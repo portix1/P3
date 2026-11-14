@@ -40,6 +40,36 @@ function permissionRun(): void {
     permissionAssert(P::allows(permissionUser([],true),'delete',$other,4,$cats),'admin bypass');
     permissionAssert(!P::allows(new U(['pseudo'=>'x','is_admin'=>false,'is_redactor'=>false]),'edit',$own,2,$cats),'non writer denied');
     permissionAssert(!P::decode('{broken')['create'],'corrupt persisted rights fail closed');
+    session_start();
+    $firstCsrf = PortixSecurity::csrfToken();
+    $secondCsrf = PortixSecurity::rotateCsrfToken();
+    permissionAssert(strlen($secondCsrf) === 64 && $firstCsrf !== $secondCsrf, 'CSRF rotates');
+    permissionAssert(!PortixSecurity::csrfIsValid($firstCsrf) && PortixSecurity::csrfIsValid($secondCsrf), 'old token refused after rotation');
+    session_destroy();
+    $configDir = sys_get_temp_dir() . '/p3-config-permissions-' . bin2hex(random_bytes(8));
+    try {
+        $configuration = Portix\Configuration\SiteConfiguration::load($configDir);
+        $configuration->replace(['title'=>'Permissions test']);
+        $configFile = $configDir . '/var/sys/config.json';
+        clearstatcache(true, $configFile);
+        permissionAssert(DIRECTORY_SEPARATOR === chr(92) || (fileperms($configFile) & 0777) === 0600, 'config private mode');
+        $configuration->update(['title'=>'Updated']);
+        permissionAssert(Portix\Configuration\SiteConfiguration::load($configDir)->get('title') === 'Updated', 'private config remains writable');
+        $user = $u;
+        $template = new Portix\View\Template($root . '/var/admin/index.tpl');
+        $argument = ['Admin','contact'];
+        foreach (['GET','POST'] as $method) {
+            $_SERVER['REQUEST_METHOD'] = $method;
+            $_POST = ['contact_admin_action'=>'reply'];
+            http_response_code(200);
+            require $root . '/var/modules/contact/config.php';
+            permissionAssert(http_response_code() === 403, 'contact denied to writer '.$method);
+        }
+    } finally {
+        @unlink($configDir . '/var/sys/config.json');
+        @rmdir($configDir . '/var/sys'); @rmdir($configDir . '/var'); @rmdir($configDir);
+        $_POST = [];
+    }
     $_SESSION=['csrf_token'=>'']; permissionAssert(!PortixSecurity::csrfIsValid(''),'empty CSRF token refused');
     $_SESSION=['csrf_token'=>123]; permissionAssert(!PortixSecurity::csrfIsValid('123'),'non-string CSRF token refused');
     $_SESSION=['csrf_token'=>'fixture']; permissionAssert(PortixSecurity::csrfIsValid('fixture')&&!PortixSecurity::csrfIsValid('wrong'),'valid and invalid CSRF token');

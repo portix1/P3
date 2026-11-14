@@ -14,6 +14,8 @@ Version de développement non publiée. La version stable 0.9.3 est publiée et 
 - Restauration et mise à jour ne peuvent plus modifier simultanément l’installation ; verrou partagé et test de refus concurrent.
 - CI réussies jusqu’au lot médiathèque (43597818241). Test explicite de la politique des médias ajouté ensuite ; validation finale et audit à compléter avant publication.
 
+- Suivi de l’audit OpenCode : rotation des jetons CSRF après connexion et réinitialisation, refus des anciens jetons ; écriture atomique privée de config.json (0600 sur Unix) ; accès Contact réservé aux administrateurs, y compris requêtes directes. Tests ajoutés ; CI à confirmer. Les comptes rédacteurs perdent volontairement l’accès aux correspondances privées.
+
 ## Historique 0.9.3
 
 Publiée le 14 novembre 2026 et installation confirmée par le mainteneur. Validation automatisée finale : run 43589468620.
