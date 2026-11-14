@@ -2875,6 +2875,11 @@
             }
             if (event.key === 'Tab' && (leaveTable || !inTable)) {
                 event.stopImmediatePropagation();
+                var summary = !event.shiftKey && source.id === 'article-body' && document.getElementById('article-summary');
+                if (summary && summary.form === source.form) {
+                    event.preventDefault();
+                    summary.focus();
+                }
             }
             leaveTable = false;
         }, true);
