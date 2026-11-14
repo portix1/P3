@@ -673,4 +673,5 @@ $_LANG['core_update_confirm'] = 'Je confirme la mise à jour et la création pr�
 $_LANG['core_update_help'] = 'P3 télécharge l’archive officielle, vérifie sa signature et son empreinte, crée un point de restauration puis installe les fichiers du moteur. Les données, les règles racine de l’hébergement et les thèmes personnalisés sont conservés. Les protections des répertoires gérés par P3 sont actualisées. La clé officielle est fournie avec P3. Une clé de confiance locale, si elle existe, reste prioritaire. Cette opération peut interrompre brièvement le site.';
 $_LANG['core_update_current'] = 'Version installée';
 $_LANG['core_update_available'] = 'Version disponible';
-$_LANG['core_update_none'] = 'P3 est à jour, ou la vérification des versions est momentanément indisponible.';
+$_LANG['core_update_none'] = 'P3 est à jour.';
+$_LANG['core_update_unavailable'] = 'Impossible de vérifier la dernière version officielle. Réessayez ultérieurement.';
