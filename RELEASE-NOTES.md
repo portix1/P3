@@ -6,7 +6,8 @@
 - Empreinte du catalogue réconciliée avec l'ancrage existant ; contrôle automatique ajouté. Aucun changement de catalogue ni de ZIP de module.
 - Numéro de développement distinct, garde de publication stable et suppression de l'ancien workflow candidat.
 - Tests de distribution et de mise à jour complétés ; résultats CI à vérifier. Aucun résultat dynamique n'est revendiqué.
-- La signature indépendante des mises à jour reste à concevoir et à déployer avec une clé de confiance hors dépôt. Le SHA-256 publié n'est qu'un contrôle d'intégrité. Ne pas considérer le canal automatique comme authentifié cryptographiquement.
+- Vérification RSA/SHA-256 des mises à jour intégrée : toute signature absente ou invalide et toute clé de confiance manquante entraînent un refus. La CI ne publie plus automatiquement. Procédure de signature hors dépôt et initialisation de la confiance : SIGNED-RELEASES.md. Aucun jeu de clés officiel n'a encore été provisionné ; ne pas publier avant cette étape.
+- La restauration conserve la protection privée et la clé publique locale ; tests de non-régression ajoutés. Un test Apache isolé doit vérifier le refus HTTP sur un faux snapshot privé. La configuration LWS réelle reste à vérifier.
 
 ## Historique 0.9.2 (publiée le 13 novembre 2026)
 
