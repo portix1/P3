@@ -13,7 +13,7 @@ Sur le poste de signature, hors de tout dépôt et dans un répertoire privé :
 
 La clé privée chiffrée reste hors GitHub, hors hébergement web, hors de toute conversation IA et hors des archives. En conserver une sauvegarde chiffrée sur un support indépendant. Communiquer l'empreinte publique aux administrateurs par un canal indépendant du dépôt. Ne pas télécharger la clé de confiance à partir de la release qu'elle doit authentifier.
 
-Sur chaque installation, déposer la clé publique vérifiée dans var/sys/core-release-public.pem avant d'utiliser les mises à jour intégrées. Le fichier est conservé par les mises à jour et les restaurations de la nouvelle version ; ne pas le remplacer pour contourner un échec de signature. Verifier que var/sys et var/private ne sont pas accessibles par HTTP. Si la clé manque ou si PHP OpenSSL n'est pas disponible, la mise à jour intégrée est refusée ; une mise à jour manuelle reste possible après vérification indépendante.
+Sur chaque installation, déposer la clé publique vérifiée dans var/sys/core-release-public.pem avant d'utiliser les mises à jour intégrées. Le fichier est conservé par les mises à jour et les restaurations de la nouvelle version ; ne pas le remplacer pour contourner un échec de signature. Vérifier que var/sys et var/private ne sont pas accessibles par HTTP. Si la clé manque ou si PHP OpenSSL n'est pas disponible, la mise à jour intégrée est refusée ; une mise à jour manuelle reste possible après vérification indépendante.
 
 ## Préparer et publier une version stable
 
@@ -33,4 +33,4 @@ La rotation se fait hors du canal de mise à jour : communiquer la nouvelle empr
 
 ## Vérification des protections HTTP
 
-Le test tools/test_private_http.sh utilise un serveur Apache isolé et des fichiers fictifs : un fichier public doit répondre 200 et un faux snapshot privé 403. Il ne prouve pas la configuration de l'hébergeur de production. Sur nginx ou un autre serveur ignorant .htaccess, configurer un refus d'accès à /var/private/ et /var/sys/ avant usage ; ne jamais utiliser un snapshot réel comme sonde.
+Le test tools/test_private_http.sh utilise un serveur Apache isolé et des fichiers fictifs : les fichiers publics et une image au nom autorisé doivent répondre 200 ; les sondes dans database, sessions, tmp, var/sys, var/private et var/uploads/images, ainsi qu'un faux snapshot privé, doivent répondre 403. Il ne prouve pas la configuration de l'hébergeur de production. Sur nginx ou un autre serveur ignorant .htaccess, appliquer des protections équivalentes aux six répertoires (interdire les accès directs aux cinq répertoires privés et ne servir que les images raster autorisées dans le sixième). Ne jamais utiliser un snapshot réel comme sonde. Les six .htaccess sont gérés par P3 et remplacés par l’updater ; conserver les adaptations d’hébergement dans les règles racine ou la configuration du serveur, qui ne sont pas modifiées par l’updater.
