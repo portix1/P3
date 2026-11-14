@@ -162,6 +162,13 @@ try {
     coreTestAssert(file_get_contents($site . '/var/admin/templates/dashboard.tpl') === 'preserve after failed install', 'interface restaurée après échec');
     coreTestAssert(file_get_contents($site . '/var/private/.htaccess') === 'Require all denied', 'protection privée restaurée');
     coreTestAssert(!is_file($site . '/var/sys/maintenance.lock'), 'maintenance coupée après échec');
+    // Cached release states are distinct and do not require network access.
+    $_SESSION['p3_core_release'] = ['version'=>'0.9.4','error'=>'','expires'=>time()+60];
+    coreTestAssert(\Portix\Maintenance\ExtensionUpdates::core('0.9.3')==='0.9.4','new release available');
+    coreTestAssert(\Portix\Maintenance\ExtensionUpdates::core('0.9.4')==='' && !\Portix\Maintenance\ExtensionUpdates::coreCheckFailed(),'installed release current');
+    $_SESSION['p3_core_release'] = ['version'=>'','error'=>'extension_updates_failed','expires'=>time()+60];
+    coreTestAssert(\Portix\Maintenance\ExtensionUpdates::core('0.9.3')==='' && \Portix\Maintenance\ExtensionUpdates::coreCheckFailed(),'release check unavailable');
+    unset($_SESSION['p3_core_release']);
     // A rollback to a pre-bundled-key release must keep the currently trusted key.
     $official = file_get_contents($source . '/src/Maintenance/core-release-public.pem');
     unlink($site . '/var/sys/core-release-public.pem');
