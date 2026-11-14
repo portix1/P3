@@ -29,7 +29,16 @@ signatureRefused(static fn() => ReleaseSignature::verify($public, '0.9.3', $hash
 $root = sys_get_temp_dir() . '/p3-signature-' . bin2hex(random_bytes(8));
 mkdir($root . '/var/sys', 0700, true);
 $path = $root . '/var/sys/core-release-public.pem';
+$bundled = $root . '/src/Maintenance/core-release-public.pem';
+mkdir(dirname($bundled), 0700, true);
+$official = file_get_contents(dirname(__DIR__) . '/src/Maintenance/core-release-public.pem');
 try {
+    signatureRefused(static fn() => ReleaseSignature::trustedKey($root));
+    file_put_contents($bundled, $public);
+    signatureRefused(static fn() => ReleaseSignature::trustedKey($root));
+    file_put_contents($bundled, $official);
+    if (ReleaseSignature::trustedKey($root) !== $official) { throw new RuntimeException('Clé officielle non chargée'); }
+    file_put_contents($path, 'invalid local key');
     signatureRefused(static fn() => ReleaseSignature::trustedKey($root));
     file_put_contents($path, $public);
     if (ReleaseSignature::trustedKey($root) !== $public) { throw new RuntimeException('Clé modifiée'); }
@@ -38,6 +47,9 @@ try {
     signatureRefused(static fn() => ReleaseSignature::trustedKey($root));
 } finally {
     if (is_link($path) || is_file($path)) { unlink($path); }
+    if (is_file($bundled)) { unlink($bundled); }
+    rmdir(dirname($bundled));
+    rmdir($root . '/src');
     rmdir($root . '/var/sys');
     rmdir($root . '/var');
     rmdir($root);
