@@ -329,7 +329,20 @@ final class UpdateSafety
         try {
             foreach(['bootstrap','includes','src','tools'] as $dir){ self::removeTree($root.'/'.$dir); self::copyTree($source.'/application/'.$dir,$root.'/'.$dir); }
             foreach(['admin','editor','lang','modules','templates'] as $dir){ self::removeTree($root.'/var/'.$dir); self::copyTree($source.'/application/var/'.$dir,$root.'/var/'.$dir); }
-            foreach(($manifest['root_files']??[]) as $entry){ if(!is_string($entry)||basename($entry)!==$entry) continue; if(is_file($source.'/application/'.$entry)&&!copy($source.'/application/'.$entry,$root.'/'.$entry)) throw new RuntimeException('Impossible de restaurer '.$entry); }
+            foreach (($manifest['root_files'] ?? []) as $entry) {
+                if (!is_string($entry) || basename($entry) !== $entry) {
+                    continue;
+                }
+                $destination = $root . '/' . $entry;
+                // Hosting rules may have changed since the rollback point was created.
+                if (in_array($entry, ['.htaccess', 'web.config'], true) && is_file($destination)) {
+                    continue;
+                }
+                $backup = $source . '/application/' . $entry;
+                if (is_file($backup) && !copy($backup, $destination)) {
+                    throw new RuntimeException('Impossible de restaurer ' . $entry);
+                }
+            }
             if(!copy($source.'/database/portix2.sqlite',$root.'/'.SiteConfiguration::load($root)->databasePath())) throw new RuntimeException('Impossible de restaurer la base SQLite.');
             self::replaceTree($source.'/var/sys',$root.'/var/sys',['maintenance.lock','core-update.lock','core-release-public.pem','.htaccess']);
             self::replaceTree($source.'/var/uploads/images',$root.'/var/uploads/images',['.htaccess']);

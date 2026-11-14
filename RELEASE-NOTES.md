@@ -1,3 +1,7 @@
+# P3 0.9.5 — développement
+
+- La restauration préserve les règles Apache ou IIS présentes à la racine du site. Un test reproduit l’état laissé par une interruption et vérifie le rétablissement des données et la levée de la maintenance.
+
 # P3 0.9.4 — sécurité et permissions
 
 Version préparée pour signature, non publiée. La version stable 0.9.3 est publiée et installée en production selon le mainteneur.

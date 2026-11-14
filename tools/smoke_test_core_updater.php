@@ -196,7 +196,27 @@ try {
         coreTestAssert($blocked, 'restauration concurrente refusée');
         coreTestAssert(is_file($site . '/src/Maintenance/core-release-public.pem'), 'application intacte pendant le refus');
     } finally { flock($lock, LOCK_UN); fclose($lock); }
+    // Reproduce the on-disk state after the process stops before its cleanup.
+    UpdateSafety::enableMaintenance($site, '0.9.4');
+    coreTestWrite($site, 'includes/engine.php', '<?php // partially replaced engine');
+    coreTestWrite($site, 'var/templates/custom/style.css', 'altered theme');
+    unlink($site . '/var/uploads/images/local.webp');
+    coreTestWrite($site, '.htaccess', 'updated LWS canonical redirect');
+    coreTestWrite($site, 'web.config', 'updated IIS routing');
+    $pdo = new PDO('sqlite:' . $site . '/database/test.sqlite');
+    $pdo->exec("UPDATE proof SET value = 'changed'");
+    $pdo = null;
     UpdateSafety::restoreRollbackPoint($site, $oldPoint);
+    coreTestAssert(file_get_contents($site . '/includes/engine.php') === '<?php // new engine', 'moteur restauré après interruption');
+    coreTestAssert(file_get_contents($site . '/var/templates/custom/style.css') === 'custom theme', 'thème personnalisé restauré');
+    coreTestAssert(file_get_contents($site . '/var/uploads/images/local.webp') === 'local image', 'média restauré');
+    coreTestAssert(file_get_contents($site . '/.htaccess') === 'updated LWS canonical redirect', 'redirection LWS actuelle préservée');
+    coreTestAssert(file_get_contents($site . '/web.config') === 'updated IIS routing', 'règles IIS actuelles préservées');
+    coreTestAssert(!is_file($site . '/var/sys/maintenance.lock'), 'maintenance levée après restauration');
+    $pdo = new PDO('sqlite:' . $site . '/database/test.sqlite');
+    coreTestAssert($pdo->query('PRAGMA integrity_check')->fetchColumn() === 'ok', 'base restaurée intègre');
+    coreTestAssert($pdo->query('SELECT value FROM proof')->fetchColumn() === 'original', 'contenu SQLite restauré');
+    $pdo = null;
     coreTestAssert(file_get_contents($site . '/var/sys/core-release-public.pem') === $official, 'clé officielle persistée avant restauration ancienne');
     coreTestAssert(\Portix\Maintenance\ReleaseSignature::trustedKey($site) === $official, 'confiance conservée après restauration');
     echo "Mise à jour P3 : sauvegarde, installation, données conservées, ZIP hostile et retour arrière : OK\n";

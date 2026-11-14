@@ -33,6 +33,8 @@ La CI exécute les contrôles sous PHP 8.2 à 8.5 et les tests HTTP/Chromium. Un
 
 Les sessions sont isolées par installation. Après la mise à jour vers 0.9.4, reconnectez-vous au back-office et rouvrez les formulaires ou aperçus restés ouverts.
 
+Lors d’une restauration, les fichiers `.htaccess` et `web.config` déjà présents à la racine sont conservés. Si l’un d’eux manque, P3 le récupère depuis le point de restauration lorsqu’il y figure.
+
 ## Licence
 
 P3 est distribué sous les termes de la GNU General Public License, version 3 ou ultérieure (`GPL-3.0-or-later`). Les licences et notices tierces doivent être conservées.
