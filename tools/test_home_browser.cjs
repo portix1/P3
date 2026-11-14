@@ -125,6 +125,19 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
       await tab.goto(base + '/login.html');
       const csrf = await tab.locator('input[name="csrf_token"]').first().inputValue();
       await ctx.request.post(base + '/login.html', {form: {pseudo: actor, pass: 'test-home-password', csrf_token: csrf}});
+      await tab.setViewportSize({width: 320, height: 800});
+      const articleResponse = await tab.goto(base + '/Admin-articles-new.html');
+      assert.equal(articleResponse.status(), 200);
+      const body = tab.locator('.portix-editor .ql-editor[role="textbox"]').first();
+      await body.waitFor();
+      assert.equal(await body.getAttribute('aria-describedby'), 'article-body-help');
+      const statusOptions = await tab.locator('select[name=status] option').evaluateAll(options => options.map(option => option.value));
+      assert.equal(statusOptions.includes('published'), actor === 'admin');
+      await body.focus();
+      await tab.keyboard.press('Tab');
+      assert.equal(await tab.evaluate(() => document.activeElement.id), 'article-summary');
+      assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Article form fits at 320 px');
+      await tab.setViewportSize({width: 1280, height: 900});
       const adminResponse = await tab.goto(base + '/Admin-home.html');
       assert.equal(adminResponse.status(), actor === 'admin' ? 200 : 403, `${actor}: Home composition permissions`);
       if (actor === 'admin') {

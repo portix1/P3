@@ -56,7 +56,7 @@ $_LANG = array_merge($_LANG, array(
     'articles_invalid_summary' => 'The description cannot exceed 170 characters.',
     'articles_invalid_seo_fields' => 'The article search metadata is too long.',
     'articles_field_body' => 'Content',
-    'articles_body_help' => 'The complete article content. Images are optimised and stored locally.',
+    'articles_body_help' => 'The complete article content. Images are optimised and stored locally. In a table, press Escape then Tab to move to the next field.',
 
     'articles_menu_settings' => 'Article menu',
     'articles_menu_introduction' => 'Each top-level category can become a header menu entry, with subcategories across several levels.',

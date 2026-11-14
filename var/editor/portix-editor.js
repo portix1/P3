@@ -2851,13 +2851,34 @@
         return normaliseBreakableSpaces(template.innerHTML);
     }
 
-    function labelEditor(quill, wrapper) {
+    function labelEditor(quill, wrapper, source) {
         var editorLabel = wrapper.getAttribute('data-editor-label') || '';
         if (editorLabel) {
             quill.root.setAttribute('aria-label', editorLabel);
         }
         quill.root.setAttribute('role', 'textbox');
         quill.root.setAttribute('aria-multiline', 'true');
+        var description = source.getAttribute('aria-describedby');
+        if (description) { quill.root.setAttribute('aria-describedby', description); }
+
+        // Keep native focus navigation outside tables. Escape then Tab also
+        // leaves the editor from a table without adding a row.
+        var leaveTable = false;
+        quill.root.addEventListener('keydown', function (event) {
+            var selection = document.getSelection();
+            var anchor = selection && selection.anchorNode;
+            var element = anchor && (anchor.nodeType === Node.ELEMENT_NODE ? anchor : anchor.parentElement);
+            var inTable = element && quill.root.contains(element) && element.closest('td,th');
+            if (event.key === 'Escape') {
+                leaveTable = !!inTable;
+                return;
+            }
+            if (event.key === 'Tab' && (leaveTable || !inTable)) {
+                event.stopImmediatePropagation();
+            }
+            leaveTable = false;
+        }, true);
+        quill.root.addEventListener('focusout', function () { leaveTable = false; });
 
         var toolbar = quill.getModule('toolbar').container;
         toolbar.setAttribute('role', 'toolbar');
@@ -3386,7 +3407,7 @@
             quill.getModule('toolbar').addHandler('formula', function () {});
             Array.from(quill.root.querySelectorAll('img')).forEach(syncCaptionPreview);
             wrapper.classList.add('is-enhanced');
-            labelEditor(quill, wrapper);
+            labelEditor(quill, wrapper, source);
             quill.getModule('toolbar').addHandler('image', function () {
                 selectImage(quill, wrapper);
             });

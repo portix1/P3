@@ -1,3 +1,7 @@
+# P3 0.9.6-dev — accessibilité du back-office
+
+- Tab permet de quitter l’éditeur d’article. Dans un tableau, Échap puis Tab passe au champ suivant. Le focus de l’éditeur est visible et les aides du contenu et de la description sont associées aux champs correspondants.
+
 # P3 0.9.5 — installation, mise à jour et restauration
 
 - La restauration préserve les règles Apache ou IIS présentes à la racine du site. Un test reproduit l’état laissé par une interruption et vérifie le rétablissement des données et la levée de la maintenance.

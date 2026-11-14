@@ -57,6 +57,11 @@
     font: inherit;
 }
 
+.portix-editor .ql-editor:focus-visible {
+    outline: 3px solid var(--accent, #245c9e);
+    outline-offset: -3px;
+}
+
 .portix-editor .ql-editor {
     height: 100%;
     min-height: 0;
