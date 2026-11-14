@@ -2,6 +2,7 @@
 """Check packaging boundaries on a temporary repository containing fake private data."""
 import contextlib
 import io
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -25,6 +26,7 @@ class DistributionTests(unittest.TestCase):
                 'database/.htaccess': 'Require all denied',
                 'database/live.sqlite': 'fake private database',
                 'var/sys/config.json': 'fake private configuration',
+                'var/sys/core-release-public.pem': 'local trust anchor not shipped',
                 'var/private/.htaccess': 'Require all denied',
                 'PREPARATION-P3-0.9.2.md': 'obsolete preparation',
                 'var/private/backup/manifest.json': 'fake backup',
@@ -42,6 +44,11 @@ class DistributionTests(unittest.TestCase):
             with patch.object(build_distribution, 'ROOT', root), contextlib.redirect_stdout(io.StringIO()):
                 build_distribution.build()
             archive = root / 'dist/P3-0.8.3-rc4.zip'
+            first_bytes = archive.read_bytes()
+            os.utime(root / 'index.php', (1700000000, 1700000000))
+            with patch.object(build_distribution, 'ROOT', root), contextlib.redirect_stdout(io.StringIO()):
+                build_distribution.build()
+            self.assertEqual(archive.read_bytes(), first_bytes, 'Distribution ZIP depends on file timestamps')
             with zipfile.ZipFile(archive) as package:
                 expected = {'P3/' + name for name in files if build_distribution.include(name)}
                 self.assertEqual(set(package.namelist()), expected)
@@ -51,6 +58,7 @@ class DistributionTests(unittest.TestCase):
                 self.assertNotIn('P3/var/private/backup/manifest.json', package.namelist())
                 self.assertNotIn('P3/PREPARATION-P3-0.9.2.md', package.namelist())
                 self.assertNotIn('P3/database/live.sqlite', package.namelist())
+                self.assertNotIn('P3/var/sys/core-release-public.pem', package.namelist())
             self.assertTrue((root / 'dist/P3-0.8.3-rc4.sha256').read_text().endswith('  P3-0.8.3-rc4.zip\n'))
             (root / 'var/private/.htaccess').unlink()
             subprocess.run(['git', '-C', str(root), 'add', '-u'], check=True, capture_output=True)
