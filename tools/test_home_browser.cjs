@@ -150,6 +150,23 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
           assert.equal((await ctx.request.get(base + url)).status(), 403);
         }
       }
+      if (actor === 'admin') {
+        for (const [url, selector] of [
+          ['/Admin-diagnostics.html', '.diagnostics-table-wrap'],
+          ['/Admin-config-themes.html', '.table-scroll']
+        ]) {
+          assert.equal((await tab.goto(base + url)).status(), 200);
+          const region = tab.locator(selector).first();
+          const label = await region.getAttribute('aria-labelledby');
+          assert(label && (await tab.locator('#' + label).innerText()).trim());
+          const heading = tab.locator('#' + label);
+          await heading.evaluate(element => { element.tabIndex = -1; element.focus(); });
+          await tab.keyboard.press('Tab');
+          assert(await region.evaluate(element => document.activeElement === element), url + ' scroll region reached with Tab');
+          assert.equal(await region.evaluate(element => getComputedStyle(element).outlineStyle), 'solid');
+          assert(await region.evaluate(element => element.getBoundingClientRect().right <= innerWidth + 1), url + ' table stays within viewport');
+        }
+      }
       const articleResponse = await tab.goto(base + '/Admin-articles-new.html');
       assert.equal(articleResponse.status(), 200);
       const body = tab.locator('.portix-editor .ql-editor[role="textbox"]').first();

@@ -616,6 +616,8 @@ input[type="submit"]:hover,
 .insights-ranking li > span { display: grid; min-width: 0; }
 .insights-ranking small { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
 .table-scroll { overflow-x: auto; }
+.table-scroll:focus-visible,
+.diagnostics-table-wrap:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
 .log-level { display: inline-block; padding: .15rem .4rem; border-radius: 999px; background: var(--surface-soft); font-size: .76rem; font-weight: 800; }
 .log-error, .log-critical { color: var(--danger); background: #fee4e2; }
 .log-warning { color: #854d0e; background: #fef9c3; }

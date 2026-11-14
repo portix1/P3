@@ -8,13 +8,13 @@
 
 <section class="diagnostics-summary">
     <div>
-        <h2>{{ diagnostics_environment_title }}</h2>
+        <h2 id="diagnostics-environment-title">{{ diagnostics_environment_title }}</h2>
         <p>{{ diagnostics_environment_help }}</p>
     </div>
     <p><strong>{{ diagnostics_last_run }}</strong> {{ diagnostics_last_summary }}</p>
 </section>
 
-<div class="diagnostics-table-wrap">
+<div class="diagnostics-table-wrap" role="region" aria-labelledby="diagnostics-environment-title" tabindex="0">
 <table class="diagnostics-table">
     <caption>{{ diagnostics_environment_title }}</caption>
     <thead><tr><th scope="col">{{ diagnostics_test }}</th><th scope="col">{{ diagnostics_status }}</th><th scope="col">{{ diagnostics_detail }}</th></tr></thead>
@@ -51,11 +51,11 @@
 <section class="diagnostics-results">
     <div class="management-heading">
         <p class="eyebrow">{{ diagnostics_results_eyebrow }}</p>
-        <h2>{{ diagnostics_results_title }}</h2>
+        <h2 id="diagnostics-results-title">{{ diagnostics_results_title }}</h2>
         <p>{{ diagnostics_total }} {{ diagnostics_total_label }} — {{ diagnostics_pass }} {{ diagnostics_pass_label }} — {{ diagnostics_fail }} {{ diagnostics_fail_label }}</p>
     </div>
 
-    <div class="diagnostics-table-wrap">
+    <div class="diagnostics-table-wrap" role="region" aria-labelledby="diagnostics-results-title" tabindex="0">
     <table class="diagnostics-table">
         <caption>{{ diagnostics_results_title }}</caption>
         <thead><tr><th scope="col">{{ diagnostics_test }}</th><th scope="col">{{ diagnostics_status }}</th><th scope="col">{{ diagnostics_detail }}</th></tr></thead>

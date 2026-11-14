@@ -23,6 +23,8 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 - Chromium à 320 px : brouillon, demande de publication et publication directe vérifiés avec deux profils rédacteurs. Visibilité publique vérifiée en session anonyme.
 - Navigation commune : le menu mobile place le focus dans le panneau à l’ouverture et Échap le rend au bouton. Vérification du tableau de bord et des trois espaces selon les droits.
 
+- Diagnostics et thèmes : accès clavier aux zones de défilement des tableaux, avec un nom et un focus visible.
+
 ## 0.9.5 — installation, mises à jour et restauration
 
 - Restauration sur installation isolée après interruption simulée : vérifier SQLite, médias, thème, clé publique, maintenance et règles HTTP racine. Les règles racine présentes sont préservées pendant la restauration.
