@@ -1,5 +1,42 @@
 # Feuille de route de P3
 
+## Priorité actuelle — consolidation vers 1.0 (validée le 14 novembre 2026)
+
+Cette séquence prime sur les anciens plans ci-dessous, conservés comme historique à réconcilier. Les versions indiquent des objectifs, non des dates ni des travaux déjà validés.
+
+| Version | Objectif |
+| --- | --- |
+| 0.9.3 | Réduction de la dette technique |
+| 0.9.4 | Audit de sécurité et permissions |
+| 0.9.5 | Robustesse de l'installation, des mises à jour et de la restauration |
+| 0.9.6 | Accessibilité et homogénéisation des interfaces |
+| 0.9.7 | Performances et consommation des ressources |
+| 0.9.8 | Consolidation et vérification de la documentation utilisateur et développeur |
+| 0.9.9 | Validation par des bêta-testeurs indépendants |
+| 1.0.0 | Première distribution publique stable après validation |
+
+Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
+
+## 0.9.3 — dette technique : suivi de l'audit OpenCode 0.9.2
+
+Source : synthèse transmise par Marc le 14 novembre 2026 ; audit statique, sans exécution des tests PHP. Rapport complet AUDIT-P3-0.9.2.md non fourni à ce stade. Références auditées selon OpenCode : release v0.9.2 au commit b608a8e et main au commit 3c68ae6 (+18 commits). Vérifier l'état réel du dépôt avant intervention. Bilan initial : 5 fermés, 2 partiels (5, 13), 6 ouverts (6, 7, 9, 10, 11, 12), 1 acceptable. Récupérer les rapports complets pour qualifier les constats anciens sans les inventer.
+
+- [ ] N1 : inclure la protection var/private/.htaccess dans la distribution et les mises à jour ; vérifier le refus HTTP effectif des données privées.
+- [ ] N2 : distinguer les protections HTTP gérées par P3 des réglages propres à l'hébergeur ; appliquer les correctifs de sécurité sans écraser les redirections ou réglages LWS ; sauvegarde, tests et rollback.
+- [ ] N3 : identifier distinctement code de développement et artefact publié ; vérifier tag, version, commit et provenance ; interdire la publication de deux contenus différents sous une même version.
+- [ ] N4 : définir et implémenter une authentification indépendante des artefacts du cœur (signature avec clé de confiance ancrée, gestion des clés et procédure de rotation) ; valider les modalités avant activation. SHA-256 de même origine ne garantit pas l'authenticité.
+- [ ] N5 : régénérer l'empreinte du catalogue et vérifier automatiquement sa cohérence.
+- [ ] N6 : réconcilier documentation, versions de modules, notes de version et état de publication ; exclure les documents préparatoires obsolètes de l'archive.
+- [ ] N7 : supprimer le workflow candidat 0.9.2 après vérification de son absence de dépendances.
+- [ ] N8 : ajouter un test de distribution des protections privées et des tests de mise à jour, refus HTTP et préservation des règles locales.
+
+Priorité proposée : N1/N2/N3/N8 avant publication ; N4 avant de considérer la mise à jour automatique comme digne de confiance ; N5/N6/N7 dans la même consolidation. Ne pas fusionner ni publier sans accord. Audit statique : aucune preuve d'exploitation distante ni validation dynamique par OpenCode. Les constats anciens restent ouverts jusqu'à preuve de correction. La synthèse présente une incohérence de comptage des sévérités N1–N8 (table : quatre moyens et quatre faibles).
+
+### Première intervention 0.9.3-dev
+
+Code et tests proposés pour N1, N3, N5, N6, N7 et N8 ; N2 limité au fichier de protection privée appartenant à P3. Aucun écrasement global des règles HTTP locales. N4 et la vérification HTTP réelle restent ouverts. La première migration depuis un updater antérieur doit installer manuellement la protection privée si elle manque. Aucun test dynamique ni déploiement confirmé à ce stade.
+
+
 ## Première distribution autonome
 
 Le paquet de base comprend le moteur, les composants indispensables et un thème neutre par défaut. Il doit permettre d’installer P3 sur un serveur vierge.
