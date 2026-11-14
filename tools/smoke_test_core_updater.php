@@ -162,6 +162,15 @@ try {
     coreTestAssert(file_get_contents($site . '/var/admin/templates/dashboard.tpl') === 'preserve after failed install', 'interface restaurée après échec');
     coreTestAssert(file_get_contents($site . '/var/private/.htaccess') === 'Require all denied', 'protection privée restaurée');
     coreTestAssert(!is_file($site . '/var/sys/maintenance.lock'), 'maintenance coupée après échec');
+    // A rollback to a pre-bundled-key release must keep the currently trusted key.
+    $official = file_get_contents($source . '/src/Maintenance/core-release-public.pem');
+    unlink($site . '/var/sys/core-release-public.pem');
+    unlink($site . '/src/Maintenance/core-release-public.pem');
+    $oldPoint = basename(UpdateSafety::createRollbackPoint($site));
+    coreTestWrite($site, 'src/Maintenance/core-release-public.pem', $official);
+    UpdateSafety::restoreRollbackPoint($site, $oldPoint);
+    coreTestAssert(file_get_contents($site . '/var/sys/core-release-public.pem') === $official, 'clé officielle persistée avant restauration ancienne');
+    coreTestAssert(\Portix\Maintenance\ReleaseSignature::trustedKey($site) === $official, 'confiance conservée après restauration');
     echo "Mise à jour P3 : sauvegarde, installation, données conservées, ZIP hostile et retour arrière : OK\n";
 } finally {
     coreTestRemove($site);
