@@ -34,7 +34,7 @@ Priorité proposée : N1/N2/N3/N8 avant publication ; N4 avant de considérer la
 
 ### Première intervention 0.9.3-dev
 
-Code et tests proposés pour N1, N3, N5, N6, N7 et N8 ; N2 limité au fichier de protection privée appartenant à P3. Aucun écrasement global des règles HTTP locales. N4 et la vérification HTTP réelle restent ouverts. La première migration depuis un updater antérieur doit installer manuellement la protection privée si elle manque. Aucun test dynamique ni déploiement confirmé à ce stade.
+Code et tests proposés pour N1, N3, N5, N6, N7 et N8 ; N2 limité au fichier de protection privée appartenant à P3. Aucun écrasement global des règles HTTP locales. N4 : vérificateur de signature, procédure de signature hors dépôt et arrêt de la publication automatique implémentés ; initialisation de la clé officielle et validation de bout en bout restent ouvertes. Protection privée et clé locale préservées par la restauration ; test Apache isolé ajouté. La vérification HTTP sur LWS reste ouverte. La première migration depuis un updater antérieur doit installer manuellement la protection privée si elle manque. Première passe validée par la CI (run 43581882348, PHP 8.2–8.5 et Chromium). Les nouveaux tests de signature, restauration et Apache doivent encore être validés sur le dernier commit. Aucun déploiement confirmé.
 
 
 ## Première distribution autonome
