@@ -31,7 +31,8 @@ def build(excluded_modules=()):
             raise RuntimeError('Unknown module exclusion')
     paths = sorted(name for name in tracked if name and include(name) and not any(name.startswith('var/modules/' + module + '/') for module in excluded_modules))
     required = {'VERSION', 'LICENSE', 'index.php', 'install.php', '.htaccess', 'bootstrap/app.php',
-                'var/private/.htaccess', 'src/Maintenance/UpdateSafety.php', 'var/modules/safety/templates/rollback.tpl'}
+                'database/.htaccess', 'sessions/.htaccess', 'tmp/.htaccess', 'var/sys/.htaccess',
+                'var/private/.htaccess', 'var/uploads/images/.htaccess', 'src/Maintenance/UpdateSafety.php', 'var/modules/safety/templates/rollback.tpl'}
     if not required.issubset(paths):
         raise RuntimeError('Distribution is missing required source files')
     output = ROOT / 'dist'
