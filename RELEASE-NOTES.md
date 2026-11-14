@@ -2,12 +2,12 @@
 
 **Branche de développement non publiée.** La version stable diffusée est 0.9.2. Cette intervention ne constitue pas une autorisation de mise à jour.
 
-- Protection `var/private/.htaccess` obligatoire dans les nouvelles archives ; le nouvel updater peut la déployer. Les règles HTTP racine et les configurations locales restent préservées. Un updater ancien ignore ce fichier : installer la protection manuellement si absente et vérifier le refus HTTP avant toute sauvegarde ou mise à jour. Sur nginx, configurer explicitement un refus d'accès au répertoire privé ; `.htaccess` ne s'y applique pas.
+- Six protections Apache obligatoires dans les nouvelles archives : `database`, `sessions`, `tmp`, `var/sys`, `var/private` et `var/uploads/images`. Le nouvel updater les installe ; il conserve `.htaccess` et `web.config` racine et les règles locales des modules. Les règles personnalisées dans les six fichiers gérés doivent être reportées dans la configuration propre à l’hébergeur. Pour migrer depuis un ancien updater, installer manuellement les protections manquantes avant toute sauvegarde. Sur nginx, appliquer les protections équivalentes dans la configuration du serveur.
 - Empreinte du catalogue réconciliée avec l'ancrage existant ; contrôle automatique ajouté. Aucun changement de catalogue ni de ZIP de module.
 - Numéro de développement distinct, garde de publication stable et suppression de l'ancien workflow candidat.
-- Tests de distribution et de mise à jour complétés ; résultats CI à vérifier. Aucun résultat dynamique n'est revendiqué.
+- Deux premières passes CI réussies : PHP 8.2–8.5, distribution, Chromium et premier test Apache (runs 43581882348 et 43582976427). Les modifications ultérieures nécessitent une nouvelle validation.
 - Vérification RSA/SHA-256 des mises à jour intégrée : toute signature absente ou invalide et toute clé de confiance manquante entraînent un refus. La CI ne publie plus automatiquement. Procédure de signature hors dépôt et initialisation de la confiance : SIGNED-RELEASES.md. Aucun jeu de clés officiel n'a encore été provisionné ; ne pas publier avant cette étape.
-- La restauration conserve la protection privée et la clé publique locale ; tests de non-régression ajoutés. Un test Apache isolé doit vérifier le refus HTTP sur un faux snapshot privé. La configuration LWS réelle reste à vérifier.
+- La restauration conserve les protections système, privées et des images ainsi que la clé publique locale. Les fichiers temporaires de mise à jour sont exclus des sauvegardes. Le test Apache isolé couvre les six protections et vérifie le maintien de l’accès aux fichiers publics autorisés. LWS reste à vérifier sur une installation réelle.
 
 ## Historique 0.9.2 (publiée le 13 novembre 2026)
 
