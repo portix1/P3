@@ -18,7 +18,7 @@
         <p><button type="submit" name="install_core_update" value="1">{{ core_update_action }} {{ core_update_target }}</button></p>
     </form>
     {% else %}
-    <p>{{ core_update_none }}</p>
+    {% if core_update_failed == "1" %}<p>{{ core_update_unavailable }}</p>{% else %}<p>{{ core_update_none }}</p>{% endif %}
     {% endif %}
 </section>
 <section id="extension-updates" aria-labelledby="extension-updates-title">
