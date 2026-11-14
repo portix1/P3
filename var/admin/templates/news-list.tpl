@@ -7,7 +7,7 @@
 <section class="news-admin-summary" aria-label="{{ news_admin_summary }}">
     <p><strong>{{ news_total }}</strong> {{ news_admin_total }}</p>
     <p><strong>{{ news_published }}</strong> {{ news_admin_published_total }}</p>
-    <a class="button" href="Admin-news-new.html">{{ news_admin_new }}</a>
+    {% if news_can_create == "1" %}<a class="button" href="Admin-news-new.html">{{ news_admin_new }}</a>{% endif %}
 </section>
 
 <section class="admin-section news-admin-list">
