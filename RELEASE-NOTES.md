@@ -20,6 +20,8 @@ Version de développement non publiée. La version stable 0.9.3 est publiée et 
 
 - Anciens mots de passe MD5 : détection centralisée et comptage agrégé sans divulgation des empreintes ; conversion au premier login conservée et testée. Compatibilité transitoire maintenue pour éviter de bloquer les comptes anciens ; suppression prévue après migration ou réinitialisation.
 
+- Diagnostics : contrôle des comptes MD5 sans affichage des empreintes et de la protection de config.json sur Unix.
+
 ## Historique 0.9.3
 
 Publiée le 14 novembre 2026 et installation confirmée par le mainteneur. Validation automatisée finale : run 43589468620.
