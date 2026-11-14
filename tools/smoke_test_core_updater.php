@@ -73,8 +73,12 @@ try {
     coreTestWrite($site, 'web.config', 'local IIS routing');
     coreTestWrite($site, 'var/modules/articles/.htaccess', 'local module policy');
     coreTestWrite($site, 'var/modules/articles/web.config', 'local module IIS policy');
+    coreTestWrite($site, 'src/Maintenance/core-release-public.pem', 'existing bundled anchor');
+    coreTestWrite($site, 'var/sys/core-release-public.pem', 'existing local anchor');
     $normal = [
         'P3/VERSION' => "0.9.3\n",
+        'P3/src/Maintenance/core-release-public.pem' => 'replacement refused',
+        'P3/var/sys/core-release-public.pem' => 'replacement refused',
         'P3/index.php' => '<?php echo "new";',
         'P3/includes/engine.php' => '<?php // new engine',
         'P3/src/Core/Application.php' => '<?php // new application',
@@ -94,6 +98,8 @@ try {
     coreTestZip($archive, $normal + $managedRules);
     $point = CoreUpdater::applyVerifiedArchive($site, $archive, '0.9.3', $work);
     coreTestAssert(trim((string)file_get_contents($site . '/VERSION')) === '0.9.3', 'version installée');
+    coreTestAssert(file_get_contents($site . '/src/Maintenance/core-release-public.pem') === 'existing bundled anchor', 'clé intégrée conservée');
+    coreTestAssert(file_get_contents($site . '/var/sys/core-release-public.pem') === 'existing local anchor', 'clé locale conservée');
     coreTestAssert(file_get_contents($site . '/var/admin/templates/dashboard.tpl') === 'after update', 'écran actualisé');
     coreTestAssert(file_get_contents($site . '/var/modules/articles/database/articles/desc.csv') === 'new schema', 'schéma du module actualisé');
     coreTestAssert(file_get_contents($site . '/.htaccess') === 'LWS production rewrite', 'règles LWS conservées');
@@ -156,6 +162,43 @@ try {
     coreTestAssert(file_get_contents($site . '/var/admin/templates/dashboard.tpl') === 'preserve after failed install', 'interface restaurée après échec');
     coreTestAssert(file_get_contents($site . '/var/private/.htaccess') === 'Require all denied', 'protection privée restaurée');
     coreTestAssert(!is_file($site . '/var/sys/maintenance.lock'), 'maintenance coupée après échec');
+    // Cached release states are distinct and do not require network access.
+    $_SESSION['p3_core_release'] = ['version'=>'0.9.4','error'=>'','expires'=>time()+60];
+    coreTestAssert(\Portix\Maintenance\ExtensionUpdates::core('0.9.3')==='0.9.4','new release available');
+    coreTestAssert(\Portix\Maintenance\ExtensionUpdates::core('0.9.4')==='' && !\Portix\Maintenance\ExtensionUpdates::coreCheckFailed(),'installed release current');
+    $_SESSION['p3_core_release'] = ['version'=>'','error'=>'extension_updates_failed','expires'=>time()+60];
+    coreTestAssert(\Portix\Maintenance\ExtensionUpdates::core('0.9.3')==='' && \Portix\Maintenance\ExtensionUpdates::coreCheckFailed(),'release check unavailable');
+    foreach ([
+        ['version'=>'0.9.4','expires'=>time()+60],
+        ['version'=>'invalid','error'=>'','expires'=>time()+60],
+        ['version'=>'0.9.4','error'=>'','expires'=>time()-1],
+        ['version'=>'0.9.4','error'=>'extension_updates_failed','expires'=>time()+60],
+        ['version'=>'','error'=>'','expires'=>time()+60],
+        'invalid',
+    ] as $invalid) {
+        $_SESSION['p3_core_release'] = $invalid;
+        coreTestAssert(\Portix\Maintenance\ExtensionUpdates::coreCheckFailed(), 'invalid or expired cache cannot imply current version');
+    }
+    unset($_SESSION['p3_core_release']);
+    coreTestAssert(\Portix\Maintenance\ExtensionUpdates::coreCheckFailed(), 'missing cache cannot imply current version');
+    // A rollback to a pre-bundled-key release must keep the currently trusted key.
+    $official = file_get_contents($source . '/src/Maintenance/core-release-public.pem');
+    unlink($site . '/var/sys/core-release-public.pem');
+    unlink($site . '/src/Maintenance/core-release-public.pem');
+    $oldPoint = basename(UpdateSafety::createRollbackPoint($site));
+    coreTestWrite($site, 'src/Maintenance/core-release-public.pem', $official);
+    $lock = fopen($site . '/var/sys/core-update.lock', 'c');
+    coreTestAssert(is_resource($lock) && flock($lock, LOCK_EX | LOCK_NB), 'verrou de mise à jour acquis');
+    try {
+        $blocked = false;
+        try { UpdateSafety::restoreRollbackPoint($site, $oldPoint); }
+        catch (RuntimeException $error) { $blocked = str_contains($error->getMessage(), 'déjà en cours'); }
+        coreTestAssert($blocked, 'restauration concurrente refusée');
+        coreTestAssert(is_file($site . '/src/Maintenance/core-release-public.pem'), 'application intacte pendant le refus');
+    } finally { flock($lock, LOCK_UN); fclose($lock); }
+    UpdateSafety::restoreRollbackPoint($site, $oldPoint);
+    coreTestAssert(file_get_contents($site . '/var/sys/core-release-public.pem') === $official, 'clé officielle persistée avant restauration ancienne');
+    coreTestAssert(\Portix\Maintenance\ReleaseSignature::trustedKey($site) === $official, 'confiance conservée après restauration');
     echo "Mise à jour P3 : sauvegarde, installation, données conservées, ZIP hostile et retour arrière : OK\n";
 } finally {
     coreTestRemove($site);

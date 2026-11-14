@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Portix\Controller\Admin;
 
 use Portix\Domain\UserAccount;
+use Portix\Domain\NewsPermissions;
 use Portix\Repository\NewsRepository;
 use Portix\Repository\ContentSafetyRepository;
 use Portix\Support\Slugger;
@@ -29,7 +30,16 @@ final class NewsAdminController
         require_once $this->root . '/includes/class/html_sanitizer.class.php';
         require_once $this->root . '/includes/class/image_storage.class.php';
 
+        if (!$user->isAdmin() && !$user->isRedactor()) { $this->deny($template); return; }
         $action = (string) ($arguments[2] ?? 'list');
+        if ($action === 'delete' && !NewsPermissions::allows($user, 'delete')) { $this->deny($template); return; }
+        if (in_array($action, ['new', 'edit', 'preview'], true)) {
+            $id = $action === 'new' || !isset($arguments[3]) ? null : $this->numericId($arguments[3]);
+            $target = $id === null ? null : $this->news->find($id);
+            if (($id !== null && $target === null) || ($action === 'edit' && $id === null) || !NewsPermissions::allows($user, 'edit', $target)) {
+                $this->deny($template); return;
+            }
+        }
         if ($action === 'upload' && ($arguments[3] ?? '') === 'image') {
             $this->uploadImage($user);
         }
@@ -52,9 +62,11 @@ final class NewsAdminController
     private function listing(\Portix\View\Template $template, UserAccount $user): void
     {
         $template->setSlot('main', './var/admin/templates/news-list.tpl');
-        $template->set('news_total', (string) $this->news->countAll());
-        $template->set('news_published', (string) $this->news->countPublished());
-        foreach ($this->news->allForAdministration() as $row) {
+        $rows = array_values(array_filter($this->news->allForAdministration(), static fn(array $row): bool => NewsPermissions::allows($user, 'edit', $row)));
+        $template->set('news_total', (string) count($rows));
+        $template->set('news_published', (string) count(array_filter($rows, static fn(array $row): bool => $row['status'] === 'published')));
+        $template->set('news_can_create', NewsPermissions::allows($user, 'edit') ? '1' : '0');
+        foreach ($rows as $row) {
             $published = (string) $row['status'] === 'published';
             $template->addRow('newsrow', [
                 'id' => (string) $row['id'],
@@ -102,6 +114,9 @@ final class NewsAdminController
                     throw new RuntimeException($this->translator->text('news_admin_invalid_title'));
                 }
                 $status = ($_POST['status'] ?? '') === 'published' ? 'published' : 'draft';
+                if (($status === 'published' || ($existing['status'] ?? '') === 'published') && !NewsPermissions::allows($user, 'publish', $existing)) {
+                    throw new RuntimeException($this->translator->text('news_admin_access_denied'));
+                }
                 $slugSource = trim((string) ($_POST['slug'] ?? ''));
                 $slugBase = Slugger::fromText($slugSource !== '' ? $slugSource : $title);
                 $slug = $this->news->uniqueSlug($slugBase, $this->reservedSlugs, $id);
@@ -109,7 +124,7 @@ final class NewsAdminController
                 $body = \PortixHtmlSanitizer::clean($_POST['content'] ?? '');
                 $intro = \PortixImageStorage::optimiseReferencedFilenames($intro, $this->root . '/var/uploads/images');
                 $body = \PortixImageStorage::optimiseReferencedFilenames($body, $this->root . '/var/uploads/images');
-                $pinned = isset($_POST['is_pinned']);
+                $pinned = NewsPermissions::allows($user, 'pin') ? isset($_POST['is_pinned']) : !empty($existing['is_pinned']);
                 $now = gmdate('Y-m-d H:i:s');
                 $publishedAt = $status === 'published'
                     ? ((string) ($existing['published_at'] ?? '') ?: $now)
@@ -119,11 +134,11 @@ final class NewsAdminController
                     $savedId = $this->news->create(
                         $title, $slug, $user->pseudo(), $intro, $body, $status, $publishedAt, $now
                     );
-                    $this->news->setPinned($savedId, $pinned);
+                    if (NewsPermissions::allows($user, 'pin')) { $this->news->setPinned($savedId, $pinned); }
                 } else {
                     $this->safety->captureRevision('news', $id, $existing, $user->pseudo());
                     $this->news->update($id, $title, $slug, $intro, $body, $status, $publishedAt, $now);
-                    $this->news->setPinned($id, $pinned);
+                    if (NewsPermissions::allows($user, 'pin')) { $this->news->setPinned($id, $pinned); }
                 }
                 header('Location: Admin-news.html');
                 exit;
@@ -157,6 +172,8 @@ final class NewsAdminController
         $template->set('news_preview_action', $id === null
             ? 'Admin-news-preview.html'
             : 'Admin-news-preview-' . $id . '.html');
+        $template->set('news_can_publish', NewsPermissions::allows($user, 'publish', $existing) ? '1' : '0');
+        $template->set('news_can_pin', NewsPermissions::allows($user, 'pin') ? '1' : '0');
         $template->set('news_draft_selected', $draft['status'] === 'draft' ? 'selected' : '');
         $template->set('news_published_selected', $draft['status'] === 'published' ? 'selected' : '');
         $template->set('news_pinned_checked', !empty($draft['is_pinned']) ? 'checked' : '');
@@ -200,7 +217,7 @@ final class NewsAdminController
             'created_by' => (string) ($existing['created_by'] ?? $user->pseudo()),
             'published_at' => (string) ($existing['published_at'] ?? $now),
             'updated_at' => $now,
-            'is_pinned' => isset($_POST['is_pinned'])
+            'is_pinned' => NewsPermissions::allows($user, 'pin') && isset($_POST['is_pinned'])
                 ? 1
                 : (int) ($existing['is_pinned'] ?? 0),
         ]);
@@ -257,6 +274,12 @@ final class NewsAdminController
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
         );
         exit;
+    }
+
+    private function deny(\Portix\View\Template $template): void
+    {
+        http_response_code(403);
+        $template->setSlot('main', './var/admin/templates/access-denied.tpl');
     }
 
     private function numericId(mixed $value): int

@@ -23,7 +23,7 @@ if (($argument[2] ?? '') === 'api') {
         $operation = (string) ($_POST['operation'] ?? 'list');
         if ($operation === 'alt_audit' && !$user->isAdmin()) { throw new RuntimeException('Audit global réservé à l’administrateur.', 403); }
         $id = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if (in_array($operation, ['replace', 'delete', 'restore', 'analyse', 'inventory', 'recover', 'webp_candidates', 'webp_migrate'], true)) {
+        if (\Portix\Domain\MediaPermissions::requiresAdmin($operation)) {
             if (!$user->isAdmin()) { throw new RuntimeException('Action réservée à l’administrateur.', 403); }
         }
         if (in_array($operation, ['replace', 'delete', 'restore', 'usages', 'set_accessibility'], true) && $id === false) {

@@ -58,6 +58,7 @@ final class DiagnosticRunner
         $rows = $this->environment()['rows'];
 
         $this->checkDatabase($rows);
+        $this->checkLegacyPasswords($rows);
         $this->checkConfiguration($rows);
         $this->checkModules($rows);
         $this->checkThemes($rows);
@@ -82,12 +83,30 @@ final class DiagnosticRunner
     }
 
     /** @param list<array<string,string>> $rows */
+    private function checkLegacyPasswords(array &$rows): void
+    {
+        try {
+            $count = (new \Portix\Repository\UserRepository($this->pdo))->countLegacyPasswordHashes();
+            $this->add($rows, 'legacy-passwords', 'Anciens mots de passe', $count === 0,
+                $count === 0 ? 'Aucun compte utilisant MD5' : $count . ' compte(s) à mettre à niveau : connexion ou réinitialisation du mot de passe.');
+        } catch (Throwable) {
+            $this->add($rows, 'legacy-passwords', 'Anciens mots de passe', false, 'Contrôle impossible.');
+        }
+    }
+
     private function checkConfiguration(array &$rows): void
     {
         $file = $this->root . '/var/sys/config.json';
         if (!is_file($file)) {
             $this->add($rows, 'configuration', 'Configuration P3', false, 'config.json absent');
             return;
+        }
+        if (DIRECTORY_SEPARATOR !== chr(92)) {
+            clearstatcache(true, $file);
+            $mode = fileperms($file);
+            $this->add($rows, 'configuration-permissions', 'Protection de config.json',
+                $mode !== false && ($mode & 0777) === 0600,
+                $mode !== false && ($mode & 0777) === 0600 ? 'Accès réservé au propriétaire (0600)' : 'Enregistrez la configuration pour rétablir le mode 0600.');
         }
         try {
             $value = json_decode((string) file_get_contents($file), true, 64, JSON_THROW_ON_ERROR);

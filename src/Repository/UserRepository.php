@@ -121,6 +121,14 @@ final class UserRepository
         return (int) $this->pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
     }
 
+    /** Aggregate only: never expose password hashes to diagnostics. */
+    public function countLegacyPasswordHashes(): int
+    {
+        return (int) $this->pdo->query(
+            "SELECT COUNT(*) FROM users WHERE length(password_hash) = 32 AND password_hash NOT GLOB '*[^0-9a-fA-F]*'"
+        )->fetchColumn();
+    }
+
     public function countAdmins(): int
     {
         return (int) $this->pdo->query('SELECT COUNT(*) FROM users WHERE is_admin = 1')->fetchColumn();

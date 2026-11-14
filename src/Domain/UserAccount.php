@@ -55,13 +55,18 @@ final class UserAccount
         return max(1, (int) ($this->row['auth_version'] ?? 1));
     }
 
+    public function hasLegacyPasswordHash(): bool
+    {
+        return preg_match('/^[a-f0-9]{32}$/iD', $this->passwordHash()) === 1;
+    }
+
     public function verifyPassword(string $plainText): bool
     {
         $stored = $this->passwordHash();
         if ($stored === '') {
             return false;
         }
-        if (preg_match('/^[a-f0-9]{32}$/i', $stored) === 1) {
+        if ($this->hasLegacyPasswordHash()) {
             return hash_equals(strtolower($stored), md5($plainText));
         }
         return password_verify($plainText, $stored);
@@ -69,7 +74,7 @@ final class UserAccount
 
     public function passwordNeedsUpgrade(): bool
     {
-        return preg_match('/^[a-f0-9]{32}$/i', $this->passwordHash()) === 1
+        return $this->hasLegacyPasswordHash()
             || password_needs_rehash($this->passwordHash(), PASSWORD_DEFAULT);
     }
 }

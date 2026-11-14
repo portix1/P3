@@ -82,10 +82,7 @@ final class AdminNavigation
             }
             [$section, $icon] = $places[$prefix] ?? [$access === 'editor' ? 'writing' : 'management', 'boxes'];
             // Only editorial features may be exposed to a redactor.
-            // Keep the pre-existing Contact inbox under Rédaction.
-            if (!$isAdmin && $section === 'management' && $prefix === 'contact') {
-                $section = 'writing';
-            } elseif (!$isAdmin && $section !== 'writing') {
+            if (!$isAdmin && $section !== 'writing') {
                 continue;
             }
             $add($section, $manifest['name'], 'Admin-' . $prefix . '.html', $icon);

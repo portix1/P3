@@ -40,11 +40,112 @@ function permissionRun(): void {
     permissionAssert(P::allows(permissionUser([],true),'delete',$other,4,$cats),'admin bypass');
     permissionAssert(!P::allows(new U(['pseudo'=>'x','is_admin'=>false,'is_redactor'=>false]),'edit',$own,2,$cats),'non writer denied');
     permissionAssert(!P::decode('{broken')['create'],'corrupt persisted rights fail closed');
+    $serverBefore = $_SERVER;
+    try {
+        foreach ([
+            [['HTTPS'=>'on'], '', true],
+            [['HTTPS'=>'OFF'], '', false],
+            [['SERVER_PORT'=>'443'], '', true],
+            [['HTTP_X_FORWARDED_PROTO'=>'https'], '', false],
+            [['HTTP_X_FORWARDED_PROTO'=>'http'], 'https://example.test', true],
+            [['SERVER_PORT'=>'80'], 'http://localhost:8080', false],
+        ] as [$server, $siteUrl, $expected]) {
+            $_SERVER = $server;
+            permissionAssert(Portix\Http\Request::fromGlobals()->secureSessionCookie($siteUrl) === $expected, 'cookie secure policy');
+        }
+    } finally { $_SERVER = $serverBefore; }
+    session_start();
+    $firstCsrf = PortixSecurity::csrfToken();
+    $secondCsrf = PortixSecurity::rotateCsrfToken();
+    permissionAssert(strlen($secondCsrf) === 64 && $firstCsrf !== $secondCsrf, 'CSRF rotates');
+    permissionAssert(!PortixSecurity::csrfIsValid($firstCsrf) && PortixSecurity::csrfIsValid($secondCsrf), 'old token refused after rotation');
+    session_destroy();
+    $configDir = sys_get_temp_dir() . '/p3-config-permissions-' . bin2hex(random_bytes(8));
+    try {
+        $configuration = Portix\Configuration\SiteConfiguration::load($configDir);
+        $configuration->replace(['title'=>'Permissions test']);
+        $configFile = $configDir . '/var/sys/config.json';
+        clearstatcache(true, $configFile);
+        permissionAssert(DIRECTORY_SEPARATOR === chr(92) || (fileperms($configFile) & 0777) === 0600, 'config private mode');
+        $configuration->update(['title'=>'Updated']);
+        permissionAssert(Portix\Configuration\SiteConfiguration::load($configDir)->get('title') === 'Updated', 'private config remains writable');
+        $user = $u;
+        $template = new Portix\View\Template($root . '/var/admin/index.tpl');
+        $argument = ['Admin','contact'];
+        foreach (['GET','POST'] as $method) {
+            $_SERVER['REQUEST_METHOD'] = $method;
+            $_POST = ['contact_admin_action'=>'reply'];
+            http_response_code(200);
+            require $root . '/var/modules/contact/config.php';
+            permissionAssert(http_response_code() === 403, 'contact denied to writer '.$method);
+        }
+    } finally {
+        @unlink($configDir . '/var/sys/config.json');
+        @rmdir($configDir . '/var/sys'); @rmdir($configDir . '/var'); @rmdir($configDir);
+        $_POST = [];
+    }
+    $_SESSION=['csrf_token'=>'']; permissionAssert(!PortixSecurity::csrfIsValid(''),'empty CSRF token refused');
+    $_SESSION=['csrf_token'=>123]; permissionAssert(!PortixSecurity::csrfIsValid('123'),'non-string CSRF token refused');
+    $_SESSION=['csrf_token'=>'fixture']; permissionAssert(PortixSecurity::csrfIsValid('fixture')&&!PortixSecurity::csrfIsValid('wrong'),'valid and invalid CSRF token');
+    foreach (['usages','analyse','alt_audit','replace','delete','restore','inventory','recover','webp_candidates','webp_migrate','unknown'] as $operation) {
+        permissionAssert(Portix\Domain\MediaPermissions::requiresAdmin($operation), 'media restricted '.$operation);
+    }
+    foreach (['list','upload','set_accessibility'] as $operation) {
+        permissionAssert(!Portix\Domain\MediaPermissions::requiresAdmin($operation), 'media editorial '.$operation);
+    }
+    $previewStore = new Portix\Preview\SessionPreviewStore();
+    $_SESSION=['authenticated'=>true,'user_nick'=>'writer','auth_version'=>1];
+    $previewToken=$previewStore->create('article',['title'=>'private preview']);
+    permissionAssert($previewStore->get('article',$previewToken)['title']==='private preview','same account preview');
+    permissionAssert($previewStore->get('news',$previewToken)===null,'wrong preview kind denied');
+    $_SESSION['user_nick']='another';
+    permissionAssert($previewStore->get('article',$previewToken)===null,'other account preview denied');
+    $_SESSION['user_nick']='writer';
+    $previewToken=$previewStore->create('news',['title'=>'private news']);
+    $_SESSION['auth_version']=2;
+    permissionAssert($previewStore->get('news',$previewToken)===null,'changed permission version preview denied');
+    $previewToken=$previewStore->create('news',['title'=>'private news']);
+    Portix\Preview\SessionPreviewStore::clear();
+    permissionAssert($previewStore->get('news',$previewToken)===null,'login change clears previews');
+    $_SESSION=[];
+    permissionAssert($previewStore->get('news',$previewToken)===null,'anonymous preview denied');
+    $newsOwn = ['created_by'=>'writer','status'=>'draft'];
+    $newsOther = array_replace($newsOwn,['created_by'=>'admin']);
+    $newsLive = array_replace($newsOwn,['status'=>'published']);
+    $newsRights = static fn(U $account, string $action, ?array $row = null): bool => Portix\Domain\NewsPermissions::allows($account, $action, $row);
+    permissionAssert($newsRights($u,'edit',$newsOwn),'news own draft editable');
+    permissionAssert(!$newsRights($u,'publish',$newsOwn),'news review cannot publish');
+    permissionAssert(!$newsRights($u,'edit',$newsOther),'news other author denied');
+    permissionAssert(!$newsRights($u,'edit',$newsLive),'news published denied');
+    permissionAssert(!$newsRights(permissionUser(['create'=>false]),'edit'),'news creation denied');
+    $trusted = permissionUser(['publish'=>true,'edit_published'=>true]);
+    permissionAssert($newsRights($trusted,'publish',$newsLive),'trusted news publication');
+    permissionAssert(!$newsRights($trusted,'pin',$newsLive)&&!$newsRights($trusted,'delete',$newsOwn),'news structural pin and deletion reserved');
+    permissionAssert($newsRights(permissionUser([],true),'pin',$newsLive),'administrator news pin');
     $db = new Portix\Infrastructure\Database(':memory:');
     (new Portix\Infrastructure\Migrator($db))->migrate();
     (new Portix\Infrastructure\Migrator($db))->migrate();
     $pdo = $db->connection();
     $repo = new Portix\Repository\UserRepository($pdo);
+    $legacyCount = $repo->countLegacyPasswordHashes();
+    $repo->create('legacy-fixture', md5('legacy-fixture-secret'), '', '', '', false, true);
+    $legacyUser = $repo->find('legacy-fixture');
+    permissionAssert($legacyUser->hasLegacyPasswordHash() && $legacyUser->passwordNeedsUpgrade(), 'legacy password detected');
+    permissionAssert($legacyUser->verifyPassword('legacy-fixture-secret') && !$legacyUser->verifyPassword('incorrect'), 'legacy password compatibility');
+    permissionAssert($repo->countLegacyPasswordHashes() === $legacyCount + 1, 'legacy password count');
+    $runner = new Portix\Diagnostics\DiagnosticRunner($root, $pdo);
+    $check = new ReflectionMethod($runner, 'checkLegacyPasswords');
+    $diagnosticRows = [];
+    $check->invokeArgs($runner, [&$diagnosticRows]);
+    permissionAssert($diagnosticRows[0]['status'] === 'fail' && !str_contains(json_encode($diagnosticRows), md5('legacy-fixture-secret')), 'legacy diagnostic exposes no hash');
+    $repo->updatePassword('legacy-fixture', password_hash('legacy-fixture-secret', PASSWORD_DEFAULT));
+    $legacyUser = $repo->find('legacy-fixture');
+    permissionAssert(!$legacyUser->hasLegacyPasswordHash() && $legacyUser->verifyPassword('legacy-fixture-secret'), 'legacy password upgraded');
+    permissionAssert($repo->countLegacyPasswordHashes() === $legacyCount, 'legacy count decreases');
+    $diagnosticRows = [];
+    $check->invokeArgs($runner, [&$diagnosticRows]);
+    permissionAssert($diagnosticRows[0]['status'] === ($legacyCount === 0 ? 'pass' : 'fail'), 'legacy diagnostic after upgrade');
+    $repo->delete('legacy-fixture');
     $repo->create('writer','hash','','','',false,true);
     $repo->saveArticlePermissions('writer',['all_categories'=>false,'categories'=>[1],'include_children'=>true]);
     permissionAssert($repo->find('writer')->authVersion()===2,'rights invalidate old sessions');
@@ -62,6 +163,27 @@ function permissionRun(): void {
     $translator=new Portix\Support\Translator($_LANG);
     $controller=new PortixModule\Articles\ArticleAdminController($articles,$root,$translator);
     $user=$repo->find('writer');
+    $newsRepo = new Portix\Repository\NewsRepository($pdo);
+    $newsId = $newsRepo->create('Own news','own-news','writer','Intro','Body','draft',null,$now);
+    $otherNewsId = $newsRepo->create('Private news','private-news','admin','Intro','Body','draft',null,$now);
+    $newsController = new Portix\Controller\Admin\NewsAdminController($newsRepo,$root,[],$translator,new Portix\Repository\ContentSafetyRepository($pdo));
+    foreach ([['edit',$otherNewsId],['preview',$otherNewsId],['delete',$newsId]] as $route) {
+        foreach (['GET','POST'] as $method) {
+            $_SERVER['REQUEST_METHOD']=$method; $_POST=['csrf_token'=>'fixture']; http_response_code(200);
+            $newsTpl=new Portix\View\Template($root.'/var/admin/templates/news-form.tpl');
+            $newsController->handle($newsTpl,array_merge(['Admin','news'],$route),$user);
+            permissionAssert(http_response_code()===403,'news forbidden '.$method.' '.implode('/',$route));
+        }
+    }
+    $_SESSION=['csrf_token'=>'fixture']; $_SERVER['REQUEST_METHOD']='POST';
+    $_POST=['csrf_token'=>'fixture','title'=>'Forged news','status'=>'published','is_pinned'=>'1','intro'=>'','content'=>''];
+    $newsTpl=new Portix\View\Template($root.'/var/admin/templates/news-form.tpl');
+    $newsController->handle($newsTpl,['Admin','news','edit',(string)$newsId],$user);
+    permissionAssert($newsRepo->find($newsId)['status']==='draft'&&$newsRepo->find($newsId)['title']==='Own news','news forged publication has no effect');
+    $_SERVER['REQUEST_METHOD']='GET'; $_POST=[];
+    $newsTpl=new Portix\View\Template($root.'/var/admin/templates/news-list.tpl');
+    $newsController->handle($newsTpl,['Admin','news'],$user);
+    permissionAssert(count($newsTpl->rows('newsrow'))===1&&$newsTpl->rows('newsrow')[0]['title']==='Own news','news list hides unauthorized drafts');
     foreach ([['edit',$otherId],['preview',$otherId],['delete',$id],['category','new'],['order']] as $route) {
         $_SERVER['REQUEST_METHOD']='GET'; $_POST=[]; http_response_code(200);
         $tpl=new Portix\View\Template($root.'/var/modules/articles/templates/admin-form.tpl');

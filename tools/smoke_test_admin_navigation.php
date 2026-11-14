@@ -64,11 +64,25 @@ try {
         static fn (array $item): bool => $item['url'] === 'Admin-articles-order.html' && $item['current'] === 'is-current'));
     navigationCheck(count($activeOrder) === 1, 'Page Organisation active dans Administration');
 
+    $oldContact = tempnam(sys_get_temp_dir(), 'p3-contact-');
+    try {
+        $contactXml = file_get_contents($root . '/var/modules/contact/desc.xml');
+        file_put_contents($oldContact, str_replace('<AdminAccess>admin</AdminAccess>', '<AdminAccess>editor</AdminAccess>', $contactXml));
+        navigationCheck(ModuleManifest::fromXml($oldContact, 'contact')['admin_access'] === 'admin',
+            'Un ancien manifeste Contact ne donne pas accès aux rédacteurs');
+    } finally {
+        unlink($oldContact);
+    }
+    navigationCheck(in_array('Admin-contact.html', array_column($sections['management'], 'url'), true),
+        'Messagerie Contact en Administration');
+
     $news = array_values(array_filter($sections['writing'], static fn (array $item): bool => $item['url'] === 'Admin-news.html'));
     navigationCheck(count($news) === 1 && $news[0]['current'] === 'is-current', 'Actualités doit être présent et actif en Rédaction');
     $editor = AdminNavigation::sections($root, $modules, false, true, ['Admin', 'news'], $translator);
     navigationCheck(in_array('Admin-news.html', array_column($editor['writing'], 'url'), true), 'Actualités doit rester accessible aux rédacteurs');
     navigationCheck($editor['management'] === [], 'Administration masquée au rédacteur');
+    navigationCheck(!in_array('Admin-contact.html', array_column($editor['writing'], 'url'), true),
+        'Messagerie Contact masquée au rédacteur');
     $editorConfiguration = array_column($editor['configuration'], 'url');
     navigationCheck($editorConfiguration === [], 'Configuration inaccessible au rédacteur');
     navigationCheck(!in_array('Admin-config-updates.html', array_column($editor['writing'], 'url'), true),

@@ -154,6 +154,13 @@ final class Application
             ? (string) $requestedArguments[0]
             : (string) $CONFIG['defaultpage'];
         $isAdministrationRequest = $requestedRoute === 'Admin';
+        $privateResponse = $isAdministrationRequest || session_status() === PHP_SESSION_ACTIVE
+            || in_array(strtolower($requestedRoute), ['login', 'personnal', 'forgot-password', 'reset-password', 'disconnect'], true);
+        if (!headers_sent()) {
+            header('Vary: Cookie', false);
+            if ($privateResponse) { header('Cache-Control: private, no-store, max-age=0'); }
+            if (strtolower($requestedRoute) === 'reset-password') { header('Referrer-Policy: no-referrer'); }
+        }
         $templateFile = $isAdministrationRequest
             ? './var/admin/index.tpl'
             : './var/templates/' . basename((string) $CONFIG['template']) . '/index.tpl';
@@ -230,7 +237,7 @@ final class Application
         $template->set('meta_json_ld', \Portix\View\Html::trusted($pageMetadata->jsonLd()));
         $template->set('meta_has_json_ld', $pageMetadata->jsonLd() !== '' ? '1' : '0');
         if (!headers_sent()) {
-            if ($isAdministrationRequest || !empty($isAuthenticated)) {
+            if ($privateResponse || !empty($isAuthenticated) || session_status() === PHP_SESSION_ACTIVE) {
                 header('Cache-Control: private, no-store, max-age=0');
             } elseif (!$this->hasResponseHeader('Cache-Control')) {
                 if (in_array($this->request->method(), ['GET', 'HEAD'], true)) {

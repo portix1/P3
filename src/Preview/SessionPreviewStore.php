@@ -5,7 +5,7 @@ namespace Portix\Preview;
 
 /**
  * Short-lived previews stored inside the authenticated PHP session.
- * Tokens are intentionally useless outside the session that created them.
+ * Tokens are bound to the authenticated account and its permission version.
  */
 final class SessionPreviewStore
 {
@@ -16,9 +16,12 @@ final class SessionPreviewStore
     /** @param array<string, mixed> $payload */
     public function create(string $kind, array $payload): string
     {
+        $identity = self::identity();
+        if ($identity === null) { throw new \RuntimeException('Accès refusé.'); }
         $this->purge();
         $token = bin2hex(random_bytes(16));
         $_SESSION[self::SESSION_KEY][$token] = [
+            'identity' => $identity,
             'kind' => $kind,
             'created_at' => time(),
             'payload' => $payload,
@@ -30,15 +33,29 @@ final class SessionPreviewStore
     /** @return array<string, mixed>|null */
     public function get(string $kind, string $token): ?array
     {
-        if (preg_match('/^[a-f0-9]{32}$/', $token) !== 1) {
+        $identity = self::identity();
+        if ($identity === null || preg_match('/^[a-f0-9]{32}$/D', $token) !== 1) {
             return null;
         }
         $this->purge();
         $entry = $_SESSION[self::SESSION_KEY][$token] ?? null;
-        if (!is_array($entry) || ($entry['kind'] ?? null) !== $kind || !is_array($entry['payload'] ?? null)) {
+        if (!is_array($entry) || ($entry['identity'] ?? null) !== $identity || ($entry['kind'] ?? null) !== $kind || !is_array($entry['payload'] ?? null)) {
             return null;
         }
         return $entry['payload'];
+    }
+
+    public static function clear(): void
+    {
+        unset($_SESSION[self::SESSION_KEY]);
+    }
+
+    private static function identity(): ?array
+    {
+        $name = $_SESSION['user_nick'] ?? null;
+        $version = $_SESSION['auth_version'] ?? null;
+        if (($_SESSION['authenticated'] ?? false) !== true || !is_string($name) || $name === '' || !is_int($version) || $version < 1) { return null; }
+        return [$name, $version];
     }
 
     private function purge(): void
@@ -49,8 +66,9 @@ final class SessionPreviewStore
             return;
         }
         $minimum = time() - self::TTL;
+        $identity = self::identity();
         foreach ($entries as $token => $entry) {
-            if (!is_array($entry) || (int) ($entry['created_at'] ?? 0) < $minimum) {
+            if (!is_array($entry) || $identity === null || ($entry['identity'] ?? null) !== $identity || (int) ($entry['created_at'] ?? 0) < $minimum) {
                 unset($entries[$token]);
             }
         }

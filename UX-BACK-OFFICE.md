@@ -1,6 +1,6 @@
 # Réorganisation du back-office
 
-Version de test 0.8.3-rc4.
+Version de développement 0.9.4-dev — non publiée.
 
 Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont classées dans Rédaction, Administration et Configuration. Chaque entrée possède une icône et un libellé. Rédaction est réservée aux opérations sur le contenu ; Administration regroupe la gestion courante et Configuration les choix durables qui définissent le site. Les deux derniers espaces sont réservés aux administrateurs.
 
@@ -8,13 +8,13 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 | --- | --- | --- | --- |
 | Moteur | — | Comptes et droits | Identité, gestion des modules, diagnostics, référencement, messagerie, apparence |
 | Articles | Brouillons, demande de publication et édition autorisée | Validation et retour pour correction, catégories, séries et ordre (administrateurs) | Navigation des articles |
-| Actualités | Rédaction et publication | — | — |
+| Actualités | Brouillons autorisés selon les droits ; publication directe uniquement si autorisée | Publication des brouillons par un administrateur, suppression et épinglage | — |
 | Médiathèque | Fichiers, images, insertion et gestion des médias | — | — |
 | Menu principal | — | — | Organisation des liens |
 | Menu de bas de page | — | — | Organisation des liens |
 | Accueil | — | — | Composition, réglages et résultats pour les administrateurs seulement |
 | Téléchargements | Fichiers et catégories | — | — |
-| Contact | Messagerie pour les rédacteurs disposant déjà de cet accès | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
+| Contact | — | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
 | Affiliation | Produits, offres et partenaires, accès administrateur conservé | — | Paramètres de présentation |
 | Statistiques | — | Audience, journaux applicatifs, journal d’audit | Mode de mesure et rétention |
 | Protection des contenus | — | — | Corbeille, révisions, points de restauration et durées de conservation |
@@ -32,7 +32,7 @@ Les pages Identité, Référencement, Messagerie et Apparence enregistrent leurs
 
 L’import d’un thème contrôlé et sans conflit déclenche son installation directement. Un conflit avec une personnalisation bloque l’installation et liste les fichiers. Le thème public est choisi séparément depuis Apparence du site. Les protections de sauvegarde, de restauration, de rôle et de formulaire sont conservées.
 
-Les liens de mise à jour proposent actuellement les archives à télécharger. L’installation distante en un clic reste à développer.
+Depuis 0.9.3, le moteur peut installer une mise à jour signée depuis le back-office. La 0.9.4 fournit la clé publique officielle. Les actualités ne disposent pas encore d’un état intermédiaire « en attente » : le rédacteur sans droit de publication enregistre un brouillon, que l’administrateur publie après vérification.
 
 ## Vérification sur le serveur de test
 

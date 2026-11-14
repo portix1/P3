@@ -6,8 +6,8 @@ $updateStatus = '';
 $root = dirname(__DIR__);
 $installedVersion = trim((string) file_get_contents($root . '/VERSION'));
 $coreVersion = \Portix\Maintenance\ExtensionUpdates::core($installedVersion);
+$coreFailed = \Portix\Maintenance\ExtensionUpdates::coreCheckFailed();
 $coreMessage = '';
-$coreFailed = false;
 
 // Core updates are explicitly requested by an administrator: never on page load.
 if (isset($_POST['install_core_update'])) {
@@ -49,7 +49,7 @@ $template->set('core_update_target', $coreVersion);
 $template->set('core_update_installed', $installedVersion);
 $template->set('core_update_message', $coreMessage);
 $template->set('core_update_failed', $coreFailed ? '1' : '0');
-foreach (['heading', 'action', 'confirm', 'help', 'current', 'available', 'none'] as $name) {
+foreach (['heading', 'action', 'confirm', 'help', 'current', 'available', 'none', 'unavailable'] as $name) {
     $template->set('core_update_' . $name, $translator->text('core_update_' . $name));
 }
 if (isset($_POST['check_extension_updates'])) {

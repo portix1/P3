@@ -304,6 +304,9 @@ final class CoreUpdater
 
     private static function isApplicationFile(string $relative): bool
     {
+        // Only the first upgrade from 0.9.3 introduces the bundled key. Once
+        // present, the established updater never replaces its trust anchor.
+        if ($relative === 'src/Maintenance/core-release-public.pem') { return false; }
         if (in_array($relative, ['VERSION', 'index.php', 'install.php',
             'README.md', 'RELEASE-NOTES.md', 'SIGNED-RELEASES.md', 'LICENSE'], true)
             || in_array($relative, self::MANAGED_HTTP_FILES, true)) { return true; }

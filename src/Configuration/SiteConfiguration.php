@@ -122,9 +122,29 @@ final class SiteConfiguration
         }
 
         $temporary = $this->file . '.tmp-' . bin2hex(random_bytes(8));
-        if (file_put_contents($temporary, $json, LOCK_EX) === false) {
-            throw new RuntimeException('Impossible d’écrire la configuration temporaire.');
+        // Create privately before writing any content; keep atomic replacement.
+        $mask = umask(0077);
+        try {
+            $handle = @fopen($temporary, 'xb');
+        } finally {
+            umask($mask);
         }
+        if ($handle === false) {
+            throw new RuntimeException('Impossible de créer la configuration temporaire.');
+        }
+        try {
+            if (DIRECTORY_SEPARATOR !== '\\' && !chmod($temporary, 0600)) {
+                throw new RuntimeException('Impossible de protéger la configuration temporaire.');
+            }
+            if (fwrite($handle, $json) !== strlen($json) || !fflush($handle)) {
+                throw new RuntimeException('Impossible d’écrire la configuration temporaire.');
+            }
+        } catch (\Throwable $error) {
+            fclose($handle);
+            @unlink($temporary);
+            throw $error;
+        }
+        fclose($handle);
         $backup = null;
         if (DIRECTORY_SEPARATOR === '\\' && is_file($this->file)) {
             $backup = $this->file . '.bak-' . bin2hex(random_bytes(6));

@@ -60,7 +60,11 @@ if (isset($_POST['pseudo'], $_POST['pass'])) {
     } else {
         $candidate = $repositories->users()->find($candidatePseudo);
         if ($candidate !== null && $candidate->verifyPassword((string) $_POST['pass'])) {
-            session_regenerate_id(true);
+            if (!session_regenerate_id(true)) {
+                throw new RuntimeException('Impossible de renouveler la session.');
+            }
+            $template->set('csrf_token', PortixSecurity::rotateCsrfToken());
+            \Portix\Preview\SessionPreviewStore::clear();
             if ($candidate->passwordNeedsUpgrade()) {
                 $repositories->users()->updatePassword(
                     $candidatePseudo,
@@ -81,6 +85,8 @@ if (isset($_POST['pseudo'], $_POST['pass'])) {
                 exit;
             }
         } else {
+            \Portix\Preview\SessionPreviewStore::clear();
+            $template->set('csrf_token', PortixSecurity::rotateCsrfToken());
             unset($_SESSION['user_nick'], $_SESSION['authenticated'], $_SESSION['auth_version'], $_SESSION['pass']);
             PortixSecurity::recordLoginFailure($candidatePseudo);
             $template->set('login_message', $translator->text('login_invalid_credentials'));
@@ -97,6 +103,8 @@ if ($authenticated && $user !== null) {
     if (!isset($_SESSION['auth_version'])
         || (int) $_SESSION['auth_version'] !== $user->authVersion()) {
         $authenticated = false;
+        $template->set('csrf_token', PortixSecurity::rotateCsrfToken());
+        \Portix\Preview\SessionPreviewStore::clear();
         unset($_SESSION['user_nick'], $_SESSION['authenticated'], $_SESSION['auth_version'], $_SESSION['pass']);
         $user = null;
     }
@@ -106,8 +114,12 @@ if ($authenticated && $user !== null) {
     $template->setSlot('users', './var/modules/UserZone/templates/personnal.tpl');
     $Isadmin = $user->isAdmin();
 } else {
+    if ($authenticated) {
+        $template->set('csrf_token', PortixSecurity::rotateCsrfToken());
+    }
     $authenticated = false;
-    unset($_SESSION['user_nick'], $_SESSION['authenticated'], $_SESSION['auth_version'], $_SESSION['pass']);
+    \Portix\Preview\SessionPreviewStore::clear();
+        unset($_SESSION['user_nick'], $_SESSION['authenticated'], $_SESSION['auth_version'], $_SESSION['pass']);
     $user = new AnonymousUser();
     $template->setSlot('users', './var/modules/UserZone/templates/users.tpl');
 }
@@ -239,7 +251,11 @@ if ($authRoute === 'reset-password') {
                 if ($pseudo === null) {
                     $template->set('password_reset_error', $translator->text('password_reset_invalid'));
                 } else {
-                    session_regenerate_id(true);
+                    if (!session_regenerate_id(true)) {
+                throw new RuntimeException('Impossible de renouveler la session.');
+            }
+            $template->set('csrf_token', PortixSecurity::rotateCsrfToken());
+                    \Portix\Preview\SessionPreviewStore::clear();
                     unset(
                         $_SESSION['user_nick'],
                         $_SESSION['authenticated'],

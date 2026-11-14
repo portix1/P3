@@ -7,11 +7,13 @@ use RuntimeException;
 
 /**
  * RSA/SHA-256 verification of the exact canonical checksum line.
- * The administrator provisions the public key independently of the release.
+ * The bundled official key is used on new installations; a local key takes precedence.
  */
 final class ReleaseSignature
 {
     private const KEY_FILE = 'var/sys/core-release-public.pem';
+    private const BUNDLED_KEY = 'src/Maintenance/core-release-public.pem';
+    private const BUNDLED_FINGERPRINT = '26aa2418c7795362ef7c258f688f0190707972466deea7631b50f9bb7586cda6';
 
     public static function trustedKey(string $root): string
     {
@@ -22,15 +24,60 @@ final class ReleaseSignature
             }
         }
         $path = $root . '/' . self::KEY_FILE;
+        $bundled = !file_exists($path);
+        if ($bundled) {
+            foreach (['src', 'src/Maintenance', self::BUNDLED_KEY] as $relative) {
+                if (is_link($root . '/' . $relative)) {
+                    throw new RuntimeException('Clé officielle : lien symbolique refusé.');
+                }
+            }
+            $path = $root . '/' . self::BUNDLED_KEY;
+        }
         if (!is_file($path) || !is_readable($path)) {
-            throw new RuntimeException('Mise à jour refusée : clé publique de confiance non installée. Utilisez la procédure de mise à jour manuelle vérifiée.');
+            throw new RuntimeException('Mise à jour refusée : clé publique de confiance indisponible.');
         }
         $pem = file_get_contents($path, false, null, 0, 16385);
         if (!is_string($pem) || strlen($pem) > 16384) {
             throw new RuntimeException('Clé publique de confiance illisible ou trop volumineuse.');
         }
-        self::parseKey($pem);
+        $key = self::parseKey($pem);
+        if ($bundled) {
+            $details = openssl_pkey_get_details($key);
+            $canonical = is_array($details) ? ($details['key'] ?? '') : '';
+            $der = base64_decode((string) preg_replace('/-----[^-]+-----|\s+/', '', $canonical), true);
+            if ($der === false || !hash_equals(self::BUNDLED_FINGERPRINT, hash('sha256', $der))) {
+                throw new RuntimeException('Mise à jour refusée : empreinte de la clé officielle incorrecte.');
+            }
+        }
         return $pem;
+    }
+
+    /** Persist the verified bundled anchor before replacing the application tree.
+     * Never import a key from a rollback point or overwrite a local anchor.
+     */
+    public static function preserveBeforeRestore(string $root): void
+    {
+        $root = rtrim($root, '/\\');
+        foreach (['var', 'var/sys', self::KEY_FILE, 'src', 'src/Maintenance', self::BUNDLED_KEY] as $relative) {
+            if (is_link($root . '/' . $relative)) {
+                throw new RuntimeException('Clé de confiance : lien symbolique refusé.');
+            }
+        }
+        $local = $root . '/' . self::KEY_FILE;
+        if (file_exists($local)) {
+            if (!is_file($local)) { throw new RuntimeException('Clé locale invalide.'); }
+            return; // preserve even invalid local bytes; updates will refuse them.
+        }
+        if (!file_exists($root . '/' . self::BUNDLED_KEY)) { return; }
+        $pem = self::trustedKey($root);
+        $handle = @fopen($local, 'xb');
+        if ($handle === false) { throw new RuntimeException('Impossible de préserver la clé de confiance.'); }
+        $written = fwrite($handle, $pem);
+        fclose($handle);
+        if ($written !== strlen($pem)) {
+            @unlink($local);
+            throw new RuntimeException('Écriture incomplète de la clé de confiance.');
+        }
     }
 
     private static function parseKey(string $pem): \OpenSSLAsymmetricKey

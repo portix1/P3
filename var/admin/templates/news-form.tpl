@@ -19,13 +19,13 @@
         <label>{{ news_admin_status }}
             <select name="status">
                 <option value="draft" {{ news_draft_selected }}>{{ news_admin_draft }}</option>
-                <option value="published" {{ news_published_selected }}>{{ news_admin_published }}</option>
+                {% if news_can_publish == "1" %}<option value="published" {{ news_published_selected }}>{{ news_admin_published }}</option>{% endif %}
             </select>
         </label>
-        <label class="news-pin-option">
+        {% if news_can_pin == "1" %}<label class="news-pin-option">
             <span>{{ news_admin_pin }}</span>
             <span><input type="checkbox" name="is_pinned" value="1" {{ news_pinned_checked }} /> {{ news_admin_pin_help }}</span>
-        </label>
+        </label>{% endif %}
     </div>
 
     <label for="news-intro">{{ news_admin_intro }}</label>

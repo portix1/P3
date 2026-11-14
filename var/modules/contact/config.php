@@ -4,8 +4,10 @@ declare(strict_types=1);
 use Portix\Mail\NativeMailTransport;
 use Portix\Observability\EventLogger;
 
-if (!$user->isAdmin() && !$user->isRedactor()) {
-    throw new RuntimeException($translator->text('security_access_denied'));
+if (!$user->isAdmin()) {
+    http_response_code(403);
+    $template->setSlot('main', './var/admin/templates/access-denied.tpl');
+    return;
 }
 $settings = PortixSettings::read('contact', [
     'recipient_name' => $translator->text('contact_default_recipient'),

@@ -16,7 +16,7 @@ final class Bootstrap
             throw new RuntimeException('P3 nécessite PHP 8.2 ou plus récent.');
         }
 
-        $root = rtrim($root, '/\\');
+        $root = realpath($root) ?: rtrim($root, '/\\');
         chdir($root);
         self::loadRuntimeServices($root);
 
@@ -27,8 +27,13 @@ final class Bootstrap
         ini_set('log_errors', '1');
 
         $request = Request::fromGlobals();
+        // Both session detection and creation must use the same installation-specific name.
+        if (session_status() === PHP_SESSION_NONE
+            && session_name('P3SID' . substr(hash('sha256', $root), 0, 24)) === false) {
+            throw new RuntimeException('Impossible de nommer la session P3.');
+        }
         if (self::requestNeedsSession($request, $root)) {
-            self::startSession($root, $request);
+            self::startSession($root, $request, $configuration);
         }
 
         if ($installationDatabase !== null && $configuration->isInstalled()) {
@@ -80,7 +85,7 @@ final class Bootstrap
         return false;
     }
 
-    private static function startSession(string $root, Request $request): void
+    private static function startSession(string $root, Request $request, SiteConfiguration $configuration): void
     {
         if (session_status() !== PHP_SESSION_NONE) {
             return;
@@ -89,16 +94,22 @@ final class Bootstrap
         if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) {
             throw new RuntimeException('Impossible de créer le dossier de sessions.');
         }
-        if (is_writable($directory)) {
-            session_save_path($directory);
+        if (!is_writable($directory) || session_save_path($directory) === false) {
+            throw new RuntimeException('Impossible d’utiliser le dossier de sessions P3.');
         }
-        session_set_cookie_params([
+        // Refuse client-supplied session identifiers not already created by PHP.
+        if (ini_set('session.use_strict_mode', '1') === false || ini_set('session.use_only_cookies', '1') === false) {
+            throw new RuntimeException('Impossible de sécuriser les identifiants de session.');
+        }
+        if (!session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
-            'secure' => $request->isSecure(),
+            'secure' => $request->secureSessionCookie((string) $configuration->get('site_url', '')),
             'httponly' => true,
             'samesite' => 'Lax',
-        ]);
+        ])) {
+            throw new RuntimeException('Impossible de sécuriser le cookie de session.');
+        }
         if (!session_start()) {
             throw new RuntimeException('Impossible de démarrer la session.');
         }
