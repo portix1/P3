@@ -1,5 +1,22 @@
 # Feuille de route de P3
 
+## Priorité actuelle — consolidation vers 1.0 (validée le 14 novembre 2026)
+
+Cette séquence prime sur les anciens plans ci-dessous, conservés comme historique à réconcilier. Les versions indiquent des objectifs, non des dates ni des travaux déjà validés.
+
+| Version | Objectif |
+| --- | --- |
+| 0.9.3 | Réduction de la dette technique |
+| 0.9.4 | Audit de sécurité et permissions |
+| 0.9.5 | Robustesse de l'installation, des mises à jour et de la restauration |
+| 0.9.6 | Accessibilité et homogénéisation des interfaces |
+| 0.9.7 | Performances et consommation des ressources |
+| 0.9.8 | Consolidation et vérification de la documentation utilisateur et développeur |
+| 0.9.9 | Validation par des bêta-testeurs indépendants |
+| 1.0.0 | Première distribution publique stable après validation |
+
+Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
+
 ## Première distribution autonome
 
 Le paquet de base comprend le moteur, les composants indispensables et un thème neutre par défaut. Il doit permettre d’installer P3 sur un serveur vierge.
