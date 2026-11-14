@@ -149,12 +149,12 @@ final class PortixSecurity
         header('Referrer-Policy: strict-origin-when-cross-origin');
         header('X-Frame-Options: DENY');
         header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
-	header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; "
-  	. "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-    	. "font-src 'self' https://fonts.gstatic.com; "
-    	. "script-src 'self' https://cdn.jsdelivr.net; "
-        . "frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://www.dailymotion.com; "
-    	. "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
+        header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; "
+            . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/katex@0.18.9/dist/katex.min.css https://fonts.googleapis.com; "
+            . "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net/npm/katex@0.18.9/dist/fonts/; "
+            . "script-src 'self' https://cdn.jsdelivr.net/npm/katex@0.18.9/dist/katex.min.js; "
+            . "frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://www.dailymotion.com; "
+            . "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
         if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
             header('Strict-Transport-Security: max-age=31536000');
         }

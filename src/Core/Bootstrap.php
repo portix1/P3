@@ -16,7 +16,7 @@ final class Bootstrap
             throw new RuntimeException('P3 nécessite PHP 8.2 ou plus récent.');
         }
 
-        $root = rtrim($root, '/\\');
+        $root = realpath($root) ?: rtrim($root, '/\\');
         chdir($root);
         self::loadRuntimeServices($root);
 
@@ -27,6 +27,11 @@ final class Bootstrap
         ini_set('log_errors', '1');
 
         $request = Request::fromGlobals();
+        // Both session detection and creation must use the same installation-specific name.
+        if (session_status() === PHP_SESSION_NONE
+            && session_name('P3SID' . substr(hash('sha256', $root), 0, 24)) === false) {
+            throw new RuntimeException('Impossible de nommer la session P3.');
+        }
         if (self::requestNeedsSession($request, $root)) {
             self::startSession($root, $request, $configuration);
         }
@@ -89,8 +94,8 @@ final class Bootstrap
         if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) {
             throw new RuntimeException('Impossible de créer le dossier de sessions.');
         }
-        if (is_writable($directory)) {
-            session_save_path($directory);
+        if (!is_writable($directory) || session_save_path($directory) === false) {
+            throw new RuntimeException('Impossible d’utiliser le dossier de sessions P3.');
         }
         // Refuse client-supplied session identifiers not already created by PHP.
         if (ini_set('session.use_strict_mode', '1') === false || ini_set('session.use_only_cookies', '1') === false) {

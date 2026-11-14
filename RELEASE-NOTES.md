@@ -1,6 +1,6 @@
-# P3 0.9.4-dev — sécurité et permissions
+# P3 0.9.4 — sécurité et permissions
 
-Version de développement non publiée. La version stable 0.9.3 est publiée et installée en production selon le mainteneur.
+Version préparée pour signature, non publiée. La version stable 0.9.3 est publiée et installée en production selon le mainteneur.
 
 - Clé publique officielle intégrée au moteur : aucune opération FTP pour les nouvelles installations ; contrôle de son empreinte SHA-256. Une clé locale existante reste prioritaire et ne peut pas être remplacée par le nouvel updater. Une clé locale invalide provoque un refus. La clé privée reste exclusivement hors dépôt.
 - Distribution : exclusion des fichiers de clés usuels, sauf la clé publique officielle à son chemin exact ; tests de régression ajoutés. Les installations 0.9.3 nécessitent encore une installation ponctuelle de la clé locale pour effectuer leur première mise à jour signée.
@@ -9,18 +9,19 @@ Version de développement non publiée. La version stable 0.9.3 est publiée et 
 - Aperçus privés : association au compte authentifié et à la version de ses droits ; suppression lors des changements d’authentification. Les anciens liens d’aperçu deviennent invalides, sans modification des articles ou actualités enregistrés.
 - Restauration : préservation de la clé officielle vérifiée dans le fichier local lorsque la version restaurée ne la fournit pas ; conservation de la clé locale et du verrou de mise à jour existants.
 - Vérification de version unifiée avec CoreUpdater ; message distinct lorsque la vérification est indisponible. Tests des trois états validés ; cache ancien, expiré, absent ou incohérent refusé, tests de régression ajoutés.
-- Contact : accès non autorisé aux réglages et à la purge refusé avant toute opération.
+- Contact 1.1.2 : messagerie et réglages réservés aux administrateurs. Un ancien manifeste qui accordait l’accès aux rédacteurs ne peut plus rétablir ce droit.
 - Médiathèque : consultation des usages réservée aux administrateurs pour protéger les références aux brouillons et les chemins internes. Ajout, sélection et description des images toujours accessibles aux rédacteurs.
 - Restauration et mise à jour ne peuvent plus modifier simultanément l’installation ; verrou partagé et test de refus concurrent.
-- CI réussies jusqu’au lot médiathèque (43597818241). Test explicite de la politique des médias ajouté ensuite ; validation finale et audit à compléter avant publication.
-
-- Suivi de l’audit OpenCode : rotation des jetons CSRF après connexion et réinitialisation, refus des anciens jetons ; écriture atomique privée de config.json (0600 sur Unix) ; accès Contact réservé aux administrateurs, y compris requêtes directes. Tests ajoutés ; CI à confirmer. Les comptes rédacteurs perdent volontairement l’accès aux correspondances privées.
+- Suivi de l’audit OpenCode : rotation des jetons CSRF après connexion et réinitialisation, refus des anciens jetons ; écriture atomique privée de config.json (0600 sur Unix). Un fichier déjà présent passe en 0600 à sa prochaine écriture.
 
 - Cookies de session Secure si HTTPS direct ou URL HTTPS configurée, y compris derrière un proxy ; aucune confiance dans X-Forwarded-Proto pour cette décision. Le serveur doit rediriger HTTP vers HTTPS ; l’environnement local HTTP reste compatible.
 
 - Anciens mots de passe MD5 : détection centralisée et comptage agrégé sans divulgation des empreintes ; conversion au premier login conservée et testée. Compatibilité transitoire maintenue pour éviter de bloquer les comptes anciens ; suppression prévue après migration ou réinitialisation.
 
 - Diagnostics : contrôle des comptes MD5 sans affichage des empreintes et de la protection de config.json sur Unix.
+
+- Sessions isolées par installation, y compris lorsque plusieurs sites partagent un domaine. Une reconnexion est nécessaire après la mise à jour.
+- CSP : seuls les fichiers KaTeX utilisés sont autorisés sur jsDelivr. Les styles en ligne restent nécessaires à l’éditeur et aux contenus existants. Les sources vidéo et les polices des thèmes sont conservées.
 
 ## Historique 0.9.3
 

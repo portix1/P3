@@ -63,11 +63,22 @@ try {
     $check=static function(bool $value,string $message):void { if (!$value) { throw new RuntimeException($message); } };
     // Exercise the actual ZIP upload screen, not a file-copy substitute.
     $login=$request('/login.html');
-    preg_match('/PHPSESSID=([^;]+)/',implode("\n",$login[2]),$cookie);
+    preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$login[2]),$cookie);
+    $firstCookieName = 'P3SID' . substr(hash('sha256', realpath($fixture)), 0, 24);
+    $check(str_starts_with($cookie[1] ?? '', $firstCookieName . '='), 'Cookie name identifies the installation');
+    $secondSite = $fixture . '/second-site';
+    mkdir($secondSite, 0770, true);
+    $copy($source . '/includes', $secondSite . '/includes');
+    file_put_contents($secondSite . '/probe.php', '<?php require ' . var_export($source . '/bootstrap/autoload.php', true)
+        . '; $_SERVER["REQUEST_URI"] = "/login.html"; Portix\Core\Bootstrap::boot(__DIR__); echo session_name();');
+    $secondLogin = $request('/second-site/probe.php', 'GET', '', ['Cookie: ' . $cookie[1]]);
+    $check($secondLogin[0] === 200 && $secondLogin[1] !== $firstCookieName
+        && preg_grep('/^Set-Cookie: ' . preg_quote($secondLogin[1], '/') . '=/i', $secondLogin[2]),
+        'A second installation on the same origin uses a distinct cookie');
     preg_match('/name="csrf_token" value="([^"]+)"/',$login[1],$token);
-    $auth=['Content-Type: application/x-www-form-urlencoded','Cookie: PHPSESSID='.($cookie[1]??'')];
+    $auth=['Content-Type: application/x-www-form-urlencoded','Cookie: '.($cookie[1]??'')];
     $logged=$request('/login.html','POST',http_build_query(['pseudo'=>'admin','pass'=>'test-home-password','csrf_token'=>$token[1]??'']),$auth);
-    if (preg_match('/PHPSESSID=([^;]+)/',implode("\n",$logged[2]),$cookie)) { $auth[1]='Cookie: PHPSESSID='.$cookie[1]; }
+    if (preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$logged[2]),$cookie)) { $auth[1]='Cookie: '.$cookie[1]; }
     $screen=$request('/Admin-config-modules.html','GET','',$auth);
     preg_match('/name="csrf_token" value="([^"]+)"/',$screen[1],$token);
     $check(!is_dir($fixture.'/var/modules/home'),'Core fixture starts without Home');
@@ -133,11 +144,11 @@ try {
     $check(in_array($anon[0],[200,403],true) && !str_contains($anon[1],'home_action'),'Anonymous cannot access composition controls');
     foreach (['admin','editor'] as $actor) {
         $login=$request('/login.html');
-        preg_match('/PHPSESSID=([^;]+)/',implode("\n",$login[2]),$cookie);
+        preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$login[2]),$cookie);
         preg_match('/name="csrf_token" value="([^"]+)"/',$login[1],$token);
-        $headers=['Content-Type: application/x-www-form-urlencoded','Cookie: PHPSESSID='.($cookie[1]??'')];
+        $headers=['Content-Type: application/x-www-form-urlencoded','Cookie: '.($cookie[1]??'')];
         $logged=$request('/login.html','POST',http_build_query(['pseudo'=>$actor,'pass'=>'test-home-password','csrf_token'=>$token[1]??'']),$headers);
-        if (preg_match('/PHPSESSID=([^;]+)/',implode("\n",$logged[2]),$cookie)) { $headers[1]='Cookie: PHPSESSID='.$cookie[1]; }
+        if (preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$logged[2]),$cookie)) { $headers[1]='Cookie: '.$cookie[1]; }
         $configArea=$request('/Admin-configuration.html','GET','',$headers);
         $check($configArea[0]===($actor==='admin'?200:403), 'Only administrators enter Configuration');
         $check(str_contains($configArea[1],'Admin-home.html')===($actor==='admin'), 'Only administrators can find Home in Configuration');

@@ -14,7 +14,7 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 | Menu de bas de page | — | — | Organisation des liens |
 | Accueil | — | — | Composition, réglages et résultats pour les administrateurs seulement |
 | Téléchargements | Fichiers et catégories | — | — |
-| Contact | Messagerie pour les rédacteurs disposant déjà de cet accès | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
+| Contact | — | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
 | Affiliation | Produits, offres et partenaires, accès administrateur conservé | — | Paramètres de présentation |
 | Statistiques | — | Audience, journaux applicatifs, journal d’audit | Mode de mesure et rétention |
 | Protection des contenus | — | — | Corbeille, révisions, points de restauration et durées de conservation |

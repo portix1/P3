@@ -70,6 +70,10 @@ final class ModuleManifest
             || $manifest['path'] !== $expectedPath) {
             throw new RuntimeException('modules_manifest_invalid');
         }
+        // A legacy Contact package must not reopen access to private messages.
+        if ($manifest['prefix'] === 'contact' && $manifest['admin_access'] === 'editor') {
+            $manifest['admin_access'] = 'admin';
+        }
         $manifest['priority'] = max(0, $manifest['priority']);
 
         return $manifest;
