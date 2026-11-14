@@ -1,8 +1,14 @@
-# P3 0.9.2 — consolidation du back-office
+# P3 0.9.3-dev — consolidation technique
 
-**Version stable en préparation sur une branche distincte, non fusionnée et non publiée.** La version diffusée demeure **P3 0.9.1** jusqu'à autorisation de publication.
+**Branche de développement non publiée.** La version stable diffusée est 0.9.2. Cette intervention ne constitue pas une autorisation de mise à jour.
 
-## Changements depuis 0.9.1
+- Protection `var/private/.htaccess` obligatoire dans les nouvelles archives ; le nouvel updater peut la déployer. Les règles HTTP racine et les configurations locales restent préservées. Un updater ancien ignore ce fichier : installer la protection manuellement si absente et vérifier le refus HTTP avant toute sauvegarde ou mise à jour. Sur nginx, configurer explicitement un refus d'accès au répertoire privé ; `.htaccess` ne s'y applique pas.
+- Empreinte du catalogue réconciliée avec l'ancrage existant ; contrôle automatique ajouté. Aucun changement de catalogue ni de ZIP de module.
+- Numéro de développement distinct, garde de publication stable et suppression de l'ancien workflow candidat.
+- Tests de distribution et de mise à jour complétés ; résultats CI à vérifier. Aucun résultat dynamique n'est revendiqué.
+- La signature indépendante des mises à jour reste à concevoir et à déployer avec une clé de confiance hors dépôt. Le SHA-256 publié n'est qu'un contrôle d'intégrité. Ne pas considérer le canal automatique comme authentifié cryptographiquement.
+
+## Historique 0.9.2 (publiée le 13 novembre 2026)
 
 - Espaces **Rédaction**, **Administration** et **Configuration** strictement distincts : la rédaction reste limitée au contenu ; la configuration et la structure du site sont réservées aux administrateurs.
 - Choix individuel des droits : **relecture obligatoire** ou **publication directe** pour chaque rédacteur. Le choix de publication directe autorise aussi la correction de ses articles publiés.
@@ -11,27 +17,4 @@
 - Formulaire simplifié, sauvegarde automatique privée toutes les 30 secondes et proposition de récupération d'un brouillon. La sauvegarde automatique **ne change jamais le statut de publication**.
 - Migration SQLite de schéma **8 vers 9**, non destructive : ajout du champ `articles.review_note`. La sauvegarde automatique crée sa table privée `article_autosaves` au premier usage.
 
-## Module autonome et provenance
-
-- Module **Articles 1.4.9** inclus dans cette version préparée ; compatible avec **P3 0.9.2 ou version ultérieure**.
-- Catalogue de cette candidate et ZIP autonome Articles reconstruits ensemble, avec empreintes SHA-256 et référence Git de confiance figée.
-- Il ne faut pas remplacer séparément le catalogue, le module et la référence de confiance.
-- Le canal stable de P3 0.9.1 reste inchangé tant que la 0.9.2 n'est pas approuvée et publiée.
-
-## Mise à jour d'une installation existante
-
-**Sauvegarder les fichiers et la base SQLite avant toute mise à jour.** Les sites en production ayant reçu des correctifs individuels ne doivent pas réinstaller P3 ni écraser leur base.
-
-Sur LWS, **conserver le `.htaccess` adapté à l'hébergement**, les redirections canoniques, `var/sys`, `var/private`, `database`, `sessions`, `var/uploads`, les médias et les thèmes personnalisés. Vérifier la file FileZilla avant tout transfert.
-
-L'archive complète est destinée à une installation neuve ou à une mise à jour contrôlée sur copie. Aucun transfert automatique n'est déclenché depuis GitHub.
-
-## Tests de validation prévus
-
-- PHP 8.2, 8.3, 8.4 et 8.5, permissions, migrations, templates, traduction et sauvegarde automatique.
-- Navigation, HTTP et Chromium, y compris les droits du rédacteur et de l'administrateur.
-- Reproductibilité du ZIP Articles et cohérence catalogue ↔ fichiers ↔ empreintes.
-- Distribution sans bases de production, sessions, sauvegardes, configurations privées ni médias importés.
-- Contrôle d'une installation neuve et de la conservation des données d'une installation existante.
-
-La fusion dans `main`, la création d'une GitHub Release et tout déploiement en production nécessitent une autorisation explicite.
+Le module Articles 1.4.9 est distribué avec le catalogue 0.9.2. La release publiée ne contient pas le CoreUpdater ajouté ultérieurement dans main. Avant toute mise à jour : sauvegarder fichiers et base, préserver les réglages LWS, les thèmes personnalisés et les médias ; ne pas relancer l'installateur. Voir README.md et ROADMAP.md.
