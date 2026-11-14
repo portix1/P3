@@ -43,6 +43,12 @@ function permissionRun(): void {
     $_SESSION=['csrf_token'=>'']; permissionAssert(!PortixSecurity::csrfIsValid(''),'empty CSRF token refused');
     $_SESSION=['csrf_token'=>123]; permissionAssert(!PortixSecurity::csrfIsValid('123'),'non-string CSRF token refused');
     $_SESSION=['csrf_token'=>'fixture']; permissionAssert(PortixSecurity::csrfIsValid('fixture')&&!PortixSecurity::csrfIsValid('wrong'),'valid and invalid CSRF token');
+    foreach (['usages','analyse','alt_audit','replace','delete','restore','inventory','recover','webp_candidates','webp_migrate','unknown'] as $operation) {
+        permissionAssert(Portix\Domain\MediaPermissions::requiresAdmin($operation), 'media restricted '.$operation);
+    }
+    foreach (['list','upload','set_accessibility'] as $operation) {
+        permissionAssert(!Portix\Domain\MediaPermissions::requiresAdmin($operation), 'media editorial '.$operation);
+    }
     $previewStore = new Portix\Preview\SessionPreviewStore();
     $_SESSION=['authenticated'=>true,'user_nick'=>'writer','auth_version'=>1];
     $previewToken=$previewStore->create('article',['title'=>'private preview']);
