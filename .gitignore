@@ -38,6 +38,7 @@
 .env.*
 !.env.example
 *.pem
+!/src/Maintenance/core-release-public.pem
 *.p12
 *.pfx
 id_rsa*
