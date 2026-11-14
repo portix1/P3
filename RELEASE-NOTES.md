@@ -7,7 +7,8 @@ Version de développement non publiée. La version stable 0.9.3 est publiée et 
 - Actualités : contrôle des droits individuels de création, modification et publication ; filtrage des brouillons inaccessibles ; épinglage réservé aux administrateurs. Les brouillons sont publiés par l’administrateur si le rédacteur n’a pas la publication directe.
 - Sessions et formulaires : jetons vides refusés, identifiants de session stricts, réponses avec session non mises en cache, Vary: Cookie et réinitialisation sans référent ; accès anonyme à l’administration renvoie 403.
 - Aperçus privés : association au compte authentifié et à la version de ses droits ; suppression lors des changements d’authentification. Les anciens liens d’aperçu deviennent invalides, sans modification des articles ou actualités enregistrés.
-- Tests CI des deux premiers lots réussis (43593007028 et 43593521836, sept tâches chacun). Validation du troisième lot et reste de l’audit à poursuivre avant publication.
+- Restauration : préservation de la clé officielle vérifiée dans le fichier local lorsque la version restaurée ne la fournit pas ; conservation de la clé locale et du verrou de mise à jour existants.
+- Tests CI des trois premiers lots réussis (43593007028, 43593521836 et 43594016586). Validation de la restauration et reste de l’audit à poursuivre avant publication.
 
 ## Historique 0.9.3
 
