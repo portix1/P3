@@ -61,6 +61,7 @@ if (isset($_POST['pseudo'], $_POST['pass'])) {
         $candidate = $repositories->users()->find($candidatePseudo);
         if ($candidate !== null && $candidate->verifyPassword((string) $_POST['pass'])) {
             session_regenerate_id(true);
+            \Portix\Preview\SessionPreviewStore::clear();
             if ($candidate->passwordNeedsUpgrade()) {
                 $repositories->users()->updatePassword(
                     $candidatePseudo,
@@ -81,7 +82,8 @@ if (isset($_POST['pseudo'], $_POST['pass'])) {
                 exit;
             }
         } else {
-            unset($_SESSION['user_nick'], $_SESSION['authenticated'], $_SESSION['auth_version'], $_SESSION['pass']);
+            \Portix\Preview\SessionPreviewStore::clear();
+        unset($_SESSION['user_nick'], $_SESSION['authenticated'], $_SESSION['auth_version'], $_SESSION['pass']);
             PortixSecurity::recordLoginFailure($candidatePseudo);
             $template->set('login_message', $translator->text('login_invalid_credentials'));
             $portixEventLogger->audit('anonymous', 'user.login_failed', $candidatePseudo, [], $requestId);
@@ -97,6 +99,7 @@ if ($authenticated && $user !== null) {
     if (!isset($_SESSION['auth_version'])
         || (int) $_SESSION['auth_version'] !== $user->authVersion()) {
         $authenticated = false;
+        \Portix\Preview\SessionPreviewStore::clear();
         unset($_SESSION['user_nick'], $_SESSION['authenticated'], $_SESSION['auth_version'], $_SESSION['pass']);
         $user = null;
     }
@@ -107,7 +110,8 @@ if ($authenticated && $user !== null) {
     $Isadmin = $user->isAdmin();
 } else {
     $authenticated = false;
-    unset($_SESSION['user_nick'], $_SESSION['authenticated'], $_SESSION['auth_version'], $_SESSION['pass']);
+    \Portix\Preview\SessionPreviewStore::clear();
+        unset($_SESSION['user_nick'], $_SESSION['authenticated'], $_SESSION['auth_version'], $_SESSION['pass']);
     $user = new AnonymousUser();
     $template->setSlot('users', './var/modules/UserZone/templates/users.tpl');
 }
@@ -240,6 +244,7 @@ if ($authRoute === 'reset-password') {
                     $template->set('password_reset_error', $translator->text('password_reset_invalid'));
                 } else {
                     session_regenerate_id(true);
+                    \Portix\Preview\SessionPreviewStore::clear();
                     unset(
                         $_SESSION['user_nick'],
                         $_SESSION['authenticated'],
