@@ -1,12 +1,20 @@
-# P3 0.9.3 — consolidation technique
+# P3 0.9.4-dev — sécurité et permissions
 
-**Version préparée, non publiée.** La version stable diffusée est 0.9.2. Cette intervention ne constitue pas une autorisation de mise à jour.
+Version de développement non publiée. La version stable 0.9.3 est publiée et installée en production selon le mainteneur.
+
+- Clé publique officielle intégrée au moteur : aucune opération FTP pour les nouvelles installations ; contrôle de son empreinte SHA-256. Une clé locale existante reste prioritaire et ne peut pas être remplacée par le nouvel updater. Une clé locale invalide provoque un refus. La clé privée reste exclusivement hors dépôt.
+- Distribution : exclusion des fichiers de clés usuels, sauf la clé publique officielle à son chemin exact ; tests de régression ajoutés. Les installations 0.9.3 nécessitent encore une installation ponctuelle de la clé locale pour effectuer leur première mise à jour signée.
+- Tests CI et audit d’autorisations à poursuivre avant publication.
+
+## Historique 0.9.3
+
+Publiée le 14 novembre 2026 et installation confirmée par le mainteneur. Validation automatisée finale : run 43589468620.
 
 - Six protections Apache obligatoires dans les nouvelles archives : `database`, `sessions`, `tmp`, `var/sys`, `var/private` et `var/uploads/images`. Le nouvel updater les installe ; il conserve `.htaccess` et `web.config` racine et les règles locales des modules. Les règles personnalisées dans les six fichiers gérés doivent être reportées dans la configuration propre à l’hébergeur. Pour migrer depuis un ancien updater, installer manuellement les protections manquantes avant toute sauvegarde. Sur nginx, appliquer les protections équivalentes dans la configuration du serveur.
 - Empreinte du catalogue réconciliée avec l'ancrage existant ; contrôle automatique ajouté. Aucun changement de catalogue ni de ZIP de module.
 - Numéro de développement distinct, garde de publication stable et suppression de l'ancien workflow candidat.
 - Deux premières passes CI réussies : PHP 8.2–8.5, distribution, Chromium et premier test Apache (runs 43581882348 et 43582976427). Troisième passe réussie (43583479742), incluant les six protections Apache et la construction de l’archive. La fixation de VERSION à 0.9.3 exige une ultime validation du commit exact.
-- Vérification RSA/SHA-256 des mises à jour intégrée : toute signature absente ou invalide et toute clé de confiance manquante entraînent un refus. La CI ne publie plus automatiquement. Procédure de signature hors dépôt et initialisation de la confiance : SIGNED-RELEASES.md. La clé officielle RSA 3072 bits a été générée hors dépôt et sa clé publique contrôlée ; empreinte DER SHA-256 : `26aa2418c7795362ef7c258f688f0190707972466deea7631b50f9bb7586cda6`. La signature de l’archive définitive reste à effectuer hors dépôt.
+- Vérification RSA/SHA-256 des mises à jour intégrée : toute signature absente ou invalide et toute clé de confiance manquante entraînent un refus. La CI ne publie plus automatiquement. Procédure de signature hors dépôt et initialisation de la confiance : SIGNED-RELEASES.md. La clé officielle RSA 3072 bits a été générée hors dépôt et sa clé publique contrôlée ; empreinte DER SHA-256 : `26aa2418c7795362ef7c258f688f0190707972466deea7631b50f9bb7586cda6`. La signature de l’archive définitive a été effectuée hors dépôt par le mainteneur.
 - La restauration conserve les protections système, privées et des images ainsi que la clé publique locale. Les fichiers temporaires de mise à jour sont exclus des sauvegardes. Le test Apache isolé couvre les six protections et vérifie le maintien de l’accès aux fichiers publics autorisés. LWS reste à vérifier sur une installation réelle.
 
 ## Historique 0.9.2 (publiée le 13 novembre 2026)
