@@ -104,7 +104,7 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
       await page.locator('.p3-home').evaluate((node,style) => {if(style===null)node.removeAttribute('style');else node.setAttribute('style',style);},previous);
     }
     await page.waitForTimeout(1500);
-    assert.equal((await context.cookies()).some(cookie => cookie.name === 'PHPSESSID'), false, 'Measurement must not create a PHP session');
+    assert.equal((await context.cookies()).some(cookie => /^(?:P3SID[a-f0-9]{24}|PHPSESSID)$/.test(cookie.name)), false, 'Measurement must not create a PHP session');
     const direct = await page.locator('[data-home-slot] h3 a').first().getAttribute('href');
     assert(!direct.includes('home-events'), 'Article links remain direct');
     const ticket = await page.locator('[data-home-page]').getAttribute('data-home-ticket');
