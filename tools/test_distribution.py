@@ -24,6 +24,10 @@ class DistributionTests(unittest.TestCase):
                 'var/modules/safety/templates/rollback.tpl': '<form></form>',
                 'var/modules/articles/database/schema.sql': 'CREATE TABLE example (id INTEGER);',
                 'database/.htaccess': 'Require all denied',
+                'sessions/.htaccess': 'Require all denied',
+                'tmp/.htaccess': 'Require all denied',
+                'var/sys/.htaccess': 'Require all denied',
+                'var/uploads/images/.htaccess': 'Options -Indexes',
                 'database/live.sqlite': 'fake private database',
                 'var/sys/config.json': 'fake private configuration',
                 'var/sys/core-release-public.pem': 'local trust anchor not shipped',
@@ -53,7 +57,8 @@ class DistributionTests(unittest.TestCase):
                 expected = {'P3/' + name for name in files if build_distribution.include(name)}
                 self.assertEqual(set(package.namelist()), expected)
                 self.assertIn('P3/var/modules/articles/database/schema.sql', package.namelist())
-                self.assertIn('P3/database/.htaccess', package.namelist())
+                for protected in ('database', 'sessions', 'tmp', 'var/sys', 'var/private', 'var/uploads/images'):
+                    self.assertIn('P3/' + protected + '/.htaccess', package.namelist())
                 self.assertEqual(package.read('P3/var/private/.htaccess'), b'Require all denied')
                 self.assertNotIn('P3/var/private/backup/manifest.json', package.namelist())
                 self.assertNotIn('P3/PREPARATION-P3-0.9.2.md', package.namelist())
