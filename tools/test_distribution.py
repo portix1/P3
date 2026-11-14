@@ -21,6 +21,8 @@ class DistributionTests(unittest.TestCase):
                 'VERSION': '0.8.3-rc4\n', 'LICENSE': 'license', 'index.php': '<?php',
                 'install.php': '<?php', '.htaccess': 'routing', 'bootstrap/app.php': '<?php',
                 'src/Maintenance/UpdateSafety.php': '<?php',
+                'src/Maintenance/core-release-public.pem': 'official public fixture',
+                'src/Maintenance/accidental-private.pem': 'fake private key',
                 'var/modules/safety/templates/rollback.tpl': '<form></form>',
                 'var/modules/articles/database/schema.sql': 'CREATE TABLE example (id INTEGER);',
                 'database/.htaccess': 'Require all denied',
@@ -64,6 +66,8 @@ class DistributionTests(unittest.TestCase):
                 self.assertNotIn('P3/PREPARATION-P3-0.9.2.md', package.namelist())
                 self.assertNotIn('P3/database/live.sqlite', package.namelist())
                 self.assertNotIn('P3/var/sys/core-release-public.pem', package.namelist())
+                self.assertEqual(package.read('P3/src/Maintenance/core-release-public.pem'), b'official public fixture')
+                self.assertNotIn('P3/src/Maintenance/accidental-private.pem', package.namelist())
             self.assertTrue((root / 'dist/P3-0.8.3-rc4.sha256').read_text().endswith('  P3-0.8.3-rc4.zip\n'))
             (root / 'var/private/.htaccess').unlink()
             subprocess.run(['git', '-C', str(root), 'add', '-u'], check=True, capture_output=True)
