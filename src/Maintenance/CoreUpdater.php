@@ -17,6 +17,12 @@ final class CoreUpdater
     private const RELEASE_BASE = 'https://github.com/portix1/P3/releases/download/';
     private const MAX_ZIP_BYTES = 62914560; // 60 MiB, abort before extraction.
     private const MAX_FILES = 4000;
+    // Only these P3-owned directory policies may be replaced. Root routing and
+    // unknown hosting/module overrides require an explicit manual review.
+    private const MANAGED_HTTP_FILES = [
+        'database/.htaccess', 'sessions/.htaccess', 'tmp/.htaccess',
+        'var/sys/.htaccess', 'var/private/.htaccess', 'var/uploads/images/.htaccess',
+    ];
 
     public static function latest(): string
     {
@@ -52,6 +58,7 @@ final class CoreUpdater
         if (self::latest() !== $requestedVersion) {
             throw new RuntimeException('Une nouvelle version est disponible : rechargez la page.');
         }
+        $trustedKey = ReleaseSignature::trustedKey($root);
         $lockFile = $root . '/var/sys/core-update.lock';
         if (is_link($lockFile)) {
             throw new RuntimeException('Verrou de mise à jour invalide.');
@@ -74,6 +81,7 @@ final class CoreUpdater
             $name = 'P3-' . $requestedVersion . '.zip';
             $url = self::RELEASE_BASE . 'v' . $requestedVersion . '/' . $name;
             $checksum = self::fetchChecksum($url, $name);
+            ReleaseSignature::verify($trustedKey, $requestedVersion, $checksum, self::fetchSignature($url));
             $archive = $work . '/' . $name;
             self::download($url, $archive);
             $actual = hash_file('sha256', $archive);
@@ -103,6 +111,19 @@ final class CoreUpdater
         return $matches[1];
     }
 
+    private static function fetchSignature(string $url): string
+    {
+        $context = stream_context_create(['http' => [
+            'timeout' => 20, 'follow_location' => 1, 'max_redirects' => 5,
+            'header' => "User-Agent: Portix-P3\r\n",
+        ]]);
+        $signature = @file_get_contents(substr($url, 0, -4) . '.sig', false, $context, 0, 1025);
+        if (!is_string($signature) || strlen($signature) > 1024) {
+            throw new RuntimeException('Signature officielle absente ou incorrecte.');
+        }
+        return $signature;
+    }
+
     private static function download(string $url, string $target): void
     {
         $context = stream_context_create(['http' => [
@@ -128,7 +149,7 @@ final class CoreUpdater
 
     /**
      * Called only after the ZIP has been downloaded from the fixed official
-     * release endpoint and verified against its independent checksum file.
+     * release endpoint and verified against its independently signed checksum.
      * Exposed for isolated fixture tests using a local test ZIP.
      */
     public static function applyVerifiedArchive(
@@ -176,7 +197,7 @@ final class CoreUpdater
                     $files[$relative] = $i;
                 }
             }
-            foreach (['VERSION', 'index.php', 'src/Core/Application.php', 'includes/engine.php'] as $required) {
+            foreach (array_merge(['VERSION', 'index.php', 'src/Core/Application.php', 'includes/engine.php'], self::MANAGED_HTTP_FILES) as $required) {
                 if (!isset($files[$required])) {
                     throw new RuntimeException('L’archive ne contient pas tous les fichiers du moteur.');
                 }
@@ -284,7 +305,8 @@ final class CoreUpdater
     private static function isApplicationFile(string $relative): bool
     {
         if (in_array($relative, ['VERSION', 'index.php', 'install.php',
-            'README.md', 'RELEASE-NOTES.md', 'LICENSE'], true)) { return true; }
+            'README.md', 'RELEASE-NOTES.md', 'SIGNED-RELEASES.md', 'LICENSE'], true)
+            || in_array($relative, self::MANAGED_HTTP_FILES, true)) { return true; }
         foreach (['bootstrap/', 'includes/', 'src/', 'tools/',
             'var/admin/', 'var/editor/', 'var/lang/', 'var/modules/'] as $prefix) {
             if (str_starts_with($relative, $prefix)) {
@@ -292,7 +314,7 @@ final class CoreUpdater
                 if (preg_match('~(?:^|/)(?:uploads|private|cache|sessions)/~', $relative)) {
                     return false;
                 }
-                return !str_ends_with($relative, '/.htaccess');
+                return !in_array(basename($relative), ['.htaccess', 'web.config'], true);
             }
         }
         return false;

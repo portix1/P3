@@ -208,7 +208,7 @@ final class UpdateSafety
             self::copyTree(
                 $root . '/var/private',
                 $partial . '/var/private',
-                ['update-backups']
+                ['update-backups','core-update-staging']
             );
             if (is_dir($root . '/download')) {
                 self::copyTree($root . '/download', $partial . '/download');
@@ -222,7 +222,7 @@ final class UpdateSafety
                     'database/portix2.sqlite',
                     'var/sys/',
                     'var/uploads/images/',
-                    'var/private/ (hors update-backups)',
+                    'var/private/ (hors update-backups et core-update-staging)',
                     'download/ si présent',
                 ],
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -277,7 +277,7 @@ final class UpdateSafety
             self::snapshotDatabase($root.'/'.SiteConfiguration::load($root)->databasePath(),$partial.'/database/portix2.sqlite');
             self::copyTree($root.'/var/sys',$partial.'/var/sys',['maintenance.lock']);
             self::copyTree($root.'/var/uploads/images',$partial.'/var/uploads/images');
-            self::copyTree($root.'/var/private',$partial.'/var/private',['update-backups']);
+            self::copyTree($root.'/var/private',$partial.'/var/private',['update-backups','core-update-staging']);
             if(is_dir($root.'/download')) self::copyTree($root.'/download',$partial.'/download');
             $app=$partial.'/application'; if(!mkdir($app,0700,true)&&!is_dir($app)) throw new RuntimeException('Impossible de préparer la copie applicative.');
             foreach(['bootstrap','includes','src','tools'] as $dir) self::copyTree($root.'/'.$dir,$app.'/'.$dir);
@@ -317,9 +317,9 @@ final class UpdateSafety
             foreach(['admin','editor','lang','modules','templates'] as $dir){ self::removeTree($root.'/var/'.$dir); self::copyTree($source.'/application/var/'.$dir,$root.'/var/'.$dir); }
             foreach(($manifest['root_files']??[]) as $entry){ if(!is_string($entry)||basename($entry)!==$entry) continue; if(is_file($source.'/application/'.$entry)&&!copy($source.'/application/'.$entry,$root.'/'.$entry)) throw new RuntimeException('Impossible de restaurer '.$entry); }
             if(!copy($source.'/database/portix2.sqlite',$root.'/'.SiteConfiguration::load($root)->databasePath())) throw new RuntimeException('Impossible de restaurer la base SQLite.');
-            self::replaceTree($source.'/var/sys',$root.'/var/sys',['maintenance.lock']);
-            self::replaceTree($source.'/var/uploads/images',$root.'/var/uploads/images');
-            self::replaceTree($source.'/var/private',$root.'/var/private',['update-backups']);
+            self::replaceTree($source.'/var/sys',$root.'/var/sys',['maintenance.lock','core-release-public.pem','.htaccess']);
+            self::replaceTree($source.'/var/uploads/images',$root.'/var/uploads/images',['.htaccess']);
+            self::replaceTree($source.'/var/private',$root.'/var/private',['update-backups','core-update-staging','.htaccess']);
             if(is_dir($source.'/download')) self::replaceTree($source.'/download',$root.'/download');
             if ($version !== '') { self::markRelease($root, $version, 'restore'); }
         } finally { self::disableMaintenance($root); }
@@ -362,7 +362,7 @@ final class UpdateSafety
         if(is_dir($destination)) {
             foreach(scandir($destination)?:[] as $entry){ if($entry==='.'||$entry==='..'||in_array($entry,$preserve,true)) continue; self::removeTree($destination.'/'.$entry); }
         }
-        self::copyTree($source,$destination);
+        self::copyTree($source,$destination,$preserve);
     }
 
     private static function removeTree(string $path): void
@@ -443,7 +443,7 @@ final class UpdateSafety
         foreach ([
             [$root . '/var/sys', ['maintenance.lock']],
             [$root . '/var/uploads/images', []],
-            [$root . '/var/private', ['update-backups']],
+            [$root . '/var/private', ['update-backups','core-update-staging']],
             [$root . '/download', []],
         ] as [$path, $excluded]) {
             $total += self::treeBytes($path, $excluded);

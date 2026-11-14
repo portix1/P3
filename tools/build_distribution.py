@@ -16,7 +16,7 @@ PLACEHOLDERS = {'.gitkeep', '.htaccess', 'web.config'}
 
 
 def include(name):
-    if name in {'.gitignore', '.gitattributes', 'AGENTS.md'} or name.startswith(EXCLUDED):
+    if name in {'.gitignore', '.gitattributes', 'AGENTS.md', 'PREPARATION-P3-0.9.2.md'} or name.startswith(EXCLUDED):
         return False
     return not name.startswith(RUNTIME) or Path(name).name in PLACEHOLDERS
 
@@ -31,7 +31,8 @@ def build(excluded_modules=()):
             raise RuntimeError('Unknown module exclusion')
     paths = sorted(name for name in tracked if name and include(name) and not any(name.startswith('var/modules/' + module + '/') for module in excluded_modules))
     required = {'VERSION', 'LICENSE', 'index.php', 'install.php', '.htaccess', 'bootstrap/app.php',
-                'src/Maintenance/UpdateSafety.php', 'var/modules/safety/templates/rollback.tpl'}
+                'database/.htaccess', 'sessions/.htaccess', 'tmp/.htaccess', 'var/sys/.htaccess',
+                'var/private/.htaccess', 'var/uploads/images/.htaccess', 'src/Maintenance/UpdateSafety.php', 'var/modules/safety/templates/rollback.tpl'}
     if not required.issubset(paths):
         raise RuntimeError('Distribution is missing required source files')
     output = ROOT / 'dist'
@@ -44,7 +45,11 @@ def build(excluded_modules=()):
                 source = ROOT / name
                 if not stat.S_ISREG(source.lstat().st_mode) or source.is_symlink():
                     raise RuntimeError(f'Non-regular tracked file: {name}')
-                package.write(source, 'P3/' + name)
+                info = zipfile.ZipInfo('P3/' + name, (1980, 1, 1, 0, 0, 0))
+                info.create_system = 3
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = 0o100644 << 16
+                package.writestr(info, source.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
         with zipfile.ZipFile(temporary) as package:
             if package.testzip() is not None:
                 raise RuntimeError('Corrupt ZIP')

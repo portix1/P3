@@ -67,7 +67,10 @@ try {
     $pdo = new PDO('sqlite:' . $root . '/database/custom.sqlite', null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     $pdo->exec("CREATE TABLE proof (value TEXT); INSERT INTO proof VALUES ('original database')"); $pdo = null;
     UpdateSafety::markRelease($root, '0.7.09-rc16', 'install');
+    mkdir($root . '/var/private/core-update-staging');
+    file_put_contents($root . '/var/private/core-update-staging/proof.zip', 'temporary archive');
     $point = UpdateSafety::createRollbackPoint($root); $name = basename($point);
+    rollbackCheck(!file_exists($point . '/var/private/core-update-staging'), 'Temporary update files copied into backup.');
     $manifest = json_decode((string) file_get_contents($point . '/manifest.json'), true, 64, JSON_THROW_ON_ERROR);
     rollbackCheck($manifest['previous_version'] === '0.8.01-beta1-preview5', 'New point must record saved VERSION.');
     $manifest['previous_version'] = '0.7.09-rc16';
@@ -82,6 +85,11 @@ try {
     file_put_contents($point . '/application/VERSION', '0.8.01-beta1-preview5');
     echo "PASS saved version, historical correction without rewriting, and legacy fallback.\n";
 
+    file_put_contents($root . '/var/private/.htaccess', 'Require all denied');
+    file_put_contents($root . '/var/sys/.htaccess', 'Require all denied');
+    file_put_contents($root . '/var/uploads/images/.htaccess', 'current image policy');
+    file_put_contents($root . '/var/sys/core-release-public.pem', 'current trust anchor');
+    file_put_contents($point . '/var/sys/core-release-public.pem', 'obsolete trust anchor');
     file_put_contents($root . '/VERSION', '0.8.3-rc3'); file_put_contents($root . '/src/proof.txt', 'new code');
     file_put_contents($root . '/var/uploads/images/proof.webp', 'new image');
     $pdo = new PDO('sqlite:' . $root . '/database/custom.sqlite'); $pdo->exec("UPDATE proof SET value='new database'"); $pdo = null;
@@ -95,6 +103,10 @@ try {
     $points = UpdateSafety::listRollbackPoints($root);
     rollbackCheck(count($points) === 2 && in_array('0.8.3-rc3', array_column($points, 'version'), true), 'Rescue point missing or wrong version.');
     rollbackCheck(!is_file($root . '/var/sys/maintenance.lock'), 'Maintenance remains active.');
+    rollbackCheck(file_get_contents($root . '/var/sys/.htaccess') === 'Require all denied', 'Restoration removed system protection.');
+    rollbackCheck(file_get_contents($root . '/var/uploads/images/.htaccess') === 'current image policy', 'Restoration removed image protection.');
+    rollbackCheck(file_get_contents($root . '/var/private/.htaccess') === 'Require all denied', 'Restoration removed private protection.');
+    rollbackCheck(file_get_contents($root . '/var/sys/core-release-public.pem') === 'current trust anchor', 'Restoration replaced current trust anchor.');
     echo "PASS full restoration, custom SQLite path, rescue point and release tracking.\n";
 
     $parent = dirname($point);
