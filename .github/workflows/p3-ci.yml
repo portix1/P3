@@ -80,41 +80,33 @@ jobs:
           path: home-browser-previews/*.png
           if-no-files-found: ignore
 
-  publish:
-    name: Distribution GitHub
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'Release P3 ')
-    needs: [validate, home-browser]
+  distribution:
+    name: Archive validée — sans publication
+    needs: [validate, home-browser, private-http]
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Checkout validated source
         uses: actions/checkout@v4
-
       - name: Build distribution
         run: |
           python3 tools/test_distribution.py
           python3 tools/build_distribution.py
+          git rev-parse HEAD > dist/SOURCE-COMMIT
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p3-validated-distribution
+          path: |
+            dist/P3-*.zip
+            dist/P3-*.sha256
+            dist/SOURCE-COMMIT
+          if-no-files-found: error
 
-      - name: Publish distribution
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          version="$(cat VERSION)"
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Only a stable version can be published by this workflow" >&2
-            exit 1
-          fi
-          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null; then
-            echo "Version already tagged; refusing publication" >&2
-            exit 1
-          fi
-          # Signing is performed off GitHub; do not publish unsigned archives.
-          echo "Publication automatique désactivée : signature hors dépôt requise." >&2
-          exit 1
-          gh release create "v$version" \
-            "dist/P3-$version.zip" "dist/P3-$version.sha256" \
-            --target "$GITHUB_SHA" --title "P3 $version" \
-            --notes-file RELEASE-NOTES.md
-
+  private-http:
+    name: Protection HTTP Apache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify access denial with Apache
+        run: bash tools/test_private_http.sh
