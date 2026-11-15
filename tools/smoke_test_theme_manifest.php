@@ -10,6 +10,9 @@ $root = dirname(__DIR__); $temporary = sys_get_temp_dir() . '/p3-theme-manifest-
 try {
     $version = trim((string) file_get_contents($root . '/VERSION'));
     $catalog = new ThemeCatalog($root, $version);
+    $updateFields = static fn (array $row): array => array_intersect_key($row, array_flip(['id', 'name', 'version']));
+    themeAssert(array_map($updateFields, $catalog->all(false)) === array_map($updateFields, $catalog->all()),
+        'Le tableau de bord retrouve les mêmes versions sans analyser les fichiers');
     foreach ($catalog->all() as $entry) {
         if (!$entry['versioned'] && $entry['errors'] === []) { continue; }
         themeAssert($entry['versioned'] && $entry['compatible'] === true, 'Thème livré non versionné ou incompatible : ' . $entry['id'] . ' ' . implode('; ', $entry['errors']));

@@ -396,6 +396,11 @@ try {
     assertSameValue(true, str_contains($engine, "['public_navigation']"), 'point d’extension public générique');
     assertSameValue(false, str_contains($engine, 'ArticleNavigation'), 'aucun couplage du noyau à Articles');
     $application = (string) file_get_contents($root . '/src/Core/Application.php');
+    assertSameValue(
+        1,
+        substr_count($application . $engine, '$repositories->modules()->allOrdered()'),
+        'le routeur et le rendu partagent une seule lecture de la liste des modules'
+    );
     assertSameValue(true, str_contains($application, 'PublicRouteResolver'), 'résolution publique modulaire');
     assertSameValue(false, str_contains($application, 'ArticleRepository'), 'aucun couplage du routeur à Articles');
     assertSameValue(

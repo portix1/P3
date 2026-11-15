@@ -1,3 +1,9 @@
+# P3 0.9.7 — performances
+
+- Le routage et le rendu partagent la liste ordonnée des modules chargée pour la requête. Les pages rendues évitent ainsi une requête SQLite redondante.
+
+- Le tableau de bord lit les manifestes des thèmes pour signaler les mises à jour. L’inventaire et les opérations sur les paquets conservent leurs contrôles de fichiers.
+
 # P3 0.9.6 — accessibilité du back-office
 
 - Dans la fiche de compte, le lecteur d’écran peut lire les aides du pseudonyme et de l’adresse e-mail après le nom du champ.

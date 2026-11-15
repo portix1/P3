@@ -30,7 +30,7 @@ $moduleAdminAccess = static function (array $module): string {
 };
 
 $MODULES = array();
-$modules = $repositories->modules()->allOrdered();
+// Application transmet la liste ordonnee deja chargee pour cette requete.
 foreach ($modules as $record) {
     $template->addRow('module', $record);
     if (!empty($record['enabled'])) {
@@ -229,7 +229,7 @@ if ($canAccessAdmin && $route === 'Admin') {
             if ($isAdmin) {
                 $root = dirname(__DIR__);
                 $version = trim((string) file_get_contents($root . '/VERSION'));
-                $themes = (new \Portix\Theme\ThemeCatalog($root, $version))->all();
+                $themes = (new \Portix\Theme\ThemeCatalog($root, $version))->all(verifyFiles: false);
                 $updates = \Portix\Maintenance\ExtensionUpdates::dashboard($root, $modules, $themes);
                 $coreUpdate = \Portix\Maintenance\ExtensionUpdates::core($version);
             }
