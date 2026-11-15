@@ -26,6 +26,6 @@ Dans **Configuration → Diagnostics**, commencez par **Tests rapides**. Utilise
 ## Reprendre un site bloqué en maintenance
 
 1. Depuis le panneau d’hébergement ou par FTP, conservez une copie de l’état actuel et récupérez le point voulu dans `var/private/update-backups/`. Un point complet contient `manifest.json`, `application/` et `database/portix2.sqlite`.
-2. Repérez le nom réel de la base dans `var/sys/config.json`, champ `database_file`. Dans le point de restauration, la copie SQLite s’appelle toujours `portix2.sqlite`. Lors d’une reprise manuelle, elle doit retrouver le nom attendu par la configuration restaurée.
-3. Rétablissez les fichiers applicatifs à partir de `application/`. Rétablissez ensemble la base, la configuration et les médias du même point si les données doivent être restaurées. Conservez les règles HTTP locales de la racine et la clé publique de confiance déjà configurée.
+2. Ouvrez le fichier `var/sys/config.json` **du point de restauration** et relevez la valeur de `database_file`. Recopiez `database/portix2.sqlite` du point dans le dossier `database/` du site en lui donnant le nom indiqué par cette valeur.
+3. Rétablissez les fichiers applicatifs à partir de `application/`. Rétablissez la configuration et les médias du même point que la base. Vérifiez aussi le contenu du dossier `download/` si le point le contient. Conservez les règles HTTP locales de la racine et la clé publique de confiance déjà configurée.
 4. Vérifiez la cohérence des fichiers et de la base avant de retirer `var/sys/maintenance.lock`. Une fois le site accessible, contrôlez la version, un article avec image et l’accès au back-office.
