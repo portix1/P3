@@ -37,3 +37,8 @@ $_LANG['search_admin_reindexed'] = 'Index reconstruit : %d contenus.';
 $_LANG['search_admin_error'] = 'Impossible de préparer l’index de recherche.';
 
 $_LANG['search_approximate'] = 'Résultats approchants pour : %s';
+$_LANG['search_index_permissions'] = 'Recherche en mode compatibilité — accès au fichier refusé ou dossier inaccessible.';
+$_LANG['search_index_locked'] = 'Recherche en mode compatibilité — index verrouillé.';
+$_LANG['search_index_disk'] = 'Recherche en mode compatibilité — erreur d’écriture ou d’espace disque.';
+$_LANG['search_index_corrupt'] = 'Recherche en mode compatibilité — fichier d’index endommagé.';
+$_LANG['search_index_schema'] = 'Recherche en mode compatibilité — structure de l’index incompatible.';

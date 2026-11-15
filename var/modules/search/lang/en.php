@@ -37,3 +37,8 @@ $_LANG['search_admin_reindexed'] = 'Index rebuilt: %d items.';
 $_LANG['search_admin_error'] = 'Unable to prepare the search index.';
 
 $_LANG['search_approximate'] = 'Approximate results for: %s';
+$_LANG['search_index_permissions'] = 'Compatibility search — index file or directory inaccessible.';
+$_LANG['search_index_locked'] = 'Compatibility search — index locked.';
+$_LANG['search_index_disk'] = 'Compatibility search — disk I/O error or disk full.';
+$_LANG['search_index_corrupt'] = 'Compatibility search — index file corrupt.';
+$_LANG['search_index_schema'] = 'Compatibility search — index schema incompatible.';

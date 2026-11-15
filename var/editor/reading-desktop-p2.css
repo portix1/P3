@@ -8,17 +8,11 @@
     max-width: 700px !important;
     margin-inline: auto !important;
     text-align: start !important;
-    hyphens: auto;
+    hyphens: none;
     overflow-wrap: break-word;
   }
 
-  /* Un alignement « justifié » enregistré dans Quill ne doit pas
-     réintroduire les espaces anormalement étirés sur grand écran. */
-  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li).ql-align-justify,
-  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align: justify"],
-  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align:justify"] {
-    text-align: start !important;
-  }
+
 }
 
 /* Sur grand bureau, utiliser la largeur réellement disponible :
@@ -36,4 +30,14 @@
     width: min(100%, 940px) !important;
     max-width: 940px !important;
   }
+}
+
+/* L’alignement enregistré dans Quill prime sur les réglages de lecture. */
+body.theme-six-cordes.theme-six-cordes-clair .article-reading > .news-rich-text.ql-align-justify,
+body.theme-six-cordes.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li).ql-align-justify,
+body.theme-six-cordes.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align: justify"],
+body.theme-six-cordes.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align:justify"] {
+  text-align: justify !important;
+  -webkit-hyphens: none;
+  hyphens: none;
 }

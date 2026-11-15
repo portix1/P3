@@ -94,6 +94,38 @@ $fragment = static function (array $result) use ($check): string {
 };
 
 try {
+    $repositoryMode = (new SearchRepository($source, $index))->sync()['mode'];
+    $broken = $index . '.corrupt';
+    file_put_contents($broken, 'ceci ne contient pas une base SQLite');
+    try {
+        $degraded = new SearchRepository($source, $broken);
+        $lock = fopen($broken . '.rebuild.lock', 'c');
+        flock($lock, LOCK_EX);
+        try {
+            $check($degraded->sync()['mode'] === 'fallback', 'Index corrompu et verrouillé : mode compatibilité.');
+            $check($degraded->indexFailure() === 'corrupt', 'Diagnostic de corruption.');
+            $findResult($degraded, 'chevalet', 'chevalet');
+        } finally {
+            fclose($lock);
+        }
+        $recovered = new SearchRepository($source, $broken);
+        $check($recovered->sync()['mode'] === $repositoryMode, 'Index corrompu reconstruit quand FTS5 est disponible.');
+        $findResult($recovered, 'chevalet', 'chevalet');
+    } finally {
+        unlink($broken);
+        @unlink($broken . '.rebuild.lock');
+    }
+    $directoryIndex = $index . '.directory';
+    mkdir($directoryIndex);
+    try {
+        $inaccessible = new SearchRepository($source, $directoryIndex);
+        $check($inaccessible->sync()['mode'] === 'fallback', 'Fichier inaccessible : mode compatibilité.');
+        $check($inaccessible->indexFailure() === 'permissions', 'Diagnostic du fichier inaccessible.');
+        $findResult($inaccessible, 'chevalet', 'chevalet');
+    } finally {
+        rmdir($directoryIndex);
+    }
+
     $repository = new SearchRepository($source, $index);
     $sync = $repository->sync(true);
     if ($sync['mode'] === 'fts5') {

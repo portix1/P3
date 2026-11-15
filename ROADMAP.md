@@ -26,6 +26,13 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 
 Version cible à définir.
 
+## 0.9.9 — correctifs et bêta-test
+
+- Rendu des articles Six Cordes UX Clair : respecter la justification enregistrée et supprimer la césure automatique. Intégrer la variante v018 0.1.13 avec les angles demandés.
+- [Recherche #47](https://github.com/portix1/P3/issues/47) : vérifier l’indexation sur une copie d’Univers Guitare et maintenir une recherche de compatibilité quand le fichier d’index est inutilisable. Les résultats restent affichés sur la page habituelle, avec diagnostic réservé à l’administration. Valider la récupération sur LWS.
+- Statistiques 2.0.4 : intégrer les exclusions des visites d’audit et vérifier que les visites ordinaires restent comptées.
+- Consigner les retours indépendants avant la première version stable 1.0.0. Si une autre version de correction s’impose, poursuivre avec 0.9.10.
+
 ## 0.9.8 — documentation
 
 - Guides administrateur et rédacteur reliés au README. Installation, maintenance et bêta-test documentés. Les entrées embarquées ont été revues pour les parcours de mise à jour, de relecture et de diagnostic.
