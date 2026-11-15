@@ -13,16 +13,17 @@
   }
 }
 
-@media screen and (max-width: 640px) {
-  /* Évite les espaces étirés entre les mots sur Safari et Chrome mobile. */
-  body.theme-six-cordes-clair .article-reading > .news-rich-text.ql-align-justify,
-  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li).ql-align-justify,
-  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align: justify"],
-  body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align:justify"] {
-    text-align: start !important;
-    hyphens: manual;
-  }
+/* Respecte la justification éditoriale sans césure des mots. */
+body.theme-six-cordes-clair .article-reading > .news-rich-text.ql-align-justify,
+body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li).ql-align-justify,
+body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align: justify"],
+body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align:justify"] {
+  text-align: justify !important;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
 
+@media screen and (max-width: 640px) {
   /* Les figures éditoriales à 25/33/50 % deviennent des blocs de lecture.
      Les images restent limitées à leur taille native et en hauteur. */
   body.theme-six-cordes-clair .article-reading .news-rich-text .portix-image-figure:is(
