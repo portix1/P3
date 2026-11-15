@@ -1,0 +1,31 @@
+name: Signaler une anomalie / Report a bug
+description: Décrire un problème reproductible
+title: "[Anomalie] "
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version de P3
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environnement (PHP, hébergement, navigateur)
+  - type: textarea
+    id: steps
+    attributes:
+      label: Étapes pour reproduire le problème
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Résultat observé et résultat attendu
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Informations complémentaires
+      description: Ne joindre aucun identifiant, secret ou donnée personnelle. Les failles de sécurité doivent être signalées en privé.

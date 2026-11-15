@@ -1,12 +1,20 @@
-# P3 — CMS PHP modulaire
+# P3 — Publier librement, garder le contrôle
 
-**Dernière version stable publiée :** `0.9.5`\
-**Version préparée pour signature :** `0.9.6` (non publiée)\
-**Version stable précédente :** `0.9.4`\
-**Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
-**Licence :** `GPL-3.0-or-later`
+[English](README.en.md) · [Télécharger P3](https://github.com/portix1/P3/releases/latest) · [Participer aux tests](BETA-TESTING.md) · [Signaler un problème](https://github.com/portix1/P3/issues/new/choose)
 
-P3 est un CMS PHP modulaire avec des espaces distincts pour la Rédaction, l'Administration courante et la Configuration du site.
+P3 est un système de gestion de contenu (CMS) libre, gratuit et modulaire, écrit en PHP. Il permet de publier sur son propre hébergement sans abonnement logiciel ni service commercial imposé.
+
+## Pour qui ?
+
+P3 s’adresse aux personnes qui souhaitent gérer un site, un blog ou un projet documentaire. Trois espaces distinguent les tâches : **Rédaction**, **Administration** et **Configuration**. La rédaction ne nécessite pas de connaissances en programmation.
+
+Un exemple en production : [Univers Guitare](https://www.universguitare.be/).
+
+## Participer avant la version 1.0
+
+Nous recherchons des volontaires, débutants ou expérimentés, pour tester l’installation, la publication, les mises à jour et l’ergonomie. Consultez le [guide des bêta-testeurs](BETA-TESTING.md). Utilisez une installation de test, sans données personnelles ni contenus irremplaçables.
+
+La version disponible et ses archives signées sont indiquées dans les [Releases](https://github.com/portix1/P3/releases).
 
 ## Distribution
 

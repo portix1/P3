@@ -1,0 +1,29 @@
+name: Retour de bêta-test / Beta feedback
+description: Partager son expérience, même sans anomalie
+title: "[Test] "
+body:
+  - type: input
+    id: profile
+    attributes:
+      label: Profil et expérience
+  - type: input
+    id: version
+    attributes:
+      label: Version de P3 et environnement
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: Tâches essayées et résultat
+    validations:
+      required: true
+  - type: textarea
+    id: usability
+    attributes:
+      label: Difficultés, termes incompris, temps nécessaire
+  - type: textarea
+    id: improvements
+    attributes:
+      label: Améliorations prioritaires et intention d’utilisation
+      description: Ne pas inclure de données personnelles ou de secrets.
