@@ -23,6 +23,8 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 - Comparaison HTTP sur une installation isolée pour quatre parcours, avec douze mesures par variante après échauffement. La seule suppression de la lecture SQLite produit des écarts inférieurs à 0,1 ms, à la précision affichée, sans gain de mémoire visible.
 - Tableau de bord : lecture des manifestes sans analyse de tous les fichiers de thème pour calculer les mises à jour disponibles. Les contrôles d’intégrité restent dans l’inventaire et le gestionnaire de paquets.
 
+- Comparaison des deux corrections sur la même installation isolée (CI 43687399373) : tableau de bord de 13,952 à 5,345 ms en médiane et de 1 034,1 à 939,2 Kio de pic PHP médian. Les pages publiques varient de moins de 0,03 ms. Mesures descriptives, avec douze requêtes par variante et sans généralisation à LWS. Rejouer avec `P3_MEASURE_RENDERING=1 php tools/smoke_test_home_http.php --browser`.
+
 ## 0.9.6 — accessibilité et homogénéisation
 
 - Premier lot : navigation au clavier dans le formulaire d’article, accès aux aides avec lecteur d’écran, focus visible et contrôle à 320 px avec les droits du rédacteur et de l’administrateur.

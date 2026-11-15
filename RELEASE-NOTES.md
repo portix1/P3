@@ -1,4 +1,4 @@
-# P3 0.9.7-dev — performances
+# P3 0.9.7 — performances
 
 - Le routage et le rendu partagent la liste ordonnée des modules chargée pour la requête. Les pages rendues évitent ainsi une requête SQLite redondante.
 
