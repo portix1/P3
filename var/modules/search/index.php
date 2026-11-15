@@ -31,7 +31,6 @@ $searchTextDefaults = [
     'search_results_many' => '%d résultats',
     'search_kind_article' => 'Article',
     'search_kind_news' => 'Actualité',
-    'search_mode_fallback' => 'Recherche en mode compatibilité.',
     'search_error' => 'La recherche est momentanément indisponible.',
 ];
 foreach ($searchTextDefaults as $key => $fallback) {
@@ -66,14 +65,6 @@ try {
         $database->connection(),
         __DIR__ . '/data/search.sqlite'
     );
-    $sync = $repository->sync();
-    if ($sync['mode'] === 'fallback') {
-        $template->set(
-            'search_status_message',
-            $translator->text('search_mode_fallback', 'Recherche en mode compatibilité.')
-        );
-    }
-
     $results = $repository->search($query, $filter, 50);
     if ($repository->suggestedQuery() !== '') {
         $template->set('search_status_message', sprintf(

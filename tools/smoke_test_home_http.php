@@ -289,6 +289,26 @@ try {
     $check($csv[0] === 200 && str_contains($csv[1], 'visiteurs_journaliers_estimes') && str_contains($csv[1], ';2;1'), 'CSV exports only daily aggregates');
     echo "Statistiques HTTP : empreinte quotidienne, exclusions, article, entrée, référent et export vérifiés.\n";
 
+    $searchFile = $fixture . '/var/modules/search/data/search.sqlite';
+    if (!is_dir(dirname($searchFile))) {
+        mkdir(dirname($searchFile), 0770, true);
+    }
+    file_put_contents($searchFile, 'index SQLite endommagé');
+    $searchLock = fopen($searchFile . '.rebuild.lock', 'c');
+    $check(is_resource($searchLock) && flock($searchLock, LOCK_EX), 'Search rebuild lock acquired');
+    try {
+        $publicSearch = $request('/search.html?q=Installation');
+        $check($publicSearch[0] === 200 && str_contains($publicSearch[1], 'class="search-result-count"')
+            && !str_contains($publicSearch[1], 'Recherche en mode compatibilité'),
+            'Public search returns results without exposing index failure');
+    } finally {
+        fclose($searchLock);
+    }
+    $publicSearch = $request('/search.html?q=Installation');
+    $check($publicSearch[0] === 200 && str_contains($publicSearch[1], 'class="search-result-count"')
+       ,
+        'Next public search returns results and repairs the derived index');
+
     if (in_array('--browser',$argv,true)) {
         // Start Chromium against a fresh HTTP process, not the fixture server
         // already used for dozens of PHP integration requests. The same

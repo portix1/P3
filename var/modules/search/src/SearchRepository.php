@@ -54,24 +54,39 @@ final class SearchRepository
         try {
             return $this->syncIndex($state, $force);
         } catch (PDOException $error) {
-            // SQLite extended result codes retain the primary code in the low byte.
-            $this->indexFailure = match (((int) ($error->errorInfo[1] ?? 0)) & 255) {
-                3, 8, 14, 23 => 'permissions',
-                5, 6 => 'locked',
-                10, 13 => 'disk',
-                11, 26 => 'corrupt',
-                1, 17 => 'schema',
-                default => throw $error,
-            };
+            $this->indexFailure = self::indexFailureReason($error);
             $this->indexPdo = null;
             if (in_array($this->indexFailure, ['corrupt', 'schema'], true)
                 && ($recovered = $this->recoverIndex($state)) !== null) {
                 return $recovered;
             }
-            $this->fts5Available = false;
-            error_log('Search index unavailable: ' . $this->indexFailure . ' — ' . $error->getMessage());
+            $this->disableIndex($error);
             return $this->syncIndex($state, false);
         }
+    }
+
+    private static function indexFailureReason(PDOException $error): string
+    {
+        if (str_starts_with($error->getMessage(), 'open_basedir prohibits opening ')) {
+            return 'permissions';
+        }
+        // SQLite extended result codes retain the primary code in the low byte.
+        return match (((int) ($error->errorInfo[1] ?? 0)) & 255) {
+            3, 8, 14, 23 => 'permissions',
+            5, 6 => 'locked',
+            10, 13 => 'disk',
+            11, 26 => 'corrupt',
+            1, 17 => 'schema',
+            default => throw $error,
+        };
+    }
+
+    private function disableIndex(PDOException $error): void
+    {
+        $this->indexFailure = self::indexFailureReason($error);
+        $this->indexPdo = null;
+        $this->fts5Available = false;
+        error_log('Search index unavailable: ' . $this->indexFailure . ' — ' . $error->getMessage());
     }
 
     private function recoverIndex(array $state): ?array
@@ -324,16 +339,23 @@ final class SearchRepository
         }
         $sql .= 'ORDER BY rank, title COLLATE NOCASE LIMIT :limit';
 
-        $statement = $this->indexConnection()->prepare($sql);
-        $statement->bindValue(':match', $match, PDO::PARAM_STR);
-        if ($kind !== 'all') {
-            $statement->bindValue(':kind', $kind, PDO::PARAM_STR);
+        try {
+            $statement = $this->indexConnection()->prepare($sql);
+            $statement->bindValue(':match', $match, PDO::PARAM_STR);
+            if ($kind !== 'all') {
+                $statement->bindValue(':kind', $kind, PDO::PARAM_STR);
+            }
+            $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $statement->execute();
+
+            $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $error) {
+            $this->disableIndex($error);
+            return $this->fallbackSearch($query, $kind, $limit);
         }
-        $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $statement->execute();
 
         $results = [];
-        foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($rows as $row) {
             $markedExcerpt = (string) ($row['excerpt'] ?? '');
             $markedFragment = $markedExcerpt;
             // L'introduction d'une actualité est affichée sur sa page ; le

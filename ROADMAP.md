@@ -29,7 +29,7 @@ Version cible à définir.
 ## 0.9.9 — correctifs et bêta-test
 
 - Rendu des articles Six Cordes UX Clair : respecter la justification enregistrée et supprimer la césure automatique. Intégrer la variante v018 0.1.13 avec les angles demandés.
-- [Recherche #47](https://github.com/portix1/P3/issues/47) : vérifier l’indexation sur une copie d’Univers Guitare et maintenir une recherche de compatibilité quand le fichier d’index est inutilisable. Identifier la cause de l’incident et valider la récupération sur LWS.
+- [Recherche #47](https://github.com/portix1/P3/issues/47) : vérifier l’indexation sur une copie d’Univers Guitare et maintenir une recherche de compatibilité quand le fichier d’index est inutilisable. Les résultats restent affichés sur la page habituelle, avec diagnostic réservé à l’administration. Valider la récupération sur LWS.
 - Statistiques 2.0.4 : intégrer les exclusions des visites d’audit et vérifier que les visites ordinaires restent comptées.
 - Consigner les retours indépendants avant la première version stable 1.0.0. Si une autre version de correction s’impose, poursuivre avec 0.9.10.
 

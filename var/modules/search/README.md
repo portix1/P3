@@ -99,3 +99,6 @@ le motif du repli et le journal PHP conserve le détail de l’erreur.
 
 Un index endommagé ou incompatible est reconstruit automatiquement lorsque
 le verrou de reconstruction et le dossier permettent de le remplacer.
+
+Le mode de compatibilité affiche les résultats dans la page de recherche
+habituelle. Le diagnostic de l’index est réservé à l’administration.
