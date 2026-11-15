@@ -264,8 +264,11 @@ try {
         . implode(', ', array_map(static function (string $header): string {
             return preg_replace('/^Set-Cookie:\s*([^=;]+).*/i', '$1', $header) ?? '';
         }, $unexpectedCookies)) . ')');
-    $check($request($articleUrl, 'GET', '', $visitor)[0] === 200, 'Public article is measurable');
+    $check($request($articleUrl . '?ug_audit=0', 'GET', '', [...$visitor, 'X-UG-Audit: 0'])[0] === 200, 'Public article is measurable with inactive audit markers');
     $request($articleUrl, 'GET', '', ['User-Agent: Googlebot']);
+    $check($request($articleUrl, 'GET', '', ['User-Agent: UniversGuitare-Audit/1.0'])[0] === 200, 'Audit agent can read the article');
+    $check($request($articleUrl, 'GET', '', [...$visitor, 'X-UG-Audit: 1'])[0] === 200, 'Audit header can read the article');
+    $check($request($articleUrl . '?ug_audit=1', 'GET', '', $visitor)[0] === 200, 'Audit query can read the article');
     $request($articleUrl, 'GET', '', [...$visitor, 'DNT: 1']);
     $request('/does-not-exist-test.html', 'GET', '', $visitor);
     $request($articleUrl, 'HEAD', '', $visitor);
