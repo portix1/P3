@@ -19,7 +19,7 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 
 ## 0.9.8 — documentation
 
-- Guides administrateur et rédacteur reliés au README. Les parcours d’installation, la documentation embarquée et le guide des bêta-testeurs restent à relire.
+- Guides administrateur et rédacteur reliés au README. Installation, maintenance et bêta-test documentés. Les entrées embarquées ont été revues pour les parcours de mise à jour, de relecture et de diagnostic.
 
 ## 0.9.7 — performances et consommation des ressources
 

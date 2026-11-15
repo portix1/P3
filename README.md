@@ -8,10 +8,12 @@
 
 P3 est un CMS PHP modulaire avec des espaces distincts pour la Rédaction, l'Administration courante et la Configuration du site.
 
-## Guides du back-office
+## Documentation
 
 - [Guide de l’administrateur](docs/guide-administrateur.md)
 - [Guide du rédacteur](docs/guide-redacteur.md)
+- [Installation et maintenance](docs/installation-et-maintenance.md)
+- [Guide du bêta-testeur](docs/guide-beta-testeur.md)
 
 ## Distribution
 
