@@ -17,6 +17,21 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## Aperçus de partage sur les réseaux sociaux
+
+- [ ] Générer les balises Open Graph dans le `<head>` des pages publiques. Alimenter `og:title` et `og:description` à partir du titre et de la description SEO, `og:url` à partir de l’URL canonique, `og:type` selon le type de page (`website` ou `article`), et `og:site_name` et `og:locale` à partir de la configuration du site.
+- [ ] Pour `og:image`, reprendre l’image principale de la page ou de l’article, puis l’image de partage par défaut configurable pour le site. Publier son URL HTTPS absolue, accessible sans connexion, ainsi que `og:image:alt`, `og:image:width` et `og:image:height` lorsque ces informations sont disponibles. Renseigner `og:video` et `og:audio` lorsqu’un média public est explicitement associé à la page pour le partage.
+- [ ] Pour X, générer `twitter:card` (`summary_large_image` avec une image adaptée, `summary` sinon), `twitter:title`, `twitter:description` et `twitter:image` à partir des mêmes données. Réutiliser les champs existants pour éviter une double saisie.
+- [ ] Vérifier l’aperçu sur Facebook, LinkedIn et X pour l’accueil et les articles avec et sans image principale. Contrôler l’image par défaut, l’accès public aux médias et l’absence de balises contradictoires entre le moteur et le thème.
+
+Version cible à définir.
+
+## 0.9.8 — documentation
+
+- Guides administrateur et rédacteur reliés au README. Installation, maintenance et bêta-test documentés. Les entrées embarquées ont été revues pour les parcours de mise à jour, de relecture et de diagnostic.
+
+- Procédures de reprise hors back-office et de vérification publique de la signature détaillées. La publication distingue le titre GitHub du tag exact attendu par le moteur.
+
 ## 0.9.7 — performances et consommation des ressources
 
 - Premier lot : une seule lecture de la liste ordonnée des modules lors du routage et du rendu. Aucun cache persistant.

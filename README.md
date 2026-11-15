@@ -1,12 +1,19 @@
 # P3 — CMS PHP modulaire
 
-**Dernière version stable publiée :** `0.9.6`\
-**Version préparée pour signature :** `0.9.7` (non publiée)\
-**Version stable précédente :** `0.9.5`\
+**Dernière version stable publiée :** `0.9.7`\
+**Prochaine version :** `0.9.8` (en préparation)\
+**Version stable précédente :** `0.9.6`\
 **Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
 **Licence :** `GPL-3.0-or-later`
 
 P3 est un CMS PHP modulaire avec des espaces distincts pour la Rédaction, l'Administration courante et la Configuration du site.
+
+## Documentation
+
+- [Guide de l’administrateur](docs/guide-administrateur.md)
+- [Guide du rédacteur](docs/guide-redacteur.md)
+- [Installation et maintenance](docs/installation-et-maintenance.md)
+- [Guide du bêta-testeur](docs/guide-beta-testeur.md)
 
 ## Distribution
 
@@ -35,7 +42,7 @@ Les sessions sont isolées par installation. Après la mise à jour vers 0.9.4, 
 
 Lors d’une restauration, les fichiers `.htaccess` et `web.config` déjà présents à la racine sont conservés. Si l’un d’eux manque, P3 le récupère depuis le point de restauration lorsqu’il y figure.
 
-Si une mise à jour ou une restauration est interrompue et que le back-office répond 503, conservez le site en maintenance. Depuis le panneau de l’hébergeur ou par FTP, récupérez le dernier point de restauration complet sous `var/private/update-backups/` et sauvegardez l’état courant. Rétablissez la copie applicative et, si nécessaire, les données du point de restauration en conservant les règles HTTP locales et la clé publique de confiance. Retirez `var/sys/maintenance.lock` uniquement après avoir rétabli un ensemble cohérent de fichiers et de données. Sur un hébergement avec accès en ligne de commande, la restauration peut aussi passer par `UpdateSafety::restoreRollbackPoint()` après chargement de `bootstrap/autoload.php`.
+Si une mise à jour ou une restauration laisse le site en maintenance, suivez la [procédure de reprise](docs/installation-et-maintenance.md#reprendre-un-site-bloqué-en-maintenance).
 
 ## Licence
 

@@ -33,7 +33,7 @@ try {
         $articles[$slug] = (string) ($article['body'] ?? '');
     }
 
-    documentationRequires($articles, 'installation', ['Mettre à jour un site existant', 'maintenance.lock']);
+    documentationRequires($articles, 'installation', ['Mettre à jour un site existant', 'Configuration → Mises à jour', 'maintenance.lock']);
     documentationRequires($articles, 'administration-de-portix-3', ['Disposition de l’accueil', 'deux ou trois colonnes', 'une seule colonne sur mobile', 'trois lignes de texte']);
 
     if (count($categories) !== 3) {
@@ -47,7 +47,7 @@ try {
     }
 
     documentationRequires($articles, 'administration-de-portix-3', ['Composer la page d’accueil', 'home.html', 'Résultats de l’accueil', 'hasard pur']);
-    documentationRequires($articles, 'guide-du-redacteur-portix-3', ['Préparer les zones de l’accueil']);
+    documentationRequires($articles, 'guide-du-redacteur-portix-3', ['Demander la publication', 'sortir de l’éditeur']);
 
     documentationRequires($articles, 'developper-un-module', ['MinimumP3', 'AdminNavigation', 'SessionlessPostActions', '0.8.4']);
     documentationRequires($articles, 'presentation', [
@@ -92,7 +92,6 @@ try {
         'sans scinder le tableau',
         'Éditeur visuel Snow', 'Images et légendes attachées', 'Déplacer par glisser-déposer',
         'Palette du tableau', 'Ligne horizontale',
-        'Épingler une actualité',
         'Coller un tableau dans l’éditeur',
         'Aperçu',
     ]);
@@ -126,18 +125,18 @@ try {
     ]);
 
     documentationRequires($articles, 'diagnostics-de-portix-3', [
-        'Administration → Diagnostics',
+        'Configuration → Diagnostics',
         'Tests rapides',
-        'Suite complète',
+        'Suite de tests complète',
         'Copier le rapport',
-        'CI PHP 8.2–8.4',
+        'CI PHP 8.2–8.5',
     ]);
 
     documentationRequires($articles, 'developper-un-module-avec-l-aide-d-une-ia', [
         'Travailler depuis une baseline connue',
         'Vérifier les fichiers générés',
         'smoke_test_documentation.php',
-        'CI PHP 8.2–8.4',
+        'CI PHP 8.2–8.5',
     ]);
 
     echo "Documentation en BDD / contenu initial : OK\n";

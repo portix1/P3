@@ -1,3 +1,7 @@
+# P3 0.9.8 — documentation
+
+- Deux guides distincts pour l’administration et la rédaction, accessibles depuis le README. Les guides d’installation, de maintenance et de bêta-test complètent la documentation. Les articles livrés à l’installation reprennent les parcours actuels de mise à jour, de relecture et de diagnostic.
+
 # P3 0.9.7 — performances
 
 - Le routage et le rendu partagent la liste ordonnée des modules chargée pour la requête. Les pages rendues évitent ainsi une requête SQLite redondante.
