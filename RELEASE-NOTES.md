@@ -1,7 +1,7 @@
-# P3 0.9.9-dev
+# P3 0.9.9
 
-- Six Cordes UX Clair : respect de la justification des articles, sans césure automatique. Variante v018 0.1.13 avec en-tête et menu principal à angles droits.
-- Recherche : maintien des résultats publics en mode compatibilité quand SQLite ne peut pas exploiter le fichier d’index. Motif affiché en administration.
+- Six Cordes UX Clair : respect de la justification des articles, sans césure automatique. Variante v018 0.1.13 avec en-tête et menu principal à angles droits et sans arrondis du côté droit des panneaux concernés. Sur un site existant, installer le thème séparément depuis Configuration → Thèmes.
+- Recherche : reconstruction automatique d’un index corrompu. Si la reconstruction est bloquée, les résultats restent accessibles sur la page habituelle. Le diagnostic est affiché en administration.
 - Statistiques 2.0.4 : exclusion des visites portant un marqueur d’audit d’Univers Guitare.
 
 # P3 0.9.8 — documentation
