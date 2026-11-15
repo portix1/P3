@@ -17,6 +17,11 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## 0.9.7 — performances et consommation des ressources
+
+- Premier lot : une seule lecture de la liste ordonnée des modules lors du routage et du rendu. Aucun cache persistant.
+- Mesures à réaliser sur installation isolée : durée de réponse et mémoire PHP sur l’accueil, un article, une recherche et le tableau de bord authentifié. Comparer les mêmes scénarios à la 0.9.6 et distinguer les lectures SQLite du temps de réponse global.
+
 ## 0.9.6 — accessibilité et homogénéisation
 
 - Premier lot : navigation au clavier dans le formulaire d’article, accès aux aides avec lecteur d’écran, focus visible et contrôle à 320 px avec les droits du rédacteur et de l’administrateur.

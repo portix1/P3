@@ -1,3 +1,7 @@
+# P3 0.9.7-dev — performances
+
+- Le routage et le rendu partagent la liste ordonnée des modules chargée pour la requête. Les pages rendues évitent ainsi une requête SQLite redondante.
+
 # P3 0.9.6 — accessibilité du back-office
 
 - Dans la fiche de compte, le lecteur d’écran peut lire les aides du pseudonyme et de l’adresse e-mail après le nom du champ.

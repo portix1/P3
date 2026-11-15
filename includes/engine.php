@@ -30,7 +30,7 @@ $moduleAdminAccess = static function (array $module): string {
 };
 
 $MODULES = array();
-$modules = $repositories->modules()->allOrdered();
+// Application transmet la liste ordonnee deja chargee pour cette requete.
 foreach ($modules as $record) {
     $template->addRow('module', $record);
     if (!empty($record['enabled'])) {
