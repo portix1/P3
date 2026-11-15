@@ -27,7 +27,8 @@ try {
         if ($manifest['schema_format']==='desc-csv' && !is_dir(dirname($file).'/database')) { mkdir(dirname($file).'/database',0770,true); }
         $installer->installDirectory(dirname($file));
     }
-    foreach (['admin','editor'] as $actor) { $repos->users()->create($actor,password_hash('test-home-password',PASSWORD_DEFAULT),$actor.'@example.test','Test',$actor,$actor==='admin',true); }
+    foreach (['admin','editor','publisher'] as $actor) { $repos->users()->create($actor,password_hash('test-home-password',PASSWORD_DEFAULT),$actor.'@example.test','Test',$actor,$actor==='admin',true); }
+    $repos->users()->saveArticlePermissions('publisher', ['publish' => true, 'edit_published' => true]);
     (new Portix\Installation\DefaultContentSeeder())->seed($db->connection(),'admin',gmdate('Y-m-d H:i:s'));
     $config=Portix\Configuration\SiteConfiguration::load($fixture);
     $config->update(['database_file'=>'home-test.sqlite','defaultpage'=>'home','template'=>'six-cordes-ux-clair','title'=>'Home test','debug'=>true]);
@@ -233,6 +234,27 @@ try {
     $slug = $db->connection()->query("SELECT slug FROM articles WHERE status = 'published' ORDER BY id LIMIT 1")->fetchColumn();
     $articleUrl = '/' . $slug . '.html';
     $visitor = ['User-Agent: Firefox test visitor', 'Referer: https://example.test/path?private=1'];
+    $restartServer = static function () use (&$server, $address, $fixture, $request, $check): void {
+        if (is_resource($server)) {
+            proc_terminate($server);
+            proc_close($server);
+        }
+        $server = proc_open(
+            [PHP_BINARY,'-S',$address,'-t',$fixture,$fixture.'/router.php'],
+            [['pipe','r'],['file',$fixture.'/server.log','a'],['file',$fixture.'/server.log','a']],
+            $browserPipes,$fixture
+        );
+        $check(is_resource($server), 'Fresh browser fixture server starts');
+        fclose($browserPipes[0]);
+        $ready = false;
+        for ($attempt=0; $attempt<30; $attempt++) {
+            usleep(100000);
+            $response = $request('/', 'HEAD');
+            if ($response[0] === 200) { $ready = true; break; }
+        }
+        $check($ready, 'Fresh browser fixture server is ready');
+    };
+    $restartServer();
     $first = $request('/', 'GET', '', $visitor);
     $unexpectedCookies = array_values(preg_grep('/^Set-Cookie:/i', $first[2]) ?: []);
     $check($first[0] === 200 && $unexpectedCookies === [],
@@ -268,24 +290,7 @@ try {
         // Start Chromium against a fresh HTTP process, not the fixture server
         // already used for dozens of PHP integration requests. The same
         // isolated SQLite fixture is retained; no assertions are skipped.
-        if (is_resource($server)) {
-            proc_terminate($server);
-            proc_close($server);
-        }
-        $server = proc_open(
-            [PHP_BINARY,'-S',$address,'-t',$fixture,$fixture.'/router.php'],
-            [['pipe','r'],['file',$fixture.'/server.log','a'],['file',$fixture.'/server.log','a']],
-            $browserPipes,$fixture
-        );
-        $check(is_resource($server), 'Fresh browser fixture server starts');
-        fclose($browserPipes[0]);
-        $ready = false;
-        for ($attempt=0; $attempt<30; $attempt++) {
-            usleep(100000);
-            $response = $request('/');
-            if ($response[0] === 200) { $ready = true; break; }
-        }
-        $check($ready, 'Fresh browser fixture server is ready');
+        $restartServer();
         putenv('HOME_TEST_URL='.$base);
         passthru('node '.escapeshellarg($source.'/tools/test_home_browser.cjs'),$exit);
         $check($exit===0,'Browser validation');

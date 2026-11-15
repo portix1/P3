@@ -4,7 +4,7 @@
 {% include "var/admin/templates/config-appearance.tpl" %}
 <section class="admin-section" aria-labelledby="theme-inventory-title">
 <h2 id="theme-inventory-title">{{ themes_inventory_title }}</h2><p>{{ themes_inventory_help }}</p>
-<div class="table-scroll"><table class="theme-inventory-table">
+<div class="table-scroll" role="region" aria-labelledby="theme-inventory-title" tabindex="0"><table class="theme-inventory-table">
 <caption class="visually-hidden">{{ themes_inventory_title }}</caption>
 <thead><tr><th scope="col">{{ themes_name }}</th><th scope="col">{{ themes_version }}</th><th scope="col">{{ themes_type }}</th><th scope="col">{{ themes_compatibility }}</th><th scope="col">{{ themes_file_state }}</th><th scope="col">{{ themes_details }}</th></tr></thead>
 <tbody>{% for themerow in themerow %}<tr><td><strong>{{ themerow.name }}</strong><br /><small>{{ themerow.id }} {{ themerow.active }}</small></td><td>{{ themerow.version }}

@@ -149,7 +149,7 @@
     </nav>
     {% endif %}
     <nav class="topbar-actions" aria-label="{{ ui_admin_navigation }}">
-        <button class="button admin-nav-toggle" type="button" aria-controls="admin-sidebar" aria-expanded="false" data-admin-icon="menu">{{ ui_menu }}</button>
+        {% if can_access_admin == "1" %}<button class="button admin-nav-toggle" type="button" aria-controls="admin-sidebar" aria-expanded="false" data-admin-icon="menu">{{ ui_menu }}</button>{% endif %}
         <a class="button button-quiet" href="{{ base_url }}/" data-admin-icon="external-link">{{ ui_view_site }}</a>
         {% if can_access_admin == "1" %}<form method="post" action="disconnect.html" class="inline-action"><input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><button class="button" type="submit" data-admin-icon="log-out">{{ ui_logout }}</button></form>{% endif %}
     </nav>
@@ -160,7 +160,7 @@
     <aside class="admin-sidebar" id="admin-sidebar" aria-label="{{ ui_admin_navigation }}">
         <nav>
             <ul class="admin-nav">
-                <li><a class="{{ ux_home_current }}" href="Admin.html" data-admin-icon="layout-dashboard">{{ ui_dashboard }}</a></li>
+                <li><a class="{{ ux_home_current }}"{% if ux_home_current == "is-current" %} aria-current="page"{% endif %} href="Admin.html" data-admin-icon="layout-dashboard">{{ ui_dashboard }}</a></li>
             </ul>
             {% if ux_show_writing == "1" %}
             <p class="nav-heading">{{ ux_writing }}</p>

@@ -120,11 +120,97 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
     assert(!(await denied.text()).includes('home_action'), 'Anonymous sees no composition controls');
     assert.deepEqual(errors, []);
     await context.close();
-    for (const actor of ['editor', 'admin']) {
+    for (const actor of ['editor', 'publisher', 'admin']) {
       const ctx = await browser.newContext(visitorOptions); const tab = await ctx.newPage();
       await tab.goto(base + '/login.html');
       const csrf = await tab.locator('input[name="csrf_token"]').first().inputValue();
       await ctx.request.post(base + '/login.html', {form: {pseudo: actor, pass: 'test-home-password', csrf_token: csrf}});
+      await tab.setViewportSize({width: 320, height: 800});
+      const pages = actor === 'admin'
+        ? ['/Admin.html', '/Admin-writing.html', '/Admin-management.html', '/Admin-configuration.html']
+        : ['/Admin.html', '/Admin-writing.html'];
+      for (const url of pages) {
+        assert.equal((await tab.goto(base + url)).status(), 200);
+        assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), url + ' fits at 320 px');
+        const toggle = tab.locator('.admin-nav-toggle');
+        await toggle.press('Enter');
+        assert.equal(await toggle.getAttribute('aria-expanded'), 'true');
+        assert(await tab.evaluate(() => !!document.activeElement.closest('#admin-sidebar')), 'Focus moved to the sidebar');
+        if (url === '/Admin.html') {
+          assert.equal(await tab.locator('#admin-sidebar a[href="Admin.html"]').getAttribute('aria-current'), 'page');
+        }
+        await tab.keyboard.press('Escape');
+        assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
+        assert(await toggle.evaluate(button => button === document.activeElement), 'Escape returns focus to the menu button');
+        await tab.locator('.skip-link').press('Enter');
+        assert.equal(await tab.evaluate(() => document.activeElement.id), 'admin-content');
+      }
+      if (actor !== 'admin') {
+        for (const url of ['/Admin-management.html', '/Admin-configuration.html']) {
+          assert.equal((await ctx.request.get(base + url)).status(), 403);
+        }
+      }
+      if (actor === 'admin') {
+        for (const url of ['/Admin-users.html', '/Admin-users-new.html', '/Admin-users-edit-editor.html',
+          '/Admin-config-modules.html', '/Admin-config-updates.html']) {
+          assert.equal((await tab.goto(base + url)).status(), 200, url + ' is accessible');
+          assert.equal(await tab.locator('main h1').count(), 1, url + ' has one main heading');
+          assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), url + ' fits at 320 px');
+        }
+        await tab.goto(base + '/Admin-users-edit-editor.html');
+        const reviewChoice = tab.locator('input[name=permission_publication][value=review]');
+        assert(await reviewChoice.isChecked(), 'Review is the default publication choice');
+        await reviewChoice.press('ArrowRight');
+        assert(await tab.locator('input[name=permission_publication][value=direct]').isChecked(), 'Publication choices are keyboard operable');
+      }
+      if (actor === 'admin') {
+        for (const [url, selector] of [
+          ['/Admin-diagnostics.html', '.diagnostics-table-wrap'],
+          ['/Admin-config-themes.html', '.table-scroll']
+        ]) {
+          assert.equal((await tab.goto(base + url)).status(), 200);
+          const region = tab.locator(selector).first();
+          const label = await region.getAttribute('aria-labelledby');
+          assert(label && (await tab.locator('#' + label).innerText()).trim());
+          const heading = tab.locator('#' + label);
+          await heading.evaluate(element => { element.tabIndex = -1; element.focus(); });
+          await tab.keyboard.press('Tab');
+          assert(await region.evaluate(element => document.activeElement === element), url + ' scroll region reached with Tab');
+          assert.equal(await region.evaluate(element => getComputedStyle(element).outlineStyle), 'solid');
+          assert(await region.evaluate(element => element.getBoundingClientRect().right <= innerWidth + 1), url + ' table stays within viewport');
+        }
+      }
+      const articleResponse = await tab.goto(base + '/Admin-articles-new.html');
+      assert.equal(articleResponse.status(), 200);
+      const body = tab.locator('.portix-editor .ql-editor[role="textbox"]').first();
+      await body.waitFor();
+      assert.equal(await body.getAttribute('aria-describedby'), 'article-body-help');
+      const statusOptions = await tab.locator('select[name=status] option').evaluateAll(options => options.map(option => option.value));
+      assert.equal(statusOptions.includes('published'), actor !== 'editor');
+      await body.focus();
+      await tab.keyboard.press('Tab');
+      assert.equal(await tab.evaluate(() => document.activeElement.id), 'article-summary');
+      assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Article form fits at 320 px');
+      if (actor !== 'admin') {
+        const title = 'Article clavier ' + actor;
+        await tab.locator('input[name=title]').fill(title);
+        await body.fill('Un article de test rédigé au clavier.');
+        const save = tab.locator('.news-editor-form .form-actions button[type=submit]').first();
+        await Promise.all([tab.waitForURL(/Admin-articles\.html/), save.press('Enter')]);
+        const row = tab.locator('.news-admin-row').filter({has: tab.getByRole('heading', {name: title, exact: true})});
+        const targetStatus = actor === 'editor' ? 'pending' : 'published';
+        const action = row.locator('.inline-action').filter({has: tab.locator('input[name=status][value=' + targetStatus + ']')});
+        const submit = action.getByRole('button');
+        await Promise.all([tab.waitForNavigation(), submit.press('Enter')]);
+        const expectedLabel = actor === 'editor' ? 'En attente de relecture' : 'Publié';
+        assert((await row.innerText()).includes(expectedLabel), 'Article status after keyboard submission');
+        const slug = (await row.locator('code').innerText()).trim();
+        const visitor = await browser.newContext(visitorOptions);
+        const publicResponse = await visitor.request.get(base + '/' + slug);
+        await visitor.close();
+        assert.equal(publicResponse.status(), actor === 'editor' ? 404 : 200, 'Only direct publication makes the article public');
+      }
+      await tab.setViewportSize({width: 1280, height: 900});
       const adminResponse = await tab.goto(base + '/Admin-home.html');
       assert.equal(adminResponse.status(), actor === 'admin' ? 200 : 403, `${actor}: Home composition permissions`);
       if (actor === 'admin') {

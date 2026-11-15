@@ -1,3 +1,12 @@
+# P3 0.9.6 — accessibilité du back-office
+
+- Dans la fiche de compte, le lecteur d’écran peut lire les aides du pseudonyme et de l’adresse e-mail après le nom du champ.
+
+- Les tableaux des diagnostics et de l’inventaire des thèmes ont une zone de défilement nommée, accessible avec Tab et signalée par un contour visible.
+
+- Le menu mobile place le focus sur son premier lien à l’ouverture. Échap ferme le menu et redonne le focus au bouton. Le tableau de bord courant est annoncé dans le menu.
+- Tab permet de quitter l’éditeur d’article. Dans un tableau, Échap puis Tab passe au champ suivant. Le focus de l’éditeur est visible et son texte d’aide est associé au champ de contenu.
+
 # P3 0.9.5 — installation, mise à jour et restauration
 
 - La restauration préserve les règles Apache ou IIS présentes à la racine du site. Un test reproduit l’état laissé par une interruption et vérifie le rétablissement des données et la levée de la maintenance.

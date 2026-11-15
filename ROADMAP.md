@@ -17,6 +17,16 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## 0.9.6 — accessibilité et homogénéisation
+
+- Premier lot : navigation au clavier dans le formulaire d’article, accès aux aides avec lecteur d’écran, focus visible et contrôle à 320 px avec les droits du rédacteur et de l’administrateur.
+- Chromium à 320 px : brouillon, demande de publication et publication directe vérifiés avec deux profils rédacteurs. Visibilité publique vérifiée en session anonyme.
+- Navigation commune : le menu mobile place le focus dans le panneau à l’ouverture et Échap le rend au bouton. Vérification du tableau de bord et des trois espaces selon les droits.
+
+- Diagnostics et thèmes : accès clavier aux zones de défilement des tableaux, avec un nom et un focus visible.
+
+- Contrôles à 320 px sur la liste des comptes, la création et l’édition d’un compte, les modules et les mises à jour. Vérification au clavier du choix individuel de publication.
+
 ## 0.9.5 — installation, mises à jour et restauration
 
 - Restauration sur installation isolée après interruption simulée : vérifier SQLite, médias, thème, clé publique, maintenance et règles HTTP racine. Les règles racine présentes sont préservées pendant la restauration.

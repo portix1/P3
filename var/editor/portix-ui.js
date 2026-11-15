@@ -4,7 +4,7 @@
         return document.body ? (document.body.getAttribute('data-' + name) || fallback) : fallback;
     }
 
-    function toggle(buttonSelector, panelSelector) {
+    function toggle(buttonSelector, panelSelector, focusOnOpen) {
         var button = document.querySelector(buttonSelector);
         var panel = document.querySelector(panelSelector);
         if (!button || !panel) { return; }
@@ -12,10 +12,24 @@
             var expanded = button.getAttribute('aria-expanded') === 'true';
             button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
             panel.classList.toggle('is-open', !expanded);
+            if (!expanded && focusOnOpen) {
+                var firstLink = panel.querySelector('a[href]');
+                if (firstLink) { firstLink.focus(); }
+            }
         });
     }
     toggle('.nav-toggle', '#main-navigation');
-    toggle('.admin-nav-toggle', '#admin-sidebar');
+    toggle('.admin-nav-toggle', '#admin-sidebar', true);
+
+    var adminSkipLink = document.querySelector('.skip-link[href="#admin-content"]');
+    var adminContent = document.getElementById('admin-content');
+    if (adminSkipLink && adminContent) {
+        adminSkipLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            adminContent.focus();
+            adminContent.scrollIntoView();
+        });
+    }
 
     document.querySelectorAll('[data-auto-submit]').forEach(function (control) {
         control.addEventListener('change', function () {
