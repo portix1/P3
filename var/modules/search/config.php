@@ -26,6 +26,9 @@ try {
         $repository->sync();
     }
     $stats = $repository->stats();
+    if ($repository->indexFailure() !== null) {
+        $message = $translator->text('search_index_' . $repository->indexFailure(), 'Index indisponible. Recherche en mode compatibilité.');
+    }
 } catch (Throwable $error) {
     error_log('Search admin: ' . $error->getMessage());
     $stats = [

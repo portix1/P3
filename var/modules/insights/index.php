@@ -7,12 +7,14 @@ $insightsTracker = static function () use ($database, $pageMetadata, $request, &
         || ($status !== false && $status !== 200)
         || str_contains($pageMetadata->robots(), 'noindex')
         || $user->isAdmin() || $user->isRedactor()
-        || ($_SERVER['HTTP_DNT'] ?? '') === '1') {
+        || ($_SERVER['HTTP_DNT'] ?? '') === '1'
+        || ($_SERVER['HTTP_X_UG_AUDIT'] ?? '') === '1'
+        || ($_GET['ug_audit'] ?? '') === '1') {
         return;
     }
 
     $agent = substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 500);
-    if (preg_match('/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|headless|monitor|uptime|ghost-rider|lighthouse|pagespeed/i', $agent)) {
+    if (preg_match('/universguitare-audit|bot|crawl|spider|slurp|bingpreview|facebookexternalhit|headless|monitor|uptime|ghost-rider|lighthouse|pagespeed/i', $agent)) {
         return;
     }
 

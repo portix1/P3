@@ -62,6 +62,7 @@ try {
           figureImages: ['#f25 > img','#f33 > img','#f50 > img'].map(sel => rect(sel).width),
           float: style('#f25').float,
           textAlign: style('.ql-align-justify').textAlign,
+          justifiedHyphens: style('.ql-align-justify').hyphens,
           inlineAlign: style('p[style]').textAlign,
           icon: rect('#icon').width,
           iconHeight: rect('#icon').height,
@@ -72,6 +73,9 @@ try {
       if (measured.scroll > width + 2) {
         throw new Error('Horizontal overflow at ' + width + 'px: ' + measured.scroll);
       }
+      if (measured.textAlign !== 'justify' || measured.inlineAlign !== 'justify' || measured.justifiedHyphens !== 'none') {
+        throw new Error('Saved justification or hyphenation at ' + width + ': ' + JSON.stringify(measured));
+      }
       if (width <= 640) {
         const threshold = Math.min(measured.reading * .70, 270);
         if (measured.figures.some(x => x < threshold)) {
@@ -81,9 +85,6 @@ try {
           throw new Error('Large image still rendered as a thumbnail at ' + width + ': ' + JSON.stringify(measured));
         }
         if (measured.float !== 'none') throw new Error('Figure float at ' + width);
-        if (!['start','left'].includes(measured.textAlign) || !['start','left'].includes(measured.inlineAlign)) {
-          throw new Error('Justification on mobile at ' + width);
-        }
         if (measured.icon > 55 || measured.iconHeight > 55 || measured.tableFigure > 100) {
           throw new Error('Small icon enlarged at ' + width + ': ' + JSON.stringify(measured));
         }
@@ -94,13 +95,11 @@ try {
         if (measured.reading > maxWidth + 1 || measured.reading < maxWidth - 55) {
           throw new Error('Desktop reading column should approach ' + maxWidth + 'px at ' + width + ': ' + JSON.stringify(measured));
         }
-        if (!['start','left'].includes(measured.readingAlign)
-            || !['start','left'].includes(measured.textAlign)
-            || !['start','left'].includes(measured.inlineAlign)) {
+        if (!['start','left'].includes(measured.readingAlign)) {
           throw new Error('Desktop text remains justified at ' + width + ': ' + JSON.stringify(measured));
         }
-        if (measured.readingHyphens !== 'auto') {
-          throw new Error('Desktop hyphenation not enabled: ' + JSON.stringify(measured));
+        if (measured.readingHyphens !== 'none') {
+          throw new Error('Desktop hyphenation still enabled: ' + JSON.stringify(measured));
         }
         if (measured.figures[0] > measured.reading * .36
             || measured.figures[1] > measured.reading * .46

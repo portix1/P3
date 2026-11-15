@@ -1,3 +1,9 @@
+# P3 0.9.9-dev
+
+- Six Cordes UX Clair : respect de la justification des articles, sans césure automatique. Variante v018 0.1.13 avec en-tête et menu principal à angles droits.
+- Recherche : maintien des résultats publics en mode compatibilité quand SQLite ne peut pas exploiter le fichier d’index. Motif affiché en administration.
+- Statistiques 2.0.4 : exclusion des visites portant un marqueur d’audit d’Univers Guitare.
+
 # P3 0.9.8 — documentation
 
 - Deux guides distincts pour l’administration et la rédaction, accessibles depuis le README. Les guides d’installation, de maintenance et de bêta-test complètent la documentation. Les articles livrés à l’installation reprennent les parcours actuels de mise à jour, de relecture et de diagnostic.

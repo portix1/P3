@@ -92,3 +92,10 @@ Vérifications locales : PHP 8.2/8.3/8.4 WebAssembly, FTS5 et compatibilité ;
 129 contrôles des fragments de texte sous 8.2 ; recherche existante et essai
 fendar -> fender sur les contenus du backup fourni (45 résultats) sous 8.2.
 Le fonctionnement sur l’installation cible reste à vérifier.
+
+Si le fichier d’index est inaccessible, verrouillé ou endommagé, la recherche
+bascule sur les contenus publiés de la base principale. L’administration affiche
+le motif du repli et le journal PHP conserve le détail de l’erreur.
+
+Un index endommagé ou incompatible est reconstruit automatiquement lorsque
+le verrou de reconstruction et le dossier permettent de le remplacer.

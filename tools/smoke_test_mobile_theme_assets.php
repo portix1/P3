@@ -31,10 +31,10 @@ $articleMarkup = str_replace('<h1>Univers Guitare</h1>',
     '<article class="news-detail article-reading"><div class="news-body news-rich-text">Texte</div></article>', $markup);
 $articleRendered = MobileThemeAssets::inject($articleMarkup, $tpl, $root);
 mobileAssetAssert(str_contains($articleRendered,
-    'var/editor/reading-desktop-p2.css?v=20261113b'),
+    'var/editor/reading-desktop-p2.css?v=20261115-justify-sans-cesure'),
     'correction de lecture desktop non injectée sur les articles');
-mobileAssetAssert(str_contains($articleRendered, 'media="screen and (min-width: 1025px)"'),
-    'feuille de lecture desktop non limitée au grand écran');
+mobileAssetAssert(str_contains($articleRendered, 'reading-desktop-p2.css?v=20261115-justify-sans-cesure" media="screen"'),
+    'feuille de lecture absente sur mobile');
 mobileAssetAssert(MobileThemeAssets::inject($articleRendered, $tpl, $root) === $articleRendered,
     'feuille de lecture desktop injectée deux fois');
 mobileAssetAssert(MobileThemeAssets::inject($articleMarkup,

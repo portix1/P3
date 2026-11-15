@@ -5,12 +5,12 @@ namespace PortixModule\Search;
 
 use PDO;
 use PDOException;
-use RuntimeException;
 
 final class SearchRepository
 {
     private ?PDO $indexPdo = null;
     private ?bool $fts5Available = null;
+    private ?string $indexFailure = null;
     private string $suggestedQuery = "";
 
     public function __construct(
@@ -34,7 +34,7 @@ final class SearchRepository
                 . ')');
             $this->fts5Available = true;
         } catch (PDOException $error) {
-            if (stripos($error->getMessage(), 'fts5') === false) {
+            if (stripos($error->getMessage(), 'no such module: fts5') === false) {
                 throw $error;
             }
             $this->fts5Available = false;
@@ -51,6 +51,95 @@ final class SearchRepository
     public function sync(bool $force = false): array
     {
         $state = $this->sourceState();
+        try {
+            return $this->syncIndex($state, $force);
+        } catch (PDOException $error) {
+            // SQLite extended result codes retain the primary code in the low byte.
+            $this->indexFailure = match (((int) ($error->errorInfo[1] ?? 0)) & 255) {
+                3, 8, 14, 23 => 'permissions',
+                5, 6 => 'locked',
+                10, 13 => 'disk',
+                11, 26 => 'corrupt',
+                1, 17 => 'schema',
+                default => throw $error,
+            };
+            $this->indexPdo = null;
+            if (in_array($this->indexFailure, ['corrupt', 'schema'], true)
+                && ($recovered = $this->recoverIndex($state)) !== null) {
+                return $recovered;
+            }
+            $this->fts5Available = false;
+            error_log('Search index unavailable: ' . $this->indexFailure . ' — ' . $error->getMessage());
+            return $this->syncIndex($state, false);
+        }
+    }
+
+    private function recoverIndex(array $state): ?array
+    {
+        $lockPath = $this->indexFile . '.rebuild.lock';
+        if (is_link($lockPath) || is_link($this->indexFile)) {
+            return null;
+        }
+        $lock = @fopen($lockPath, 'c');
+        if ($lock === false) {
+            return null;
+        }
+        $temporary = null;
+        try {
+            if (!flock($lock, LOCK_EX | LOCK_NB)) {
+                return null;
+            }
+            // A previous request may have repaired the index before we acquired the lock.
+            $this->fts5Available = null;
+            try {
+                $result = $this->syncIndex($state, false);
+                $this->indexFailure = null;
+                return $result;
+            } catch (PDOException $error) {
+                $this->indexPdo = null;
+                $code = ((int) ($error->errorInfo[1] ?? 0)) & 255;
+                if (!in_array($code, [1, 11, 17, 26], true)) {
+                    return null;
+                }
+            }
+            foreach (['-journal', '-wal', '-shm'] as $suffix) {
+                if (file_exists($this->indexFile . $suffix) || is_link($this->indexFile . $suffix)) {
+                    return null;
+                }
+            }
+            $directory = dirname($this->indexFile);
+            $temporary = @tempnam($directory, 'search-rebuild-');
+            if ($temporary === false || dirname($temporary) !== realpath($directory)) {
+                return null;
+            }
+            $replacement = new self($this->sourcePdo, $temporary);
+            $result = $replacement->syncIndex($state, true);
+            unset($replacement);
+            if ($result['mode'] !== 'fts5' || !@rename($temporary, $this->indexFile)) {
+                return null;
+            }
+            $temporary = null;
+            $this->fts5Available = null;
+            $this->indexFailure = null;
+            return $result;
+        } catch (PDOException $error) {
+            error_log('Search index rebuild: ' . $error->getMessage());
+            return null;
+        } finally {
+            if (is_string($temporary)) {
+                @unlink($temporary);
+            }
+            fclose($lock);
+        }
+    }
+
+    public function indexFailure(): ?string
+    {
+        return $this->indexFailure;
+    }
+
+    private function syncIndex(array $state, bool $force): array
+    {
         $articleCount = $state['articles'];
         $newsCount = $state['news'];
 
@@ -217,11 +306,9 @@ final class SearchRepository
         $kind = in_array($kind, ['all', 'article', 'news'], true) ? $kind : 'all';
         $limit = max(1, min(100, $limit));
 
-        if (!$this->fts5Available()) {
+        if ($this->sync()['mode'] === 'fallback') {
             return $this->fallbackSearch($query, $kind, $limit);
         }
-
-        $this->sync();
         $match = $this->ftsQuery($query);
         if ($match === '') {
             return [];
@@ -395,8 +482,8 @@ final class SearchRepository
         }
 
         $directory = dirname($this->indexFile);
-        if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) {
-            throw new RuntimeException('search_index_directory_failed');
+        if (!is_dir($directory)) {
+            @mkdir($directory, 0775, true);
         }
 
         $this->indexPdo = new PDO('sqlite:' . $this->indexFile, null, null, [
