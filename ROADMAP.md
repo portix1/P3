@@ -20,7 +20,8 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 ## 0.9.7 — performances et consommation des ressources
 
 - Premier lot : une seule lecture de la liste ordonnée des modules lors du routage et du rendu. Aucun cache persistant.
-- Mesures à réaliser sur installation isolée : durée de réponse et mémoire PHP sur l’accueil, un article, une recherche et le tableau de bord authentifié. Comparer les mêmes scénarios à la 0.9.6 et distinguer les lectures SQLite du temps de réponse global.
+- Comparaison HTTP sur une installation isolée pour quatre parcours, avec douze mesures par variante après échauffement. La seule suppression de la lecture SQLite produit des écarts inférieurs à 0,1 ms, à la précision affichée, sans gain de mémoire visible.
+- Tableau de bord : lecture des manifestes sans analyse de tous les fichiers de thème pour calculer les mises à jour disponibles. Les contrôles d’intégrité restent dans l’inventaire et le gestionnaire de paquets.
 
 ## 0.9.6 — accessibilité et homogénéisation
 

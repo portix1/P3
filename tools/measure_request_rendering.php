@@ -17,7 +17,11 @@ function measureRequestRendering(string $fixture, string $articleUrl, array $aut
     }
 
     // Equivalent to the 0.9.6 engine for this comparison.
-    $baseline = str_replace($marker, '$modules = $repositories->modules()->allOrdered();', $engine);
+    $baseline = str_replace(
+        [$marker, 'ThemeCatalog($root, $version))->all(verifyFiles: false);'],
+        ['$modules = $repositories->modules()->allOrdered();', 'ThemeCatalog($root, $version))->all();'],
+        $engine
+    );
     $metricsFile = $fixture . '/request-metrics.json';
     $probe = <<<'PROBE'
 if (isset($_SERVER['HTTP_X_P3_TEST_METRICS'])) {

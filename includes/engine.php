@@ -229,7 +229,7 @@ if ($canAccessAdmin && $route === 'Admin') {
             if ($isAdmin) {
                 $root = dirname(__DIR__);
                 $version = trim((string) file_get_contents($root . '/VERSION'));
-                $themes = (new \Portix\Theme\ThemeCatalog($root, $version))->all();
+                $themes = (new \Portix\Theme\ThemeCatalog($root, $version))->all(verifyFiles: false);
                 $updates = \Portix\Maintenance\ExtensionUpdates::dashboard($root, $modules, $themes);
                 $coreUpdate = \Portix\Maintenance\ExtensionUpdates::core($version);
             }

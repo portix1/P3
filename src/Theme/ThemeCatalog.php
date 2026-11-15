@@ -12,18 +12,18 @@ final class ThemeCatalog
 {
     public function __construct(private readonly string $root, private readonly string $p3Version, private readonly string $phpVersion = PHP_VERSION) {}
 
-    public function all(): array
+    public function all(bool $verifyFiles = true): array
     {
         $result = [];
         foreach (glob($this->root . '/var/templates/*', GLOB_ONLYDIR) ?: [] as $directory) {
             if (is_link($directory) || (!is_file($directory . '/index.tpl') && basename($directory) !== 'shared')) { continue; }
-            $result[] = $this->inspect(basename($directory));
+            $result[] = $this->inspect(basename($directory), $verifyFiles);
         }
         usort($result, static fn (array $a, array $b): int => strnatcasecmp($a['name'], $b['name']));
         return $result;
     }
 
-    public function inspect(string $id): array
+    public function inspect(string $id, bool $verifyFiles = true): array
     {
         $row = ['id' => $id, 'name' => $id, 'version' => '', 'kind' => $id === 'shared' ? 'shared' : 'theme', 'variant_of' => '', 'versioned' => false, 'compatible' => null, 'changed' => [], 'missing' => [], 'extra' => [], 'errors' => [], 'requirements' => ''];
         if (!preg_match('/^[A-Za-z0-9][A-Za-z0-9_-]{0,62}$/D', $id)) { $row['errors'][] = 'Identifiant de dossier invalide.'; return $row; }
@@ -38,6 +38,7 @@ final class ThemeCatalog
             $row['requirements'] = 'P3 ≥ ' . $manifest['p3_min'] . (($manifest['p3_max'] ?? null) !== null ? ' et ≤ ' . $manifest['p3_max'] : '') . ' ; PHP ≥ ' . $manifest['php_min'] . ' ; contrat ' . $manifest['contract'];
             $row['compatible'] = version_compare($this->p3Version, $manifest['p3_min'], '>=') && version_compare($this->phpVersion, $manifest['php_min'], '>=')
                 && (($manifest['p3_max'] ?? null) === null || version_compare($this->p3Version, $manifest['p3_max'], '<='));
+            if (!$verifyFiles) { return $row; }
             if ($manifest['kind'] === 'theme') {
                 $row['errors'] = ThemeContract::validate($this->root, $id);
             }
