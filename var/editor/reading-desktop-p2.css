@@ -12,12 +12,11 @@
     overflow-wrap: break-word;
   }
 
-  /* Un alignement « justifié » enregistré dans Quill ne doit pas
-     réintroduire les espaces anormalement étirés sur grand écran. */
+  /* Respecte la justification enregistrée dans le contenu. */
   body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li).ql-align-justify,
   body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align: justify"],
   body.theme-six-cordes-clair .article-reading .news-rich-text :is(p, div, li)[style*="text-align:justify"] {
-    text-align: start !important;
+    text-align: justify !important;
   }
 }
 
