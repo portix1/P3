@@ -115,6 +115,17 @@ try {
         unlink($broken);
         @unlink($broken . '.rebuild.lock');
     }
+    $directoryIndex = $index . '.directory';
+    mkdir($directoryIndex);
+    try {
+        $inaccessible = new SearchRepository($source, $directoryIndex);
+        $check($inaccessible->sync()['mode'] === 'fallback', 'Fichier inaccessible : mode compatibilité.');
+        $check($inaccessible->indexFailure() === 'permissions', 'Diagnostic du fichier inaccessible.');
+        $findResult($inaccessible, 'chevalet', 'chevalet');
+    } finally {
+        rmdir($directoryIndex);
+    }
+
     $repository = new SearchRepository($source, $index);
     $sync = $repository->sync(true);
     if ($sync['mode'] === 'fts5') {
