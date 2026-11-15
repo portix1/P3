@@ -17,6 +17,10 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## Aperçus de partage sur les réseaux sociaux
+
+- [ ] Vérifier et compléter la balise `<meta property="og:image" content="…" />` dans le `<head>` des pages publiques pour déclarer l’image d’aperçu à Facebook et aux autres services compatibles Open Graph. Utiliser l’image principale définie pour la page ou l’article, avec une image par défaut configurable pour le site. Servir une URL HTTPS absolue, accessible sans connexion, et vérifier les aperçus de l’accueil et d’un article avec et sans image principale. Version à définir.
+
 ## 0.9.8 — documentation
 
 - Guides administrateur et rédacteur reliés au README. Installation, maintenance et bêta-test documentés. Les entrées embarquées ont été revues pour les parcours de mise à jour, de relecture et de diagnostic.
