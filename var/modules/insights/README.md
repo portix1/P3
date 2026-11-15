@@ -39,3 +39,14 @@ la qualité de l’estimation dépend de l’adresse remise à PHP par le serveu
 
 Le module alimente aussi les compteurs d’articles utilisés par Accueil
 pour la sélection pondérée. L’export CSV fournit les agrégats quotidiens.
+
+## Exclure les visites d’audit
+
+Depuis la version 2.0.4, le module ignore une visite lorsque le User-Agent
+contient `UniversGuitare-Audit`, lorsque l’en-tête `X-UG-Audit` vaut `1`,
+ou lorsque l’URL porte `ug_audit=1`. Chaque marqueur fonctionne seul.
+Pour un audit dans le navigateur, ajoutez le paramètre à chaque page
+consultée, avec `?` ou `&` selon l’adresse.
+
+Les exclusions s’appliquent aux mesures à venir. Les agrégats existants
+et les journaux de l’hébergeur restent tels quels.

@@ -26,6 +26,10 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 
 Version cible à définir.
 
+## Statistiques 2.0.4 — visites d’audit
+
+- Exclure les requêtes portant le User-Agent d’audit d’Univers Guitare, l’en-tête `X-UG-Audit: 1` ou le paramètre `ug_audit=1`. Les compteurs existants ne sont pas recalculés.
+
 ## 0.9.8 — documentation
 
 - Guides administrateur et rédacteur reliés au README. Installation, maintenance et bêta-test documentés. Les entrées embarquées ont été revues pour les parcours de mise à jour, de relecture et de diagnostic.
