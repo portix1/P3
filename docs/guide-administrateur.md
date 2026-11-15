@@ -29,13 +29,13 @@ Dans **Rédaction → Articles**, utilisez **Voir les demandes** ou filtrez les 
 2. Ouvrez **Configuration → Mises à jour**. Si P3 propose une version, lancez l’installation et attendez son résultat.
 3. Contrôlez la version affichée dans le tableau de bord, puis vérifiez l’accueil, un article et la connexion au back-office. Réouvrez les formulaires commencés avant la mise à jour.
 
-Si la vérification des mises à jour est indisponible, notez le message exact. En cas de refus lié à la signature ou à la clé, vérifiez la distribution avec la [procédure de signature](../SIGNED-RELEASES.md).
+Si la vérification des mises à jour est indisponible, notez le message exact. En cas de refus lié à la signature ou à la clé, vérifiez la distribution avec la [procédure de signature](../SIGNED-RELEASES.md#vérifier-une-distribution-téléchargée).
 
 ## Restaurer après une mise à jour
 
 Dans **Configuration → Protection des contenus → Rollback**, choisissez le point voulu et cliquez sur **Restaurer ce point**. Le point complet rétablit les fichiers applicatifs, la base, la configuration et les médias sauvegardés. Les modifications effectuées depuis ce point peuvent être perdues. P3 crée un point de secours de l’état courant avant la restauration.
 
-Si un écran 503 empêche l’accès au back-office après une interruption, utilisez la [procédure de reprise par FTP ou depuis le panneau de l’hébergeur](../README.md#publication-et-tests).
+Si un écran 503 empêche l’accès au back-office après une interruption, utilisez la [procédure de reprise par FTP ou depuis le panneau de l’hébergeur](installation-et-maintenance.md#reprendre-un-site-bloqué-en-maintenance).
 
 ## Aider les rédacteurs
 

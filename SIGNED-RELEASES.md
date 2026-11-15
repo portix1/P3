@@ -15,6 +15,20 @@ La clé privée chiffrée reste hors GitHub, hors hébergement web, hors de tout
 
 Depuis 0.9.4, la clé publique officielle est fournie dans src/Maintenance/core-release-public.pem. Son empreinte DER SHA-256 doit correspondre à 26aa2418c7795362ef7c258f688f0190707972466deea7631b50f9bb7586cda6, à vérifier par un canal indépendant avant la première installation. Aucun transfert FTP n’est nécessaire sur une nouvelle installation. Si une clé locale existe dans var/sys/core-release-public.pem, elle reste prioritaire ; une clé locale invalide provoque un refus, sans repli sur la clé intégrée. L’updater 0.9.4 et suivants n’écrase aucune des deux clés ; les restaurations préservent la clé locale. Si seule la clé officielle intégrée existe, elle est vérifiée puis copiée dans le fichier local avant toute restauration, y compris vers une version antérieure à 0.9.4. Une restauration ne rétablit jamais une ancienne clé locale depuis la sauvegarde. Pour une installation 0.9.3, déposer une seule fois la clé publique vérifiée dans var/sys/core-release-public.pem afin de passer à 0.9.4 par le mécanisme intégré. Vérifier que var/sys et var/private ne sont pas accessibles par HTTP. Si la clé manque ou si PHP OpenSSL n'est pas disponible, la mise à jour intégrée est refusée ; une mise à jour manuelle reste possible après vérification indépendante.
 
+## Vérifier une distribution téléchargée
+
+Placez le ZIP, l’empreinte et la signature dans le même dossier. Munissez-vous d’une clé publique vérifiée séparément. Dans les commandes suivantes, remplacez `X.Y.Z` par la version téléchargée et adaptez le chemin de la clé.
+
+```sh
+openssl pkey -pubin -in /chemin/verifie/core-release-public.pem -outform DER |
+  openssl dgst -sha256
+openssl dgst -sha256 -verify /chemin/verifie/core-release-public.pem \
+  -signature P3-X.Y.Z.sig P3-X.Y.Z.sha256
+sha256sum -c P3-X.Y.Z.sha256
+```
+
+Sur macOS, utilisez `shasum -a 256 -c P3-X.Y.Z.sha256` pour le dernier contrôle. L’empreinte de la clé doit correspondre à l’empreinte reçue par le canal de confiance, OpenSSL doit afficher `Verified OK` et le ZIP doit être indiqué `OK`. Si un contrôle échoue, interrompez l’installation et vérifiez les fichiers et la clé.
+
 ## Préparer et publier une version stable
 
 1. Fixer VERSION à X.Y.Z et actualiser la documentation. Valider le commit exact et les tests. Récupérer l'artefact CI, dont SOURCE-COMMIT identifie le code construit. Vérifier le commit attendu et reconstruire ou contrôler les fichiers de l'archive à partir de cette source de confiance ; ne pas signer aveuglément un fichier issu de GitHub.
@@ -25,7 +39,8 @@ Depuis 0.9.4, la clé publique officielle est fournie dans src/Maintenance/core-
        openssl dgst -sha256 -verify /chemin/verifie/core-release-public.pem -signature P3-X.Y.Z.sig P3-X.Y.Z.sha256
 
    Le fichier .sha256 doit contenir exactement 64 caractères hexadécimaux minuscules, deux espaces, P3-X.Y.Z.zip et un saut de ligne LF. La signature est binaire, RSA/SHA-256.
-3. Après autorisation explicite, créer le tag/release sur le commit contrôlé et y joindre les trois fichiers ZIP, SHA-256 et SIG, avec les notes correspondant à cette version. Contrôler les artefacts téléchargés après publication.
+3. Après autorisation explicite, créez la release sur le commit contrôlé. Dans **Choose a tag**, saisissez exactement `vX.Y.Z`, avec le `v` minuscule. Le titre est un champ distinct. Joignez le ZIP, le fichier SHA-256 et la signature avec leurs noms d’origine.
+4. Pour la version stable à proposer à tous les sites, publiez la release comme dernière version stable. Vérifiez que [l’API GitHub de la dernière release](https://api.github.com/repos/portix1/P3/releases/latest) renvoie le tag attendu, puis téléchargez les trois fichiers depuis cette release et répétez la vérification.
 
 ## Rotation et limites
 

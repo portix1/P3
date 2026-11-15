@@ -21,6 +21,8 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 
 - Guides administrateur et rédacteur reliés au README. Installation, maintenance et bêta-test documentés. Les entrées embarquées ont été revues pour les parcours de mise à jour, de relecture et de diagnostic.
 
+- Procédures de reprise hors back-office et de vérification publique de la signature détaillées. La publication distingue le titre GitHub du tag exact attendu par le moteur.
+
 ## 0.9.7 — performances et consommation des ressources
 
 - Premier lot : une seule lecture de la liste ordonnée des modules lors du routage et du rendu. Aucun cache persistant.
