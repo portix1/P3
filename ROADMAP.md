@@ -17,6 +17,10 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## 0.9.8 — documentation
+
+- Guides administrateur et rédacteur reliés au README. Les parcours d’installation, la documentation embarquée et le guide des bêta-testeurs restent à relire.
+
 ## 0.9.7 — performances et consommation des ressources
 
 - Premier lot : une seule lecture de la liste ordonnée des modules lors du routage et du rendu. Aucun cache persistant.

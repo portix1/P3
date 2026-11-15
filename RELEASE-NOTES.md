@@ -1,3 +1,7 @@
+# P3 0.9.8-dev — documentation
+
+- Deux guides distincts pour l’administration et la rédaction, accessibles depuis le README.
+
 # P3 0.9.7 — performances
 
 - Le routage et le rendu partagent la liste ordonnée des modules chargée pour la requête. Les pages rendues évitent ainsi une requête SQLite redondante.

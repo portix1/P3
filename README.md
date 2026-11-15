@@ -1,12 +1,17 @@
 # P3 — CMS PHP modulaire
 
-**Dernière version stable publiée :** `0.9.6`\
-**Version préparée pour signature :** `0.9.7` (non publiée)\
-**Version stable précédente :** `0.9.5`\
+**Dernière version stable publiée :** `0.9.7`\
+**Version de développement :** `0.9.8-dev` (non publiée)\
+**Version stable précédente :** `0.9.6`\
 **Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
 **Licence :** `GPL-3.0-or-later`
 
 P3 est un CMS PHP modulaire avec des espaces distincts pour la Rédaction, l'Administration courante et la Configuration du site.
+
+## Guides du back-office
+
+- [Guide de l’administrateur](docs/guide-administrateur.md)
+- [Guide du rédacteur](docs/guide-redacteur.md)
 
 ## Distribution
 
