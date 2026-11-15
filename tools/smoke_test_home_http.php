@@ -291,6 +291,8 @@ try {
         // already used for dozens of PHP integration requests. The same
         // isolated SQLite fixture is retained; no assertions are skipped.
         $restartServer();
+        require $source . '/tools/measure_request_rendering.php';
+        measureRequestRendering($fixture, $articleUrl, $auth, $request);
         putenv('HOME_TEST_URL='.$base);
         passthru('node '.escapeshellarg($source.'/tools/test_home_browser.cjs'),$exit);
         $check($exit===0,'Browser validation');
