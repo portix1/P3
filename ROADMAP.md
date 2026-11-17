@@ -33,6 +33,15 @@ reste à reproduire sur une installation de test.
 | Configuration difficile à parcourir | Proposition pour la 0.9.10 : grouper les liens par usage. Vérifier qu’identité, thèmes, menus et maintenance se trouvent sans parcourir toute la liste. |
 | Recherche sur LWS | La récupération est testée en local et en CI. Confirmer la recherche publique sur LWS. [Ticket #47](https://github.com/portix1/P3/issues/47) |
 
+## Refonte du module Téléchargements
+
+Version cible à définir.
+
+- [ ] Repenser le parcours dans **Administration → Téléchargements**. Déposer un fichier, proposer un titre à partir de son nom, puis le publier. La description et la catégorie restent facultatives.
+- [ ] Permettre à la rédaction d’insérer dans un article ou une page un bouton vers un fichier déjà publié, avec le titre, le format et la taille. La gestion des fichiers reste réservée à l’administration.
+- [ ] Proposer une liste publique compacte avec titre, courte description, format, taille et bouton de téléchargement. Utiliser les catégories comme filtres lorsqu’elles sont présentes et afficher le SHA-256 dans un détail dépliable lorsqu’il est disponible.
+- [ ] Vérifier la mise à niveau depuis le module actuel. Les fichiers, leurs catégories, leurs états de publication, leurs compteurs et les liens déjà diffusés doivent rester utilisables.
+
 ## Aperçus de partage sur les réseaux sociaux
 
 - [ ] Générer les balises Open Graph dans le `<head>` des pages publiques. Alimenter `og:title` et `og:description` à partir du titre et de la description SEO, `og:url` à partir de l’URL canonique, `og:type` selon le type de page (`website` ou `article`), et `og:site_name` et `og:locale` à partir de la configuration du site.
