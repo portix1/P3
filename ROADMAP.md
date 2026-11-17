@@ -35,12 +35,7 @@ reste à reproduire sur une installation de test.
 
 ## Refonte du module Téléchargements
 
-Version cible à définir.
-
-- [ ] Repenser le parcours dans **Administration → Téléchargements**. Déposer un fichier, proposer un titre à partir de son nom, puis le publier. La description et la catégorie restent facultatives.
-- [ ] Permettre à la rédaction d’insérer dans un article ou une page un bouton vers un fichier déjà publié, avec le titre, le format et la taille. La gestion des fichiers reste réservée à l’administration.
-- [ ] Proposer une liste publique compacte avec titre, courte description, format, taille et bouton de téléchargement. Utiliser les catégories comme filtres lorsqu’elles sont présentes et afficher le SHA-256 dans un détail dépliable lorsqu’il est disponible.
-- [ ] Vérifier la mise à niveau depuis le module actuel. Les fichiers, leurs catégories, leurs états de publication, leurs compteurs et les liens déjà diffusés doivent rester utilisables.
+Repartir de zéro sur le seul module Téléchargements. Attendre les retours de bêta-test avant de définir les besoins, de concevoir le nouveau module ou de commencer à coder. Version cible à définir.
 
 ## Aperçus de partage sur les réseaux sociaux
 
