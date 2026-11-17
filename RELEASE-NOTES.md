@@ -1,3 +1,7 @@
+# P3 0.9.10 — en préparation
+
+- Installation neuve : le bouton « Ouvrir P3 » mène directement à la racine du site.
+
 # P3 0.9.9
 
 - Six Cordes UX Clair : respect de la justification des articles, sans césure automatique. Variante v018 0.1.13 avec en-tête et menu principal à angles droits et sans arrondis du côté droit des panneaux concernés. Sur un site existant, installer le thème séparément depuis Configuration → Thèmes.
