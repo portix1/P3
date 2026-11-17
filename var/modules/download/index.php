@@ -2,9 +2,23 @@
 declare(strict_types=1);
 
 use Portix\Storage\DownloadStorage;
+use Portix\Support\Slugger;
+use PortixModule\Download\DownloadResponse;
+
+$action = (string) ($argument[1] ?? 'list');
+if ($action === 'fichier') {
+    require_once __DIR__ . '/src/DownloadResponse.php';
+    $id = (string) ($argument[2] ?? '');
+    DownloadResponse::send(
+        $repositories->downloads(),
+        $translator,
+        dirname(__DIR__, 3),
+        ctype_digit($id) ? (int) $id : 0,
+        $request->method()
+    );
+}
 
 $template->setSlot('main', 'var/modules/download/templates/index.tpl');
-$action = (string) ($argument[1] ?? 'list');
 $categories = $repositories->downloads()->categories();
 $publicCategoryCount = 0;
 
@@ -61,7 +75,11 @@ foreach ($files as $file) {
             $checksum = (string) hash_file('sha256', $path);
         }
         $template->addRow('downloadfile', [
-            'id' => (string) $file['id'],
+            'url' => 'dwl-fichier-' . (int) $file['id'] . '-' . substr(
+                Slugger::fromText(pathinfo((string) $file['original_name'], PATHINFO_FILENAME), 'fichier'),
+                0,
+                120
+            ) . '.html',
             'title' => (string) $file['title'],
             'description' => (string) $file['description'],
             'original_name' => (string) $file['original_name'],

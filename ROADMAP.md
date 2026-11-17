@@ -27,7 +27,7 @@ reste à reproduire sur une installation de test.
 | Retour | État et prochain contrôle |
 | --- | --- |
 | Installation neuve sur LWS | Retours 500 sur les adresses HTML reproduits. Le correctif de la distribution 0.9.9 est validé en CI. Refaire une installation à partir de l’archive republiée. [PR #52](https://github.com/portix1/P3/pull/52) |
-| Téléchargements | Correctif proposé pour la 0.9.10 : accès depuis Administration et publication sans catégorie sur la page Téléchargements. Tester la création, le déplacement entre catégories et la visibilité publique. |
+| Téléchargements | Correctif proposé pour la 0.9.10 : accès depuis Administration et publication sans catégorie sur la page Téléchargements, avec une adresse publique courte par fichier. Tester la création, le déplacement entre catégories et la visibilité publique. |
 | Approbation depuis une liste de relecture restée ouverte | Écart relevé dans le code. Reproduire après modification et nouvelle soumission, puis vérifier que l’ancienne action est refusée. Cible 0.9.10. |
 | Restauration qui renverrait une erreur 500 | Rapport détaillé attendu. Reproduire sur une copie de site avec le type de restauration et le journal de l’erreur. |
 | Configuration difficile à parcourir | Proposition pour la 0.9.10 : grouper les liens par usage. Vérifier qu’identité, thèmes, menus et maintenance se trouvent sans parcourir toute la liste. |

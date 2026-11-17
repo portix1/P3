@@ -97,10 +97,20 @@ try {
         'category_id' => '', 'title' => 'Guide public de test', 'description' => '', 'status' => 'published',
     ]), $auth);
     $check($repos->downloads()->find($downloadId)['category_id'] === null, 'Download moved outside its category');
+    $downloadUrl = 'dwl-fichier-' . $downloadId . '-guide-fixture.html';
     $publicDownloads = $request('/dwl.html');
     $check($publicDownloads[0] === 200 && str_contains($publicDownloads[1], 'Guide public de test')
-        && str_contains($publicDownloads[1], 'download.php?id=' . $downloadId), 'Uncategorized download is published on main page');
+        && str_contains($publicDownloads[1], $downloadUrl), 'Uncategorized download is published on main page');
 
+    $downloadResponse = $request('/' . $downloadUrl);
+    $check($downloadResponse[0] === 200 && str_starts_with($downloadResponse[1], '%PDF-1.4')
+        && str_contains(implode("\n", $downloadResponse[2]), 'guide-fixture.pdf'), 'Public URL serves the original file as an attachment');
+    $legacyDownload = $request('/var/modules/download/download.php?id=' . $downloadId);
+    $check($legacyDownload[0] === 200 && $legacyDownload[1] === $downloadResponse[1], 'Legacy link still downloads the same file');
+    $draftDownload = $repos->downloads()->create([
+        ...$stored, 'category_id' => null, 'title' => 'Guide privé', 'description' => '', 'status' => 'draft',
+    ]);
+    $check($request('/dwl-fichier-' . $draftDownload . '-guide-fixture.html')[0] === 404, 'Draft download is not public');
     $screen=$request('/Admin-config-modules.html','GET','',$auth);
     preg_match('/name="csrf_token" value="([^"]+)"/',$screen[1],$token);
     $check(!is_dir($fixture.'/var/modules/home'),'Core fixture starts without Home');
