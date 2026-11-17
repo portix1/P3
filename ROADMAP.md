@@ -17,6 +17,22 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## Bêta-test
+
+Le [guide de bêta-test](docs/guide-beta-testeur.md) décrit les parcours à essayer.
+Pour chaque retour, noter la version, l’hébergement et la version de PHP, puis
+les étapes observées et le résultat attendu. Une idée issue d’une simulation
+reste à reproduire sur une installation de test.
+
+| Retour | État et prochain contrôle |
+| --- | --- |
+| Installation neuve sur LWS | Retours 500 sur les adresses HTML reproduits. Le correctif de la distribution 0.9.9 est validé en CI. Refaire une installation à partir de l’archive republiée. [PR #52](https://github.com/portix1/P3/pull/52) |
+| Téléchargements | Correctif proposé pour la 0.9.10 : accès depuis Administration et publication sans catégorie sur la page Téléchargements. Tester la création, le déplacement entre catégories et la visibilité publique. |
+| Approbation depuis une liste de relecture restée ouverte | Écart relevé dans le code. Reproduire après modification et nouvelle soumission, puis vérifier que l’ancienne action est refusée. Cible 0.9.10. |
+| Restauration qui renverrait une erreur 500 | Rapport détaillé attendu. Reproduire sur une copie de site avec le type de restauration et le journal de l’erreur. |
+| Configuration difficile à parcourir | Proposition pour la 0.9.10 : grouper les liens par usage. Vérifier qu’identité, thèmes, menus et maintenance se trouvent sans parcourir toute la liste. |
+| Recherche sur LWS | La récupération est testée en local et en CI. Confirmer la recherche publique sur LWS. [Ticket #47](https://github.com/portix1/P3/issues/47) |
+
 ## Aperçus de partage sur les réseaux sociaux
 
 - [ ] Générer les balises Open Graph dans le `<head>` des pages publiques. Alimenter `og:title` et `og:description` à partir du titre et de la description SEO, `og:url` à partir de l’URL canonique, `og:type` selon le type de page (`website` ou `article`), et `og:site_name` et `og:locale` à partir de la configuration du site.

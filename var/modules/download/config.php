@@ -166,7 +166,7 @@ if ($view === 'edit' && isset($argument[3]) && ctype_digit((string) $argument[3]
     $template->set('downloads_file_required', '');
     $template->set('downloads_current_file', (string) $download['original_name']);
     $template->set('downloads_is_edit', '1');
-    downloadAddCategories($template, $repositories, (int) $download['category_id']);
+    downloadAddCategories($template, $repositories, $download['category_id'] === null ? null : (int) $download['category_id']);
     return;
 }
 if ($view === 'categories') {
@@ -212,7 +212,7 @@ foreach ($repositories->downloads()->all() as $row) {
     $template->addRow('downloadrow', [
         'id' => (string) $row['id'],
         'title' => (string) $row['title'],
-        'category' => (string) ($row['category_name'] ?? ''),
+        'category' => (string) ($row['category_name'] ?? $translator->text('downloads_no_category')),
         'status' => (string) $row['status'],
         'status_label' => $translator->text('downloads_status_' . (string) $row['status']),
         'counter' => (string) $row['download_count'],
@@ -229,8 +229,12 @@ function downloadId(mixed $value): int
     return (int) $id;
 }
 
-function downloadCategoryId($repositories, mixed $value): int
+function downloadCategoryId($repositories, mixed $value): ?int
 {
+    if ($value === null || $value === '') {
+        return null;
+    }
+
     $id = downloadId($value);
     if ($repositories->downloads()->findCategory($id) === null) {
         throw new RuntimeException('downloads_category_not_found');
