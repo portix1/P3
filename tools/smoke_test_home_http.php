@@ -183,9 +183,10 @@ try {
         if (preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$logged[2]),$cookie)) { $headers[1]='Cookie: '.$cookie[1]; }
         $configArea=$request('/Admin-configuration.html','GET','',$headers);
         $check($configArea[0]===($actor==='admin'?200:403), 'Only administrators enter Configuration');
-        $check(str_contains($configArea[1],'Admin-configuration-module-home.html')===($actor==='admin'), 'Only administrators can find Home in Configuration');
+        $check(str_contains($configArea[1], 'href="Admin-home-settings.html"')===($actor==='admin'), 'Only administrators find Home settings in Configuration');
         $management=$request('/Admin-management.html','GET','',$headers);
         $check($management[0]===($actor==='admin'?200:403), 'Only administrators enter Administration');
+        $check(str_contains($management[1], 'href="Admin-management-module-home.html"')===($actor==='admin'), 'Only administrators find Home composition and report in Administration');
         $check(str_contains($configArea[1], 'href="Admin-menu.html"')===($actor==='admin'),
             'Main menu appears only in Configuration for administrators');
         $check(str_contains($configArea[1], 'href="Admin-footer.html"')===($actor==='admin'),
@@ -198,7 +199,7 @@ try {
             $check(str_contains($configArea[1], 'href="' . $entry . '"') === ($actor === 'admin'), 'Configuration entry: '.$entry);
             $check(!str_contains($management[1], 'href="' . $entry . '"'), 'Entry absent from Administration: '.$entry);
         }
-        foreach (['Admin-configuration-module-home.html', 'Admin-configuration-module-safety.html', 'Admin-configuration-site.html', 'Admin-management-module-articles.html'] as $menuRoute) {
+        foreach (['Admin-management-module-home.html', 'Admin-configuration-module-safety.html', 'Admin-configuration-site.html', 'Admin-management-module-articles.html'] as $menuRoute) {
             $menu = $request('/' . $menuRoute, 'GET', '', $headers);
             $check($menu[0] === ($actor === 'admin' ? 200 : 403), 'Configuration menu permissions: ' . $menuRoute);
             $posted = $request('/' . $menuRoute, 'POST', '{}', [...$headers, 'Accept: application/json']);
@@ -218,20 +219,20 @@ try {
             $check($request('/Admin-management-module-missing.html', 'GET', '', $headers)[0] === 404, 'Unknown management menu returns 404');
         }
         if ($actor === 'admin') {
-            $menu = $request('/Admin-configuration-module-home.html', 'GET', '', $headers);
+            $menu = $request('/Admin-management-module-home.html', 'GET', '', $headers);
             $document = new DOMDocument();
             @$document->loadHTML($menu[1]);
             $xpath = new DOMXPath($document);
             $cards = $xpath->query('//main//a[contains(@class,"management-card")]');
             $labels = [];
             foreach ($cards as $card) { $labels[] = trim($card->textContent); }
-            $check($labels === ['Réglages', 'Composer', 'Résultats'], 'Home menu exposes exactly three short actions');
-            $sidebar = $xpath->query('//aside//a[contains(@href,"Admin-configuration-module-home")]');
-            $check($sidebar->length === 1, 'Home appears once in the Configuration sidebar');
+            $check($labels === ['Accueil', 'Résultats'], 'Home management menu exposes composition and results');
+            $sidebar = $xpath->query('//aside//a[contains(@href,"Admin-management-module-home")]');
+            $check($sidebar->length === 1, 'Home appears once in the Administration sidebar');
             $check($request('/Admin-configuration-module-missing.html', 'GET', '', $headers)[0] === 404,
                 'Unknown configuration module is not a menu');
             $leaf = $request('/Admin-home-settings.html', 'GET', '', $headers);
-            $check(str_contains($leaf[1], 'href="Admin-configuration-module-home.html"'), 'Existing settings page links back to its module menu');
+            $check($leaf[0] === 200 && str_contains($leaf[1], 'Admin-home-settings.html'), 'Home settings remain directly accessible in Configuration');
         }
         foreach (['Admin-config-modules.html', 'Admin-modmgr.html'] as $managerRoute) {
             $manager = $request('/'.$managerRoute, 'GET', '', $headers);
