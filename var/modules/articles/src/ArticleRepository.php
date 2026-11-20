@@ -27,6 +27,12 @@ final class ArticleRepository
         return (int) $this->pdo->query('SELECT COUNT(*) FROM articles')->fetchColumn();
     }
 
+    /** Count submissions awaiting administrator review, without loading article bodies. */
+    public function countPendingReview(): int
+    {
+        return (int) $this->pdo->query("SELECT COUNT(*) FROM articles WHERE status = 'pending'")->fetchColumn();
+    }
+
     public function countPublished(): int
     {
         return (int) $this->pdo->query("SELECT COUNT(*) FROM articles WHERE status = 'published'")->fetchColumn();
