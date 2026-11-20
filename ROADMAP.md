@@ -35,6 +35,20 @@ La [revue des consignes](docs/consignes-p3.md) rapproche les décisions Drive, l
 - Installation mutualisée, piste à explorer de faible priorité, consignée dans Drive. Conserver l’installation autonome jusqu’à validation d’une architecture.
 - Après stabilisation de 1.0, consolider le contrat d’extension vers 1.1.0. Les projets Partage social, FAQ, Galerie, Annuaire, Agenda et Newsletter gardent leurs cycles propres. Le plan MOD-00 à MOD-11 est dans le référentiel Drive et reste à spécifier et tester par lots.
 
+## Après 1.0.0 — capacité de charge et performances sur hébergement mutualisé
+
+**Statut : à planifier après la première distribution stable.** Ce chantier ne modifie ni le périmètre ni le calendrier de validation de P3 1.0.0. LWS StarterPack et Univers Guitare servent de cas de mesure, sans rendre P3 dépendant de cet hébergeur.
+
+- [ ] Définir un protocole de charge reproductible sur installation isolée : pages publiques, accueil dynamique, recherche, statistiques et parcours de rédaction ; séries à 1, 5, 10, 20 et 50 utilisateurs concurrents avec montée progressive.
+- [ ] Mesurer latences médiane et p95, débit, codes HTTP/erreurs, CPU, mémoire et éventuels verrous ou attentes SQLite ; différencier trafic régulier et pointes.
+- [ ] Examiner les requêtes et écritures liées aux statistiques ainsi que le coût de composition de l'accueil et du rendu PHP ; identifier les goulets avant toute optimisation.
+- [ ] Évaluer un cache applicatif optionnel, son invalidation et sa compatibilité avec les hébergeurs mutualisés, sans dépendre de Varnish ni d'un service externe obligatoire.
+- [ ] Contrôler les tailles des pages, images et transferts pour estimer les limites de bande passante ; distinguer visites, pages vues et connexions concurrentes.
+- [ ] Vérifier ensuite sur LWS par essais mesurés, progressifs et non destructifs, en dehors des périodes sensibles ; surveiller les quotas et ne pas effectuer de test agressif sur le site en production.
+- [ ] Documenter protocole, environnement, résultats et limites ; ne publier aucun chiffre de « visites par jour supportées » sans mesure représentative.
+
+Version cible : **postérieure à 1.0.0, à déterminer**.
+
 ## Aperçus de partage sur les réseaux sociaux
 
 - [ ] Générer les balises Open Graph dans le `<head>` des pages publiques. Alimenter `og:title` et `og:description` à partir du titre et de la description SEO, `og:url` à partir de l’URL canonique, `og:type` selon le type de page (`website` ou `article`), et `og:site_name` et `og:locale` à partir de la configuration du site.
