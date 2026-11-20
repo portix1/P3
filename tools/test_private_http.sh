@@ -52,7 +52,7 @@ for route in login.html accueil.html Admin.html Admin-writing.html Admin-managem
   test "$(curl --fail --silent --path-as-is "$url/nested/deeper/site/$route")" = "deep route"
 done
 test "$(curl --fail --silent "$url/nested/static.html")" = "nested static route"
-test "$(curl --fail --silent "$url/nested/unknown.php")" = "nested route"
+test "$(curl --fail --silent "$url/unknown.php")" = "root route"
 test "$(curl --fail --silent "$url/robots.txt")" = "root route"
 test "$(curl --fail --silent "$url/nested/sitemap.xml")" = "nested route"
 
