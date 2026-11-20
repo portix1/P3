@@ -82,6 +82,7 @@ $tests = [
     'smoke_test_production_update.php',
     'smoke_test_core_updater.php',
     'smoke_test_release_signature.php',
+    'smoke_test_download2.php',
     'smoke_test_ziparchive.php',
     'smoke_test_installer.php',
     'smoke_test_install_routes.php',
