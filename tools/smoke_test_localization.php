@@ -81,7 +81,7 @@ try {
 
         'admin_area_class', 'admin_home_current', 'admin_news_current', 'admin_users_current', 'admin_config_current',
         'admin_modules_current', 'admin_diagnostics_current', 'admin_module_count', 'admin_enabled_module_count',
-        'admin_news_count', 'admin_published_news_count', 'diagnostics_message', 'diagnostics_mode', 'diagnostics_has_result', 'diagnostics_total', 'diagnostics_pass', 'diagnostics_fail', 'diagnostics_report', 'diagnostics_last_summary', 'news_total', 'news_published',
+        'admin_news_count', 'admin_published_news_count', 'dashboard_review_visible', 'dashboard_review_count', 'dashboard_review_message', 'diagnostics_message', 'diagnostics_mode', 'diagnostics_has_result', 'diagnostics_total', 'diagnostics_pass', 'diagnostics_fail', 'diagnostics_report', 'diagnostics_last_summary', 'news_total', 'news_published',
         'news_form_title', 'news_form_action', 'news_message', 'news_title', 'news_slug',
         'news_intro', 'news_content', 'news_preview_action', 'news_draft_selected', 'news_published_selected', 'news_pinned_checked',
         'articles_asset_version', 'articles_can_configure_menu', 'articles_listing', 'articles_list_title', 'articles_has_items',
