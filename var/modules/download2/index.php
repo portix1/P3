@@ -35,7 +35,7 @@ $template->setSlot('main', './var/modules/download2/templates/public.tpl');
 $template->set('dl2_has_files', '0');
 $storage = new \Portix\Storage\DownloadStorage(dirname(__DIR__, 3) . '/var/private/download2');
 $count = 0;
-foreach ($library->published() as $file) {
+foreach ($library->publicLibrary() as $file) {
     try {
         $path = $storage->path((string) $library->find((int) $file['id'], true)['stored_name']);
         if (!is_file($path) || is_link($path)) { continue; }

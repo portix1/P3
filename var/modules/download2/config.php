@@ -39,6 +39,8 @@ try {
                     'title' => dl2Title((string) ($_POST['title'] ?? ''), $stored['original_name']),
                     'description' => dl2Description((string) ($_POST['description'] ?? '')),
                     'status' => dl2Status((string) ($_POST['status'] ?? 'draft')),
+                    'show_in_library' => isset($_POST['show_in_library']) ? 1 : 0,
+                    'show_in_library' => isset($_POST['show_in_library']) ? 1 : 0,
                 ]);
             } catch (Throwable $e) {
                 $storage->delete((string) $stored['stored_name']);
@@ -98,6 +100,7 @@ $template->set('dl2_description_value', '');
 $template->set('dl2_draft_selected', 'selected');
 $template->set('dl2_published_selected', '');
 $template->set('dl2_file_required', 'required');
+$template->set('dl2_show_in_library_checked', 'checked');
 $template->set('dl2_category_none_selected', 'selected');
 $template->set('dl2_file_current', '');
 $template->set('dl2_is_edit', '0');
@@ -118,6 +121,7 @@ if ($view === 'new' || $view === 'edit') {
         $template->set('dl2_file_required', '');
         $template->set('dl2_file_current', (string) $item['original_name']);
         $template->set('dl2_is_edit', '1');
+        $template->set('dl2_show_in_library_checked', (int) $item['show_in_library'] === 1 ? 'checked' : '');
         $selectedCategory = $item['category_id'] === null ? null : (int) $item['category_id'];
     }
     $template->set('dl2_category_none_selected', $selectedCategory === null ? 'selected' : '');
@@ -159,6 +163,7 @@ foreach ($library->allForAdmin() as $item) {
         'category'=>(string)($item['category_name'] ?? $translator->text('dl2_without_category')),
         'status'=>$translator->text('dl2_' . $item['status']),
         'counter'=>(string)$item['download_count'],
+        'library_visibility'=>(int)$item['show_in_library'] === 1 ? $translator->text('dl2_library_yes') : $translator->text('dl2_library_no'),
         'name'=>(string)$item['original_name'],
     ]);
 }

@@ -8,6 +8,7 @@ mime_type; text; notnull; ; ; ; ; ;
 size_bytes; numeric; notnull; 0; ; ; ; ;
 sha256; text; notnull; ; ; ; ; ;
 status; text; notnull; draft; ; index; ; ;
+show_in_library; bool; notnull; 1; ; index; ; ;
 download_count; numeric; notnull; 0; ; ; ; ;
 created_at; date; notnull; ; ; ; ; ;
 updated_at; date; notnull; ; ; index; ; ;

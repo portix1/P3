@@ -124,6 +124,18 @@ try {
             'description' => '', 'status' => 'published',
         ]);
         $file2Draft = $newStorage->storeLocalFile($downloadSource, 'nouveau-guide-brouillon.pdf');
+        $newDownloads->update($published2, ['show_in_library' => 0]);
+        $hiddenLibrary = $request('/download.html');
+        $check($hiddenLibrary[0] === 200 && !str_contains($hiddenLibrary[1], 'Document public nouveau gestionnaire'),
+            'Download2 hides article-only file from public library');
+        $hiddenCatalogue = $request('/download-catalog.html');
+        $hiddenData = json_decode($hiddenCatalogue[1], true);
+        $check($hiddenCatalogue[0] === 200 && count($hiddenData['files'] ?? []) === 1,
+            'Download2 keeps article-only files selectable from Quill');
+        $hiddenDirect = $request('/download-file-' . $published2 . '.html');
+        $check($hiddenDirect[0] === 200 && str_starts_with($hiddenDirect[1], '%PDF-1.4'),
+            'Download2 article-only file remains downloadable');
+        $newDownloads->update($published2, ['show_in_library' => 1]);
         $draft2 = $newDownloads->create([
             ...$file2Draft, 'category_id' => null, 'title' => 'Document non publié',
             'description' => '', 'status' => 'draft',

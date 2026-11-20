@@ -33,6 +33,20 @@ final class Library
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /** Public library listing; article-only files remain downloadable and selectable in Quill. */
+    public function publicLibrary(): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT f.id, f.title, f.description, f.original_name, f.mime_type, f.size_bytes, '
+            . 'c.name AS category_name FROM dm2_files f '
+            . 'LEFT JOIN dm2_categories c ON c.id = f.category_id '
+            . "WHERE f.status = 'published' AND f.show_in_library = 1 "
+            . 'ORDER BY f.title COLLATE NOCASE, f.id'
+        );
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function find(int $id, bool $publishedOnly = false): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM dm2_files WHERE id = :id'
@@ -98,14 +112,14 @@ final class Library
         self::validate($data);
         $now = gmdate('Y-m-d H:i:s');
         $stmt = $this->pdo->prepare('INSERT INTO dm2_files '
-            . '(category_id,title,description,original_name,stored_name,mime_type,size_bytes,sha256,status,created_at,updated_at) '
-            . 'VALUES (:category_id,:title,:description,:original_name,:stored_name,:mime_type,:size_bytes,:sha256,:status,:created_at,:updated_at)');
+            . '(category_id,title,description,original_name,stored_name,mime_type,size_bytes,sha256,status,show_in_library,created_at,updated_at) '
+            . 'VALUES (:category_id,:title,:description,:original_name,:stored_name,:mime_type,:size_bytes,:sha256,:status,:show_in_library,:created_at,:updated_at)');
         $stmt->execute([
             'category_id' => $data['category_id'], 'title' => trim($data['title']),
             'description' => trim($data['description']), 'original_name' => $data['original_name'],
             'stored_name' => $data['stored_name'], 'mime_type' => $data['mime_type'],
             'size_bytes' => $data['size_bytes'], 'sha256' => $data['sha256'],
-            'status' => $data['status'], 'created_at' => $now, 'updated_at' => $now,
+            'status' => $data['status'], 'show_in_library' => $data['show_in_library'] ?? 1, 'created_at' => $now, 'updated_at' => $now,
         ]);
         return (int) $this->pdo->lastInsertId();
     }
@@ -119,14 +133,14 @@ final class Library
         $next['updated_at'] = gmdate('Y-m-d H:i:s');
         $stmt = $this->pdo->prepare('UPDATE dm2_files SET category_id=:category_id,title=:title,'
             . 'description=:description,original_name=:original_name,stored_name=:stored_name,'
-            . 'mime_type=:mime_type,size_bytes=:size_bytes,sha256=:sha256,status=:status,'
+            . 'mime_type=:mime_type,size_bytes=:size_bytes,sha256=:sha256,status=:status,show_in_library=:show_in_library,'
             . 'updated_at=:updated_at WHERE id=:id');
         $stmt->execute([
             'id' => $id, 'category_id' => $next['category_id'], 'title' => trim($next['title']),
             'description' => trim($next['description']), 'original_name' => $next['original_name'],
             'stored_name' => $next['stored_name'], 'mime_type' => $next['mime_type'],
             'size_bytes' => $next['size_bytes'], 'sha256' => $next['sha256'],
-            'status' => $next['status'], 'updated_at' => $next['updated_at'],
+            'status' => $next['status'], 'show_in_library' => $next['show_in_library'], 'updated_at' => $next['updated_at'],
         ]);
     }
 
@@ -148,6 +162,7 @@ final class Library
         if (trim((string) ($data['title'] ?? '')) === '' || mb_strlen((string) $data['title']) > 200
             || mb_strlen((string) ($data['description'] ?? '')) > 5000
             || !in_array($data['status'] ?? null, ['draft','published'], true)
+            || !in_array($data['show_in_library'] ?? 1, [0, 1], true)
             || !is_numeric($data['size_bytes'] ?? null)
             || (int) $data['size_bytes'] < 1
             || preg_match('/^[a-f0-9]{64}$/D', (string) ($data['sha256'] ?? '')) !== 1

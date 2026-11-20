@@ -13,6 +13,7 @@
 <label>{{ dl2_status }} <select name="status"><option value="draft" {{ dl2_draft_selected }}>{{ dl2_draft }}</option><option value="published" {{ dl2_published_selected }}>{{ dl2_published }}</option></select></label>
 <label>{{ dl2_file }} <input type="file" name="file" accept=".pdf,.zip,.png,.jpg,.jpeg,.gif,.txt,.csv,.tar,.gz" {{ dl2_file_required }}>
 <small>{{ dl2_file_current }} {{ dl2_file_help }}</small></label>
+<label class="form-grid-wide"><input type="checkbox" name="show_in_library" value="1" {{ dl2_show_in_library_checked }}> {{ dl2_show_in_library }}</label>
 <label class="form-grid-wide">{{ dl2_description }}<textarea name="description" maxlength="5000">{{ dl2_description_value }}</textarea></label>
 </div><button type="submit">{{ dl2_save }}</button> <a href="Admin-dl2.html">{{ dl2_cancel }}</a>
 </form>

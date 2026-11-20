@@ -23,6 +23,8 @@ $repo = new RepositoryRegistry($db);
 $installer = new ModuleInstaller($db, $repo->modules());
 $result = $installer->installDirectory($root . '/var/modules/download2');
 dl2Assert($result['tables'] === ['dm2_categories','dm2_files'], 'schémas indépendants');
+$columns = array_column($db->connection()->query('PRAGMA table_info(dm2_files)')->fetchAll(), 'name');
+dl2Assert(in_array('show_in_library', $columns, true), 'colonne visibilité créée');
 dl2Assert(!$result['module']['enabled'] && $result['module']['admin_access'] === 'admin', 'désactivé par défaut et réservé admin');
 $library = new Library($db->connection());
 $id = $library->create([
@@ -45,6 +47,15 @@ dl2Assert(count($published)===1 && (int)$published[0]['id']===$id, 'publication 
 dl2Assert($resolver->resolve('download-file-'.$id, $modules) === ['dl2','file',(string)$id], 'route d’un fichier publié');
 dl2Assert(!array_key_exists('download_count', $published[0]), 'aucun compteur dans les données publiques');
 dl2Assert(!array_key_exists('stored_name', $published[0]), 'aucune adresse de stockage dans les données publiques');
+// Hide from general library while keeping link and Quill catalogue access.
+$library->update($id, ['show_in_library' => 0]);
+dl2Assert($library->publicLibrary() === [], 'fichier réservé aux articles absent de la bibliothèque');
+dl2Assert(count($library->published()) === 1, 'fichier réservé aux articles dans le sélecteur');
+dl2Assert($resolver->resolve('download-file-'.$id, $modules) === ['dl2','file',(string)$id], 'lien direct conservé');
+dl2Assert((int)$library->find($id)['show_in_library'] === 0, 'option enregistrée en base');
+$library->update($id, ['show_in_library' => 1]);
+dl2Assert(count($library->publicLibrary()) === 1, 'réaffichage dans la bibliothèque');
+
 $library->increment($id);
 $library->increment($id);
 dl2Assert((int)$library->find($id)['download_count']===2, 'compteur administratif');

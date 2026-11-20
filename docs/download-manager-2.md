@@ -11,6 +11,7 @@ L'installation se fera uniquement dans une copie de test. Ne pas activer `downlo
 
 - Préfixe public et administratif : `dl2` ; tables neuves `dm2_files` et `dm2_categories`.
 - Stockage hors espace public : `var/private/download2` ; contrôles MIME, signature et taille de fichier via le service de stockage P3.
+- Option « Afficher dans la bibliothèque publique » indépendante de l'état Publié, cochée par défaut et conservée au remplacement du fichier. Un fichier publié masqué reste accessible depuis son lien d'article et le sélecteur Quill. Les compteurs ne sont jamais publics.
 - Catégories facultatives (création, édition, suppression des catégories vides) ; description facultative ; brouillon ou publié.
 - Adresse de téléchargement fondée sur un identifiant immuable : `dl2-file-ID.html`. Un remplacement conserve l'identifiant.
 - Route de téléchargement : refus des fichiers non publiés, de POST et des liens symboliques ; HEAD ne compte pas comme téléchargement.
