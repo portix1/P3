@@ -2,7 +2,7 @@
 {% if dl2_message %}<p role="status">{{ dl2_message }}</p>{% endif %}
 <p><a class="button" href="Admin-dl2-new.html">{{ dl2_add }}</a></p>
 <section class="admin-section">
-<table><caption>{{ dl2_manage }}</caption><thead><tr><th>{{ dl2_title_field }}</th><th>{{ dl2_category }}</th><th>{{ dl2_status }}</th><th>{{ dl2_downloads_admin }}</th><th>{{ ui_actions }}</th></tr></thead>
+<table><caption>{{ dl2_manage }}</caption><thead><tr><th scope="col">{{ dl2_title_field }}</th><th scope="col">{{ dl2_category }}</th><th scope="col">{{ dl2_status }}</th><th scope="col">{{ dl2_downloads_admin }}</th><th scope="col">{{ ui_actions }}</th></tr></thead>
 <tbody>{% for dl2_admin_file in dl2_admin_file %}<tr>
 <td><strong>{{ dl2_admin_file.title }}</strong><small>{{ dl2_admin_file.name }}</small></td>
 <td>{{ dl2_admin_file.category }}</td><td>{{ dl2_admin_file.status }}</td>
