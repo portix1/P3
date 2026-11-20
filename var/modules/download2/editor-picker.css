@@ -1,0 +1,20 @@
+.portix-download-dialog {
+    max-width: min(36rem, calc(100vw - 2rem));
+    width: 100%;
+    max-height: 80vh;
+    border: 1px solid #87909a;
+    border-radius: 6px;
+    padding: 1.25rem;
+    background: #fff;
+    color: #20252b;
+}
+.portix-download-dialog::backdrop { background: rgb(0 0 0 / 50%); }
+.portix-download-dialog h2 { font-size: 1.25rem; margin: 0 0 1rem; }
+.portix-download-dialog input { width: 100%; box-sizing: border-box; padding: .6rem; }
+.portix-download-choices { display: grid; gap: .4rem; max-height: 45vh; overflow-y: auto; margin: 1rem 0; }
+.portix-download-choice { text-align: left; padding: .65rem; cursor: pointer; }
+.portix-download-choice:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
+.portix-download-picker { font-size: 1.15rem; }
+.download-admin-category { padding: 1rem 0; border-bottom: 1px solid #ccc; }
+.download-admin-category form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .75rem; }
+.download-admin-category textarea { display: block; width: min(28rem, 100%); }
