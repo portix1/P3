@@ -79,6 +79,10 @@ try {
         'Affiliation présente en Administration');
     navigationCheck(!in_array('Admin-affiliation.html', array_column($sections['writing'], 'url'), true),
         'Affiliation absente de Rédaction');
+    navigationCheck(in_array('Admin-dwl.html', array_column($sections['management'], 'url'), true),
+        'Gestion des téléchargements présente en Administration');
+    navigationCheck(!in_array('Admin-dwl.html', array_column($sections['writing'], 'url'), true),
+        'Gestion des téléchargements absente de Rédaction');
 
 
     $news = array_values(array_filter($sections['writing'], static fn (array $item): bool => $item['url'] === 'Admin-news.html'));
@@ -96,10 +100,12 @@ try {
     navigationCheck(!in_array('Admin-footer.html', array_column($editor['writing'], 'url'), true), 'Menu de bas de page masqué au rédacteur');
 
     if (is_dir($root.'/var/modules/home')) {
-    foreach (['Admin-home.html', 'Admin-home-settings.html', 'Admin-home-report.html'] as $url) {
-        navigationCheck(in_array($url, array_column($sections['configuration'], 'url'), true), 'Accueil regroupé dans Configuration');
-        navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['management']], 'url'), true), 'Accueil absent des autres espaces');
+    foreach (['Admin-home.html', 'Admin-home-report.html'] as $url) {
+        navigationCheck(in_array($url, array_column($sections['management'], 'url'), true), 'Gestion quotidienne de l’accueil en Administration');
+        navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['configuration']], 'url'), true), 'Gestion quotidienne de l’accueil absente des autres espaces');
     }
+    navigationCheck(in_array('Admin-home-settings.html', array_column($sections['configuration'], 'url'), true), 'Réglages de l’accueil en Configuration');
+    navigationCheck(!in_array('Admin-home-settings.html', array_column([...$sections['writing'], ...$sections['management']], 'url'), true), 'Réglages de l’accueil exclus des autres espaces');
     navigationCheck(in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Menu de bas de page dans Configuration');
     navigationCheck(in_array('Admin-menu.html', array_column($sections['configuration'], 'url'), true), 'Menu principal dans Configuration');
     navigationCheck(!in_array('Admin-footer.html', array_column($sections['management'], 'url'), true), 'Menu de bas de page absent d’Administration');
