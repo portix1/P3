@@ -111,6 +111,69 @@ try {
         ...$stored, 'category_id' => null, 'title' => 'Guide privé', 'description' => '', 'status' => 'draft',
     ]);
     $check($request('/dwl-fichier-' . $draftDownload . '-guide-fixture.html')[0] === 404, 'Draft download is not public');
+    // Download Manager 2 is a separate, disabled-by-default module.
+    // Exercise public visibility, transfer and counters on this disposable fixture.
+    if (is_file($fixture . '/var/modules/download2/src/Library.php')) {
+        require_once $source . '/var/modules/download2/src/Library.php';
+        $db->connection()->exec("UPDATE modules SET enabled=1 WHERE prefix='dl2'");
+        $newDownloads = new PortixModule\Download2\Library($db->connection());
+        $newStorage = new Portix\Storage\DownloadStorage($fixture . '/var/private/download2');
+        $file2 = $newStorage->storeLocalFile($downloadSource, 'nouveau-guide.pdf');
+        $published2 = $newDownloads->create([
+            ...$file2, 'category_id' => null, 'title' => 'Document public nouveau gestionnaire',
+            'description' => '', 'status' => 'published',
+        ]);
+        $file2Draft = $newStorage->storeLocalFile($downloadSource, 'nouveau-guide-brouillon.pdf');
+        $newDownloads->update($published2, ['show_in_library' => 0]);
+        $hiddenLibrary = $request('/download.html');
+        $check($hiddenLibrary[0] === 200 && !str_contains($hiddenLibrary[1], 'Document public nouveau gestionnaire'),
+            'Download2 hides article-only file from public library');
+        $hiddenCatalogue = $request('/download-catalog.html');
+        $hiddenData = json_decode($hiddenCatalogue[1], true);
+        $check($hiddenCatalogue[0] === 200 && count($hiddenData['files'] ?? []) === 1,
+            'Download2 keeps article-only files selectable from Quill');
+        $hiddenDirect = $request('/download-file-' . $published2 . '.html');
+        $check($hiddenDirect[0] === 200 && str_starts_with($hiddenDirect[1], '%PDF-1.4'),
+            'Download2 article-only file remains downloadable');
+        $newDownloads->update($published2, ['show_in_library' => 1]);
+        $draft2 = $newDownloads->create([
+            ...$file2Draft, 'category_id' => null, 'title' => 'Document non publié',
+            'description' => '', 'status' => 'draft',
+        ]);
+        $catalog2 = $request('/download-catalog.html');
+        $catalogBody2 = json_decode($catalog2[1], true);
+        $check($catalog2[0] === 200 && is_array($catalogBody2)
+            && count($catalogBody2['files'] ?? []) === 1
+            && (int) ($catalogBody2['files'][0]['id'] ?? 0) === $published2,
+            'Download2 catalogue contains published files only');
+        $check(!str_contains($catalog2[1], 'download_count') && !str_contains($catalog2[1], 'stored_name'),
+            'Download2 public API leaks no counters or private paths');
+        $public2 = $request('/download.html');
+        $check($public2[0] === 200 && str_contains($public2[1], 'download-file-'.$published2.'.html')
+            && !str_contains($public2[1], 'Document non publié'),
+            'Download2 public list links published files only');
+        $check($request('/download-file-'.$draft2.'.html')[0] === 404,
+            'Download2 refuses unpublished file');
+        $received2 = $request('/download-file-'.$published2.'.html');
+        $check($received2[0] === 200 && str_starts_with($received2[1], '%PDF-1.4'),
+            'Download2 transfers a published document');
+        $check((int) $newDownloads->find($published2)['download_count'] === 1,
+            'Download2 counts one successful GET');
+        $head2 = $request('/download-file-'.$published2.'.html', 'HEAD');
+        $check($head2[0] === 200
+            && (int) $newDownloads->find($published2)['download_count'] === 1,
+            'Download2 HEAD does not count as a download');
+        $admin2 = $request('/Admin-dl2.html','GET','',$auth);
+        $check($admin2[0] === 200 && str_contains($admin2[1], 'Document public nouveau gestionnaire'),
+            'Download2 administrator sees files');
+        $editor2 = $request('/Admin-articles-new.html', 'GET', '', $auth);
+        $check($editor2[0] === 200 && str_contains($editor2[1], 'download2/editor-picker.js'),
+            'Quill picker loaded when Download2 is active');
+        $db->connection()->exec("UPDATE modules SET enabled=0 WHERE prefix='dl2'");
+        $editor2off = $request('/Admin-articles-new.html', 'GET', '', $auth);
+        $check($editor2off[0] === 200 && !str_contains($editor2off[1], 'download2/editor-picker.js'),
+            'Quill picker absent when Download2 is disabled');
+    }
     $screen=$request('/Admin-config-modules.html','GET','',$auth);
     preg_match('/name="csrf_token" value="([^"]+)"/',$screen[1],$token);
     $check(!is_dir($fixture.'/var/modules/home'),'Core fixture starts without Home');

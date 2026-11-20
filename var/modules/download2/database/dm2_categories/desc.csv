@@ -1,0 +1,4 @@
+id; numeric; notnull; ; ; ; primary; ;
+name; text; notnull; ; ; ; ; ;
+slug; text; notnull; ; unique; index; ; ;
+description; text; notnull; ; ; ; ; ;
