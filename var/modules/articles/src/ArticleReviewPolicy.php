@@ -11,6 +11,21 @@ use RuntimeException;
  */
 final class ArticleReviewPolicy
 {
+    /** Fingerprint of the persisted article, including content and publication state. */
+    public static function version(array $article): string
+    {
+        unset($article['category_name']);
+        ksort($article);
+        return hash('sha256', json_encode($article, JSON_THROW_ON_ERROR));
+    }
+
+    public static function assertVersion(array $article, mixed $expected): void
+    {
+        if (!is_string($expected) || !hash_equals(self::version($article), $expected)) {
+            throw new RuntimeException('articles_review_changed');
+        }
+    }
+
     public static function transition(
         string $current,
         string $next,

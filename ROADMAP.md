@@ -26,6 +26,13 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 
 Version cible à définir.
 
+## Relecture — consolidation vers 1.0
+
+- Articles 1.4.10 en préparation. Empreinte de la version affichée dans les actions de la liste. Comparaison du contenu, vérification des permissions et changement d’état dans une même transaction.
+- Refus HTTP 409 d’une ancienne approbation ou d’un ancien retour pour correction après modification et nouvelle soumission. Les anciens formulaires sans empreinte doivent être rechargés.
+- Tests de non-régression HTTP à la racine et en sous-dossier, y compris modification à date identique, formulaire incomplet ou altéré, validation actuelle et répétition d’une approbation. Test d’un verrou SQLite concurrent.
+- Catalogue officiel Articles 1.4.9 conservé pendant les essais. Préparer la distribution 1.4.10 avant une publication stable.
+
 ## Installation et routage — consolidation vers 1.0
 
 - Correction du `.htaccess` incluse dans la branche de la PR #52. Pages HTML dirigées vers `/index.php` à la racine et vers `index.php` en sous-dossier.

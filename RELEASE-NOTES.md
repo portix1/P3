@@ -1,3 +1,9 @@
+# En préparation — Articles 1.4.10
+
+- Relecture depuis la liste des articles. Si le contenu ou l’état enregistré diffère depuis l’affichage, l’approbation et le retour pour correction sont refusés. P3 invite à recharger la liste et à relire la version actuelle.
+- La comparaison et le changement d’état sont effectués dans une même transaction. Une action en double ou un verrou SQLite concurrent ne publie pas de version imprévue.
+- Les listes ouvertes avant cette mise à jour doivent être rechargées. Le catalogue de module publié reste en 1.4.9 pendant la validation de cette candidate.
+
 # P3 0.9.9
 
 - Installation neuve : le bouton « Ouvrir P3 » mène directement à la racine. La réécriture Apache des pages HTML utilise une cible absolue à la racine du domaine et une cible relative en sous-dossier. Tests du routage Apache et du parcours complet installation, connexion et administration aux deux emplacements.
