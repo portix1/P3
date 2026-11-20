@@ -81,6 +81,9 @@
     <link rel="stylesheet" href="var/modules/articles/article-picker.css?v={{ articles_asset_version }}">
     <script src="var/modules/articles/article-picker.js?v={{ articles_asset_version }}" defer></script>
     <script src="var/modules/articles/series-order.js?v={{ articles_asset_version }}" defer></script>
+    {% if dl2_picker_enabled == "1" %}
+    <script src="var/modules/download2/editor-picker.js?v=2.0.0-dev1" defer></script>
+    {% endif %}
 
     <details class="article-optional-metadata">
         <summary>{{ articles_optional_metadata }}</summary>
