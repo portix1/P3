@@ -16,10 +16,3 @@
 <label class="form-grid-wide">{{ dl2_description }}<textarea name="description" maxlength="5000">{{ dl2_description_value }}</textarea></label>
 </div><button type="submit">{{ dl2_save }}</button> <a href="Admin-dl2.html">{{ dl2_cancel }}</a>
 </form>
-<section class="admin-section"><h2>{{ dl2_category }}</h2>
-<form method="post" action="Admin-dl2-new.html">
-<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-<input type="hidden" name="dl2_action" value="create_category">
-<label>{{ dl2_category }} <input type="text" name="name" maxlength="120" required></label>
-<button type="submit">{{ dl2_add }}</button>
-</form></section>
