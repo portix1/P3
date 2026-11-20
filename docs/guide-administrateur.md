@@ -5,8 +5,8 @@ Connectez-vous à `login.html` avec votre compte administrateur. Le **Tableau de
 | Espace | Où intervenir |
 | --- | --- |
 | **Rédaction** | Créer et relire les articles et les actualités. |
-| **Administration** | Gérer les comptes et leurs droits, traiter les messages et suivre l’activité du site. |
-| **Configuration** | Régler l’identité du site, composer l’accueil, modifier les menus, gérer les thèmes et les modules, lancer les diagnostics et les mises à jour. |
+| **Administration** | Gérer les comptes et leurs droits, traiter les messages, composer l’accueil, consulter ses résultats, gérer l’affiliation et les téléchargements. |
+| **Configuration** | Régler l’identité du site et l’accueil, modifier les menus, gérer les thèmes et les modules, lancer les diagnostics et les mises à jour. |
 
 Les fonctions proposées dépendent des modules activés. Les catégories, séries, menus et autres éléments de structure restent sous la responsabilité de l’administrateur.
 
@@ -14,7 +14,7 @@ Les fonctions proposées dépendent des modules activés. Les catégories, séri
 
 Configuration affiche une seule entrée par module, dans la page et dans le menu latéral. Cliquez sur le composant à régler. S’il propose plusieurs fonctions, une page-menu permet de choisir l’action.
 
-**Configuration de l’accueil** ouvre **Réglages**, **Composer** et **Résultats**. **Protection des contenus** regroupe ses fonctions et ses réglages. **Configuration du site** ouvre les fonctions du moteur, notamment l’identité, le référencement, la messagerie, les thèmes, les modules, les mises à jour et les diagnostics.
+**Réglages de l’accueil** reste directement accessible dans Configuration. **Composer l’accueil** et **Résultats de l’accueil** sont regroupés dans Administration. **Protection des contenus** regroupe ses fonctions et ses réglages. **Configuration du site** ouvre les fonctions du moteur, notamment l’identité, le référencement, la messagerie, les thèmes, les modules, les mises à jour et les diagnostics.
 
 Une entrée comportant une seule fonction l’ouvre directement. Le fil d’Ariane permet de revenir à la page-menu du composant, puis à Configuration. Les modules désactivés disparaissent de ce parcours.
 
@@ -25,7 +25,7 @@ Une entrée comportant une seule fonction l’ouvre directement. Le fil d’Aria
 3. Enregistrez le compte, rouvrez sa fiche et repérez **Droits de rédaction des articles**.
 4. Choisissez **Relecture obligatoire** ou **Publication directe**, puis enregistrez les droits dans leur propre formulaire.
 
-Avec la relecture obligatoire, le rédacteur soumet ses articles avant la mise en ligne. Avec la publication directe, il peut aussi corriger ses propres articles déjà publiés. Vérifiez les catégories accessibles et les autres droits accordés dans cette fiche.
+Avec la relecture obligatoire, le rédacteur peut demander la publication directement depuis le formulaire ou plus tard depuis la liste des brouillons. Avec la publication directe, il peut aussi corriger ses propres articles déjà publiés. Vérifiez les catégories accessibles et les autres droits accordés dans cette fiche.
 
 ## Relire un article
 
