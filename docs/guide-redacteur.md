@@ -14,10 +14,10 @@ Au clavier, Tab passe du contenu à la description. Si vous êtes dans un tablea
 
 ## Demander la publication ou publier directement
 
-- **Relecture obligatoire** — Cliquez sur **Enregistrer le brouillon**, puis sur **Demander la publication** dans la liste des articles. L’article passe **En attente de relecture** et reste privé. Si l’administrateur le renvoie, ouvrez l’article, lisez **Corrections demandées**, enregistrez votre nouvelle version et soumettez-la à nouveau.
+- **Relecture obligatoire** — Cliquez sur **Demander la publication** dans le formulaire pour enregistrer et soumettre votre texte. Vous pouvez aussi enregistrer un brouillon, puis demander sa publication depuis la liste des articles. L’article passe **En attente de relecture** et reste privé. Si l’administrateur le renvoie, ouvrez l’article, lisez **Corrections demandées**, enregistrez votre nouvelle version et soumettez-la à nouveau.
 - **Publication directe** — Enregistrez le brouillon, puis choisissez **Publier** dans la liste des articles. Ouvrez l’adresse publique pour vérifier le résultat.
 
-Si vous modifiez un article qui attend une relecture, il repasse en brouillon. Vous devrez demander sa publication à nouveau. La modification d’un article déjà publié dépend des droits de votre compte.
+Si vous modifiez un article qui attend une relecture, **Enregistrer le brouillon** le remet en brouillon ; **Demander la publication** soumet immédiatement la version corrigée. La modification d’un article déjà publié dépend des droits de votre compte.
 
 ## Retrouver un article
 
