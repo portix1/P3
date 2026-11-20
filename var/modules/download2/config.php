@@ -40,7 +40,6 @@ try {
                     'description' => dl2Description((string) ($_POST['description'] ?? '')),
                     'status' => dl2Status((string) ($_POST['status'] ?? 'draft')),
                     'show_in_library' => isset($_POST['show_in_library']) ? 1 : 0,
-                    'show_in_library' => isset($_POST['show_in_library']) ? 1 : 0,
                 ]);
             } catch (Throwable $e) {
                 $storage->delete((string) $stored['stored_name']);
@@ -62,6 +61,7 @@ try {
                     'title' => dl2Title((string) ($_POST['title'] ?? ''), (string) $old['original_name']),
                     'description' => dl2Description((string) ($_POST['description'] ?? '')),
                     'status' => dl2Status((string) ($_POST['status'] ?? 'draft')),
+                    'show_in_library' => isset($_POST['show_in_library']) ? 1 : 0,
                 ]);
             } catch (Throwable $e) {
                 if ($stored !== null) { $storage->delete((string) $stored['stored_name']); }
