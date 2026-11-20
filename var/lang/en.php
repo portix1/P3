@@ -611,6 +611,10 @@ $_LANG['extension_updates_none'] = 'No updates found for tracked extensions.';
 $_LANG['extension_updates_found'] = 'Updates available.';
 $_LANG['extension_updates_failed'] = 'The check failed. Reload the page and try again.';
 
+$_LANG['dashboard_review_heading'] = 'Articles awaiting review';
+$_LANG['dashboard_review_one'] = '%d article is awaiting your review.';
+$_LANG['dashboard_review_many'] = '%d articles are awaiting your review.';
+$_LANG['dashboard_review_action'] = 'Review submissions';
 $_LANG['dashboard_update_one'] = '%d update available';
 $_LANG['dashboard_update_many'] = '%d updates available';
 
