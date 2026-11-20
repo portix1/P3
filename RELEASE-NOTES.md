@@ -1,6 +1,6 @@
 # P3 0.9.9
 
-- Installation neuve : le bouton « Ouvrir P3 » mène directement à la racine. La réécriture des pages HTML utilise une cible absolue à la racine du domaine, notamment pour les sous-domaines LWS.
+- Installation neuve : le bouton « Ouvrir P3 » mène directement à la racine. La réécriture Apache des pages HTML utilise une cible absolue à la racine du domaine et une cible relative en sous-dossier. Tests du routage Apache et du parcours complet installation, connexion et administration aux deux emplacements.
 - Six Cordes UX Clair : respect de la justification des articles, sans césure automatique. Variante v018 0.1.13 avec en-tête et menu principal à angles droits et sans arrondis du côté droit des panneaux concernés. Sur un site existant, installer le thème séparément depuis Configuration → Thèmes.
 - Recherche : reconstruction automatique d’un index corrompu. Si la reconstruction est bloquée, les résultats restent accessibles sur la page habituelle. Le diagnostic est affiché en administration.
 - Statistiques 2.0.4 : exclusion des visites portant un marqueur d’audit d’Univers Guitare.

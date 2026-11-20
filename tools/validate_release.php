@@ -84,6 +84,7 @@ $tests = [
     'smoke_test_release_signature.php',
     'smoke_test_ziparchive.php',
     'smoke_test_installer.php',
+    'smoke_test_install_routes.php',
 ];
 
 if (is_file($root . '/var/modules/media/src/MediaManager.php')) { $tests[] = 'smoke_test_media.php'; }
