@@ -5,8 +5,8 @@ Connectez-vous à `login.html` avec votre compte administrateur. Le **Tableau de
 | Espace | Où intervenir |
 | --- | --- |
 | **Rédaction** | Créer et relire les articles et les actualités. |
-| **Administration** | Gérer les comptes et leurs droits, traiter les messages et suivre l’activité du site. |
-| **Configuration** | Régler l’identité du site, composer l’accueil, modifier les menus, gérer les thèmes et les modules, lancer les diagnostics et les mises à jour. |
+| **Administration** | Gérer les comptes et leurs droits, traiter les messages, composer l’accueil, suivre ses résultats, gérer l’affiliation et les téléchargements. |
+| **Configuration** | Régler l’identité du site et les paramètres de l’accueil, modifier les menus, gérer les thèmes et les modules, lancer les diagnostics et les mises à jour. |
 
 Les fonctions proposées dépendent des modules activés. Les catégories, séries, menus et autres éléments de structure restent sous la responsabilité de l’administrateur.
 
@@ -17,7 +17,7 @@ Les fonctions proposées dépendent des modules activés. Les catégories, séri
 3. Enregistrez le compte, rouvrez sa fiche et repérez **Droits de rédaction des articles**.
 4. Choisissez **Relecture obligatoire** ou **Publication directe**, puis enregistrez les droits dans leur propre formulaire.
 
-Avec la relecture obligatoire, le rédacteur soumet ses articles avant la mise en ligne. Avec la publication directe, il peut aussi corriger ses propres articles déjà publiés. Vérifiez les catégories accessibles et les autres droits accordés dans cette fiche.
+Avec la relecture obligatoire, le rédacteur peut demander la publication directement en enregistrant son article, ou depuis la liste des brouillons. Avec la publication directe, il peut aussi corriger ses propres articles déjà publiés. Vérifiez les catégories accessibles et les autres droits accordés dans cette fiche.
 
 ## Relire un article
 
