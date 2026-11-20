@@ -2,10 +2,10 @@
   "schema": 1,
   "id": "six-cordes-ux-clair",
   "name": "Six Cordes UX Clair",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "kind": "theme",
   "contract": "1",
-  "p3_min": "0.8.1",
+  "p3_min": "0.8.0",
   "p3_max": null,
   "php_min": "8.2",
   "requires": [
@@ -25,7 +25,7 @@
     "index.tpl": "ddb2736badcde96de5633a8e115b7b216dc54eabdf985c505edbad7283bb7887",
     "menu.tpl": "9696615551ec5b226114e2a805154c20c981302fe951822dfe38cd32db7c6a63",
     "not-found.tpl": "27506dbb1040e627ad6d3d1b5b6530a4d10570d7ca78d69caa9b0fa4b5ad5ac2",
-    "style.css": "6c50e1ad0b598f0c754c65bc65d6d70e50193818554a4827fe7acb9fe0046443",
-    "style.min.css": "72de11ef97d46762791eea2cfd0322d0813c528839833ae00deb982cec5c59b1"
+    "style.css": "8e297946e0951d9272d323161a94cc74e5d6d73411b005ba1b90ea2f19f71650",
+    "style.min.css": "26c7473d577c3a685edfba6eda5322b1abd6c787a83d27d52634576a8cf71552"
   }
 }
