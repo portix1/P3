@@ -198,12 +198,24 @@ try {
             $check(str_contains($configArea[1], 'href="' . $entry . '"') === ($actor === 'admin'), 'Configuration entry: '.$entry);
             $check(!str_contains($management[1], 'href="' . $entry . '"'), 'Entry absent from Administration: '.$entry);
         }
-        foreach (['Admin-configuration-module-home.html', 'Admin-configuration-module-safety.html', 'Admin-configuration-site.html'] as $menuRoute) {
+        foreach (['Admin-configuration-module-home.html', 'Admin-configuration-module-safety.html', 'Admin-configuration-site.html', 'Admin-management-module-articles.html'] as $menuRoute) {
             $menu = $request('/' . $menuRoute, 'GET', '', $headers);
             $check($menu[0] === ($actor === 'admin' ? 200 : 403), 'Configuration menu permissions: ' . $menuRoute);
             $posted = $request('/' . $menuRoute, 'POST', '{}', [...$headers, 'Accept: application/json']);
             $check($posted[0] === ($actor === 'admin' ? 405 : 403), 'Configuration menu refuses POST: ' . $menuRoute);
             $check($request('/' . $menuRoute)[0] === 403, 'Anonymous configuration menu refused');
+        }
+        if ($actor === 'admin') {
+            $check(substr_count($management[1], 'href="Admin-management-module-articles.html"') === 2, 'Article group appears once on page and once in sidebar');
+            $check(!str_contains($management[1], 'href="Admin-articles-categories.html"'), 'Category leaf is hidden from workspace root');
+            $articleMenu = $request('/Admin-management-module-articles.html', 'GET', '', $headers);
+            $check(str_contains($articleMenu[1], '<h1>Gestion des articles</h1>'), 'Article management menu title');
+            foreach (['categories', 'series', 'order'] as $action) {
+                $check(str_contains($articleMenu[1], 'href="Admin-articles-' . $action . '.html"'), 'Existing article action linked: ' . $action);
+                $leaf = $request('/Admin-articles-' . $action . '.html', 'GET', '', $headers);
+                $check($leaf[0] === 200 && str_contains($leaf[1], 'href="Admin-management-module-articles.html"'), 'Article leaf returns to group: ' . $action);
+            }
+            $check($request('/Admin-management-module-missing.html', 'GET', '', $headers)[0] === 404, 'Unknown management menu returns 404');
         }
         if ($actor === 'admin') {
             $menu = $request('/Admin-configuration-module-home.html', 'GET', '', $headers);

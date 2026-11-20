@@ -679,3 +679,5 @@ $_LANG['core_update_unavailable'] = 'Impossible de vérifier la dernière versio
 $_LANG = array_merge($_LANG, [
     'ux_site_configuration' => 'Configuration du site',
 ]);
+
+$_LANG['ux_management_articles'] = 'Gestion des articles';
