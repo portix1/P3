@@ -14,7 +14,7 @@
 <button type="submit" class="button-danger">{{ dl2_delete }}</button></form></td>
 </tr>{% endfor %}</tbody></table>
 </section>
-<dialog id="confirm-delete-dialog" class="confirm-dialog"><form method="dialog">
-<h2>{{ dl2_delete }} ?</h2><p data-confirm-title></p>
+<dialog id="confirm-delete-dialog" class="confirm-dialog" aria-labelledby="dl2-delete-heading"><form method="dialog">
+<h2 id="dl2-delete-heading">{{ dl2_delete }} ?</h2><p data-confirm-title></p>
 <button value="cancel">{{ dl2_cancel }}</button><button value="confirm">{{ dl2_delete }}</button>
 </form></dialog>
