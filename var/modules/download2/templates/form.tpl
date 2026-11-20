@@ -1,4 +1,4 @@
-<header class="page-heading"><h1>{{ dl2_form_title }}</h1></header>
+<header class="page-heading"><h1>{{ dl2_form_title }}</h1><p><a href="Admin-dl2.html">{{ dl2_manage }}</a> · <a href="Admin-dl2-categories.html">{{ dl2_categories }}</a></p></header>
 {% if dl2_message %}<p role="status">{{ dl2_message }}</p>{% endif %}
 <form method="post" enctype="multipart/form-data" class="settings-form">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
