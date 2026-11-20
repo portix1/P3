@@ -35,7 +35,9 @@ if ($user->isAdmin()) {
     }
 }
 
-$articleRepository = new \PortixModule\Articles\ArticleRepository($database->connection());
+$articleRepository = new \PortixModule\Articles\ArticleRepository($database->connection());$download2Module = $repositories->modules()->findByPrefix('dl2');
+$template->set('dl2_picker_enabled', is_array($download2Module) && !empty($download2Module['enabled']) ? '1' : '0');
+
 $reservedArticleSlugs = [
     'accueil', 'admin', 'install', 'index', 'disconnect', 'login', 'personnal', 'forgot-password', 'reset-password', 'usrmgr',
 ];
