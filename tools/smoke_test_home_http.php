@@ -128,7 +128,7 @@ try {
             ...$file2Draft, 'category_id' => null, 'title' => 'Document non publié',
             'description' => '', 'status' => 'draft',
         ]);
-        $catalog2 = $request('/dl2-catalog.html');
+        $catalog2 = $request('/download-catalog.html');
         $catalogBody2 = json_decode($catalog2[1], true);
         $check($catalog2[0] === 200 && is_array($catalogBody2)
             && count($catalogBody2['files'] ?? []) === 1
@@ -136,18 +136,18 @@ try {
             'Download2 catalogue contains published files only');
         $check(!str_contains($catalog2[1], 'download_count') && !str_contains($catalog2[1], 'stored_name'),
             'Download2 public API leaks no counters or private paths');
-        $public2 = $request('/dl2.html');
-        $check($public2[0] === 200 && str_contains($public2[1], 'dl2-file-'.$published2.'.html')
+        $public2 = $request('/download.html');
+        $check($public2[0] === 200 && str_contains($public2[1], 'download-file-'.$published2.'.html')
             && !str_contains($public2[1], 'Document non publié'),
             'Download2 public list links published files only');
-        $check($request('/dl2-file-'.$draft2.'.html')[0] === 404,
+        $check($request('/download-file-'.$draft2.'.html')[0] === 404,
             'Download2 refuses unpublished file');
-        $received2 = $request('/dl2-file-'.$published2.'.html');
+        $received2 = $request('/download-file-'.$published2.'.html');
         $check($received2[0] === 200 && str_starts_with($received2[1], '%PDF-1.4'),
             'Download2 transfers a published document');
         $check((int) $newDownloads->find($published2)['download_count'] === 1,
             'Download2 counts one successful GET');
-        $head2 = $request('/dl2-file-'.$published2.'.html', 'HEAD');
+        $head2 = $request('/download-file-'.$published2.'.html', 'HEAD');
         $check($head2[0] === 200
             && (int) $newDownloads->find($published2)['download_count'] === 1,
             'Download2 HEAD does not count as a download');
