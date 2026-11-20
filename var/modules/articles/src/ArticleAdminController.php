@@ -300,8 +300,12 @@ final class ArticleAdminController
                 if (!in_array($requestedStatus, ['draft', 'published'], true)) {
                     throw new RuntimeException('articles_invalid_status');
                 }
-                // Changes to an article awaiting review require a new request.
-                $status = ($existing['status'] ?? '') === 'pending' ? 'draft' : $requestedStatus;
+                // Editors requiring review may submit the saved article directly.
+                // An ordinary save of a pending article still returns it to draft.
+                $requestReview = isset($_POST['submit_review']) && !$user->isAdmin()
+                    && !$user->articlePermissions()['publish'];
+                $status = $requestReview ? 'pending'
+                    : (($existing['status'] ?? '') === 'pending' ? 'draft' : $requestedStatus);
                 if (!$this->allowed($user, 'edit', $existing, $categoryId)
                     || (($status === 'published' || ($existing['status'] ?? '') === 'published') && !$this->allowed($user, 'publish', $existing, $categoryId))) {
                     throw new RuntimeException('security_access_denied');
@@ -388,7 +392,7 @@ final class ArticleAdminController
                 });
                 // Saving the article replaces its private recovery copy.
                 $this->articles->autosaves()->delete($user->pseudo(), $id ?? 0);
-                header('Location: ' . $returnUrl, true, 303);
+                header('Location: ' . ($requestReview ? 'Admin-articles.html?state=pending' : $returnUrl), true, 303);
                 exit;
             } catch (RuntimeException $error) {
                 $message = $this->translator->exception($error);
