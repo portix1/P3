@@ -10,6 +10,14 @@ Connectez-vous à `login.html` avec votre compte administrateur. Le **Tableau de
 
 Les fonctions proposées dépendent des modules activés. Les catégories, séries, menus et autres éléments de structure restent sous la responsabilité de l’administrateur.
 
+## Trouver une fonction dans Configuration
+
+Configuration affiche une seule entrée par module, dans la page et dans le menu latéral. Cliquez sur le composant à régler. S’il propose plusieurs fonctions, une page-menu permet de choisir l’action.
+
+**Configuration de l’accueil** ouvre **Réglages**, **Composer** et **Résultats**. **Protection des contenus** regroupe ses fonctions et ses réglages. **Configuration du site** ouvre les fonctions du moteur, notamment l’identité, le référencement, la messagerie, les thèmes, les modules, les mises à jour et les diagnostics.
+
+Une entrée comportant une seule fonction l’ouvre directement. Le fil d’Ariane permet de revenir à la page-menu du composant, puis à Configuration. Les modules désactivés disparaissent de ce parcours.
+
 ## Créer un compte et choisir ses droits
 
 1. Dans **Administration → Comptes et droits**, choisissez **Créer un compte**.

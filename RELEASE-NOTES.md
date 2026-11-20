@@ -1,3 +1,9 @@
+# En préparation — Configuration par module
+
+- Une seule entrée par composant dans Configuration et son menu latéral. Les composants à plusieurs fonctions ouvrent une page-menu, les fonctions uniques restent directement accessibles.
+- Accueil 1.1.1 fournit les intitulés Configuration de l’accueil, Réglages, Composer et Résultats. La protection des contenus est regroupée et les fonctions du moteur figurent dans Configuration du site.
+- Regroupement générique des contributions des modules, fil d’Ariane avec retour au composant, contrôle des rôles et disparition des modules désactivés. Les adresses existantes restent utilisables.
+
 # En préparation — Articles 1.4.10
 
 - Relecture depuis la liste des articles. Si le contenu ou l’état enregistré diffère depuis l’affichage, l’approbation et le retour pour correction sont refusés. P3 invite à recharger la liste et à relire la version actuelle.

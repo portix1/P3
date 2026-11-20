@@ -118,6 +118,33 @@ try {
     navigationCheck(in_array('Admin-config-themes.html', array_column($sections['configuration'], 'url'), true), 'Thèmes dans Configuration');
     navigationCheck(!in_array('Admin-diagnostics.html', array_column($sections['management'], 'url'), true), 'Diagnostics exclus d’Administration');
     navigationCheck($editor['management'] === [] && $editor['configuration'] === [], 'Rédacteur cantonné à Rédaction');
+    $groups = AdminNavigation::configurationGroups($sections['configuration'], ['Admin', 'configuration']);
+    $owners = array_column($groups, 'module');
+    navigationCheck(count($owners) === count(array_unique($owners)), 'Une entrée par composant dans Configuration');
+    navigationCheck(count($groups) < count($sections['configuration']), 'Les actions sont regroupées');
+    $homeGroup = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === 'home'))[0];
+    navigationCheck($homeGroup['name'] === 'Configuration de l’accueil', 'Libellé du groupe Accueil');
+    navigationCheck(array_column($homeGroup['children'], 'name') === ['Réglages', 'Composer', 'Résultats'], 'Trois choix explicites dans Accueil');
+    navigationCheck(array_column($homeGroup['children'], 'url') === ['Admin-home-settings.html', 'Admin-home.html', 'Admin-home-report.html'],
+        'Les fonctions Accueil gardent leurs adresses');
+    $safetyGroup = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === 'safety'))[0];
+    navigationCheck(count($safetyGroup['children']) === 2, 'Protection des contenus regroupée aussi');
+    $coreGroup = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === ''))[0];
+    navigationCheck(count($coreGroup['children']) === 7, 'Fonctions du moteur regroupées');
+    $single = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === 'menu'))[0];
+    navigationCheck($single['url'] === 'Admin-menu.html' && $single['children'] === [], 'Fonction unique accessible directement');
+    $activeGroups = AdminNavigation::configurationGroups(
+        AdminNavigation::sections($root, $modules, true, false, ['Admin', 'home', 'settings'], $translator)['configuration'],
+        ['Admin', 'home', 'settings']
+    );
+    $activeHome = array_values(array_filter($activeGroups, static fn (array $group): bool => $group['module'] === 'home'))[0];
+    navigationCheck($activeHome['current'] === 'is-current', 'Le composant reste sélectionné sur une fonction interne');
+    $hiddenGroups = AdminNavigation::configurationGroups($homeHidden['configuration'], ['Admin', 'configuration']);
+    navigationCheck(!in_array('home', array_column($hiddenGroups, 'module'), true), 'Le groupe disparaît à la désactivation');
+    navigationCheck(AdminNavigation::configurationGroups($editor['configuration'], ['Admin', 'configuration']) === [],
+        'Aucun groupe pour le rédacteur');
+    navigationCheck(AdminNavigation::configurationGroups($anonymous['configuration'], ['Admin', 'configuration']) === [],
+        'Aucun groupe pour le visiteur');
     echo "Navigation complète des modules, Actualités, rôles et désactivation : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR, $error->getMessage() . "\n");

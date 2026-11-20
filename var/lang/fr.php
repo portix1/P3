@@ -675,3 +675,8 @@ $_LANG['core_update_current'] = 'Version installée';
 $_LANG['core_update_available'] = 'Version disponible';
 $_LANG['core_update_none'] = 'P3 est à jour.';
 $_LANG['core_update_unavailable'] = 'Impossible de vérifier la dernière version officielle. Réessayez ultérieurement.';
+
+$_LANG = array_merge($_LANG, [
+    'ux_site_configuration' => 'Configuration du site',
+    'ux_configuration_module' => 'Configuration — %s',
+]);

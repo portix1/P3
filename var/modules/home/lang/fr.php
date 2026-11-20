@@ -38,3 +38,10 @@ $_LANG += [
 'home_status_duplicate'=>'Contenus déjà retenus dans une autre zone, ou limite de contenus atteinte.',
 'home_status_ready'=>'Zone affichable.',
 ];
+
+$_LANG = array_merge($_LANG, [
+    'home_configuration' => 'Configuration de l’accueil',
+    'home_admin_short' => 'Composer',
+    'home_settings_short' => 'Réglages',
+    'home_report_short' => 'Résultats',
+]);

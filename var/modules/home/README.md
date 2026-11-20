@@ -1,4 +1,4 @@
-# Accueil 1.0.8
+# Accueil 1.1.1
 
 Module générique de composition de la page d’accueil, sans catégorie ni domaine imposé.
 
@@ -67,3 +67,7 @@ Les compositions distinguent désormais plus nettement le premier article, les l
 La pondération reste fondée sur les vues du module Statistiques. Les expositions et clics d’accueil sont complémentaires et ne recomptent pas les visiteurs. L’ajustement des poids attend l’analyse de données réelles suffisantes.
 
 Importer P3-home-1.1.0.zip dans Configuration → Gestion des modules, sans désinstallation. Compatible P3 0.8.4-rc4, aucune migration de schéma ni patch moteur requis. Sauvegarder les zones et les fichiers avant mise à jour. Un retour à 1.0.8 nécessite de désactiver ou supprimer les zones « Derniers articles », type absent de cette ancienne version.
+
+## Configuration de l’accueil — 1.1.1
+
+Dans le moteur qui fournit le regroupement de Configuration par module, l’entrée Configuration de l’accueil ouvre trois choix, Réglages, Composer et Résultats. Le menu latéral conserve une seule entrée Accueil. Le fil d’Ariane permet de revenir à cette page-menu depuis les écrans existants. Sur un moteur antérieur, les trois fonctions conservent leur navigation habituelle. Les zones et réglages sont conservés.

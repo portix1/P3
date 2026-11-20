@@ -402,14 +402,28 @@ if ($route === 'Admin') {
     $adminSections = \Portix\Navigation\AdminNavigation::sections(
         dirname(__DIR__), $modules, $isAdmin, $isRedactor, $argument, $translator, (string) $CONFIG['lang']
     );
+    $configurationGroups = \Portix\Navigation\AdminNavigation::configurationGroups(
+        $adminSections['configuration'], $argument
+    );
+    $navigationSections = $adminSections;
+    $navigationSections['configuration'] = $configurationGroups;
     $activeArea = in_array($adminRoute, ['writing', 'management', 'configuration'], true) ? $adminRoute : '';
     $activeEntry = '';
     foreach ($adminSections as $section => $entries) {
         foreach ($entries as $entry) {
-            $template->addRow('ux_nav_' . $section, $entry);
             if ($entry['current'] === 'is-current') {
                 $activeArea = $section;
                 $activeEntry = $entry['name'];
+            }
+        }
+    }
+    $breadcrumbGroup = null;
+    foreach ($navigationSections as $section => $entries) {
+        foreach ($entries as $entry) {
+            $template->addRow('ux_nav_' . $section, $entry);
+            if ($section === 'configuration' && $entry['current'] === 'is-current'
+                && $entry['children'] !== []) {
+                $breadcrumbGroup = $entry;
             }
         }
         $template->set('ux_has_' . $section, $entries !== [] ? '1' : '0');
@@ -421,6 +435,8 @@ if ($route === 'Admin') {
     $template->set('admin_area_class', $activeArea === '' ? 'admin-area-dashboard' : 'admin-area-' . $activeArea);
     $template->set('ux_active_area', $activeArea);
     $template->set('ux_active_label', $activeArea === '' ? '' : $translator->text('ux_' . $activeArea));
+    $template->set('ux_breadcrumb_group_url', $breadcrumbGroup['url'] ?? '');
+    $template->set('ux_breadcrumb_group_label', $breadcrumbGroup['name'] ?? '');
     $template->set('ux_breadcrumb_leaf', $activeEntry);
     if ($canAccessAdmin && $adminRoute === 'configuration' && !$isAdmin) {
         http_response_code(403);
@@ -428,7 +444,35 @@ if ($route === 'Admin') {
     } elseif ($canAccessAdmin && in_array($adminRoute, ['writing', 'management', 'configuration'], true) && ($isAdmin || $adminRoute !== 'management')) {
         $template->set('ux_area_title', $translator->text('ux_' . $adminRoute));
         $template->set('ux_area_help', $translator->text('ux_' . $adminRoute . '_help'));
-        foreach ($adminSections[$adminRoute] as $entry) { $template->addRow('ux_entries', $entry); }
+        $areaEntries = $navigationSections[$adminRoute];
+        if ($adminRoute === 'configuration' && isset($argument[2])) {
+            $menuUrl = implode('-', $argument) . '.html';
+            $menu = null;
+            foreach ($configurationGroups as $group) {
+                if ($group['url'] === $menuUrl && $group['children'] !== []) {
+                    $menu = $group;
+                    break;
+                }
+            }
+            if ($menu === null) {
+                http_response_code(404);
+                $template->setSlot('main', './var/admin/templates/not-found.tpl');
+                $areaEntries = [];
+            } elseif (!in_array($request->method(), ['GET', 'HEAD'], true)) {
+                http_response_code(405);
+                header('Allow: GET, HEAD');
+                $template->setSlot('main', './var/admin/templates/access-denied.tpl');
+                $areaEntries = [];
+            } else {
+                $template->set('ux_area_title', $menu['name']);
+                $template->set('ux_area_help', '');
+                $template->set('ux_breadcrumb_group_url', '');
+                $template->set('ux_breadcrumb_group_label', '');
+                $template->set('ux_breadcrumb_leaf', $menu['name']);
+                $areaEntries = $menu['children'];
+            }
+        }
+        foreach ($areaEntries as $entry) { $template->addRow('ux_entries', $entry); }
     }
     foreach (['writing', 'management', 'configuration', 'identity', 'appearance', 'seo', 'mail',
         'updates', 'navigation', 'overview_help', 'writing_help', 'management_help', 'configuration_help',

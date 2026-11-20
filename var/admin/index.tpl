@@ -182,7 +182,7 @@
             <p class="nav-heading">{{ ux_configuration }}</p>
             <ul class="admin-nav">
                 {% for item in ux_nav_configuration %}
-                <li><a class="{{ item.current }} workspace-link"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
+                <li><a class="{{ item.current }} workspace-link"{% if item.current == "is-current" %} aria-current="location"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -198,7 +198,7 @@
 
     <main class="admin-content" id="admin-content" tabindex="-1">
         {% if ux_active_area %}
-        <nav class="ux-breadcrumb" aria-label="{{ ui_breadcrumb }}"><a href="Admin.html">{{ ui_dashboard }}</a><span aria-hidden="true">›</span><a href="Admin-{{ ux_active_area }}.html">{{ ux_active_label }}</a>{% if ux_breadcrumb_leaf %}<span aria-hidden="true">›</span><span>{{ ux_breadcrumb_leaf }}</span>{% endif %}</nav>
+        <nav class="ux-breadcrumb" aria-label="{{ ui_breadcrumb }}"><a href="Admin.html">{{ ui_dashboard }}</a><span aria-hidden="true">›</span><a href="Admin-{{ ux_active_area }}.html">{{ ux_active_label }}</a>{% if ux_breadcrumb_group_url %}<span aria-hidden="true">›</span><a href="{{ ux_breadcrumb_group_url }}">{{ ux_breadcrumb_group_label }}</a>{% endif %}{% if ux_breadcrumb_leaf %}<span aria-hidden="true">›</span><span>{{ ux_breadcrumb_leaf }}</span>{% endif %}</nav>
         {% endif %}
         {% slot main %}
     </main>

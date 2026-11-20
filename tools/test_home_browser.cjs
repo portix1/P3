@@ -151,6 +151,34 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         }
       }
       if (actor === 'admin') {
+        await tab.goto(base + '/Admin-configuration.html');
+        const configurationCards = tab.locator('main .management-card');
+        const componentUrls = await configurationCards.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
+        assert.equal(componentUrls.length, new Set(componentUrls).size, 'Configuration has unique component entries');
+        assert.equal(await tab.locator('main a[href="Admin-configuration-module-home.html"]').count(), 1, 'One Home entry on Configuration');
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-configuration-module-home.html"]').count(), 1, 'One Home entry in the sidebar');
+        assert.equal(await tab.locator('main a[href="Admin-home-report.html"]').count(), 0, 'Home actions are on its module menu');
+        await tab.locator('main').getByRole('link', {name: 'Configuration de l’accueil', exact: true}).press('Enter');
+        await tab.waitForURL('**/Admin-configuration-module-home.html');
+        assert.deepEqual(await tab.locator('main .management-card strong').allTextContents(), ['Réglages', 'Composer', 'Résultats']);
+        await tab.locator('main').getByRole('link', {name: 'Réglages', exact: true}).press('Enter');
+        await tab.waitForURL('**/Admin-home-settings.html');
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-configuration-module-home.html"]').getAttribute('aria-current'), 'location');
+        await tab.locator('.ux-breadcrumb a[href="Admin-configuration-module-home.html"]').press('Enter');
+        await tab.waitForURL('**/Admin-configuration-module-home.html');
+        for (const [menu, count] of [['module-home', 3], ['module-safety', 2], ['site', 7]]) {
+          for (const width of [1280, 375, 320]) {
+            await tab.setViewportSize({width, height: 850});
+            assert.equal((await tab.goto(base + '/Admin-configuration-' + menu + '.html')).status(), 200);
+            assert.equal(await tab.locator('main .management-card').count(), count, menu + ' lists its functions');
+            assert.equal(await tab.locator('main h1').count(), 1, 'Module menu has one main heading');
+            assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), menu + ' fits at ' + width);
+            if (process.env.HOME_SCREENSHOT_DIR) {
+              await tab.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, 'configuration-' + menu + '-' + width + '.png'), fullPage: true});
+            }
+          }
+        }
+        await tab.setViewportSize({width: 320, height: 800});
         for (const url of ['/Admin-users.html', '/Admin-users-new.html', '/Admin-users-edit-editor.html',
           '/Admin-config-modules.html', '/Admin-config-updates.html']) {
           assert.equal((await tab.goto(base + url)).status(), 200, url + ' is accessible');

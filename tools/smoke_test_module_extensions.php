@@ -28,6 +28,20 @@ try {
     extensionCheck($editor['configuration']===[] && $editor['management']===[],'Editor cannot see privileged declarations');
     $settings=array_values(array_filter($admin['configuration'],static fn($row)=>$row['url']==='Admin-catalog-settings.html'));
     extensionCheck(count($settings)===1 && $settings[0]['name']==='Catalog settings' && $settings[0]['current']==='is-current','Declared locale and active area respected');
+    $multipleXml = str_replace('</AdminNavigation>',
+        '<Item area="configuration" action="archive" role="admin" icon="folder" label="catalog_archive"/></AdminNavigation>', $xml);
+    file_put_contents($directory . '/desc.xml', $multipleXml);
+    $multiple = ModuleManifest::fromXml($directory . '/desc.xml', 'catalog');
+    $declared = AdminNavigation::sections($root, [$multiple], true, false, ['Admin', 'catalog', 'archive'], new Translator([]), 'en');
+    $groups = AdminNavigation::configurationGroups($declared['configuration'], ['Admin', 'catalog', 'archive']);
+    $catalogGroup = array_values(array_filter($groups, static fn (array $row): bool => $row['module'] === 'catalog'))[0];
+    extensionCheck(count($catalogGroup['children']) === 2 && $catalogGroup['current'] === 'is-current',
+        'A third-party module gets its own active configuration menu');
+    extensionCheck($catalogGroup['url'] === 'Admin-configuration-module-catalog.html', 'Generic module menu route');
+    $singleGroups = AdminNavigation::configurationGroups($admin['configuration'], ['Admin', 'catalog', 'settings']);
+    $single = array_values(array_filter($singleGroups, static fn (array $row): bool => $row['module'] === 'catalog'))[0];
+    extensionCheck($single['url'] === 'Admin-catalog-settings.html' && $single['children'] === [], 'Single module function stays direct');
+    file_put_contents($directory . '/desc.xml', $xml);
     $manifest['enabled']=false;
     $disabled=AdminNavigation::sections($root,[$manifest],true,false,[],new Translator([]));
     foreach ($disabled as $rows) { foreach ($rows as $row) { extensionCheck(!str_contains($row['url'],'catalog'),'Disabled declarations hidden'); } }

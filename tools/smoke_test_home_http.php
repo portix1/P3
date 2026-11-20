@@ -152,7 +152,7 @@ try {
         if (preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$logged[2]),$cookie)) { $headers[1]='Cookie: '.$cookie[1]; }
         $configArea=$request('/Admin-configuration.html','GET','',$headers);
         $check($configArea[0]===($actor==='admin'?200:403), 'Only administrators enter Configuration');
-        $check(str_contains($configArea[1],'Admin-home.html')===($actor==='admin'), 'Only administrators can find Home in Configuration');
+        $check(str_contains($configArea[1],'Admin-configuration-module-home.html')===($actor==='admin'), 'Only administrators can find Home in Configuration');
         $management=$request('/Admin-management.html','GET','',$headers);
         $check($management[0]===($actor==='admin'?200:403), 'Only administrators enter Administration');
         $check(str_contains($configArea[1], 'href="Admin-menu.html"')===($actor==='admin'),
@@ -163,9 +163,32 @@ try {
             'Main menu absent from Administration');
         $check(!str_contains($management[1], 'href="Admin-footer.html"'),
             'Footer menu absent from Administration');
-        foreach (['Admin-config-modules.html', 'Admin-diagnostics.html', 'Admin-safety.html'] as $entry) {
+        foreach (['Admin-configuration-site.html', 'Admin-configuration-module-safety.html'] as $entry) {
             $check(str_contains($configArea[1], 'href="' . $entry . '"') === ($actor === 'admin'), 'Configuration entry: '.$entry);
             $check(!str_contains($management[1], 'href="' . $entry . '"'), 'Entry absent from Administration: '.$entry);
+        }
+        foreach (['Admin-configuration-module-home.html', 'Admin-configuration-module-safety.html', 'Admin-configuration-site.html'] as $menuRoute) {
+            $menu = $request('/' . $menuRoute, 'GET', '', $headers);
+            $check($menu[0] === ($actor === 'admin' ? 200 : 403), 'Configuration menu permissions: ' . $menuRoute);
+            $posted = $request('/' . $menuRoute, 'POST', '{}', [...$headers, 'Accept: application/json']);
+            $check($posted[0] === ($actor === 'admin' ? 405 : 403), 'Configuration menu refuses POST: ' . $menuRoute);
+            $check($request('/' . $menuRoute)[0] === 403, 'Anonymous configuration menu refused');
+        }
+        if ($actor === 'admin') {
+            $menu = $request('/Admin-configuration-module-home.html', 'GET', '', $headers);
+            $document = new DOMDocument();
+            @$document->loadHTML($menu[1]);
+            $xpath = new DOMXPath($document);
+            $cards = $xpath->query('//main//a[contains(@class,"management-card")]');
+            $labels = [];
+            foreach ($cards as $card) { $labels[] = trim($card->textContent); }
+            $check($labels === ['Réglages', 'Composer', 'Résultats'], 'Home menu exposes exactly three short actions');
+            $sidebar = $xpath->query('//aside//a[contains(@href,"Admin-configuration-module-home")]');
+            $check($sidebar->length === 1, 'Home appears once in the Configuration sidebar');
+            $check($request('/Admin-configuration-module-missing.html', 'GET', '', $headers)[0] === 404,
+                'Unknown configuration module is not a menu');
+            $leaf = $request('/Admin-home-settings.html', 'GET', '', $headers);
+            $check(str_contains($leaf[1], 'href="Admin-configuration-module-home.html"'), 'Existing settings page links back to its module menu');
         }
         foreach (['Admin-config-modules.html', 'Admin-modmgr.html'] as $managerRoute) {
             $manager = $request('/'.$managerRoute, 'GET', '', $headers);
@@ -324,6 +347,8 @@ try {
     }
     $db->connection()->exec("UPDATE modules SET enabled=0 WHERE prefix='home'");
     $check($request('/')[0]===404 && $request('/home-events.html','POST',json_encode($event),['Content-Type: application/json'])[0]===404,'Disabled module does not render or collect');
+    $check($request('/Admin-configuration-module-home.html', 'GET', '', $auth)[0] === 404,
+        'Disabled module menu is not accessible to the administrator');
     echo "Accueil HTTP : public, rôles, CSRF, persistance, signature, port local et absence de nouveau cookie : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR,$error->getMessage()."\n");
