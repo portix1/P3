@@ -116,7 +116,8 @@ try {
             'csrf_token' => $token[1], 'pseudo' => 'admin', 'pass' => 'test-install-password',
         ]);
         installRouteCheck($authenticated[0] === 302, 'Administrator can log in.');
-        foreach (['Admin.html', 'Admin-writing.html', 'Admin-management.html', 'Admin-configuration.html'] as $route) {
+        foreach (['Admin.html', 'Admin-writing.html', 'Admin-management.html', 'Admin-configuration.html',
+            'Admin-configuration-site.html', 'Admin-configuration-module-safety.html'] as $route) {
             installRouteCheck($request('/' . $route)[0] === 200, 'Administrator can open ' . $route);
         }
         $configuration = json_decode((string) file_get_contents($site . '/var/sys/config.json'), true, 512, JSON_THROW_ON_ERROR);

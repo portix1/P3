@@ -77,8 +77,7 @@ final class AdminNavigation
                 return $_LANG;
             })($directory, $language, $manifest['default_language']);
             $moduleTranslator = new Translator($moduleMessages);
-            $ownerName = $moduleTranslator->text($prefix . '_configuration',
-                sprintf($translator->text('ux_configuration_module', 'Configuration — %s'), $manifest['name']));
+            $ownerName = $moduleTranslator->text($prefix . '_configuration', $manifest['name']);
             if ($manifest['admin_navigation'] !== []) {
                 foreach ($manifest['admin_navigation'] as $item) {
                     if (!$isAdmin && ($item['role'] !== 'editor' || $item['area'] !== 'writing')) { continue; }

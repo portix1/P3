@@ -678,5 +678,4 @@ $_LANG['core_update_unavailable'] = 'Unable to check the latest official version
 
 $_LANG = array_merge($_LANG, [
     'ux_site_configuration' => 'Site configuration',
-    'ux_configuration_module' => 'Configuration — %s',
 ]);

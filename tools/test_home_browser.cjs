@@ -171,6 +171,7 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
             await tab.setViewportSize({width, height: 850});
             assert.equal((await tab.goto(base + '/Admin-configuration-' + menu + '.html')).status(), 200);
             assert.equal(await tab.locator('main .management-card').count(), count, menu + ' lists its functions');
+            assert.equal(await tab.locator('main .management-card svg').count(), count, menu + ' gives each action an icon');
             assert.equal(await tab.locator('main h1').count(), 1, 'Module menu has one main heading');
             assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), menu + ' fits at ' + width);
             if (process.env.HOME_SCREENSHOT_DIR) {
