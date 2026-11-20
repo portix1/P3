@@ -1,6 +1,6 @@
 <header class="page-heading"><h1>{{ dl2_manage }}</h1><p>{{ dl2_manage_help }}</p></header>
 {% if dl2_message %}<p role="status">{{ dl2_message }}</p>{% endif %}
-<p><a class="button" href="Admin-dl2-new.html">{{ dl2_add }}</a></p>
+<p><a class="button" href="Admin-dl2-new.html">{{ dl2_add }}</a> · <a href="Admin-dl2-categories.html">{{ dl2_categories }}</a></p>
 <section class="admin-section">
 <table><caption>{{ dl2_manage }}</caption><thead><tr><th scope="col">{{ dl2_title_field }}</th><th scope="col">{{ dl2_category }}</th><th scope="col">{{ dl2_status }}</th><th scope="col">{{ dl2_downloads_admin }}</th><th scope="col">{{ ui_actions }}</th></tr></thead>
 <tbody>{% for dl2_admin_file in dl2_admin_file %}<tr>
