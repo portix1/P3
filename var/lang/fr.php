@@ -611,6 +611,10 @@ $_LANG['extension_updates_none'] = 'Aucune mise à jour trouvée pour les extens
 $_LANG['extension_updates_found'] = 'Mises à jour disponibles.';
 $_LANG['extension_updates_failed'] = 'La vérification a échoué. Rechargez la page et réessayez.';
 
+$_LANG['dashboard_review_heading'] = 'Articles à valider';
+$_LANG['dashboard_review_one'] = '%d article attend votre validation.';
+$_LANG['dashboard_review_many'] = '%d articles attendent votre validation.';
+$_LANG['dashboard_review_action'] = 'Examiner les demandes';
 $_LANG['dashboard_update_one'] = '%d mise à jour disponible';
 $_LANG['dashboard_update_many'] = '%d mises à jour disponibles';
 
