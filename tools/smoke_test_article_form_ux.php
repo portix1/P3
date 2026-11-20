@@ -34,6 +34,14 @@ foreach (["'articles_autosave_url'", "'articles_autosave_snapshot'",
         throw new RuntimeException('Sauvegarde automatique : élément absent : ' . $expected);
     }
 }
+if (!str_contains($source, 'name="submit_review"')
+    || !str_contains($source, '{% if review_required == "1" %}<button type="submit" name="submit_review"')) {
+    throw new RuntimeException('Le bouton de relecture doit être réservé au compte concerné.');
+}
+if (!str_contains($controller, "isset(\$_POST['submit_review'])")
+    || !str_contains($controller, "\$status = \$requestReview ? 'pending'")) {
+    throw new RuntimeException('La demande doit enregistrer un article en attente.');
+}
 $layout = (string) file_get_contents($root . '/var/admin/index.tpl');
 if (!str_contains($layout, 'var/modules/articles/article-autosave.js')) {
     throw new RuntimeException('Script de sauvegarde automatique non chargé.');
