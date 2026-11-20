@@ -47,11 +47,23 @@ dl2Assert((int)$library->find($id)['download_count']===2, 'pas de comptage pour 
 $category=$library->createCategory('Notices','notices');
 $library->update($id, ['category_id'=>$category,'status'=>'published']);
 dl2Assert(count($library->published($category))===1, 'catégorie facultative');
+$library->updateCategory($category, 'Notices corrigées', 'Contenu');
+dl2Assert($library->findCategory($category)['name'] === 'Notices corrigées', 'modification catégorie');
+try {
+    $library->deleteCategory($category);
+    throw new RuntimeException('Category in use should not be deleted');
+} catch (RuntimeException $exception) {
+    dl2Assert($exception->getMessage() === 'dl2_category_in_use', 'catégorie utilisée protégée');
+}
 dl2Assert(count($library->published($category+1))===0, 'catégorie non correspondante');
 $library->delete($id);
 dl2Assert($library->find($id)===null && $library->published()===[], 'suppression');
+$library->deleteCategory($category);
+dl2Assert($library->findCategory($category)===null, 'suppression catégorie vide');
 $public=(string)file_get_contents($root.'/var/modules/download2/templates/public.tpl');
 $index=(string)file_get_contents($root.'/var/modules/download2/index.php');
+$catalogueSource=(string)file_get_contents($root.'/var/modules/download2/index.php');
+dl2Assert(str_contains($catalogueSource, "'category' =>") && !str_contains($catalogueSource, "'counter' =>"), 'catalogue public limité aux métadonnées');
 dl2Assert(!str_contains($public,'counter') && !str_contains($public,'download_count')
     && !str_contains($index,'download_count'), 'aucune statistique publique');
 echo "Download Manager 2 : installation, droits, brouillon, publication, comptage privé, catégories et suppression OK\n";
