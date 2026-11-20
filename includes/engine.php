@@ -252,6 +252,8 @@ if ($canAccessAdmin && $route === 'Admin') {
             $template->set('admin_enabled_module_count', (string) $enabledModuleCount);
             // The alert is only prepared for administrators and for an enabled Articles module.
             // Read the current database state on each dashboard request: no stale badge cache.
+            $template->set('dashboard_review_heading', $translator->text('dashboard_review_heading'));
+            $template->set('dashboard_review_action', $translator->text('dashboard_review_action'));
             $template->set('dashboard_review_visible', '0');
             if ($isAdmin) {
                 $articlesModule = $repositories->modules()->findByPrefix('articles');
