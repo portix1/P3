@@ -1,5 +1,9 @@
 # Feuille de route de P3
 
+## Archive regroupée pour tests locaux — 20 novembre 2026
+
+P3 0.9.10 regroupe les branches des PR #52 à #56. Inclut le classement de Téléchargements en Administration, les fichiers sans catégorie et les liens courts. Le test de rendu des téléchargements est actualisé pour ces liens. La refonte complète du module demeure un chantier ultérieur à cadrer. Cette archive de test ne constitue pas une publication stable.
+
 ## Priorité actuelle — consolidation vers 1.0 (validée le 14 novembre 2026)
 
 Cette séquence prime sur les anciens plans ci-dessous, conservés comme historique à réconcilier. Les versions indiquent des objectifs, non des dates ni des travaux déjà validés.
@@ -17,6 +21,20 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## Décisions et contrôle des consignes — 20 novembre 2026
+
+La [revue des consignes](docs/consignes-p3.md) rapproche les décisions Drive, les échanges et le dépôt. Les travaux de consolidation ont repris sur instruction de Marc. Les tests utilisateur seront regroupés sur une version plus avancée. Les plateformes locales et hébergées sont des environnements de validation complémentaires d’un CMS universel.
+
+- Installation et routage, correction du .htaccess incluse, préparés dans [#52](https://github.com/portix1/P3/pull/52). Validation CI réussie, sept tâches. Fusion et publication en attente.
+- Approbation depuis une ancienne liste corrigée dans la candidate Articles 1.4.10, [#54](https://github.com/portix1/P3/pull/54), basée sur #52. Validation CI réussie, sept tâches. Essais utilisateur futurs sur un lot regroupé.
+- Téléchargements et Affiliation doivent être accessibles depuis Administration. Le premier classement est préparé dans #53. Le second reste à corriger. Ces tâches sont distinctes de la refonte future de Téléchargements.
+- Restauration signalée en erreur, hiérarchie de Configuration, recherche #47 et mises à jour de thèmes #50 conservent leur suivi avant arbitrage de la sortie 1.0.
+- Préparer la documentation exhaustive module par module avec captures annotées, en décrivant les parcours validés et en relevant les scénarios restant à vérifier.
+- MCP P3 pour administration et rédaction, piste à explorer. Version et périmètre à définir avant développement.
+- Reprise de zéro du seul module Téléchargements, avec nouveau cadrage avant développement. Les fonctionnalités et contraintes de compatibilité précédemment proposées ne constituent pas une spécification validée.
+- Installation mutualisée, piste à explorer de faible priorité, consignée dans Drive. Conserver l’installation autonome jusqu’à validation d’une architecture.
+- Après stabilisation de 1.0, consolider le contrat d’extension vers 1.1.0. Les projets Partage social, FAQ, Galerie, Annuaire, Agenda et Newsletter gardent leurs cycles propres. Le plan MOD-00 à MOD-11 est dans le référentiel Drive et reste à spécifier et tester par lots.
+
 ## Aperçus de partage sur les réseaux sociaux
 
 - [ ] Générer les balises Open Graph dans le `<head>` des pages publiques. Alimenter `og:title` et `og:description` à partir du titre et de la description SEO, `og:url` à partir de l’URL canonique, `og:type` selon le type de page (`website` ou `article`), et `og:site_name` et `og:locale` à partir de la configuration du site.
@@ -25,6 +43,27 @@ Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-teste
 - [ ] Vérifier l’aperçu sur Facebook, LinkedIn et X pour l’accueil et les articles avec et sans image principale. Contrôler l’image par défaut, l’accès public aux médias et l’absence de balises contradictoires entre le moteur et le thème.
 
 Version cible à définir.
+
+## Configuration par module — réalisation du 20 novembre 2026
+
+Demande validée et développement autorisé par Marc. La page Configuration et sa navigation latérale proposent une seule entrée par module. Les modules à plusieurs fonctions disposent d’une page-menu. Les fonctions du moteur sont réunies dans Configuration du site. [Cadrage et critères de validation](docs/configuration-par-module.md).
+
+Accueil 1.1.1 présente Réglages, Composer et Résultats. La protection des contenus et les contributions de modules tiers bénéficient du même regroupement. Le fil d’Ariane permet le retour à la page-menu et les anciennes adresses restent utilisables. Tests de rôles, modules actifs et désactivés, actions directes, HTTP et navigateur prévus dans ce lot.
+
+## Relecture — consolidation vers 1.0
+
+- Articles 1.4.10 en préparation. Empreinte de la version affichée dans les actions de la liste. Comparaison du contenu, vérification des permissions et changement d’état dans une même transaction.
+- Refus HTTP 409 d’une ancienne approbation ou d’un ancien retour pour correction après modification et nouvelle soumission. Les anciens formulaires sans empreinte doivent être rechargés.
+- Tests de non-régression HTTP à la racine et en sous-dossier, y compris modification à date identique, formulaire incomplet ou altéré, validation actuelle et répétition d’une approbation. Test d’un verrou SQLite concurrent.
+- Catalogue officiel Articles 1.4.9 conservé pendant les essais. Préparer la distribution 1.4.10 avant une publication stable.
+
+## Installation et routage — consolidation vers 1.0
+
+- Correction du `.htaccess` incluse dans la branche de la PR #52. Pages HTML dirigées vers `/index.php` à la racine et vers `index.php` en sous-dossier.
+- Parcours HTTP automatisé sur une installation neuve à la racine et en sous-dossier profond, avec nom SQLite généré ou personnalisé. Vérifier ouverture du site, redirection d’accueil, connexion, refus anonyme et accès administrateur aux trois espaces.
+- Routage Apache testé séparément à trois profondeurs, avec fichiers statiques, paramètres de recherche et adresses encodées.
+- Windows, macOS, serveurs locaux et hébergements constituent des environnements de validation complémentaires. La validation Linux/PHP et Apache ne vaut pas validation exécutée sous IIS ou nginx.
+- Fusion, archive finale et publication restent à effectuer après validation et accord.
 
 ## 0.9.9 — correctifs et bêta-test
 
@@ -217,3 +256,7 @@ Avant tout nouvel envoi FTP, supprimer les anciens transferts en attente et vér
 Marc demande de terminer les travaux d’accueil, y compris les propositions de composition, d’aperçu, de réorganisation des zones et d’explication des zones vides. Accueil 1.1.0 regroupe ces fonctions, les derniers articles et le sélecteur visuel de médiathèque. La validation automatisée et la livraison sont suivies dans la [proposition #19](https://github.com/portix1/P3/pull/19). L’aperçu utilise les styles du module sans l’habillage du thème. La validation visuelle sur le site de Marc reste à effectuer après import du ZIP. La pondération reste inchangée tant qu’aucune analyse des mesures réelles ne justifie un ajustement.
 
 Marc confirme également que les en-têtes de tableaux illisibles sont corrigés. Ce point est clôturé.
+
+## Administration : gestion des articles — 20 novembre 2026
+
+Administration et son menu latéral présentent une entrée « Gestion des articles ». Elle ouvre une page-menu donnant accès aux catégories, aux séries et à l’ordre des articles. Les adresses et les fonctions existantes sont conservées. Le fil d’Ariane permet de revenir à cette page-menu et son entrée reste sélectionnée dans chaque fonction. Le regroupement partage le mécanisme de Configuration ; une fonction unique reste directe. Les permissions administrateur restent contrôlées côté serveur. Aucun changement de données ni de version propre au module Articles : ce parcours est fourni par le moteur candidat 0.9.10.

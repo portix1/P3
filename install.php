@@ -235,7 +235,7 @@ function installCheckRow(array $check): string
 <div class="success" role="status">
 <p><strong>Installation terminée.</strong></p>
 <p>La base SQLite, la configuration et les dossiers d’écriture ont été contrôlés.</p>
-<p><a class="button" href="./accueil.html">Ouvrir P3</a></p>
+<p><a class="button" href="./">Ouvrir P3</a></p>
 </div>
 <?php elseif (!$preflight['ok']): ?>
 <p class="blocked">L’installation est bloquée tant que tous les prérequis indispensables ne sont pas validés.</p>

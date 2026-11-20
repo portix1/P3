@@ -26,7 +26,7 @@ try {
     foreach (glob($root . '/var/modules/*/desc.xml') ?: [] as $file) {
         $definition = ModuleManifest::fromXml($file, basename(dirname($file)));
         // Exercise opt-in modules in their enabled state, without changing shipped defaults.
-        if ($definition['prefix'] === 'home') { $definition['enabled'] = true; }
+        if (in_array($definition['prefix'], ['home', 'dwl'], true)) { $definition['enabled'] = true; }
         $modules[] = $definition;
     }
     $sections = AdminNavigation::sections($root, $modules, true, false, ['Admin', 'news'], $translator);
@@ -38,6 +38,9 @@ try {
             navigationCheck(in_array('Admin-' . $module['prefix'] . '.html', $urls, true), 'Module administrable absent du menu : ' . $module['prefix']);
         }
     }
+
+    navigationCheck(in_array('Admin-dwl.html', array_column($sections['management'], 'url'), true), 'Téléchargements dans Administration');
+    navigationCheck(!in_array('Admin-dwl.html', array_column($sections['writing'], 'url'), true), 'Téléchargements absents de Rédaction');
 
     $moduleManager = AdminNavigation::sections($root, $modules, true, false, ['Admin', 'modmgr'], $translator);
     $managerEntry = array_values(array_filter($moduleManager['configuration'], static fn (array $item): bool => $item['url'] === 'Admin-config-modules.html'));
@@ -91,10 +94,13 @@ try {
     navigationCheck(!in_array('Admin-footer.html', array_column($editor['writing'], 'url'), true), 'Menu de bas de page masqué au rédacteur');
 
     if (is_dir($root.'/var/modules/home')) {
-    foreach (['Admin-home.html', 'Admin-home-settings.html', 'Admin-home-report.html'] as $url) {
-        navigationCheck(in_array($url, array_column($sections['configuration'], 'url'), true), 'Accueil regroupé dans Configuration');
-        navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['management']], 'url'), true), 'Accueil absent des autres espaces');
+    foreach (['Admin-home.html', 'Admin-home-report.html'] as $url) {
+        navigationCheck(in_array($url, array_column($sections['management'], 'url'), true), 'Accueil quotidien dans Administration');
+        navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['configuration']], 'url'), true), 'Accueil quotidien absent des autres espaces');
     }
+    navigationCheck(in_array('Admin-home-settings.html', array_column($sections['configuration'], 'url'), true), 'Réglages Accueil dans Configuration');
+    navigationCheck(in_array('Admin-affiliation.html', array_column($sections['management'], 'url'), true), 'Affiliation dans Administration');
+    navigationCheck(!in_array('Admin-affiliation.html', array_column($sections['writing'], 'url'), true), 'Affiliation absente de Rédaction');
     navigationCheck(in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Menu de bas de page dans Configuration');
     navigationCheck(in_array('Admin-menu.html', array_column($sections['configuration'], 'url'), true), 'Menu principal dans Configuration');
     navigationCheck(!in_array('Admin-footer.html', array_column($sections['management'], 'url'), true), 'Menu de bas de page absent d’Administration');
@@ -118,6 +124,42 @@ try {
     navigationCheck(in_array('Admin-config-themes.html', array_column($sections['configuration'], 'url'), true), 'Thèmes dans Configuration');
     navigationCheck(!in_array('Admin-diagnostics.html', array_column($sections['management'], 'url'), true), 'Diagnostics exclus d’Administration');
     navigationCheck($editor['management'] === [] && $editor['configuration'] === [], 'Rédacteur cantonné à Rédaction');
+    $groups = AdminNavigation::configurationGroups($sections['configuration'], ['Admin', 'configuration']);
+    $owners = array_column($groups, 'module');
+    navigationCheck(count($owners) === count(array_unique($owners)), 'Une entrée par composant dans Configuration');
+    navigationCheck(count($groups) < count($sections['configuration']), 'Les actions sont regroupées');
+    $homeSettings = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === 'home'))[0];
+    navigationCheck($homeSettings['url'] === 'Admin-home-settings.html' && $homeSettings['children'] === [],
+        'Réglages accueil directement accessibles dans Configuration');
+    $safetyGroup = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === 'safety'))[0];
+    navigationCheck(count($safetyGroup['children']) === 2, 'Protection des contenus regroupée aussi');
+    $coreGroup = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === ''))[0];
+    navigationCheck(count($coreGroup['children']) === 7, 'Fonctions du moteur regroupées');
+    $single = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === 'menu'))[0];
+    navigationCheck($single['url'] === 'Admin-menu.html' && $single['children'] === [], 'Fonction unique accessible directement');
+    $activeGroups = AdminNavigation::configurationGroups(
+        AdminNavigation::sections($root, $modules, true, false, ['Admin', 'home', 'settings'], $translator)['configuration'],
+        ['Admin', 'home', 'settings']
+    );
+    $activeHome = array_values(array_filter($activeGroups, static fn (array $group): bool => $group['module'] === 'home'))[0];
+    navigationCheck($activeHome['current'] === 'is-current', 'Le composant reste sélectionné sur une fonction interne');
+    $hiddenGroups = AdminNavigation::configurationGroups($homeHidden['configuration'], ['Admin', 'configuration']);
+    navigationCheck(!in_array('home', array_column($hiddenGroups, 'module'), true), 'Le groupe disparaît à la désactivation');
+    navigationCheck(AdminNavigation::configurationGroups($editor['configuration'], ['Admin', 'configuration']) === [],
+        'Aucun groupe pour le rédacteur');
+    navigationCheck(AdminNavigation::configurationGroups($anonymous['configuration'], ['Admin', 'configuration']) === [],
+        'Aucun groupe pour le visiteur');
+    $managementGroups = AdminNavigation::workspaceGroups($articlesMenu['management'], ['Admin', 'articles', 'order'], 'management');
+    $articleGroup = array_values(array_filter($managementGroups, static fn (array $group): bool => $group['module'] === 'articles'))[0];
+    navigationCheck($articleGroup['name'] === 'Gestion des articles', 'Titre du menu de gestion des articles');
+    navigationCheck($articleGroup['url'] === 'Admin-management-module-articles.html', 'Route du menu de gestion');
+    navigationCheck(array_column($articleGroup['children'], 'url') === ['Admin-articles-categories.html', 'Admin-articles-series.html', 'Admin-articles-order.html'], 'Trois fonctions existantes regroupées');
+    navigationCheck($articleGroup['current'] === 'is-current', 'Le parent reste actif sur Organisation');
+    navigationCheck(count(array_column($managementGroups, 'module')) === count(array_unique(array_column($managementGroups, 'module'))), 'Une entrée par module en Administration');
+    navigationCheck(AdminNavigation::workspaceGroups($editor['management'], ['Admin', 'management'], 'management') === [], 'Pas de gestion pour les rédacteurs');
+    $disabledArticles = array_map(static function (array $module): array { if ($module['prefix'] === 'articles') { $module['enabled'] = false; } return $module; }, $modules);
+    $withoutArticles = AdminNavigation::sections($root, $disabledArticles, true, false, ['Admin', 'management'], $translator);
+    navigationCheck(!in_array('articles', array_column(AdminNavigation::workspaceGroups($withoutArticles['management'], ['Admin', 'management'], 'management'), 'module'), true), 'Groupe retiré si Articles est désactivé');
     echo "Navigation complète des modules, Actualités, rôles et désactivation : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR, $error->getMessage() . "\n");

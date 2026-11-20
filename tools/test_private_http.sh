@@ -21,6 +21,16 @@ for directory in database sessions tmp var/sys var/private var/uploads/images; d
 done
 printf 'public image fixture\n' > "$fixture/var/uploads/images/0123456789abcdef0123456789abcdef.webp"
 printf 'public fixture\n' > "$fixture/public.txt"
+printf 'root route\n' > "$fixture/index.php"
+mkdir -p "$fixture/nested"
+cp "$root/.htaccess" "$fixture/nested/.htaccess"
+printf 'nested route\n' > "$fixture/nested/index.php"
+printf 'static route\n' > "$fixture/static.html"
+mkdir -p "$fixture/nested/deeper/site"
+cp "$root/.htaccess" "$fixture/nested/deeper/site/.htaccess"
+printf 'deep route\n' > "$fixture/nested/deeper/site/index.php"
+printf 'nested static route\n' > "$fixture/nested/static.html"
+
 printf 'fake private fixture\n' > "$fixture/var/private/update-backups/fixture/proof.sqlite"
 docker run -d --name "$name" --publish 127.0.0.1::80 \
   -v "$fixture:/usr/local/apache2/htdocs:ro" httpd:2.4 \
@@ -32,6 +42,28 @@ for i in $(seq 1 30); do
   sleep 1
 done
 test "$(curl --fail --silent "$url/public.txt")" = "public fixture"
+test "$(curl --fail --silent "$url/login.html")" = "root route"
+test "$(curl --fail --silent "$url/accueil.html")" = "root route"
+test "$(curl --fail --silent "$url/nested/login.html")" = "nested route"
+test "$(curl --fail --silent "$url/static.html")" = "static route"
+assert_route() {
+  local path="$1" expected="$2" actual
+  actual="$(curl --fail --silent --path-as-is "$url/$path")"
+  if [[ "$actual" != "$expected" ]]; then
+    echo "Route $path: expected '$expected', received '$actual'." >&2
+    return 1
+  fi
+}
+for route in login.html accueil.html Admin.html Admin-writing.html Admin-management.html Admin-configuration.html 'search.html?q=guitare' 'article-%65tude.html'; do
+  assert_route "$route" "root route"
+  assert_route "nested/$route" "nested route"
+  assert_route "nested/deeper/site/$route" "deep route"
+done
+test "$(curl --fail --silent "$url/nested/static.html")" = "nested static route"
+test "$(curl --fail --silent "$url/unknown.php")" = "root route"
+test "$(curl --fail --silent "$url/robots.txt")" = "root route"
+test "$(curl --fail --silent "$url/nested/sitemap.xml")" = "nested route"
+
 for path in src/proof.txt var/modules/example/database/proof.txt; do
   test "$(curl --silent --output /dev/null --write-out '%{http_code}' "$url/$path")" = "403"
 done

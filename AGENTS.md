@@ -1,5 +1,15 @@
 # Règles de développement de P3
 
+## Lecture préalable et décisions en vigueur
+
+Avant toute modification, lire [docs/consignes-p3.md](docs/consignes-p3.md), ROADMAP.md et les contrats concernés, puis consulter l’index et les documents 03, 04 et 05 du référentiel Drive lorsqu’ils sont accessibles. Le document consolidé contient leurs liens. Signaler une source inaccessible ou une contradiction. La dernière décision explicite de Marc prévaut sur un tableau ou une note historique.
+
+Pour une nouvelle fonctionnalité, appliquer la méthode convenue inspirée de Spec Kit. Intention, cadrage, options et brainstorming avec Marc, arbitrages, spécification courte, plan technique, implémentation, validation et gel. Une idée après gel ouvre un nouveau cadrage. Une demande d’étude ou d’ajout à la roadmap reste à ce stade. Pour une correction autorisée, reproduire le défaut et traiter sa cause dans le périmètre convenu, sans redemander l’accord à chaque étape autorisée.
+
+P3 est universel. LWS, Windows, macOS, les serveurs locaux et les environnements automatisés sont des plateformes de validation. Séparer les mécanismes génériques des particularités observées et indiquer les environnements effectivement testés. Les règles d’Univers Guitare ou de Six Cordes ne deviennent pas des valeurs imposées aux autres sites.
+
+Le 20 novembre 2026, Marc a demandé la reprise des corrections et prévoit ses tests sur une version regroupée plus avancée. La consolidation avant 1.0 reste prioritaire. Préserver le cadrage ultérieur de la réécriture du seul module Téléchargements et des autres pistes inscrites à la roadmap.
+
 ## Organisation obligatoire du back-office
 
 Cette organisation s’applique à toute création ou modification du moteur, d’un module ou d’un plugin. Une évolution ne doit pas réintroduire un écran mélangé ou une navigation indépendante.
@@ -43,3 +53,11 @@ Ce travail est soumis à un accord explicite de Marc avant toute fusion dans `ma
 - GitHub est la référence du code et des règles ; synchroniser les documents de suivi sur Drive lorsque possible. Les décisions validées, les travaux en cours, les tests automatisés et les confirmations en production doivent rester distincts. Les audits OpenCode et les retours des bêta-testeurs alimentent une liste de défauts priorisés, sans déclencher de modifications concurrentes non coordonnées.
 - Jusqu'à 1.0, privilégier la consolidation. Pas de nouveau module sauf nécessité démontrée et accord explicite. Ne pas fusionner dans main ni publier ou déployer sans autorisation explicite.
 - En cas de contexte incomplet, consulter le dépôt et signaler les contradictions ; ne pas inventer d'état, de résultats de tests ni de décisions. Les règles doivent s'appliquer quel que soit l'assistant chargé du travail.
+
+## Configuration regroupée par module — 20 novembre 2026
+
+La page Configuration et son menu latéral affichent une seule entrée par module. Si plusieurs fonctions appartiennent au même module dans cet espace, elles sont accessibles depuis une page-menu dédiée. Une fonction unique reste accessible directement. Le regroupement utilise l’inventaire commun et s’applique aux modules tiers. Accueil présente Configuration de l’accueil, puis Réglages, Composer et Résultats. Les fonctions du moteur sont regroupées dans Configuration du site. Le fil d’Ariane relie chaque fonction à sa page-menu. Les accès administrateur restent contrôlés côté serveur.
+
+## Administration : gestion des articles — 20 novembre 2026
+
+Administration et son menu latéral présentent une entrée « Gestion des articles ». Elle ouvre une page-menu donnant accès aux catégories, aux séries et à l’ordre des articles. Les adresses et les fonctions existantes sont conservées. Le fil d’Ariane permet de revenir à cette page-menu et son entrée reste sélectionnée dans chaque fonction. Le regroupement partage le mécanisme de Configuration ; une fonction unique reste directe. Les permissions administrateur restent contrôlées côté serveur. Aucun changement de données ni de version propre au module Articles : ce parcours est fourni par le moteur candidat 0.9.10.

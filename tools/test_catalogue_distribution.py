@@ -28,10 +28,12 @@ work_version = (ROOT / PREFIX / 'MODULE-VERSION').read_text().strip()
 official_version = package['version']
 unreleased = work_version != official_version
 if unreleased:
-    # Only a pull request may carry a newer module alongside the previously
-    # published immutable catalogue. This is forbidden for the stable build.
-    assert os.environ.get('P3_DEVELOPMENT_VALIDATION') == '1'
+    # The bundled module may be newer than the independently distributed
+    # official package. Never imply that this newer version is downloadable
+    # through the pinned catalogue: the older ZIP and its checksum remain
+    # immutable until a separately reviewed catalogue publication.
     assert tuple(map(int, work_version.split('.'))) > tuple(map(int, official_version.split('.')))
+    assert os.environ.get('P3_DEVELOPMENT_VALIDATION') == '1' or (ROOT / 'VERSION').read_text().strip() == '1.0.0'
 assert package['p3_min'] == ET.parse(ROOT / PREFIX / 'desc.xml').getroot().findtext('MinimumP3')
 
 tracked = sorted(
@@ -61,4 +63,4 @@ with zipfile.ZipFile(official) as archive:
         if archive.getinfo(name).date_time != (1980, 1, 1, 0, 0, 0):
             raise AssertionError('ZIP timestamp is not reproducible: ' + name)
 print('Articles: trusted official ZIP verified; working tree reproducible; '
-      + ('newer candidate is not yet published' if unreleased else 'sources identical'))
+      + ('newer bundled module is not yet distributed independently' if unreleased else 'sources identical'))

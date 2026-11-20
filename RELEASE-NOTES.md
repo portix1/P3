@@ -1,5 +1,51 @@
+# P3 1.0.0 — première version stable, publication après signature
+
+Version construite à partir de la candidate 0.9.11 validée. Les corrections suivantes sont incluses :
+
+- Back-office séparé en trois espaces : Rédaction, Administration, Configuration ; fonctions regroupées par module.
+- Rédaction : publication directe selon les droits individuels ou soumission à relecture depuis le formulaire. Le tableau de bord administrateur signale les articles à valider, avec compteur et lien filtré.
+- Relecture : protection des actions d'approbation depuis une liste périmée.
+- Installation : correction des chemins en racine et sous-dossier, protections Apache et parcours de connexion.
+- Téléchargements : fichiers sans catégorie et liens courts.
+- Sécurité, permissions, restauration, performances et accessibilité : améliorations consolidées sur la série 0.9.
+- Modules intégrés : Articles 1.4.12, Accueil 1.1.2, Téléchargements 1.0.1.
+
+La distribution du module Articles 1.4.12 est incluse dans le noyau 1.0.0. Le catalogue autonome figé annonce encore Articles 1.4.9, qui reste inchangé jusqu'à sa publication autonome vérifiée.
+
+**Publication stable conditionnée à la signature hors dépôt du ZIP final et à la vérification de sa provenance.** Les essais réels sur d'autres hébergements et le parcours LWS demeurent des limites connues.
+
+# P3 0.9.11 — candidate de validation avant 1.0.0
+
+Candidate complète construite sur la 0.9.10 consolidée. Elle préserve les correctifs d'installation, de routage et de protection des validations d'articles obsolètes.
+
+- Administration : Affiliation, Téléchargements, composition de l'accueil et résultats ; réglages de l'accueil en Configuration.
+- Rédaction : possibilité pour un rédacteur soumis à relecture d'enregistrer un article et de demander sa publication directement depuis le formulaire, sans autorisation de publication directe.
+- Articles 1.4.11 et Accueil 1.1.2 ; versions de candidate incluses dans le paquet complet.
+- Corrections d'accessibilité, tests de navigation, notices et guides actualisés.
+
+**Statut : candidate non publiée.** Cette version ne devient 1.0.0 qu'après validation explicite de la candidate et nouvelle vérification de l'archive et de sa signature. Ne pas utiliser sur un site en production sans sauvegarde préalable et essai sur une copie.
+
+# P3 0.9.10 — archive regroupée pour essais locaux
+
+Archive complète de test. Inclut les correctifs d’installation et du .htaccess, la protection des actions de relecture, le regroupement de Configuration par module, les consignes consolidées et le correctif Téléchargements 1.0.1 en Administration, avec catégories facultatives et liens courts. Articles 1.4.10 et Accueil 1.1.1 sont inclus.
+
+Le test de sécurité des téléchargements utilise désormais la nouvelle adresse attendue par le template. Le code publié et les versions de test restent distingués. La refonte complète de Téléchargements conserve son cadrage ultérieur.
+
+# En préparation — Configuration par module
+
+- Une seule entrée par composant dans Configuration et son menu latéral. Les composants à plusieurs fonctions ouvrent une page-menu, les fonctions uniques restent directement accessibles.
+- Accueil 1.1.1 fournit les intitulés Configuration de l’accueil, Réglages, Composer et Résultats. La protection des contenus est regroupée et les fonctions du moteur figurent dans Configuration du site.
+- Regroupement générique des contributions des modules, fil d’Ariane avec retour au composant, contrôle des rôles et disparition des modules désactivés. Les adresses existantes restent utilisables.
+
+# En préparation — Articles 1.4.10
+
+- Relecture depuis la liste des articles. Si le contenu ou l’état enregistré diffère depuis l’affichage, l’approbation et le retour pour correction sont refusés. P3 invite à recharger la liste et à relire la version actuelle.
+- La comparaison et le changement d’état sont effectués dans une même transaction. Une action en double ou un verrou SQLite concurrent ne publie pas de version imprévue.
+- Les listes ouvertes avant cette mise à jour doivent être rechargées. Le catalogue de module publié reste en 1.4.9 pendant la validation de cette candidate.
+
 # P3 0.9.9
 
+- Installation neuve : le bouton « Ouvrir P3 » mène directement à la racine. La réécriture Apache des pages HTML utilise une cible absolue à la racine du domaine et une cible relative en sous-dossier. Tests du routage Apache et du parcours complet installation, connexion et administration aux deux emplacements.
 - Six Cordes UX Clair : respect de la justification des articles, sans césure automatique. Variante v018 0.1.13 avec en-tête et menu principal à angles droits et sans arrondis du côté droit des panneaux concernés. Sur un site existant, installer le thème séparément depuis Configuration → Thèmes.
 - Recherche : reconstruction automatique d’un index corrompu. Si la reconstruction est bloquée, les résultats restent accessibles sur la page habituelle. Le diagnostic est affiché en administration.
 - Statistiques 2.0.4 : exclusion des visites portant un marqueur d’audit d’Univers Guitare.
@@ -78,3 +124,7 @@ Publiée le 14 novembre 2026 et installation confirmée par le mainteneur. Valid
 - Migration SQLite de schéma **8 vers 9**, non destructive : ajout du champ `articles.review_note`. La sauvegarde automatique crée sa table privée `article_autosaves` au premier usage.
 
 Le module Articles 1.4.9 est distribué avec le catalogue 0.9.2. La release publiée ne contient pas le CoreUpdater ajouté ultérieurement dans main. Avant toute mise à jour : sauvegarder fichiers et base, préserver les réglages LWS, les thèmes personnalisés et les médias ; ne pas relancer l'installateur. Voir README.md et ROADMAP.md.
+
+## Administration : gestion des articles — 20 novembre 2026
+
+Administration et son menu latéral présentent une entrée « Gestion des articles ». Elle ouvre une page-menu donnant accès aux catégories, aux séries et à l’ordre des articles. Les adresses et les fonctions existantes sont conservées. Le fil d’Ariane permet de revenir à cette page-menu et son entrée reste sélectionnée dans chaque fonction. Le regroupement partage le mécanisme de Configuration ; une fonction unique reste directe. Les permissions administrateur restent contrôlées côté serveur. Aucun changement de données ni de version propre au module Articles : ce parcours est fourni par le moteur candidat 0.9.10.

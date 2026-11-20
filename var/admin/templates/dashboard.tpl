@@ -10,6 +10,13 @@
 {% if admin_theme_has_updates == "1" %}<p><a href="Admin-config-themes.html#theme-inventory-title">{{ admin_theme_updates }}</a></p>{% endif %}
 {% if admin_theme_has_updates == "0" %}<p>{{ admin_theme_updates }}</p>{% endif %}</article>
 </section>
+{% if dashboard_review_visible == "1" %}
+<section class="dashboard-review-notice" aria-labelledby="dashboard-review-heading">
+<h2 id="dashboard-review-heading">{{ dashboard_review_heading }}</h2>
+<p>{{ dashboard_review_message }}</p>
+<p><a href="Admin-articles.html?state=pending">{{ dashboard_review_action }}</a></p>
+</section>
+{% endif %}
 <nav class="management-grid" aria-label="{{ ux_navigation }}">
 {% if ux_has_writing == "1" %}<a class="management-card action-content" href="Admin-writing.html" data-admin-icon="pencil"><strong>{{ ux_writing }}</strong><span>{{ ux_writing_help }}</span></a>{% endif %}
 {% if ux_has_management == "1" %}<a class="management-card action-management" href="Admin-management.html" data-admin-icon="users"><strong>{{ ux_management }}</strong><span>{{ ux_management_help }}</span></a>{% endif %}

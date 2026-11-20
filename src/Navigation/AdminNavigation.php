@@ -15,31 +15,37 @@ final class AdminNavigation
         if (!$isAdmin && !$isRedactor) {
             return $sections;
         }
-        $add = static function (string $section, string $label, string $url, string $icon, string $match = '') use (&$sections, $translator): void {
+        $owner = '';
+        $ownerName = $translator->text('ux_site_configuration', 'Configuration du site');
+        $managementName = $translator->text('ux_management', 'Administration');
+        $add = static function (string $section, string $label, string $url, string $icon, string $match = '') use (&$sections, $translator, &$owner, &$ownerName, &$managementName): void {
             $sections[$section][] = [
                 'name' => $translator->text($label, $label),
                 'url' => $url,
                 'icon' => $icon,
                 'match' => $match !== '' ? $match : basename($url, '.html'),
                 'current' => '',
+                'module' => $owner,
+                'configuration_name' => $ownerName,
+                'management_name' => $managementName,
             ];
         };
         if ($isAdmin) {
             $add('management', 'ux_accounts', 'Admin-users.html', 'users');
-            $add('configuration', 'diagnostics_nav', 'Admin-diagnostics.html', 'activity');
             $add('configuration', 'ux_identity', 'Admin-config.html', 'settings', 'Admin-config');
             $add('configuration', 'ux_modules', 'Admin-config-modules.html', 'boxes');
             $add('configuration', 'ux_updates', 'Admin-config-updates.html', 'settings');
             $add('configuration', 'ux_themes', 'Admin-config-themes.html', 'images');
             $add('configuration', 'ux_seo', 'Admin-config-seo.html', 'search');
             $add('configuration', 'ux_mail', 'Admin-config-mail.html', 'mail');
+            $add('configuration', 'diagnostics_nav', 'Admin-diagnostics.html', 'activity');
         }
 
         $places = [
             'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
             'media' => ['writing', 'images'], 'menu' => ['configuration', 'menu'],
-            'footer' => ['configuration', 'panel-bottom'], 'dwl' => ['writing', 'download'],
-            'affiliation' => ['writing', 'dollar-sign'], 'contact' => ['management', 'mail'],
+            'footer' => ['configuration', 'panel-bottom'], 'dwl' => ['management', 'download'],
+            'affiliation' => ['management', 'dollar-sign'], 'contact' => ['management', 'mail'],
             'insights' => ['management', 'chart-bar'], 'search' => ['management', 'search'],
             'safety' => ['configuration', 'triangle-alert'],
         ];
@@ -64,19 +70,27 @@ final class AdminNavigation
                 continue;
             }
             $prefix = $manifest['prefix'];
+            $owner = $prefix;
+            $moduleMessages = (static function (string $directory, string $language, string $fallback): array {
+                $_LANG = [];
+                $file = $directory . '/lang/' . basename($language) . '.php';
+                if (!is_file($file)) { $file = $directory . '/lang/' . basename($fallback) . '.php'; }
+                if (is_file($file) && !is_link($file)) { include $file; }
+                return $_LANG;
+            })($directory, $language, $manifest['default_language']);
+            $moduleTranslator = new Translator($moduleMessages);
+            $ownerName = $moduleTranslator->text($prefix . '_configuration', $manifest['name']);
+            $managementName = $moduleTranslator->text($prefix . '_management',
+                $translator->text('ux_management_' . $prefix, $manifest['name']));
             if ($manifest['admin_navigation'] !== []) {
-                $moduleMessages = (static function (string $directory, string $language, string $fallback): array {
-                    $_LANG = [];
-                    $file = $directory . '/lang/' . basename($language) . '.php';
-                    if (!is_file($file)) { $file = $directory . '/lang/' . basename($fallback) . '.php'; }
-                    if (is_file($file) && !is_link($file)) { include $file; }
-                    return $_LANG;
-                })($directory, $language, $manifest['default_language']);
-                $moduleTranslator = new Translator($moduleMessages);
                 foreach ($manifest['admin_navigation'] as $item) {
                     if (!$isAdmin && ($item['role'] !== 'editor' || $item['area'] !== 'writing')) { continue; }
                     $url = 'Admin-' . $prefix . ($item['action'] !== '' ? '-' . $item['action'] : '') . '.html';
                     $add($item['area'], $moduleTranslator->text($item['label'], $translator->text($item['label'], $manifest['name'])), $url, $item['icon']);
+                    $index = array_key_last($sections[$item['area']]);
+                    $sections[$item['area']][$index]['configuration_action_name'] = $moduleTranslator->text(
+                        $item['label'] . '_short', $sections[$item['area']][$index]['name']
+                    );
                 }
                 continue;
             }
@@ -117,4 +131,49 @@ final class AdminNavigation
         }
         return $sections;
     }
+
+    /** Group the same inventory for the Configuration page and its sidebar. */
+    public static function configurationGroups(array $entries, array $arguments): array
+    {
+        return self::workspaceGroups($entries, $arguments, 'configuration');
+    }
+
+    /** Reuse module grouping in administrative workspaces without changing leaf routes. */
+    public static function workspaceGroups(array $entries, array $arguments, string $area): array
+    {
+        if (!in_array($area, ['configuration', 'management'], true)) {
+            return $entries;
+        }
+        $groups = [];
+        foreach ($entries as $entry) {
+            $key = $entry['module'] === '' ? 'site' : 'module:' . $entry['module'];
+            $groups[$key][] = $entry;
+        }
+        $route = implode('-', $arguments) . '.html';
+        $result = [];
+        foreach ($groups as $items) {
+            $first = $items[0];
+            if (count($items) === 1) {
+                $result[] = [...$first, 'children' => []];
+                continue;
+            }
+            $url = $first['module'] === '' ? 'Admin-' . $area . '-site.html'
+                : 'Admin-' . $area . '-module-' . $first['module'] . '.html';
+            $current = $route === $url || in_array('is-current', array_column($items, 'current'), true);
+            foreach ($items as &$item) {
+                $item['name'] = $area === 'configuration' ? ($item['configuration_action_name'] ?? $item['name']) : $item['name'];
+            }
+            unset($item);
+            $result[] = [
+                'name' => $first[$area . '_name'],
+                'url' => $url,
+                'icon' => $first['icon'],
+                'module' => $first['module'],
+                'current' => $current ? 'is-current' : '',
+                'children' => $items,
+            ];
+        }
+        return $result;
+    }
+
 }

@@ -5,10 +5,18 @@ Connectez-vous à `login.html` avec votre compte administrateur. Le **Tableau de
 | Espace | Où intervenir |
 | --- | --- |
 | **Rédaction** | Créer et relire les articles et les actualités. |
-| **Administration** | Gérer les comptes et leurs droits, traiter les messages et suivre l’activité du site. |
-| **Configuration** | Régler l’identité du site, composer l’accueil, modifier les menus, gérer les thèmes et les modules, lancer les diagnostics et les mises à jour. |
+| **Administration** | Gérer les comptes et leurs droits, traiter les messages, composer l’accueil, consulter ses résultats, gérer l’affiliation et les téléchargements. |
+| **Configuration** | Régler l’identité du site et l’accueil, modifier les menus, gérer les thèmes et les modules, lancer les diagnostics et les mises à jour. |
 
 Les fonctions proposées dépendent des modules activés. Les catégories, séries, menus et autres éléments de structure restent sous la responsabilité de l’administrateur.
+
+## Trouver une fonction dans Configuration
+
+Configuration affiche une seule entrée par module, dans la page et dans le menu latéral. Cliquez sur le composant à régler. S’il propose plusieurs fonctions, une page-menu permet de choisir l’action.
+
+**Réglages de l’accueil** reste directement accessible dans Configuration. **Composer l’accueil** et **Résultats de l’accueil** sont regroupés dans Administration. **Protection des contenus** regroupe ses fonctions et ses réglages. **Configuration du site** ouvre les fonctions du moteur, notamment l’identité, le référencement, la messagerie, les thèmes, les modules, les mises à jour et les diagnostics.
+
+Une entrée comportant une seule fonction l’ouvre directement. Le fil d’Ariane permet de revenir à la page-menu du composant, puis à Configuration. Les modules désactivés disparaissent de ce parcours.
 
 ## Créer un compte et choisir ses droits
 
@@ -17,11 +25,11 @@ Les fonctions proposées dépendent des modules activés. Les catégories, séri
 3. Enregistrez le compte, rouvrez sa fiche et repérez **Droits de rédaction des articles**.
 4. Choisissez **Relecture obligatoire** ou **Publication directe**, puis enregistrez les droits dans leur propre formulaire.
 
-Avec la relecture obligatoire, le rédacteur soumet ses articles avant la mise en ligne. Avec la publication directe, il peut aussi corriger ses propres articles déjà publiés. Vérifiez les catégories accessibles et les autres droits accordés dans cette fiche.
+Avec la relecture obligatoire, le rédacteur peut demander la publication directement depuis le formulaire ou plus tard depuis la liste des brouillons. Avec la publication directe, il peut aussi corriger ses propres articles déjà publiés. Vérifiez les catégories accessibles et les autres droits accordés dans cette fiche.
 
 ## Relire un article
 
-Dans **Rédaction → Articles**, utilisez **Voir les demandes** ou filtrez les articles sur **En attente de relecture**. Ouvrez l’article et vérifiez son aperçu si nécessaire. Dans la liste, **Accepter et publier** met la version enregistrée en ligne. **Renvoyer pour correction** demande un commentaire et remet l’article en brouillon. Le rédacteur pourra soumettre une nouvelle version.
+Dans **Rédaction → Articles**, utilisez **Voir les demandes** ou filtrez les articles sur **En attente de relecture**. Ouvrez l’article et vérifiez son aperçu si nécessaire. Dans la liste, **Accepter et publier** met en ligne la version associée à cette liste. Si l’article a changé entre-temps, P3 refuse l’action et vous invite à recharger la liste et à relire la version actuelle. Cette vérification s’applique aussi au retour pour correction. **Renvoyer pour correction** demande un commentaire et remet l’article en brouillon. Le rédacteur pourra soumettre une nouvelle version.
 
 ## Installer une mise à jour
 
@@ -40,3 +48,15 @@ Si un écran 503 empêche l’accès au back-office après une interruption, uti
 ## Aider les rédacteurs
 
 Transmettez le [guide du rédacteur](guide-redacteur.md) avec l’adresse de connexion et indiquez si leur compte publie directement ou passe par une relecture.
+
+
+## Gérer les téléchargements
+
+Dans **Administration → Téléchargements**, vous pouvez déposer un fichier
+et le publier directement sur la page Téléchargements. Choisissez
+**Sans catégorie** dans le formulaire pour l’afficher sur cette page.
+Un fichier associé à une catégorie apparaît sur la page de cette catégorie.
+
+## Gestion des articles
+
+Dans Administration, ouvrir **Gestion des articles**. Cette page-menu donne accès aux catégories, aux séries et à l’ordre des articles. Le menu latéral conserve une seule entrée pour ces fonctions ; le fil d’Ariane permet de revenir à leur page-menu. Les anciennes adresses restent utilisables. La rédaction et la relecture restent accessibles depuis Rédaction selon les droits existants.

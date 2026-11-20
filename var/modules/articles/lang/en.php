@@ -190,3 +190,9 @@ $_LANG['articles_page_next'] = 'Next page';
 $_LANG['articles_optional_metadata'] = 'Author and featured image';
 $_LANG['articles_optional_metadata_help'] = 'Optional fields. If left blank, P3 uses the site author and the first image in the article.';
 
+
+$_LANG = array_merge($_LANG, [
+    'articles_review_conflict_title' => 'Review needs refreshing',
+    'articles_review_changed' => 'This article has changed or another action is in progress. Reload the list and review the current version before trying again.',
+    'articles_review_reload' => 'Return to the article list',
+]);

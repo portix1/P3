@@ -145,13 +145,15 @@ try {
     $moduleVersion = trim((string) file_get_contents($articlesRoot . '/MODULE-VERSION'));
     integrityCheck($workingVersion === $moduleVersion, 'Manifeste et MODULE-VERSION désynchronisés');
     $unreleasedVersion = $workingVersion !== $articlesEntry['version'];
-    // A development pull request may carry a newer module while the trusted
-    // catalogue deliberately keeps the last published, immutable ZIP.
-    // The flag is NEVER enabled by the stable/release validation workflow.
+    // The independently published catalogue is immutable. The full 1.0.0
+    // distribution may include a newer bundled Articles module, but it must
+    // never be advertised as an independently verified catalogue ZIP.
     if ($unreleasedVersion) {
-        integrityCheck(getenv('P3_DEVELOPMENT_VALIDATION') === '1'
+        $isBundledStable = trim((string)file_get_contents($root . '/VERSION')) === '1.0.0';
+        integrityCheck(
+            (getenv('P3_DEVELOPMENT_VALIDATION') === '1' || $isBundledStable)
             && version_compare($workingVersion, (string)$articlesEntry['version'], '>'),
-            'Une version Articles non publiée est interdite dans une distribution stable');
+            'Module Articles plus récent non répertorié sans validation explicite de la distribution');
     }
     integrityCheck($articlesEntry['p3_min'] === $articlesManifest['minimum_p3'],
         'Version minimale P3 du catalogue incohérente');

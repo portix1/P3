@@ -115,3 +115,17 @@ reviewAssert($oldPdo->query('SELECT title FROM articles WHERE id = 42')->fetchCo
 reviewAssert((int) $oldPdo->query('PRAGMA user_version')->fetchColumn() === 10,
     'Migration existante vers version 10');
 echo "Relecture : permissions, transitions et migration 10 vérifiées.\n";
+
+$article = ['id' => 1, 'body' => '<p>Original</p>', 'status' => 'pending', 'updated_at' => '2026-11-20 10:00:00'];
+$version = Review::version($article);
+Review::assertVersion($article, $version);
+foreach (['body', 'status', 'updated_at', 'title', 'summary', 'featured_image', 'category_id', 'review_note'] as $field) {
+    $changed = [...$article, $field => 'changed'];
+    try {
+        Review::assertVersion($changed, $version);
+        throw new RuntimeException('Stale field accepted: ' . $field);
+    } catch (RuntimeException $error) {
+        reviewAssert($error->getMessage() === 'articles_review_changed', 'Changed field refused: ' . $field);
+    }
+}
+echo "Relecture : empreinte du contenu et des métadonnées vérifiée.\n";

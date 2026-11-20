@@ -250,6 +250,26 @@ if ($canAccessAdmin && $route === 'Admin') {
             $template->set('admin_core_update', $coreUpdate);
             $template->set('admin_module_count', (string) $visibleModuleCount);
             $template->set('admin_enabled_module_count', (string) $enabledModuleCount);
+            // The alert is only prepared for administrators and for an enabled Articles module.
+            // Read the current database state on each dashboard request: no stale badge cache.
+            $template->set('dashboard_review_heading', $translator->text('dashboard_review_heading'));
+            $template->set('dashboard_review_action', $translator->text('dashboard_review_action'));
+            $template->set('dashboard_review_visible', '0');
+            if ($isAdmin) {
+                $articlesModule = $repositories->modules()->findByPrefix('articles');
+                if (is_array($articlesModule) && !empty($articlesModule['enabled'])) {
+                    require_once dirname(__DIR__) . '/var/modules/articles/src/ArticleRepository.php';
+                    $pendingReview = (new \PortixModule\Articles\ArticleRepository($database->connection()))->countPendingReview();
+                    if ($pendingReview > 0) {
+                        $template->set('dashboard_review_visible', '1');
+                        $template->set('dashboard_review_count', (string) $pendingReview);
+                        $template->set('dashboard_review_message', sprintf(
+                            $translator->text($pendingReview === 1 ? 'dashboard_review_one' : 'dashboard_review_many'),
+                            $pendingReview
+                        ));
+                    }
+                }
+            }
             $template->set('admin_news_count', $adminNewsEnabled ? (string) $repositories->news()->countAll() : '0');
             $template->set('admin_published_news_count', $adminNewsEnabled ? (string) $repositories->news()->countPublished() : '0');
             $themeInfo = (new \Portix\Theme\ThemeCatalog(dirname(__DIR__), trim((string) file_get_contents(dirname(__DIR__) . '/VERSION'))))->inspect(basename((string) $CONFIG['template']));
@@ -402,14 +422,31 @@ if ($route === 'Admin') {
     $adminSections = \Portix\Navigation\AdminNavigation::sections(
         dirname(__DIR__), $modules, $isAdmin, $isRedactor, $argument, $translator, (string) $CONFIG['lang']
     );
+    $configurationGroups = \Portix\Navigation\AdminNavigation::configurationGroups(
+        $adminSections['configuration'], $argument
+    );
+    $navigationSections = $adminSections;
+    $navigationSections['configuration'] = $configurationGroups;
+    $navigationSections['management'] = \Portix\Navigation\AdminNavigation::workspaceGroups(
+        $adminSections['management'], $argument, 'management'
+    );
     $activeArea = in_array($adminRoute, ['writing', 'management', 'configuration'], true) ? $adminRoute : '';
     $activeEntry = '';
     foreach ($adminSections as $section => $entries) {
         foreach ($entries as $entry) {
-            $template->addRow('ux_nav_' . $section, $entry);
             if ($entry['current'] === 'is-current') {
                 $activeArea = $section;
                 $activeEntry = $entry['name'];
+            }
+        }
+    }
+    $breadcrumbGroup = null;
+    foreach ($navigationSections as $section => $entries) {
+        foreach ($entries as $entry) {
+            $template->addRow('ux_nav_' . $section, $entry);
+            if (in_array($section, ['configuration', 'management'], true) && $entry['current'] === 'is-current'
+                && $entry['children'] !== []) {
+                $breadcrumbGroup = $entry;
             }
         }
         $template->set('ux_has_' . $section, $entries !== [] ? '1' : '0');
@@ -421,6 +458,8 @@ if ($route === 'Admin') {
     $template->set('admin_area_class', $activeArea === '' ? 'admin-area-dashboard' : 'admin-area-' . $activeArea);
     $template->set('ux_active_area', $activeArea);
     $template->set('ux_active_label', $activeArea === '' ? '' : $translator->text('ux_' . $activeArea));
+    $template->set('ux_breadcrumb_group_url', $breadcrumbGroup['url'] ?? '');
+    $template->set('ux_breadcrumb_group_label', $breadcrumbGroup['name'] ?? '');
     $template->set('ux_breadcrumb_leaf', $activeEntry);
     if ($canAccessAdmin && $adminRoute === 'configuration' && !$isAdmin) {
         http_response_code(403);
@@ -428,7 +467,35 @@ if ($route === 'Admin') {
     } elseif ($canAccessAdmin && in_array($adminRoute, ['writing', 'management', 'configuration'], true) && ($isAdmin || $adminRoute !== 'management')) {
         $template->set('ux_area_title', $translator->text('ux_' . $adminRoute));
         $template->set('ux_area_help', $translator->text('ux_' . $adminRoute . '_help'));
-        foreach ($adminSections[$adminRoute] as $entry) { $template->addRow('ux_entries', $entry); }
+        $areaEntries = $navigationSections[$adminRoute];
+        if (in_array($adminRoute, ['configuration', 'management'], true) && isset($argument[2])) {
+            $menuUrl = implode('-', $argument) . '.html';
+            $menu = null;
+            foreach ($navigationSections[$adminRoute] as $group) {
+                if ($group['url'] === $menuUrl && $group['children'] !== []) {
+                    $menu = $group;
+                    break;
+                }
+            }
+            if ($menu === null) {
+                http_response_code(404);
+                $template->setSlot('main', './var/admin/templates/not-found.tpl');
+                $areaEntries = [];
+            } elseif (!in_array($request->method(), ['GET', 'HEAD'], true)) {
+                http_response_code(405);
+                header('Allow: GET, HEAD');
+                $template->setSlot('main', './var/admin/templates/access-denied.tpl');
+                $areaEntries = [];
+            } else {
+                $template->set('ux_area_title', $menu['name']);
+                $template->set('ux_area_help', '');
+                $template->set('ux_breadcrumb_group_url', '');
+                $template->set('ux_breadcrumb_group_label', '');
+                $template->set('ux_breadcrumb_leaf', $menu['name']);
+                $areaEntries = $menu['children'];
+            }
+        }
+        foreach ($areaEntries as $entry) { $template->addRow('ux_entries', $entry); }
     }
     foreach (['writing', 'management', 'configuration', 'identity', 'appearance', 'seo', 'mail',
         'updates', 'navigation', 'overview_help', 'writing_help', 'management_help', 'configuration_help',

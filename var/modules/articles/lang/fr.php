@@ -167,7 +167,7 @@ $_LANG['articles_series_batch_backup_failed'] = 'Impossible de sauvegarder les s
 $_LANG['articles_public_edit'] = 'Modifier cet article';
 
 $_LANG['articles_save_draft'] = 'Enregistrer le brouillon';
-$_LANG['articles_review_next_step'] = 'Enregistrez votre brouillon. Dans la liste des articles, choisissez ensuite « Demander la publication ». Un administrateur le relira avant sa mise en ligne.';
+$_LANG['articles_review_next_step'] = 'Choisissez « Enregistrer le brouillon » pour continuer plus tard, ou « Demander la publication » pour soumettre directement l’article à un administrateur.';
 
 $_LANG['articles_filter_heading'] = 'Rechercher dans les articles';
 $_LANG['articles_filter_search'] = 'Rechercher';
@@ -189,3 +189,9 @@ $_LANG['articles_page_next'] = 'Page suivante';
 $_LANG['articles_optional_metadata'] = 'Auteur et image principale';
 $_LANG['articles_optional_metadata_help'] = 'Champs facultatifs. Sans indication, P3 utilise l’auteur du site et la première image de l’article.';
 
+
+$_LANG = array_merge($_LANG, [
+    'articles_review_conflict_title' => 'Relecture à actualiser',
+    'articles_review_changed' => 'Cet article a changé ou une autre action est en cours. Rechargez la liste et relisez la version actuelle avant de réessayer.',
+    'articles_review_reload' => 'Revenir à la liste des articles',
+]);

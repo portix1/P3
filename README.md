@@ -1,12 +1,20 @@
 # P3 — CMS PHP modulaire
 
-**Dernière version stable publiée :** `0.9.8`\
-**Prochaine version :** `0.9.9` (en préparation)\
-**Version stable précédente :** `0.9.7`\
+**Dernière version publiée :** `0.9.9`\
+**Version stable préparée :** `1.0.0` (signature et publication en attente)\
+**Dernière version publiée avant 1.0.0 :** `0.9.9`\
 **Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
 **Licence :** `GPL-3.0-or-later`
 
 P3 est un CMS PHP modulaire avec des espaces distincts pour la Rédaction, l'Administration courante et la Configuration du site.
+
+## Distribution de la version 1.0.0
+
+Cette archive complète 1.0.0 regroupe les correctifs validés après 0.9.9. Elle contient le moteur, les modules et les thèmes, avec Articles 1.4.12, Accueil 1.1.2 et Téléchargements 1.0.1. La distribution ne doit être annoncée comme publiée qu'après vérification de son archive et de sa signature.
+
+Pour une installation neuve, extraire le dossier P3 dans le répertoire Web local et ouvrir install.php. Le ZIP inclut les fichiers cachés de protection et de routage, dont le .htaccess corrigé. Pour tester une installation existante, travailler sur une copie sauvegardée et suivre le guide de maintenance, en conservant configuration, base, médias et personnalisations.
+
+Les correctifs regroupés proviennent de la consolidation 0.9.10 (PR #52 à #57), des améliorations du back-office (PR #58) et de la validation 0.9.11 (PR #59). Le module Articles 1.4.12 est fourni avec le moteur ; le catalogue autonome figé continue de proposer Articles 1.4.9, jusqu'à une publication séparée du catalogue. La réécriture complète de Téléchargements, le MCP et les autres pistes futures restent dans la roadmap.
 
 ## Documentation
 

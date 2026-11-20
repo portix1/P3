@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <modules>
-<Name>Accueil</Name><Version>1.1.0</Version><Prefix>home</Prefix><Type>module</Type>
+<Name>Accueil</Name><Version>1.1.2</Version><Prefix>home</Prefix><Type>module</Type>
 <Priority>80</Priority><DefLang>fr</DefLang><Path>home</Path><Enabled>0</Enabled>
 <AdminAccess>admin</AdminAccess><SchemaFormat>desc-csv</SchemaFormat>
 <MinimumP3>0.8.4-rc4</MinimumP3>
 <AdminNavigation>
- <Item area="configuration" action="" role="admin" icon="house" label="home_admin" />
  <Item area="configuration" action="settings" role="admin" icon="settings" label="home_settings" />
- <Item area="configuration" action="report" role="admin" icon="chart-bar" label="home_report" />
+ <Item area="management" action="" role="admin" icon="layout-dashboard" label="home_admin" />
+ <Item area="management" action="report" role="admin" icon="chart-bar" label="home_report" />
 </AdminNavigation>
 <SessionlessPostActions>events</SessionlessPostActions>
 </modules>

@@ -33,3 +33,10 @@ $_LANG += [
 'home_status_duplicate'=>'Content already selected elsewhere, or content limit reached.',
 'home_status_ready'=>'Zone ready to display.',
 ];
+
+$_LANG = array_merge($_LANG, [
+    'home_configuration' => 'Home page configuration',
+    'home_admin_short' => 'Compose',
+    'home_settings_short' => 'Settings',
+    'home_report_short' => 'Results',
+]);

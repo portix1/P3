@@ -87,12 +87,12 @@ final class DownloadRepository
     }
 
     /** @return list<array<string, mixed>> */
-    public function publishedForCategory(int $categoryId): array
+    public function publishedForCategory(?int $categoryId): array
     {
         $statement = $this->pdo->prepare(
             'SELECT d.*, c.name AS category_name, c.slug AS category_slug FROM downloads d '
-            . 'JOIN download_categories c ON c.id = d.category_id '
-            . "WHERE d.category_id = :category_id AND d.status = 'published' "
+            . 'LEFT JOIN download_categories c ON c.id = d.category_id '
+            . "WHERE d.category_id IS :category_id AND d.status = 'published' "
             . 'ORDER BY d.position, d.title, d.id'
         );
         $statement->execute(['category_id' => $categoryId]);
@@ -117,7 +117,7 @@ final class DownloadRepository
     public function create(array $file): int
     {
         $positionStatement = $this->pdo->prepare(
-            'SELECT COALESCE(MAX(position), 0) + 1 FROM downloads WHERE category_id = :category_id'
+            'SELECT COALESCE(MAX(position), 0) + 1 FROM downloads WHERE category_id IS :category_id'
         );
         $positionStatement->execute(['category_id' => $file['category_id']]);
         $position = (int) $positionStatement->fetchColumn();

@@ -3,6 +3,7 @@ declare(strict_types=1);
 if (PHP_SAPI!=='cli') { http_response_code(403); exit(1); }
 $source=dirname(__DIR__);
 require $source.'/bootstrap/autoload.php';require $source.'/includes/class/settings.class.php';
+require $source . "/includes/class/security.class.php";
 $fixture=sys_get_temp_dir().'/p3-home-http-'.bin2hex(random_bytes(6));
 mkdir($fixture,0770,true);
 $skip=['.git','database','sessions','tmp','dist','var/private','var/sys','var/uploads','var/cache','var/modules/home'];
@@ -80,6 +81,36 @@ try {
     $auth=['Content-Type: application/x-www-form-urlencoded','Cookie: '.($cookie[1]??'')];
     $logged=$request('/login.html','POST',http_build_query(['pseudo'=>'admin','pass'=>'test-home-password','csrf_token'=>$token[1]??'']),$auth);
     if (preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$logged[2]),$cookie)) { $auth[1]='Cookie: '.$cookie[1]; }
+    $categoryId = $repos->downloads()->createCategory('Guides', 'guides', '');
+    $downloadSource = $fixture . '/tmp/download-fixture.pdf';
+    file_put_contents($downloadSource, "%PDF-1.4\n1 0 obj\n<<>>\nendobj\n%%EOF\n");
+    $downloadStorage = new Portix\Storage\DownloadStorage($fixture . '/var/private/downloads');
+    $stored = $downloadStorage->storeLocalFile($downloadSource, 'guide-fixture.pdf');
+    $downloadId = $repos->downloads()->create([
+        ...$stored, 'category_id' => $categoryId, 'title' => 'Guide public de test', 'description' => '', 'status' => 'published',
+    ]);
+    $editDownload = $request('/Admin-dwl-edit-' . $downloadId . '.html', 'GET', '', $auth);
+    $check($editDownload[0] === 200 && str_contains($editDownload[1], 'Sans catégorie'), 'Uncategorized option present on download edit form');
+    preg_match('/name="csrf_token" value="([^"]+)"/', $editDownload[1], $downloadToken);
+    $request('/Admin-dwl-edit-' . $downloadId . '.html', 'POST', http_build_query([
+        'csrf_token' => $downloadToken[1] ?? '', 'download_action' => 'update_file', 'id' => $downloadId,
+        'category_id' => '', 'title' => 'Guide public de test', 'description' => '', 'status' => 'published',
+    ]), $auth);
+    $check($repos->downloads()->find($downloadId)['category_id'] === null, 'Download moved outside its category');
+    $downloadUrl = 'dwl-fichier-' . $downloadId . '-guide-fixture.html';
+    $publicDownloads = $request('/dwl.html');
+    $check($publicDownloads[0] === 200 && str_contains($publicDownloads[1], 'Guide public de test')
+        && str_contains($publicDownloads[1], $downloadUrl), 'Uncategorized download is published on main page');
+
+    $downloadResponse = $request('/' . $downloadUrl);
+    $check($downloadResponse[0] === 200 && str_starts_with($downloadResponse[1], '%PDF-1.4')
+        && str_contains(implode("\n", $downloadResponse[2]), 'guide-fixture.pdf'), 'Public URL serves the original file as an attachment');
+    $legacyDownload = $request('/var/modules/download/download.php?id=' . $downloadId);
+    $check($legacyDownload[0] === 200 && $legacyDownload[1] === $downloadResponse[1], 'Legacy link still downloads the same file');
+    $draftDownload = $repos->downloads()->create([
+        ...$stored, 'category_id' => null, 'title' => 'Guide privé', 'description' => '', 'status' => 'draft',
+    ]);
+    $check($request('/dwl-fichier-' . $draftDownload . '-guide-fixture.html')[0] === 404, 'Draft download is not public');
     $screen=$request('/Admin-config-modules.html','GET','',$auth);
     preg_match('/name="csrf_token" value="([^"]+)"/',$screen[1],$token);
     $check(!is_dir($fixture.'/var/modules/home'),'Core fixture starts without Home');
@@ -143,6 +174,14 @@ try {
     $check($request('/home-events.html')[0]===405,'GET event refused');
     $anon=$request('/Admin-home.html');
     $check(in_array($anon[0],[200,403],true) && !str_contains($anon[1],'home_action'),'Anonymous cannot access composition controls');
+    // A submission on the disposable site must create an administrator-only
+    // dashboard alert, without introducing a persistent notification table.
+    $reviewArticle = $db->connection()->query("SELECT id, status FROM articles WHERE status = 'published' ORDER BY id LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    $check(is_array($reviewArticle), 'A published fixture article is available for review tests');
+    $beforePending = (int) $db->connection()->query("SELECT COUNT(*) FROM articles WHERE status = 'pending'")->fetchColumn();
+    $reviewId = (int) $reviewArticle['id'];
+    $reviewChange = $db->connection()->prepare("UPDATE articles SET status = ? WHERE id = ?");
+    $reviewChange->execute(['pending', $reviewId]);
     foreach (['admin','editor'] as $actor) {
         $login=$request('/login.html');
         preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$login[2]),$cookie);
@@ -150,11 +189,21 @@ try {
         $headers=['Content-Type: application/x-www-form-urlencoded','Cookie: '.($cookie[1]??'')];
         $logged=$request('/login.html','POST',http_build_query(['pseudo'=>$actor,'pass'=>'test-home-password','csrf_token'=>$token[1]??'']),$headers);
         if (preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$logged[2]),$cookie)) { $headers[1]='Cookie: '.$cookie[1]; }
+        $dashboard = $request('/Admin.html', 'GET', '', $headers);
+        $check($dashboard[0] === 200, 'Dashboard available to authenticated staff');
+        $reviewLink = 'href="Admin-articles.html?state=pending"';
+        if ($actor === 'admin') {
+            $check(str_contains($dashboard[1], $reviewLink), 'Administrator sees review link from dashboard');
+            $check(str_contains($dashboard[1], ($beforePending + 1) . ' article'), 'Dashboard displays the current review count');
+        } else {
+            $check(!str_contains($dashboard[1], $reviewLink), 'Editor never sees administrator review alert');
+        }
         $configArea=$request('/Admin-configuration.html','GET','',$headers);
         $check($configArea[0]===($actor==='admin'?200:403), 'Only administrators enter Configuration');
-        $check(str_contains($configArea[1],'Admin-home.html')===($actor==='admin'), 'Only administrators can find Home in Configuration');
+        $check(str_contains($configArea[1], 'href="Admin-home-settings.html"')===($actor==='admin'), 'Only administrators find Home settings in Configuration');
         $management=$request('/Admin-management.html','GET','',$headers);
         $check($management[0]===($actor==='admin'?200:403), 'Only administrators enter Administration');
+        $check(str_contains($management[1], 'href="Admin-management-module-home.html"')===($actor==='admin'), 'Only administrators find Home composition and report in Administration');
         $check(str_contains($configArea[1], 'href="Admin-menu.html"')===($actor==='admin'),
             'Main menu appears only in Configuration for administrators');
         $check(str_contains($configArea[1], 'href="Admin-footer.html"')===($actor==='admin'),
@@ -163,9 +212,44 @@ try {
             'Main menu absent from Administration');
         $check(!str_contains($management[1], 'href="Admin-footer.html"'),
             'Footer menu absent from Administration');
-        foreach (['Admin-config-modules.html', 'Admin-diagnostics.html', 'Admin-safety.html'] as $entry) {
+        foreach (['Admin-configuration-site.html', 'Admin-configuration-module-safety.html'] as $entry) {
             $check(str_contains($configArea[1], 'href="' . $entry . '"') === ($actor === 'admin'), 'Configuration entry: '.$entry);
             $check(!str_contains($management[1], 'href="' . $entry . '"'), 'Entry absent from Administration: '.$entry);
+        }
+        foreach (['Admin-management-module-home.html', 'Admin-configuration-module-safety.html', 'Admin-configuration-site.html', 'Admin-management-module-articles.html'] as $menuRoute) {
+            $menu = $request('/' . $menuRoute, 'GET', '', $headers);
+            $check($menu[0] === ($actor === 'admin' ? 200 : 403), 'Configuration menu permissions: ' . $menuRoute);
+            $posted = $request('/' . $menuRoute, 'POST', '{}', [...$headers, 'Accept: application/json']);
+            $check($posted[0] === ($actor === 'admin' ? 405 : 403), 'Configuration menu refuses POST: ' . $menuRoute);
+            $check($request('/' . $menuRoute)[0] === 403, 'Anonymous configuration menu refused');
+        }
+        if ($actor === 'admin') {
+            $check(substr_count($management[1], 'href="Admin-management-module-articles.html"') === 2, 'Article group appears once on page and once in sidebar');
+            $check(!str_contains($management[1], 'href="Admin-articles-categories.html"'), 'Category leaf is hidden from workspace root');
+            $articleMenu = $request('/Admin-management-module-articles.html', 'GET', '', $headers);
+            $check(str_contains($articleMenu[1], '<h1>Gestion des articles</h1>'), 'Article management menu title');
+            foreach (['categories', 'series', 'order'] as $action) {
+                $check(str_contains($articleMenu[1], 'href="Admin-articles-' . $action . '.html"'), 'Existing article action linked: ' . $action);
+                $leaf = $request('/Admin-articles-' . $action . '.html', 'GET', '', $headers);
+                $check($leaf[0] === 200 && str_contains($leaf[1], 'href="Admin-management-module-articles.html"'), 'Article leaf returns to group: ' . $action);
+            }
+            $check($request('/Admin-management-module-missing.html', 'GET', '', $headers)[0] === 404, 'Unknown management menu returns 404');
+        }
+        if ($actor === 'admin') {
+            $menu = $request('/Admin-management-module-home.html', 'GET', '', $headers);
+            $document = new DOMDocument();
+            @$document->loadHTML($menu[1]);
+            $xpath = new DOMXPath($document);
+            $cards = $xpath->query('//main//a[contains(@class,"management-card")]');
+            $labels = [];
+            foreach ($cards as $card) { $labels[] = trim($card->textContent); }
+            $check($labels === ['Composer l’accueil', 'Résultats de l’accueil'], 'Home management menu exposes composition and results');
+            $sidebar = $xpath->query('//aside//a[contains(@href,"Admin-management-module-home")]');
+            $check($sidebar->length === 1, 'Home appears once in the Administration sidebar');
+            $check($request('/Admin-configuration-module-missing.html', 'GET', '', $headers)[0] === 404,
+                'Unknown configuration module is not a menu');
+            $leaf = $request('/Admin-home-settings.html', 'GET', '', $headers);
+            $check($leaf[0] === 200 && str_contains($leaf[1], 'Admin-home-settings.html'), 'Home settings remain directly accessible in Configuration');
         }
         foreach (['Admin-config-modules.html', 'Admin-modmgr.html'] as $managerRoute) {
             $manager = $request('/'.$managerRoute, 'GET', '', $headers);
@@ -220,6 +304,11 @@ try {
         $staffHome=$request('/','GET','',$headers);
         $check(!str_contains($staffHome[1],'home/assets/home.js'),'Staff measurement excluded');
     }
+    $reviewChange->execute([(string) $reviewArticle['status'], $reviewId]);
+    $dashboardAfterReview = $request('/Admin.html', 'GET', '', $auth);
+    $check($dashboardAfterReview[0] === 200, 'Administrator dashboard remains available after relecture');
+    $check(str_contains($dashboardAfterReview[1], 'href="Admin-articles.html?state=pending"') === ($beforePending > 0),
+        'Dashboard alert disappears when the last request is handled');
     // The preceding HTTP exercises may generate real minimal measurements.
     // Reset only this isolated fixture so the empty-dashboard assertion remains
     // deterministic across PHP versions and request timings.
@@ -324,6 +413,8 @@ try {
     }
     $db->connection()->exec("UPDATE modules SET enabled=0 WHERE prefix='home'");
     $check($request('/')[0]===404 && $request('/home-events.html','POST',json_encode($event),['Content-Type: application/json'])[0]===404,'Disabled module does not render or collect');
+    $check($request('/Admin-configuration-module-home.html', 'GET', '', $auth)[0] === 404,
+        'Disabled module menu is not accessible to the administrator');
     echo "Accueil HTTP : public, rôles, CSRF, persistance, signature, port local et absence de nouveau cookie : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR,$error->getMessage()."\n");

@@ -151,6 +151,59 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         }
       }
       if (actor === 'admin') {
+        await tab.goto(base + '/Admin-management.html');
+        assert.equal(await tab.locator('main a[href="Admin-management-module-articles.html"]').count(), 1);
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-management-module-articles.html"]').count(), 1);
+        assert.equal(await tab.locator('main a[href="Admin-articles-categories.html"]').count(), 0);
+        await tab.locator('main').getByRole('link', {name: 'Gestion des articles', exact: true}).press('Enter');
+        await tab.waitForURL('**/Admin-management-module-articles.html');
+        await tab.locator('main .management-card svg').first().waitFor();
+        for (const width of [1280, 375, 320]) {
+          await tab.setViewportSize({width, height: 850});
+          assert.equal(await tab.locator('main .management-card').count(), 3);
+          assert.equal(await tab.locator('main .management-card svg').count(), 3);
+          assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+          if (process.env.HOME_SCREENSHOT_DIR) {
+            await tab.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, 'management-articles-' + width + '.png'), fullPage: true});
+          }
+        }
+        await tab.locator('main a[href="Admin-articles-categories.html"]').press('Enter');
+        await tab.waitForURL('**/Admin-articles-categories.html');
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-management-module-articles.html"]').getAttribute('aria-current'), 'location');
+        await tab.locator('.ux-breadcrumb a[href="Admin-management-module-articles.html"]').press('Enter');
+        await tab.waitForURL('**/Admin-management-module-articles.html');
+        await tab.goto(base + '/Admin-configuration.html');
+        const configurationCards = tab.locator('main .management-card');
+        const componentUrls = await configurationCards.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
+        assert.equal(componentUrls.length, new Set(componentUrls).size, 'Configuration has unique component entries');
+        assert.equal(await tab.locator('main a[href="Admin-home-settings.html"]').count(), 1, 'Home settings appear once in Configuration');
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-home-settings.html"]').count(), 1, 'Home settings appear once in the Configuration sidebar');
+        await tab.locator('main a[href="Admin-home-settings.html"]').press('Enter');
+        await tab.waitForURL('**/Admin-home-settings.html');
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-home-settings.html"]').getAttribute('aria-current'), 'location');
+        await tab.goto(base + '/Admin-management.html');
+        assert.equal(await tab.locator('main a[href="Admin-management-module-home.html"]').count(), 1, 'One Home entry in Administration');
+        await tab.locator('main a[href="Admin-management-module-home.html"]').press('Enter');
+        await tab.waitForURL('**/Admin-management-module-home.html');
+        assert.deepEqual(await tab.locator('main .management-card strong').allTextContents(), ['Composer l’accueil', 'Résultats de l’accueil']);
+        for (const [url, count] of [
+          ['Admin-management-module-home.html', 2],
+          ['Admin-configuration-module-safety.html', 2],
+          ['Admin-configuration-site.html', 7]
+        ]) {
+          for (const width of [1280, 375, 320]) {
+            await tab.setViewportSize({width, height: 850});
+            assert.equal((await tab.goto(base + '/' + url)).status(), 200);
+            assert.equal(await tab.locator('main .management-card').count(), count, url + ' lists its functions');
+            assert.equal(await tab.locator('main .management-card svg').count(), count, url + ' gives each action an icon');
+            assert.equal(await tab.locator('main h1').count(), 1, 'Module menu has one main heading');
+            assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), url + ' fits at ' + width);
+            if (process.env.HOME_SCREENSHOT_DIR) {
+              await tab.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, url + '-' + width + '.png'), fullPage: true});
+            }
+          }
+        }
+        await tab.setViewportSize({width: 320, height: 800});
         for (const url of ['/Admin-users.html', '/Admin-users-new.html', '/Admin-users-edit-editor.html',
           '/Admin-config-modules.html', '/Admin-config-updates.html']) {
           assert.equal((await tab.goto(base + url)).status(), 200, url + ' is accessible');

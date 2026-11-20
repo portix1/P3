@@ -11,6 +11,7 @@ use RuntimeException;
 use Throwable;
 
 require_once __DIR__ . '/SeriesAdminController.php';
+require_once __DIR__ . '/ArticleReviewPolicy.php';
 
 final class ArticleAdminController
 {
@@ -62,7 +63,8 @@ final class ArticleAdminController
             $this->deleteArticle($arguments, $user);
         }
         if ($action === 'status') {
-            $this->changeArticleStatus($arguments, $user);
+            $this->changeArticleStatus($template, $arguments, $user);
+            return;
         }
         if ($action === 'preview') {
             $this->previewArticle($arguments, $user);
@@ -151,6 +153,14 @@ final class ArticleAdminController
 
 
         foreach ($visibleRows as $row) {
+            // Fetch only this page's articles so content and action version agree.
+            $current = $this->articles->find((int) $row['id']);
+            if ($current === null || !$this->allowed($user, 'edit', $current,
+                $current['category_id'] === null ? null : (int) $current['category_id'])) {
+                continue;
+            }
+            $row = array_replace($row, $current);
+            $version = ArticleReviewPolicy::version($current);
             $status = (string) $row['status'];
             $published = $status === 'published';
             $pending = $status === 'pending';
@@ -171,6 +181,7 @@ final class ArticleAdminController
             }
             $template->addRow('articlerow', [
                 'id' => (string) $row['id'],
+                'version' => $version,
                 'edit_url' => ArticleListPagination::editorUrl((int)$row['id'], $pagination['page'], $state, $query),
                 'title' => (string) $row['title'],
                 'slug' => (string) $row['slug'],
@@ -289,8 +300,12 @@ final class ArticleAdminController
                 if (!in_array($requestedStatus, ['draft', 'published'], true)) {
                     throw new RuntimeException('articles_invalid_status');
                 }
-                // Changes to an article awaiting review require a new request.
-                $status = ($existing['status'] ?? '') === 'pending' ? 'draft' : $requestedStatus;
+                // Editors requiring review may submit the saved article directly.
+                // An ordinary save of a pending article still returns it to draft.
+                $requestReview = isset($_POST['submit_review']) && !$user->isAdmin()
+                    && !$user->articlePermissions()['publish'];
+                $status = $requestReview ? 'pending'
+                    : (($existing['status'] ?? '') === 'pending' ? 'draft' : $requestedStatus);
                 if (!$this->allowed($user, 'edit', $existing, $categoryId)
                     || (($status === 'published' || ($existing['status'] ?? '') === 'published') && !$this->allowed($user, 'publish', $existing, $categoryId))) {
                     throw new RuntimeException('security_access_denied');
@@ -377,7 +392,7 @@ final class ArticleAdminController
                 });
                 // Saving the article replaces its private recovery copy.
                 $this->articles->autosaves()->delete($user->pseudo(), $id ?? 0);
-                header('Location: ' . $returnUrl, true, 303);
+                header('Location: ' . ($requestReview ? 'Admin-articles.html?state=pending' : $returnUrl), true, 303);
                 exit;
             } catch (RuntimeException $error) {
                 $message = $this->translator->exception($error);
@@ -548,30 +563,44 @@ final class ArticleAdminController
     }
 
     /** @param list<string> $arguments */
-    private function changeArticleStatus(array $arguments, UserAccount $user): never
+    private function changeArticleStatus(\Portix\View\Template $template, array $arguments, UserAccount $user): void
     {
         \PortixSecurity::requirePostWithCsrf();
         $status = is_scalar($_POST['status'] ?? null) ? (string) $_POST['status'] : '';
         $id = $this->numericId($arguments[3] ?? null);
-        $existing = $this->articles->find($id);
-        if ($existing === null) { throw new RuntimeException('articles_not_found'); }
-        $current = (string) $existing['status'];
-        $categoryId = $existing['category_id'] === null ? null : (int) $existing['category_id'];
-        $canPublish = $this->allowed($user, 'publish', $existing, $categoryId);
-        $canEdit = $this->allowed($user, 'edit', $existing, $categoryId);
-        require_once __DIR__ . '/ArticleReviewPolicy.php';
-        $note = ArticleReviewPolicy::transition(
-            $current, $status, $user->isAdmin(), $canEdit, $canPublish,
-            (string) ($_POST['review_note'] ?? '')
-        );
 
-        $this->articles->transaction(function () use ($id, $existing, $user, $status, $note): void {
-            if ($this->safety !== null) {
-                $this->safety->captureRevision('article', $id, $existing, $user->pseudo());
+        try {
+            $this->articles->transaction(function () use ($id, $user, $status): void {
+                // Read, compare, check permissions and write in the same transaction.
+                $existing = $this->articles->find($id);
+                if ($existing === null) {
+                    throw new RuntimeException('articles_review_changed');
+                }
+                $categoryId = $existing['category_id'] === null ? null : (int) $existing['category_id'];
+                $canPublish = $this->allowed($user, 'publish', $existing, $categoryId);
+                $canEdit = $this->allowed($user, 'edit', $existing, $categoryId);
+                ArticleReviewPolicy::assertVersion($existing, $_POST['article_version'] ?? null);
+                $note = ArticleReviewPolicy::transition(
+                    (string) $existing['status'], $status, $user->isAdmin(), $canEdit, $canPublish,
+                    (string) ($_POST['review_note'] ?? '')
+                );
+                if ($this->safety !== null) {
+                    $this->safety->captureRevision('article', $id, $existing, $user->pseudo());
+                }
+                $this->articles->updateArticleStatus($id, $status, gmdate('Y-m-d H:i:s'));
+                $this->articles->saveReviewNote($id, $note);
+            });
+        } catch (RuntimeException $error) {
+            $locked = $error instanceof \PDOException && in_array(
+                (int) ($error->errorInfo[1] ?? 0), [5, 6], true
+            );
+            if ($error->getMessage() !== 'articles_review_changed' && !$locked) {
+                throw $error;
             }
-            $this->articles->updateArticleStatus($id, $status, gmdate('Y-m-d H:i:s'));
-            $this->articles->saveReviewNote($id, $note);
-        });
+            http_response_code(409);
+            $template->setSlot('main', './var/modules/articles/templates/review-conflict.tpl');
+            return;
+        }
         header('Location: Admin-articles.html');
         exit;
     }

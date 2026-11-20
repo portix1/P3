@@ -611,6 +611,10 @@ $_LANG['extension_updates_none'] = 'Aucune mise à jour trouvée pour les extens
 $_LANG['extension_updates_found'] = 'Mises à jour disponibles.';
 $_LANG['extension_updates_failed'] = 'La vérification a échoué. Rechargez la page et réessayez.';
 
+$_LANG['dashboard_review_heading'] = 'Articles à valider';
+$_LANG['dashboard_review_one'] = '%d article attend votre validation.';
+$_LANG['dashboard_review_many'] = '%d articles attendent votre validation.';
+$_LANG['dashboard_review_action'] = 'Examiner les demandes';
 $_LANG['dashboard_update_one'] = '%d mise à jour disponible';
 $_LANG['dashboard_update_many'] = '%d mises à jour disponibles';
 
@@ -675,3 +679,9 @@ $_LANG['core_update_current'] = 'Version installée';
 $_LANG['core_update_available'] = 'Version disponible';
 $_LANG['core_update_none'] = 'P3 est à jour.';
 $_LANG['core_update_unavailable'] = 'Impossible de vérifier la dernière version officielle. Réessayez ultérieurement.';
+
+$_LANG = array_merge($_LANG, [
+    'ux_site_configuration' => 'Configuration du site',
+]);
+
+$_LANG['ux_management_articles'] = 'Gestion des articles';

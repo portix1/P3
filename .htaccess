@@ -21,6 +21,13 @@ RewriteRule ^.*\.(?:phar|phtml|php[0-9]?)$ index.php [L,QSA,NC]
 # encore présent sur le serveur.
 RewriteRule ^(?:sitemap\.xml|robots\.txt|agents\.txt|agents\.json|llms\.txt|sitemap\.txt|feed\.xml|atom\.xml|feed\.json)$ index.php [L,QSA,NC]
 
+# À la racine d’un domaine, utiliser un chemin URL absolu pour le routeur.
+# Sur certains hébergements mutualisés, la cible relative échoue sur les sous-domaines.
+RewriteCond %{REQUEST_URI} ^/[^/]+$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^[A-Za-z0-9_%~-]+(?:-[A-Za-z0-9_.%~-]+)*\.html$ /index.php [L,QSA,NC]
+
 # Les ressources publiques réelles (CSS, images et scripts) sont servies telles quelles.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

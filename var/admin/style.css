@@ -210,6 +210,18 @@ a:hover { text-decoration-thickness: 2px; }
 .metric-value { display: block; color: var(--accent-dark); font-size: 2rem; font-weight: 800; line-height: 1.1; }
 .metric-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+.dashboard-review-notice {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--admin-line);
+    border-left: 4px solid var(--admin-ink);
+    border-radius: var(--radius);
+    background: var(--surface);
+}
+.dashboard-review-notice h2 { margin: 0 0 .3rem; font-size: 1.1rem; }
+.dashboard-review-notice p { margin: .3rem 0; }
+.dashboard-review-notice a { font-weight: 700; }
+
 .quick-actions { margin-top: 1rem; }
 .quick-actions h2,
 .admin-section h2 { margin: 0 0 1rem; font-size: 1.15rem; }
