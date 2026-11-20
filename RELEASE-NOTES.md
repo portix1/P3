@@ -1,3 +1,14 @@
+# P3 0.9.11 — candidate de validation avant 1.0.0
+
+Candidate complète construite sur la 0.9.10 consolidée. Elle préserve les correctifs d'installation, de routage et de protection des validations d'articles obsolètes.
+
+- Administration : Affiliation, Téléchargements, composition de l'accueil et résultats ; réglages de l'accueil en Configuration.
+- Rédaction : possibilité pour un rédacteur soumis à relecture d'enregistrer un article et de demander sa publication directement depuis le formulaire, sans autorisation de publication directe.
+- Articles 1.4.11 et Accueil 1.1.2 ; versions de candidate incluses dans le paquet complet.
+- Corrections d'accessibilité, tests de navigation, notices et guides actualisés.
+
+**Statut : candidate non publiée.** Cette version ne devient 1.0.0 qu'après validation explicite de la candidate et nouvelle vérification de l'archive et de sa signature. Ne pas utiliser sur un site en production sans sauvegarde préalable et essai sur une copie.
+
 # P3 0.9.10 — archive regroupée pour essais locaux
 
 Archive complète de test. Inclut les correctifs d’installation et du .htaccess, la protection des actions de relecture, le regroupement de Configuration par module, les consignes consolidées et le correctif Téléchargements 1.0.1 en Administration, avec catégories facultatives et liens courts. Articles 1.4.10 et Accueil 1.1.1 sont inclus.
