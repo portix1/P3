@@ -20,8 +20,16 @@ try {
             $name = trim((string) ($_POST['name'] ?? ''));
             $slug = Slugger::fromText($name, 'categorie');
             $library->createCategory($name, $slug, '');
-            $view = 'new';
+            $view = 'categories';
             $message = $translator->text('dl2_saved');
+        } elseif ($action === 'update_category' && $id !== false) {
+            $library->updateCategory((int) $id, (string) ($_POST['name'] ?? ''), dl2Description((string) ($_POST['description'] ?? '')));
+            $view = 'categories';
+            $message = $translator->text('dl2_saved');
+        } elseif ($action === 'delete_category' && $id !== false) {
+            $library->deleteCategory((int) $id);
+            $view = 'categories';
+            $message = $translator->text('dl2_deleted');
         } elseif ($action === 'create') {
             $stored = $storage->storeUpload((array) ($_FILES['file'] ?? []));
             try {
@@ -120,6 +128,19 @@ if ($view === 'new' || $view === 'edit') {
         ]);
     }
     $template->setSlot('main', './var/modules/download2/templates/form.tpl');
+    return;
+}
+
+if ($view === 'categories') {
+    $template->setSlot('main', './var/modules/download2/templates/categories.tpl');
+    foreach ($library->categories() as $category) {
+        $template->addRow('dl2_category_row', [
+            'id'=>(string)$category['id'], 'name'=>(string)$category['name'],
+            'description'=>(string)$category['description'],
+            'usage'=>(string)$library->categoryUsage((int)$category['id']),
+            'can_delete'=>$library->categoryUsage((int)$category['id']) === 0 ? '1' : '0',
+        ]);
+    }
     return;
 }
 
