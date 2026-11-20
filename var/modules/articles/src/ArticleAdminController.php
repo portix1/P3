@@ -381,7 +381,7 @@ final class ArticleAdminController
                 });
                 // Saving the article replaces its private recovery copy.
                 $this->articles->autosaves()->delete($user->pseudo(), $id ?? 0);
-                header('Location: ' . $returnUrl, true, 303);
+                header('Location: ' . ($requestReview ? 'Admin-articles.html?state=pending' : $returnUrl), true, 303);
                 exit;
             } catch (RuntimeException $error) {
                 $message = $this->translator->exception($error);
