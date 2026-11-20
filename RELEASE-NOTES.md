@@ -1,3 +1,9 @@
+# P3 0.9.10 — archive regroupée pour essais locaux
+
+Archive complète de test. Inclut les correctifs d’installation et du .htaccess, la protection des actions de relecture, le regroupement de Configuration par module, les consignes consolidées et le correctif Téléchargements 1.0.1 en Administration, avec catégories facultatives et liens courts. Articles 1.4.10 et Accueil 1.1.1 sont inclus.
+
+Le test de sécurité des téléchargements utilise désormais la nouvelle adresse attendue par le template. Le code publié et les versions de test restent distingués. La refonte complète de Téléchargements conserve son cadrage ultérieur.
+
 # En préparation — Configuration par module
 
 - Une seule entrée par composant dans Configuration et son menu latéral. Les composants à plusieurs fonctions ouvrent une page-menu, les fonctions uniques restent directement accessibles.

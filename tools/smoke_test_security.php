@@ -160,6 +160,7 @@ try {
     $template->set('times', 'fois');
     $template->addRow('downloadfile', [
         'id' => '7',
+        'url' => 'dwl-fichier-7-guide-portix.html',
         'title' => 'Guide Portix',
         'description' => 'Guide de test',
         'mime_type' => 'application/pdf',
@@ -169,7 +170,7 @@ try {
     ]);
     $rendered = $template->render();
     if (strpos($rendered, 'Guide Portix') === false
-        || strpos($rendered, 'download.php?id=7') === false
+        || strpos($rendered, 'dwl-fichier-7-guide-portix.html') === false
         || str_contains($rendered, '{%')) {
         throw new RuntimeException('Un fichier publié ne figure pas dans sa catégorie publique.');
     }

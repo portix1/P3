@@ -6,6 +6,7 @@ $_LANG = array_merge($_LANG, [
     'size' => 'Size',
     'downloads_public_intro' => 'Documents and files made available by the site.',
     'downloads_files_count' => 'file(s)',
+    'downloads_no_category' => 'Uncategorized',
     'downloads_all_categories' => 'All categories',
     'downloads_no_files' => 'No published file in this category.',
     'downloads_format' => 'Format',

@@ -94,6 +94,16 @@ try {
     serviceAssertTrue(is_file($storage->path((string) $download['stored_name'])), 'stockage privé');
     $repositories->downloads()->incrementCounter($downloadId);
     serviceAssertSame(1, (int) $repositories->downloads()->find($downloadId)['download_count'], 'compteur de téléchargement');
+    serviceAssertSame([$downloadId], array_column($repositories->downloads()->publishedForCategory($categoryId), 'id'), 'fichier publié dans sa catégorie');
+    $otherId = $repositories->downloads()->create([
+        ...$stored, 'category_id' => null, 'title' => 'Autre fichier', 'description' => '', 'status' => 'published',
+    ]);
+    $draftId = $repositories->downloads()->create([
+        ...$stored, 'category_id' => null, 'title' => 'Brouillon', 'description' => '', 'status' => 'draft',
+    ]);
+    serviceAssertSame([$otherId], array_column($repositories->downloads()->publishedForCategory(null), 'id'), 'seuls les fichiers hors catégorie publiés sont listés');
+    $repositories->downloads()->delete($draftId);
+    $repositories->downloads()->delete($otherId);
     $storage->delete((string) $download['stored_name']);
     $repositories->downloads()->delete($downloadId);
 

@@ -26,7 +26,7 @@ try {
     foreach (glob($root . '/var/modules/*/desc.xml') ?: [] as $file) {
         $definition = ModuleManifest::fromXml($file, basename(dirname($file)));
         // Exercise opt-in modules in their enabled state, without changing shipped defaults.
-        if ($definition['prefix'] === 'home') { $definition['enabled'] = true; }
+        if (in_array($definition['prefix'], ['home', 'dwl'], true)) { $definition['enabled'] = true; }
         $modules[] = $definition;
     }
     $sections = AdminNavigation::sections($root, $modules, true, false, ['Admin', 'news'], $translator);
@@ -38,6 +38,9 @@ try {
             navigationCheck(in_array('Admin-' . $module['prefix'] . '.html', $urls, true), 'Module administrable absent du menu : ' . $module['prefix']);
         }
     }
+
+    navigationCheck(in_array('Admin-dwl.html', array_column($sections['management'], 'url'), true), 'Téléchargements dans Administration');
+    navigationCheck(!in_array('Admin-dwl.html', array_column($sections['writing'], 'url'), true), 'Téléchargements absents de Rédaction');
 
     $moduleManager = AdminNavigation::sections($root, $modules, true, false, ['Admin', 'modmgr'], $translator);
     $managerEntry = array_values(array_filter($moduleManager['configuration'], static fn (array $item): bool => $item['url'] === 'Admin-config-modules.html'));
