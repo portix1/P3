@@ -3433,6 +3433,12 @@
             });
             source.value = semanticHtml(quill);
             enhanceLinkTooltip(quill);
+            // Stable extension point for optional editor integrations.
+            // Consumers must be loaded only when their module is enabled.
+            wrapper.p3Quill = quill;
+            wrapper.dispatchEvent(new CustomEvent('p3:editor-ready', {
+                bubbles: true, detail: { quill: quill }
+            }));
 
             surface.addEventListener('paste', function (event) {
                 var files = clipboardImages(event);
