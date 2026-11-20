@@ -75,6 +75,11 @@ try {
     }
     navigationCheck(in_array('Admin-contact.html', array_column($sections['management'], 'url'), true),
         'Messagerie Contact en Administration');
+    navigationCheck(in_array('Admin-affiliation.html', array_column($sections['management'], 'url'), true),
+        'Affiliation présente en Administration');
+    navigationCheck(!in_array('Admin-affiliation.html', array_column($sections['writing'], 'url'), true),
+        'Affiliation absente de Rédaction');
+
 
     $news = array_values(array_filter($sections['writing'], static fn (array $item): bool => $item['url'] === 'Admin-news.html'));
     navigationCheck(count($news) === 1 && $news[0]['current'] === 'is-current', 'Actualités doit être présent et actif en Rédaction');
