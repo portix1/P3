@@ -157,6 +157,7 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         assert.equal(await tab.locator('main a[href="Admin-articles-categories.html"]').count(), 0);
         await tab.locator('main').getByRole('link', {name: 'Gestion des articles', exact: true}).press('Enter');
         await tab.waitForURL('**/Admin-management-module-articles.html');
+        await tab.locator('main .management-card svg').first().waitFor();
         for (const width of [1280, 375, 320]) {
           await tab.setViewportSize({width, height: 850});
           assert.equal(await tab.locator('main .management-card').count(), 3);
