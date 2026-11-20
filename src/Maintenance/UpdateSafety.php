@@ -203,7 +203,7 @@ final class UpdateSafety
                 $root . '/' . SiteConfiguration::load($root)->databasePath(),
                 $partial . '/database/portix2.sqlite'
             );
-            self::copyTree($root . '/var/sys', $partial . '/var/sys', ['maintenance.lock']);
+            self::copyTree($root . '/var/sys', $partial . '/var/sys', ['maintenance.lock', 'core-update.lock']);
             self::copyTree($root . '/var/uploads/images', $partial . '/var/uploads/images');
             self::copyTree(
                 $root . '/var/private',
@@ -275,7 +275,7 @@ final class UpdateSafety
         if(!mkdir($partial,0700,true)&&!is_dir($partial)) throw new RuntimeException('Impossible de préparer le point de restauration.');
         try {
             self::snapshotDatabase($root.'/'.SiteConfiguration::load($root)->databasePath(),$partial.'/database/portix2.sqlite');
-            self::copyTree($root.'/var/sys',$partial.'/var/sys',['maintenance.lock']);
+            self::copyTree($root.'/var/sys',$partial.'/var/sys',['maintenance.lock', 'core-update.lock']);
             self::copyTree($root.'/var/uploads/images',$partial.'/var/uploads/images');
             self::copyTree($root.'/var/private',$partial.'/var/private',['update-backups','core-update-staging']);
             if(is_dir($root.'/download')) self::copyTree($root.'/download',$partial.'/download');
@@ -489,7 +489,7 @@ final class UpdateSafety
             ? (int) filesize($root . '/' . SiteConfiguration::load($root)->databasePath())
             : 0;
         foreach ([
-            [$root . '/var/sys', ['maintenance.lock']],
+            [$root . '/var/sys', ['maintenance.lock', 'core-update.lock']],
             [$root . '/var/uploads/images', []],
             [$root . '/var/private', ['update-backups','core-update-staging']],
             [$root . '/download', []],
