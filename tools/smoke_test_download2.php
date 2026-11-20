@@ -32,9 +32,17 @@ $id = $library->create([
     'sha256'=>str_repeat('b',64), 'status'=>'draft',
 ]);
 dl2Assert($library->published() === [], 'brouillon invisible');
+$repo->modules()->setEnabled('dl2', true);
+$resolver = new \Portix\Module\PublicRouteResolver($root, $db->connection());
+$modules = $repo->modules()->allOrdered();
+dl2Assert($resolver->resolve('download', $modules) === ['dl2'], 'slug public download');
+dl2Assert($resolver->resolve('download-catalog', $modules) === ['dl2', 'catalog'], 'catalogue public');
+dl2Assert($resolver->resolve('download-file-'.$id, $modules) === null, 'brouillon sans route publique');
+
 $library->update($id, ['status'=>'published']);
 $published = $library->published();
 dl2Assert(count($published)===1 && (int)$published[0]['id']===$id, 'publication du document');
+dl2Assert($resolver->resolve('download-file-'.$id, $modules) === ['dl2','file',(string)$id], 'route d’un fichier publié');
 dl2Assert(!array_key_exists('download_count', $published[0]), 'aucun compteur dans les données publiques');
 dl2Assert(!array_key_exists('stored_name', $published[0]), 'aucune adresse de stockage dans les données publiques');
 $library->increment($id);
@@ -42,6 +50,7 @@ $library->increment($id);
 dl2Assert((int)$library->find($id)['download_count']===2, 'compteur administratif');
 $library->update($id, ['status'=>'draft']);
 dl2Assert($library->published()===[], 'dépublication immédiate');
+dl2Assert($resolver->resolve('download-file-'.$id, $modules) === null, 'route supprimée après dépublication');
 $library->increment($id);
 dl2Assert((int)$library->find($id)['download_count']===2, 'pas de comptage pour brouillon');
 $category=$library->createCategory('Notices','notices');
