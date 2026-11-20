@@ -39,7 +39,7 @@ final class AdminNavigation
             'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
             'media' => ['writing', 'images'], 'menu' => ['configuration', 'menu'],
             'footer' => ['configuration', 'panel-bottom'], 'dwl' => ['writing', 'download'],
-            'affiliation' => ['writing', 'dollar-sign'], 'contact' => ['management', 'mail'],
+            'affiliation' => ['management', 'dollar-sign'], 'contact' => ['management', 'mail'],
             'insights' => ['management', 'chart-bar'], 'search' => ['management', 'search'],
             'safety' => ['configuration', 'triangle-alert'],
         ];
