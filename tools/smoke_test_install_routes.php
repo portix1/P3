@@ -7,6 +7,8 @@ if (PHP_SAPI !== 'cli') {
 }
 
 $source = dirname(__DIR__);
+require $source . '/bootstrap/autoload.php';
+require $source . '/var/modules/articles/src/ArticleRepository.php';
 $temporary = sys_get_temp_dir() . '/p3-install-routes-' . bin2hex(random_bytes(6));
 mkdir($temporary, 0770, true);
 $server = null;
@@ -117,6 +119,69 @@ try {
         foreach (['Admin.html', 'Admin-writing.html', 'Admin-management.html', 'Admin-configuration.html'] as $route) {
             installRouteCheck($request('/' . $route)[0] === 200, 'Administrator can open ' . $route);
         }
+        $configuration = json_decode((string) file_get_contents($site . '/var/sys/config.json'), true, 512, JSON_THROW_ON_ERROR);
+        $database = new Portix\Infrastructure\Database($site . '/database/' . $configuration['database_file']);
+        $articles = new PortixModule\Articles\ArticleRepository($database->connection());
+        $now = gmdate('Y-m-d H:i:s');
+        $articleId = $articles->createArticle(null, 'Review regression', 'review-regression', '<p>Original text</p>',
+            'pending', 'admin', null, $now);
+        $reviewForm = static function () use ($request, $articleId): array {
+            $page = $request('/Admin-articles.html?state=pending');
+            installRouteCheck($page[0] === 200, 'Pending review list is accessible.');
+            $document = new DOMDocument();
+            @$document->loadHTML($page[1]);
+            $xpath = new DOMXPath($document);
+            $inputs = $xpath->query('//form[@action="Admin-articles-status-' . $articleId . '.html"]//input');
+            $values = [];
+            foreach ($inputs as $input) {
+                $values[$input->getAttribute('name')] = $input->getAttribute('value');
+            }
+            installRouteCheck(isset($values['csrf_token'], $values['article_version']), 'Review form identifies its article version.');
+            return $values;
+        };
+        $stale = $reviewForm();
+        // Change and resubmit within the same timestamp, which defeats date-only checks.
+        $articles->updateArticle($articleId, null, 'Review regression', 'review-regression', '<p>Changed text</p>',
+            'draft', null, $now);
+        $articles->updateArticleStatus($articleId, 'pending', $now);
+        $currentArticle = $articles->find($articleId);
+        $statusPath = '/Admin-articles-status-' . $articleId . '.html';
+        $conflict = $request($statusPath, [...$stale, 'status' => 'published']);
+        installRouteCheck($conflict[0] === 409 && str_contains($conflict[1], 'Relecture à actualiser'),
+            'Stale approval is refused after modification and resubmission.');
+        installRouteCheck($articles->find($articleId) === $currentArticle, 'Stale approval preserves every article field.');
+        installRouteCheck($request('/review-regression.html')[0] === 404, 'Changed article remains private.');
+        installRouteCheck($request($statusPath, [...$stale, 'status' => 'draft', 'review_note' => 'Old feedback'])[0] === 409,
+            'Stale return for correction is refused too.');
+        $fresh = $reviewForm();
+        $withoutVersion = $fresh;
+        unset($withoutVersion['article_version']);
+        installRouteCheck($request($statusPath, [...$withoutVersion, 'status' => 'published'])[0] === 409,
+            'An older form without a version must be reloaded.');
+        installRouteCheck($request($statusPath, [...$fresh, 'article_version' => 'forged', 'status' => 'published'])[0] === 409,
+            'An invalid version is refused.');
+        installRouteCheck($articles->find($articleId) === $currentArticle, 'Refused actions preserve pending content and feedback.');
+        if ($prefix === '') {
+            $connection = $database->connection();
+            $connection->beginTransaction();
+            $connection->exec("UPDATE articles SET title = title WHERE id = " . $articleId);
+            try {
+                installRouteCheck($request($statusPath, [...$fresh, 'status' => 'published'])[0] === 409,
+                    'A concurrent SQLite writer prevents publication without a server error.');
+            } finally {
+                $connection->rollBack();
+            }
+            installRouteCheck($articles->find($articleId) === $currentArticle, 'A lock conflict preserves the pending article.');
+            $connection = null;
+        }
+        installRouteCheck($request($statusPath, [...$fresh, 'status' => 'published'])[0] === 302,
+            'Fresh approval publishes the current article.');
+        installRouteCheck($articles->find($articleId)['status'] === 'published' && $request('/review-regression.html')[0] === 200,
+            'The approved version is public.');
+        installRouteCheck($request($statusPath, [...$fresh, 'status' => 'published'])[0] === 409,
+            'A repeated approval is refused.');
+        $articles = null;
+        $database = null;
         installRouteCheck($request('/var/templates/modern/style.min.css')[0] === 200, 'Public CSS is accessible.');
         installRouteCheck($request('/unknown-install-test.html')[0] === 404, 'Unknown page returns 404.');
         installRouteCheck($request('/install.php')[0] === 200, 'Installed site refuses a new installation gracefully.');

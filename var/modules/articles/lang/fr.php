@@ -189,3 +189,9 @@ $_LANG['articles_page_next'] = 'Page suivante';
 $_LANG['articles_optional_metadata'] = 'Auteur et image principale';
 $_LANG['articles_optional_metadata_help'] = 'Champs facultatifs. Sans indication, P3 utilise l’auteur du site et la première image de l’article.';
 
+
+$_LANG = array_merge($_LANG, [
+    'articles_review_conflict_title' => 'Relecture à actualiser',
+    'articles_review_changed' => 'Cet article a changé ou une autre action est en cours. Rechargez la liste et relisez la version actuelle avant de réessayer.',
+    'articles_review_reload' => 'Revenir à la liste des articles',
+]);

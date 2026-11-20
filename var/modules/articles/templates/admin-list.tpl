@@ -48,6 +48,7 @@
         <div class="news-row-actions article-row-actions">
             {% if articlerow.can_publish == "1" %}<form method="post" action="Admin-articles-status-{{ articlerow.id }}.html" class="inline-action article-action-slot">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                <input type="hidden" name="article_version" value="{{ articlerow.version }}" />
                 <input type="hidden" name="status" value="{{ articlerow.next_status }}" />
                 <button class="button {{ articlerow.status_action_class }}" type="submit">{{ articlerow.status_action }}</button>
             </form>{% endif %}
@@ -55,6 +56,7 @@
                 <summary>{{ articles_review_send_back }}</summary>
                 <form method="post" action="Admin-articles-status-{{ articlerow.id }}.html" class="article-review-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                <input type="hidden" name="article_version" value="{{ articlerow.version }}" />
                 <input type="hidden" name="status" value="draft" />
                 <label>{{ articles_review_note_label }}
                     <textarea name="review_note" rows="2" maxlength="2000" required></textarea>

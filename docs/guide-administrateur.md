@@ -21,7 +21,7 @@ Avec la relecture obligatoire, le rédacteur soumet ses articles avant la mise e
 
 ## Relire un article
 
-Dans **Rédaction → Articles**, utilisez **Voir les demandes** ou filtrez les articles sur **En attente de relecture**. Ouvrez l’article et vérifiez son aperçu si nécessaire. Dans la liste, **Accepter et publier** met la version enregistrée en ligne. **Renvoyer pour correction** demande un commentaire et remet l’article en brouillon. Le rédacteur pourra soumettre une nouvelle version.
+Dans **Rédaction → Articles**, utilisez **Voir les demandes** ou filtrez les articles sur **En attente de relecture**. Ouvrez l’article et vérifiez son aperçu si nécessaire. Dans la liste, **Accepter et publier** met en ligne la version associée à cette liste. Si l’article a changé entre-temps, P3 refuse l’action et vous invite à recharger la liste et à relire la version actuelle. Cette vérification s’applique aussi au retour pour correction. **Renvoyer pour correction** demande un commentaire et remet l’article en brouillon. Le rédacteur pourra soumettre une nouvelle version.
 
 ## Installer une mise à jour
 

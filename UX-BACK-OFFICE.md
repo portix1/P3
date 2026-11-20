@@ -82,3 +82,7 @@ La migration du socle SQLite ajoute `review_note` (texte facultatif) à la table
 Critère pratique de vérification : un rédacteur peut créer un brouillon, demander sa publication et retrouver une éventuelle demande de correction sans devoir comprendre des termes techniques. La refonte générale de la fiche utilisateur, l’ordre des champs de l’éditeur, le tableau de bord et les liens des thèmes restent des travaux distincts à vérifier en navigateur.
 
 Sur petit écran, ouvrez le menu avec Entrée ou Espace. Le focus passe au premier lien du menu. Échap referme le menu et replace le focus sur son bouton.
+
+## Relecture et listes restées ouvertes
+
+Les actions de changement d’état portent l’empreinte de la version affichée. P3 compare cette empreinte au contenu enregistré dans la transaction qui effectue la transition. Une modification, une nouvelle soumission ou une action déjà effectuée invalide l’ancien formulaire si la version enregistrée diffère. Un refus HTTP 409 invite à recharger la liste et à relire la version actuelle. Les formulaires ouverts avant cette mise à jour doivent être rechargés.
