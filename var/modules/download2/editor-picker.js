@@ -50,7 +50,7 @@
             dialog.showModal();
             search.focus();
             try {
-                var response = await fetch('dl2-catalog.html', { credentials: 'same-origin', cache: 'no-store' });
+                var response = await fetch('download-catalog.html', { credentials: 'same-origin', cache: 'no-store' });
                 if (!response.ok) { throw new Error('download catalogue unavailable'); }
                 var payload = await response.json();
                 var files = Array.isArray(payload.files) ? payload.files : [];
@@ -73,7 +73,7 @@
                             var text = String(file.title).trim();
                             if (!text) { return; }
                             if (length) { quill.deleteText(index, length, 'user'); }
-                            quill.insertText(index, text, { link: 'dl2-file-' + file.id + '.html' }, 'user');
+                            quill.insertText(index, text, { link: 'download-file-' + file.id + '.html' }, 'user');
                             quill.insertText(index + text.length, ' ', 'user');
                             quill.setSelection(index + text.length + 1, 0, 'silent');
                             close();

@@ -146,7 +146,15 @@ if ($view === 'categories') {
 
 $template->setSlot('main', './var/modules/download2/templates/admin.tpl');
 foreach ($library->allForAdmin() as $item) {
+    $fileMissing = false;
+    try {
+        $onDisk = $storage->path((string)$item['stored_name']);
+        $fileMissing = !is_file($onDisk) || is_link($onDisk);
+    } catch (Throwable) {
+        $fileMissing = true;
+    }
     $template->addRow('dl2_admin_file', [
+        'storage_warning' => $fileMissing ? $translator->text('dl2_missing_storage') : '',
         'id'=>(string)$item['id'], 'title'=>(string)$item['title'],
         'category'=>(string)($item['category_name'] ?? $translator->text('dl2_without_category')),
         'status'=>$translator->text('dl2_' . $item['status']),

@@ -45,9 +45,9 @@ foreach ($library->published() as $file) {
         'description' => (string) $file['description'],
         'category' => (string) ($file['category_name'] ?? ''),
         'size' => number_format((int)$file['size_bytes'] / 1024, 0, ',', ' ') . ' Kio',
-        'url' => 'dl2-file-' . (int) $file['id'] . '.html',
+        'url' => 'download-file-' . (int) $file['id'] . '.html',
     ]);
     $count++;
 }
 $template->set('dl2_has_files', $count ? '1' : '0');
-$pageMetadata->define($translator->text('dl2_title'), $translator->text('dl2_intro'), 'dl2.html');
+$pageMetadata->define($translator->text('dl2_title'), $translator->text('dl2_intro'), 'download.html');
