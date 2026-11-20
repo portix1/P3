@@ -82,8 +82,8 @@
     <script src="var/modules/articles/article-picker.js?v={{ articles_asset_version }}" defer></script>
     <script src="var/modules/articles/series-order.js?v={{ articles_asset_version }}" defer></script>
     {% if dl2_picker_enabled == "1" %}
-    <link rel="stylesheet" href="var/modules/download2/editor-picker.css?v=2.0.0-dev1">
-    <script src="var/modules/download2/editor-picker.js?v=2.0.0-dev1" defer></script>
+    <link rel="stylesheet" href="var/modules/download2/editor-picker.css?v=2.0.0-dev3">
+    <script src="var/modules/download2/editor-picker.js?v=2.0.0-dev3" defer></script>
     {% endif %}
 
     <details class="article-optional-metadata">
