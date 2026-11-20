@@ -159,15 +159,21 @@ Le paquet de base comprend le moteur, les composants indispensables et un thème
 3. **Tester une mise à jour sur une copie existante.** Vérifier la conservation des contenus, comptes, réglages et URL. Tester la sauvegarde et la restauration, y compris avec un nom SQLite personnalisé.
 4. **Préparer la publication.** Vérifier que l’archive testée correspond au code validé et consigner les conditions d’installation et de mise à jour.
 
-## Distribution des extensions
+## Distribution découplée et installeur autonome — décision du 20 novembre 2026
 
-Après validation du paquet de base :
+**Statut : décision validée, développement non engagé.** Chantier structurant à mener après P3 1.0.0, avant d'étendre le catalogue des modules. La [feuille de route de référence sur Drive](https://docs.google.com/document/d/1sDjN_Deyid4oSVxJOnSA_78DdjjtayevhGm04psqwes/edit) conserve le suivi détaillé.
 
-1. Préparer le catalogue des versions et les archives vérifiées du moteur, des modules et des thèmes.
-2. Préparer le lanceur PHP qui permet de choisir les composants et de les installer.
-3. Ajouter la détection et l’installation des mises à jour depuis l’administration.
+- [ ] **Séparer les distributions.** Une archive pour le noyau P3, sans modules ni thèmes optionnels ; une archive par module et une par thème, avec leur versionnement propre. Les mises à jour du noyau ne doivent pas écraser les extensions installées, leurs réglages ni les données. Identifier les composants indispensables au démarrage avant de les extraire du paquet.
+- [ ] **Catalogue et archives officiels sur GitHub.** Un catalogue JSON versionné et des ZIP publiés dans GitHub Releases ; aucun service obligatoire sur `p3.universguitare.be`. Documenter identifiant, version, compatibilité P3/PHP, dépendances, URL d'archive figée, SHA-256, signature et provenance. Conserver l'accès aux versions antérieures et une copie locale du dernier catalogue authentifié.
+- [ ] **Installation et mises à jour individuelles dans P3.** Depuis Configuration → Gestion des modules et Gestion des thèmes, présenter le catalogue distant, les versions installées et disponibles, les contrôles de compatibilité, puis permettre l'installation et la mise à jour. Préserver l'import manuel de ZIP, en distinguant sources officielles et extensions tierces.
+- [ ] **Installeur PHP autonome et indépendant des versions du noyau.** Prévoir un dépôt GitHub distinct `portix1/P3-Installer` (à créer). Cet installeur minimal, sans noyau embarqué, se dépose sur un hébergement vierge, vérifie les prérequis, consulte le catalogue GitHub, laisse choisir une version compatible de P3, des modules et un thème, vérifie les archives, puis installe et configure le site et son premier administrateur.
+- [ ] **Protocole d'installation stable.** Versionner séparément l'installeur ; indiquer sa version minimale requise dans le catalogue lorsque le protocole évolue. Neutraliser ou supprimer l'installeur à la fin de la procédure.
+- [ ] **Fonctionnement sans GitHub.** Prévoir l'installation hors ligne depuis des archives fournies manuellement, avec les mêmes vérifications de compatibilité, d'intégrité et d'authenticité. Un site déjà installé ne doit pas dépendre de la disponibilité du catalogue pour fonctionner.
+- [ ] **Recette avant publication.** Tester une installation vierge à la racine et en sous-dossier, XAMPP/Windows et hébergements mutualisés, indisponibilité réseau, archives et signatures invalides, dépendances, sauvegarde/restauration, conservation des extensions lors d'une mise à jour du noyau et publication autonome d'un module ou d'un thème.
 
-Le déploiement sur Univers Guitare suit son propre cycle.
+**Ordre de réalisation :** contrat et sécurité du catalogue → archives découplées → gestionnaires d'extensions → installeur universel → tests de bout en bout.
+
+Le déploiement sur Univers Guitare suit son propre cycle. Aucune fusion dans `main`, publication ou intervention en production sans validation explicite.
 
 ## Réorganisation UX du back-office
 
