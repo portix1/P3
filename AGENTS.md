@@ -1,5 +1,15 @@
 # Règles de développement de P3
 
+## Lecture préalable et décisions en vigueur
+
+Avant toute modification, lire [docs/consignes-p3.md](docs/consignes-p3.md), ROADMAP.md et les contrats concernés, puis consulter l’index et les documents 03, 04 et 05 du référentiel Drive lorsqu’ils sont accessibles. Le document consolidé contient leurs liens. Signaler une source inaccessible ou une contradiction. La dernière décision explicite de Marc prévaut sur un tableau ou une note historique.
+
+Pour une nouvelle fonctionnalité, appliquer la méthode convenue inspirée de Spec Kit. Intention, cadrage, options et brainstorming avec Marc, arbitrages, spécification courte, plan technique, implémentation, validation et gel. Une idée après gel ouvre un nouveau cadrage. Une demande d’étude ou d’ajout à la roadmap reste à ce stade. Pour une correction autorisée, reproduire le défaut et traiter sa cause dans le périmètre convenu, sans redemander l’accord à chaque étape autorisée.
+
+P3 est universel. LWS, Windows, macOS, les serveurs locaux et les environnements automatisés sont des plateformes de validation. Séparer les mécanismes génériques des particularités observées et indiquer les environnements effectivement testés. Les règles d’Univers Guitare ou de Six Cordes ne deviennent pas des valeurs imposées aux autres sites.
+
+Le 20 novembre 2026, Marc a demandé la reprise des corrections et prévoit ses tests sur une version regroupée plus avancée. La consolidation avant 1.0 reste prioritaire. Préserver le cadrage ultérieur de la réécriture du seul module Téléchargements et des autres pistes inscrites à la roadmap.
+
 ## Organisation obligatoire du back-office
 
 Cette organisation s’applique à toute création ou modification du moteur, d’un module ou d’un plugin. Une évolution ne doit pas réintroduire un écran mélangé ou une navigation indépendante.

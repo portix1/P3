@@ -17,6 +17,20 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## Décisions et contrôle des consignes — 20 novembre 2026
+
+La [revue des consignes](docs/consignes-p3.md) rapproche les décisions Drive, les échanges et le dépôt. Les travaux de consolidation ont repris sur instruction de Marc. Les tests utilisateur seront regroupés sur une version plus avancée. Les plateformes locales et hébergées sont des environnements de validation complémentaires d’un CMS universel.
+
+- Installation et routage, correction du .htaccess incluse, préparés dans [#52](https://github.com/portix1/P3/pull/52). Validation CI réussie, sept tâches. Fusion et publication en attente.
+- Approbation depuis une ancienne liste corrigée dans la candidate Articles 1.4.10, [#54](https://github.com/portix1/P3/pull/54), basée sur #52. Validation CI réussie, sept tâches. Essais utilisateur futurs sur un lot regroupé.
+- Téléchargements et Affiliation doivent être accessibles depuis Administration. Le premier classement est préparé dans #53. Le second reste à corriger. Ces tâches sont distinctes de la refonte future de Téléchargements.
+- Restauration signalée en erreur, hiérarchie de Configuration, recherche #47 et mises à jour de thèmes #50 conservent leur suivi avant arbitrage de la sortie 1.0.
+- Préparer la documentation exhaustive module par module avec captures annotées, en décrivant les parcours validés et en relevant les scénarios restant à vérifier.
+- MCP P3 pour administration et rédaction, piste à explorer. Version et périmètre à définir avant développement.
+- Reprise de zéro du seul module Téléchargements, avec nouveau cadrage avant développement. Les fonctionnalités et contraintes de compatibilité précédemment proposées ne constituent pas une spécification validée.
+- Installation mutualisée, piste à explorer de faible priorité, consignée dans Drive. Conserver l’installation autonome jusqu’à validation d’une architecture.
+- Après stabilisation de 1.0, consolider le contrat d’extension vers 1.1.0. Les projets Partage social, FAQ, Galerie, Annuaire, Agenda et Newsletter gardent leurs cycles propres. Le plan MOD-00 à MOD-11 est dans le référentiel Drive et reste à spécifier et tester par lots.
+
 ## Aperçus de partage sur les réseaux sociaux
 
 - [ ] Générer les balises Open Graph dans le `<head>` des pages publiques. Alimenter `og:title` et `og:description` à partir du titre et de la description SEO, `og:url` à partir de l’URL canonique, `og:type` selon le type de page (`website` ou `article`), et `og:site_name` et `og:locale` à partir de la configuration du site.

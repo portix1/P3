@@ -1,6 +1,6 @@
 # Réorganisation du back-office
 
-Version de développement 0.9.4-dev — non publiée.
+Référence fonctionnelle. État de revue au 20 novembre 2026 dans [les consignes consolidées](docs/consignes-p3.md).
 
 Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont classées dans Rédaction, Administration et Configuration. Chaque entrée possède une icône et un libellé. Rédaction est réservée aux opérations sur le contenu ; Administration regroupe la gestion courante et Configuration les choix durables qui définissent le site. Les deux derniers espaces sont réservés aux administrateurs.
 
@@ -13,9 +13,9 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 | Menu principal | — | — | Organisation des liens |
 | Menu de bas de page | — | — | Organisation des liens |
 | Accueil | — | — | Composition, réglages et résultats pour les administrateurs seulement |
-| Téléchargements | Fichiers et catégories | — | — |
+| Téléchargements | — | Fichiers et catégories, classement attendu encore en correction | — |
 | Contact | — | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
-| Affiliation | Produits, offres et partenaires, accès administrateur conservé | — | Paramètres de présentation |
+| Affiliation | — | Produits, offres et partenaires, accès administrateur uniquement, classement encore à corriger | Paramètres de présentation |
 | Statistiques | — | Audience, journaux applicatifs, journal d’audit | Mode de mesure et rétention |
 | Protection des contenus | — | — | Corbeille, révisions, points de restauration et durées de conservation |
 | Recherche | — | État et reconstruction de l’index | — |
@@ -36,7 +36,7 @@ Depuis 0.9.3, le moteur peut installer une mise à jour signée depuis le back-o
 
 ## Vérification sur le serveur de test
 
-Faire une sauvegarde de l’installation de test. Extraire le ZIP 0.8.3-rc4 à sa racine en remplaçant les fichiers applicatifs. L’archive ne contient pas de base ni de configuration privée.
+Préparer une copie de test sauvegardée et utiliser le paquet exact de la version à valider. Vérifier son origine, son empreinte et sa signature selon son canal. Suivre le guide d’installation ou de mise à jour correspondant au scénario. Consigner l’environnement et distinguer installation neuve, mise à jour et restauration.
 
 Ouvrir Admin.html après connexion puis examiner les trois espaces. Tester l’enregistrement d’une page de configuration et contrôler que les réglages des autres pages sont conservés. Vérifier avec un compte rédacteur que seuls ses accès autorisés apparaissent.
 
