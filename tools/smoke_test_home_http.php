@@ -174,6 +174,14 @@ try {
     $check($request('/home-events.html')[0]===405,'GET event refused');
     $anon=$request('/Admin-home.html');
     $check(in_array($anon[0],[200,403],true) && !str_contains($anon[1],'home_action'),'Anonymous cannot access composition controls');
+    // A submission on the disposable site must create an administrator-only
+    // dashboard alert, without introducing a persistent notification table.
+    $reviewArticle = $db->connection()->query("SELECT id, status FROM articles WHERE status = 'published' ORDER BY id LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    $check(is_array($reviewArticle), 'A published fixture article is available for review tests');
+    $beforePending = (int) $db->connection()->query("SELECT COUNT(*) FROM articles WHERE status = 'pending'")->fetchColumn();
+    $reviewId = (int) $reviewArticle['id'];
+    $reviewChange = $db->connection()->prepare("UPDATE articles SET status = ? WHERE id = ?");
+    $reviewChange->execute(['pending', $reviewId]);
     foreach (['admin','editor'] as $actor) {
         $login=$request('/login.html');
         preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$login[2]),$cookie);
@@ -181,6 +189,15 @@ try {
         $headers=['Content-Type: application/x-www-form-urlencoded','Cookie: '.($cookie[1]??'')];
         $logged=$request('/login.html','POST',http_build_query(['pseudo'=>$actor,'pass'=>'test-home-password','csrf_token'=>$token[1]??'']),$headers);
         if (preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$logged[2]),$cookie)) { $headers[1]='Cookie: '.$cookie[1]; }
+        $dashboard = $request('/Admin.html', 'GET', '', $headers);
+        $check($dashboard[0] === 200, 'Dashboard available to authenticated staff');
+        $reviewLink = 'href="Admin-articles.html?state=pending"';
+        if ($actor === 'admin') {
+            $check(str_contains($dashboard[1], $reviewLink), 'Administrator sees review link from dashboard');
+            $check(str_contains($dashboard[1], ($beforePending + 1) . ' article'), 'Dashboard displays the current review count');
+        } else {
+            $check(!str_contains($dashboard[1], $reviewLink), 'Editor never sees administrator review alert');
+        }
         $configArea=$request('/Admin-configuration.html','GET','',$headers);
         $check($configArea[0]===($actor==='admin'?200:403), 'Only administrators enter Configuration');
         $check(str_contains($configArea[1], 'href="Admin-home-settings.html"')===($actor==='admin'), 'Only administrators find Home settings in Configuration');
@@ -287,6 +304,11 @@ try {
         $staffHome=$request('/','GET','',$headers);
         $check(!str_contains($staffHome[1],'home/assets/home.js'),'Staff measurement excluded');
     }
+    $reviewChange->execute([(string) $reviewArticle['status'], $reviewId]);
+    $dashboardAfterReview = $request('/Admin.html', 'GET', '', $auth);
+    $check($dashboardAfterReview[0] === 200, 'Administrator dashboard remains available after relecture');
+    $check(str_contains($dashboardAfterReview[1], 'href="Admin-articles.html?state=pending"') === ($beforePending > 0),
+        'Dashboard alert disappears when the last request is handled');
     // The preceding HTTP exercises may generate real minimal measurements.
     // Reset only this isolated fixture so the empty-dashboard assertion remains
     // deterministic across PHP versions and request timings.
