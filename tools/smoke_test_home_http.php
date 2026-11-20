@@ -226,7 +226,7 @@ try {
             $cards = $xpath->query('//main//a[contains(@class,"management-card")]');
             $labels = [];
             foreach ($cards as $card) { $labels[] = trim($card->textContent); }
-            $check($labels === ['Accueil', 'Résultats'], 'Home management menu exposes composition and results');
+            $check($labels === ['Composer l’accueil', 'Résultats de l’accueil'], 'Home management menu exposes composition and results');
             $sidebar = $xpath->query('//aside//a[contains(@href,"Admin-management-module-home")]');
             $check($sidebar->length === 1, 'Home appears once in the Administration sidebar');
             $check($request('/Admin-configuration-module-missing.html', 'GET', '', $headers)[0] === 404,
