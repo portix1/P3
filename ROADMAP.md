@@ -17,6 +17,10 @@ Cette séquence prime sur les anciens plans ci-dessous, conservés comme histori
 
 Marc prévoit des audits réguliers avec OpenCode et recherchera des bêta-testeurs. La documentation doit être tenue à jour dès chaque intervention ; la 0.9.8 est une étape de vérification globale, pas un report de cette obligation. Avant publication, traiter les défauts bloquants, vérifier les résultats des tests et documenter les limites connues. Aucun nouveau module sans nécessité démontrée et accord explicite. Voir AGENTS.md.
 
+## P1 — Résilience du moteur de recherche (avant bêta-tests 0.9.9)
+
+- [ ] [Incident #47](https://github.com/portix1/P3/issues/47) : indexation indisponible en production (Univers Guitare, P3 0.9.8, 15 novembre 2026). Reproduire et identifier la cause exacte ; reconstruire automatiquement l’index dérivé absent, corrompu ou incompatible, sans toucher à la base principale. Prévoir verrouillage des reconstructions concurrentes, recherche de compatibilité lorsque possible et diagnostic administrateur explicite. Tester les permissions, erreurs disque, verrouillage, corruption, schéma incompatible, absence de FTS5, mises à jour et exclusion des brouillons ; valider sur LWS. Aucune intervention FTP pour une panne récupérable.
+
 ## Aperçus de partage sur les réseaux sociaux
 
 - [ ] Générer les balises Open Graph dans le `<head>` des pages publiques. Alimenter `og:title` et `og:description` à partir du titre et de la description SEO, `og:url` à partir de l’URL canonique, `og:type` selon le type de page (`website` ou `article`), et `og:site_name` et `og:locale` à partir de la configuration du site.
