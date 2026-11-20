@@ -289,8 +289,12 @@ final class ArticleAdminController
                 if (!in_array($requestedStatus, ['draft', 'published'], true)) {
                     throw new RuntimeException('articles_invalid_status');
                 }
-                // Changes to an article awaiting review require a new request.
-                $status = ($existing['status'] ?? '') === 'pending' ? 'draft' : $requestedStatus;
+                // An explicit review request from the editor submits the saved version.
+                // Without it, editing an article awaiting review returns it to draft.
+                $requestReview = isset($_POST['submit_review']) && !$user->isAdmin()
+                    && !$user->articlePermissions()['publish'];
+                $status = $requestReview ? 'pending'
+                    : (($existing['status'] ?? '') === 'pending' ? 'draft' : $requestedStatus);
                 if (!$this->allowed($user, 'edit', $existing, $categoryId)
                     || (($status === 'published' || ($existing['status'] ?? '') === 'published') && !$this->allowed($user, 'publish', $existing, $categoryId))) {
                     throw new RuntimeException('security_access_denied');
