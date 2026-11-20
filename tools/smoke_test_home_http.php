@@ -123,8 +123,9 @@ try {
             ...$file2, 'category_id' => null, 'title' => 'Document public nouveau gestionnaire',
             'description' => '', 'status' => 'published',
         ]);
+        $file2Draft = $newStorage->storeLocalFile($downloadSource, 'nouveau-guide-brouillon.pdf');
         $draft2 = $newDownloads->create([
-            ...$file2, 'category_id' => null, 'title' => 'Document non publié',
+            ...$file2Draft, 'category_id' => null, 'title' => 'Document non publié',
             'description' => '', 'status' => 'draft',
         ]);
         $catalog2 = $request('/dl2-catalog.html');
