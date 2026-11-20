@@ -3,7 +3,7 @@ category_id; numeric; null; ; ; index; ; dm2_categories.id; setnull
 title; text; notnull; ; ; ; ; ;
 description; text; notnull; ; ; ; ; ;
 original_name; text; notnull; ; ; ; ; ;
-stored_name; text; notnull; ; ; unique; index; ;
+stored_name; text; notnull; ; unique; index; ; ;
 mime_type; text; notnull; ; ; ; ; ;
 size_bytes; numeric; notnull; 0; ; ; ; ;
 sha256; text; notnull; ; ; ; ; ;
