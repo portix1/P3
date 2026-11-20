@@ -259,7 +259,7 @@ if ($canAccessAdmin && $route === 'Admin') {
                 $articlesModule = $repositories->modules()->findByPrefix('articles');
                 if (is_array($articlesModule) && !empty($articlesModule['enabled'])) {
                     require_once dirname(__DIR__) . '/var/modules/articles/src/ArticleRepository.php';
-                    $pendingReview = (new \\PortixModule\\Articles\\ArticleRepository($database->connection()))->countPendingReview();
+                    $pendingReview = (new \PortixModule\Articles\ArticleRepository($database->connection()))->countPendingReview();
                     if ($pendingReview > 0) {
                         $template->set('dashboard_review_visible', '1');
                         $template->set('dashboard_review_count', (string) $pendingReview);
