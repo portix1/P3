@@ -94,10 +94,13 @@ try {
     navigationCheck(!in_array('Admin-footer.html', array_column($editor['writing'], 'url'), true), 'Menu de bas de page masqué au rédacteur');
 
     if (is_dir($root.'/var/modules/home')) {
-    foreach (['Admin-home.html', 'Admin-home-settings.html', 'Admin-home-report.html'] as $url) {
-        navigationCheck(in_array($url, array_column($sections['configuration'], 'url'), true), 'Accueil regroupé dans Configuration');
-        navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['management']], 'url'), true), 'Accueil absent des autres espaces');
+    foreach (['Admin-home.html', 'Admin-home-report.html'] as $url) {
+        navigationCheck(in_array($url, array_column($sections['management'], 'url'), true), 'Accueil quotidien dans Administration');
+        navigationCheck(!in_array($url, array_column([...$sections['writing'], ...$sections['configuration']], 'url'), true), 'Accueil quotidien absent des autres espaces');
     }
+    navigationCheck(in_array('Admin-home-settings.html', array_column($sections['configuration'], 'url'), true), 'Réglages Accueil dans Configuration');
+    navigationCheck(in_array('Admin-affiliation.html', array_column($sections['management'], 'url'), true), 'Affiliation dans Administration');
+    navigationCheck(!in_array('Admin-affiliation.html', array_column($sections['writing'], 'url'), true), 'Affiliation absente de Rédaction');
     navigationCheck(in_array('Admin-footer.html', array_column($sections['configuration'], 'url'), true), 'Menu de bas de page dans Configuration');
     navigationCheck(in_array('Admin-menu.html', array_column($sections['configuration'], 'url'), true), 'Menu principal dans Configuration');
     navigationCheck(!in_array('Admin-footer.html', array_column($sections['management'], 'url'), true), 'Menu de bas de page absent d’Administration');
@@ -125,11 +128,9 @@ try {
     $owners = array_column($groups, 'module');
     navigationCheck(count($owners) === count(array_unique($owners)), 'Une entrée par composant dans Configuration');
     navigationCheck(count($groups) < count($sections['configuration']), 'Les actions sont regroupées');
-    $homeGroup = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === 'home'))[0];
-    navigationCheck($homeGroup['name'] === 'Configuration de l’accueil', 'Libellé du groupe Accueil');
-    navigationCheck(array_column($homeGroup['children'], 'name') === ['Réglages', 'Composer', 'Résultats'], 'Trois choix explicites dans Accueil');
-    navigationCheck(array_column($homeGroup['children'], 'url') === ['Admin-home-settings.html', 'Admin-home.html', 'Admin-home-report.html'],
-        'Les fonctions Accueil gardent leurs adresses');
+    $homeSettings = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === 'home'))[0];
+    navigationCheck($homeSettings['url'] === 'Admin-home-settings.html' && $homeSettings['children'] === [],
+        'Réglages accueil directement accessibles dans Configuration');
     $safetyGroup = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === 'safety'))[0];
     navigationCheck(count($safetyGroup['children']) === 2, 'Protection des contenus regroupée aussi');
     $coreGroup = array_values(array_filter($groups, static fn (array $group): bool => $group['module'] === ''))[0];
