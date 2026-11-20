@@ -21,4 +21,10 @@ Le fil d’Ariane permet de revenir à Configuration puis à la page-menu du com
 - Navigation clavier, focus visible, absence de débordement à 320 px et titres compréhensibles.
 - Tests du moteur, d’Accueil, de la protection des contenus et d’un module tiers à plusieurs fonctions.
 
-Ce chantier porte sur le parcours de Configuration. La réécriture de Téléchargements et les autres pistes gardent leur cadrage propre.
+Le périmètre initial porte sur Configuration ; la demande suivante étend le même mécanisme à la gestion des articles dans Administration. La réécriture de Téléchargements et les autres pistes gardent leur cadrage propre.
+
+## Administration : gestion des articles — 20 novembre 2026
+
+Administration et son menu latéral présentent une entrée « Gestion des articles ». Elle ouvre une page-menu donnant accès aux catégories, aux séries et à l’ordre des articles. Les adresses et les fonctions existantes sont conservées. Le fil d’Ariane permet de revenir à cette page-menu et son entrée reste sélectionnée dans chaque fonction. Le regroupement partage le mécanisme de Configuration ; une fonction unique reste directe. Les permissions administrateur restent contrôlées côté serveur. Aucun changement de données ni de version propre au module Articles : ce parcours est fourni par le moteur candidat 0.9.10.
+
+Pour les modules tiers, prefix_management dans la langue du module permet de nommer la page-menu Administration ; le nom déclaré dans le manifeste sert de repli. Ce regroupement concerne uniquement plusieurs contributions dans le même espace.

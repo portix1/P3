@@ -26,7 +26,7 @@ try {
     foreach (glob($root . '/var/modules/*/desc.xml') ?: [] as $file) {
         $definition = ModuleManifest::fromXml($file, basename(dirname($file)));
         // Exercise opt-in modules in their enabled state, without changing shipped defaults.
-        if ($definition['prefix'] === 'home') { $definition['enabled'] = true; }
+        if (in_array($definition['prefix'], ['home', 'dwl'], true)) { $definition['enabled'] = true; }
         $modules[] = $definition;
     }
     $sections = AdminNavigation::sections($root, $modules, true, false, ['Admin', 'news'], $translator);
@@ -38,6 +38,9 @@ try {
             navigationCheck(in_array('Admin-' . $module['prefix'] . '.html', $urls, true), 'Module administrable absent du menu : ' . $module['prefix']);
         }
     }
+
+    navigationCheck(in_array('Admin-dwl.html', array_column($sections['management'], 'url'), true), 'Téléchargements dans Administration');
+    navigationCheck(!in_array('Admin-dwl.html', array_column($sections['writing'], 'url'), true), 'Téléchargements absents de Rédaction');
 
     $moduleManager = AdminNavigation::sections($root, $modules, true, false, ['Admin', 'modmgr'], $translator);
     $managerEntry = array_values(array_filter($moduleManager['configuration'], static fn (array $item): bool => $item['url'] === 'Admin-config-modules.html'));
@@ -145,6 +148,17 @@ try {
         'Aucun groupe pour le rédacteur');
     navigationCheck(AdminNavigation::configurationGroups($anonymous['configuration'], ['Admin', 'configuration']) === [],
         'Aucun groupe pour le visiteur');
+    $managementGroups = AdminNavigation::workspaceGroups($articlesMenu['management'], ['Admin', 'articles', 'order'], 'management');
+    $articleGroup = array_values(array_filter($managementGroups, static fn (array $group): bool => $group['module'] === 'articles'))[0];
+    navigationCheck($articleGroup['name'] === 'Gestion des articles', 'Titre du menu de gestion des articles');
+    navigationCheck($articleGroup['url'] === 'Admin-management-module-articles.html', 'Route du menu de gestion');
+    navigationCheck(array_column($articleGroup['children'], 'url') === ['Admin-articles-categories.html', 'Admin-articles-series.html', 'Admin-articles-order.html'], 'Trois fonctions existantes regroupées');
+    navigationCheck($articleGroup['current'] === 'is-current', 'Le parent reste actif sur Organisation');
+    navigationCheck(count(array_column($managementGroups, 'module')) === count(array_unique(array_column($managementGroups, 'module'))), 'Une entrée par module en Administration');
+    navigationCheck(AdminNavigation::workspaceGroups($editor['management'], ['Admin', 'management'], 'management') === [], 'Pas de gestion pour les rédacteurs');
+    $disabledArticles = array_map(static function (array $module): array { if ($module['prefix'] === 'articles') { $module['enabled'] = false; } return $module; }, $modules);
+    $withoutArticles = AdminNavigation::sections($root, $disabledArticles, true, false, ['Admin', 'management'], $translator);
+    navigationCheck(!in_array('articles', array_column(AdminNavigation::workspaceGroups($withoutArticles['management'], ['Admin', 'management'], 'management'), 'module'), true), 'Groupe retiré si Articles est désactivé');
     echo "Navigation complète des modules, Actualités, rôles et désactivation : OK\n";
 } catch (Throwable $error) {
     fwrite(STDERR, $error->getMessage() . "\n");

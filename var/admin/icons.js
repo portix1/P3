@@ -7,6 +7,15 @@
     const NS = 'http://www.w3.org/2000/svg';
 
     const icons = {
+        'folder': [
+            ['path', { d:'M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z' }]
+        ],
+        'list': [
+            ['path', { d:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01' }]
+        ],
+        'arrow-up-down': [
+            ['path', { d:'m3 7 4-4 4 4M7 3v18m6-4 4 4 4-4M17 21V3' }]
+        ],
         'images': [
             ['path', { d:'M4 7H3a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-1' }],
             ['rect', { x:'6', y:'2', width:'16', height:'16', rx:'2' }],

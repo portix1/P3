@@ -94,3 +94,7 @@ La page Configuration et son menu latéral affichent une seule entrée par modul
 Les adresses existantes des écrans restent valides. Les nouvelles pages-menu sont calculées à partir des fonctions accessibles et des modules actifs. Un module désactivé ne possède plus de page-menu accessible. Rédacteurs et visiteurs sont refusés. Les pages-menu sont en lecture seule et refusent POST.
 
 AdminNavigation::sections conserve l’inventaire des fonctions. Chaque entrée porte le préfixe de son module et son libellé de configuration. AdminNavigation::configurationGroups produit la navigation regroupée et les enfants à partir de cet inventaire. Les langues des modules peuvent fournir prefix_configuration pour leur groupe et label_short pour le nom court d’une fonction. Ces clés sont facultatives et possèdent des libellés de repli.
+
+## Administration : gestion des articles — 20 novembre 2026
+
+Administration et son menu latéral présentent une entrée « Gestion des articles ». Elle ouvre une page-menu donnant accès aux catégories, aux séries et à l’ordre des articles. Les adresses et les fonctions existantes sont conservées. Le fil d’Ariane permet de revenir à cette page-menu et son entrée reste sélectionnée dans chaque fonction. Le regroupement partage le mécanisme de Configuration ; une fonction unique reste directe. Les permissions administrateur restent contrôlées côté serveur. Aucun changement de données ni de version propre au module Articles : ce parcours est fourni par le moteur candidat 0.9.10.

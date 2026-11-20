@@ -1,3 +1,9 @@
+# P3 0.9.10 — archive regroupée pour essais locaux
+
+Archive complète de test. Inclut les correctifs d’installation et du .htaccess, la protection des actions de relecture, le regroupement de Configuration par module, les consignes consolidées et le correctif Téléchargements 1.0.1 en Administration, avec catégories facultatives et liens courts. Articles 1.4.10 et Accueil 1.1.1 sont inclus.
+
+Le test de sécurité des téléchargements utilise désormais la nouvelle adresse attendue par le template. Le code publié et les versions de test restent distingués. La refonte complète de Téléchargements conserve son cadrage ultérieur.
+
 # En préparation — Configuration par module
 
 - Une seule entrée par composant dans Configuration et son menu latéral. Les composants à plusieurs fonctions ouvrent une page-menu, les fonctions uniques restent directement accessibles.
@@ -91,3 +97,7 @@ Publiée le 14 novembre 2026 et installation confirmée par le mainteneur. Valid
 - Migration SQLite de schéma **8 vers 9**, non destructive : ajout du champ `articles.review_note`. La sauvegarde automatique crée sa table privée `article_autosaves` au premier usage.
 
 Le module Articles 1.4.9 est distribué avec le catalogue 0.9.2. La release publiée ne contient pas le CoreUpdater ajouté ultérieurement dans main. Avant toute mise à jour : sauvegarder fichiers et base, préserver les réglages LWS, les thèmes personnalisés et les médias ; ne pas relancer l'installateur. Voir README.md et ROADMAP.md.
+
+## Administration : gestion des articles — 20 novembre 2026
+
+Administration et son menu latéral présentent une entrée « Gestion des articles ». Elle ouvre une page-menu donnant accès aux catégories, aux séries et à l’ordre des articles. Les adresses et les fonctions existantes sont conservées. Le fil d’Ariane permet de revenir à cette page-menu et son entrée reste sélectionnée dans chaque fonction. Le regroupement partage le mécanisme de Configuration ; une fonction unique reste directe. Les permissions administrateur restent contrôlées côté serveur. Aucun changement de données ni de version propre au module Articles : ce parcours est fourni par le moteur candidat 0.9.10.

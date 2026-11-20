@@ -151,6 +151,27 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         }
       }
       if (actor === 'admin') {
+        await tab.goto(base + '/Admin-management.html');
+        assert.equal(await tab.locator('main a[href="Admin-management-module-articles.html"]').count(), 1);
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-management-module-articles.html"]').count(), 1);
+        assert.equal(await tab.locator('main a[href="Admin-articles-categories.html"]').count(), 0);
+        await tab.locator('main').getByRole('link', {name: 'Gestion des articles', exact: true}).press('Enter');
+        await tab.waitForURL('**/Admin-management-module-articles.html');
+        await tab.locator('main .management-card svg').first().waitFor();
+        for (const width of [1280, 375, 320]) {
+          await tab.setViewportSize({width, height: 850});
+          assert.equal(await tab.locator('main .management-card').count(), 3);
+          assert.equal(await tab.locator('main .management-card svg').count(), 3);
+          assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+          if (process.env.HOME_SCREENSHOT_DIR) {
+            await tab.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, 'management-articles-' + width + '.png'), fullPage: true});
+          }
+        }
+        await tab.locator('main a[href="Admin-articles-categories.html"]').press('Enter');
+        await tab.waitForURL('**/Admin-articles-categories.html');
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-management-module-articles.html"]').getAttribute('aria-current'), 'location');
+        await tab.locator('.ux-breadcrumb a[href="Admin-management-module-articles.html"]').press('Enter');
+        await tab.waitForURL('**/Admin-management-module-articles.html');
         await tab.goto(base + '/Admin-configuration.html');
         const configurationCards = tab.locator('main .management-card');
         const componentUrls = await configurationCards.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));

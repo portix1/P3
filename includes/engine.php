@@ -407,6 +407,9 @@ if ($route === 'Admin') {
     );
     $navigationSections = $adminSections;
     $navigationSections['configuration'] = $configurationGroups;
+    $navigationSections['management'] = \Portix\Navigation\AdminNavigation::workspaceGroups(
+        $adminSections['management'], $argument, 'management'
+    );
     $activeArea = in_array($adminRoute, ['writing', 'management', 'configuration'], true) ? $adminRoute : '';
     $activeEntry = '';
     foreach ($adminSections as $section => $entries) {
@@ -421,7 +424,7 @@ if ($route === 'Admin') {
     foreach ($navigationSections as $section => $entries) {
         foreach ($entries as $entry) {
             $template->addRow('ux_nav_' . $section, $entry);
-            if ($section === 'configuration' && $entry['current'] === 'is-current'
+            if (in_array($section, ['configuration', 'management'], true) && $entry['current'] === 'is-current'
                 && $entry['children'] !== []) {
                 $breadcrumbGroup = $entry;
             }
@@ -445,10 +448,10 @@ if ($route === 'Admin') {
         $template->set('ux_area_title', $translator->text('ux_' . $adminRoute));
         $template->set('ux_area_help', $translator->text('ux_' . $adminRoute . '_help'));
         $areaEntries = $navigationSections[$adminRoute];
-        if ($adminRoute === 'configuration' && isset($argument[2])) {
+        if (in_array($adminRoute, ['configuration', 'management'], true) && isset($argument[2])) {
             $menuUrl = implode('-', $argument) . '.html';
             $menu = null;
-            foreach ($configurationGroups as $group) {
+            foreach ($navigationSections[$adminRoute] as $group) {
                 if ($group['url'] === $menuUrl && $group['children'] !== []) {
                     $menu = $group;
                     break;

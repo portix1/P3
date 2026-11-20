@@ -174,7 +174,7 @@
             <p class="nav-heading">{{ ux_management }}</p>
             <ul class="admin-nav">
                 {% for item in ux_nav_management %}
-                <li><a class="{{ item.current }} workspace-link"{% if item.current == "is-current" %} aria-current="page"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
+                <li><a class="{{ item.current }} workspace-link"{% if item.current == "is-current" %} aria-current="location"{% endif %} href="{{ item.url }}" data-admin-icon="{{ item.icon }}">{{ item.name }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}

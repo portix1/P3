@@ -2,9 +2,23 @@
 declare(strict_types=1);
 
 use Portix\Storage\DownloadStorage;
+use Portix\Support\Slugger;
+use PortixModule\Download\DownloadResponse;
+
+$action = (string) ($argument[1] ?? 'list');
+if ($action === 'fichier') {
+    require_once __DIR__ . '/src/DownloadResponse.php';
+    $id = (string) ($argument[2] ?? '');
+    DownloadResponse::send(
+        $repositories->downloads(),
+        $translator,
+        dirname(__DIR__, 3),
+        ctype_digit($id) ? (int) $id : 0,
+        $request->method()
+    );
+}
 
 $template->setSlot('main', 'var/modules/download/templates/index.tpl');
-$action = (string) ($argument[1] ?? 'list');
 $categories = $repositories->downloads()->categories();
 $publicCategoryCount = 0;
 
@@ -23,30 +37,27 @@ foreach ($categories as $category) {
 
 if ($action !== 'cat') {
     $pageMetadata->define($translator->text('download'), $translator->text('downloads_public_intro'), 'dwl.html');
-    if ($publicCategoryCount === 0) {
-        $pageMetadata->noIndex();
-    }
     $template->set('downloads_listing', '1');
-    return;
+    $files = $repositories->downloads()->publishedForCategory(null);
+} else {
+    $slug = implode('-', array_slice($argument, 2));
+    $category = $repositories->downloads()->findCategoryBySlug($slug);
+    if ($category === null) {
+        http_response_code(404);
+        $pageMetadata->noIndex();
+        $template->setSlot('main', './var/templates/modern/not-found.tpl');
+        return;
+    }
+    $pageMetadata->define(
+        (string) $category['name'],
+        (string) $category['description'],
+        'dwl-cat-' . (string) $category['slug'] . '.html'
+    );
+    $template->set('downloads_listing', '0');
+    $template->set('downloads_category_title', (string) $category['name']);
+    $template->set('downloads_category_description', (string) $category['description']);
+    $files = $repositories->downloads()->publishedForCategory((int) $category['id']);
 }
-
-$slug = implode('-', array_slice($argument, 2));
-$category = $repositories->downloads()->findCategoryBySlug($slug);
-if ($category === null) {
-    http_response_code(404);
-    $pageMetadata->noIndex();
-    $template->setSlot('main', './var/templates/modern/not-found.tpl');
-    return;
-}
-$pageMetadata->define(
-    (string) $category['name'],
-    (string) $category['description'],
-    'dwl-cat-' . (string) $category['slug'] . '.html'
-);
-$template->set('downloads_listing', '0');
-$template->set('downloads_category_title', (string) $category['name']);
-$template->set('downloads_category_description', (string) $category['description']);
-$files = $repositories->downloads()->publishedForCategory((int) $category['id']);
 $storage = new DownloadStorage(dirname(__DIR__, 3) . '/var/private/downloads');
 $visibleFiles = 0;
 foreach ($files as $file) {
@@ -64,7 +75,11 @@ foreach ($files as $file) {
             $checksum = (string) hash_file('sha256', $path);
         }
         $template->addRow('downloadfile', [
-            'id' => (string) $file['id'],
+            'url' => 'dwl-fichier-' . (int) $file['id'] . '-' . substr(
+                Slugger::fromText(pathinfo((string) $file['original_name'], PATHINFO_FILENAME), 'fichier'),
+                0,
+                120
+            ) . '.html',
             'title' => (string) $file['title'],
             'description' => (string) $file['description'],
             'original_name' => (string) $file['original_name'],
@@ -78,7 +93,7 @@ foreach ($files as $file) {
     }
 }
 $template->set('downloads_has_files', $visibleFiles === 0 ? '0' : '1');
-if ($visibleFiles === 0) {
+if ($visibleFiles === 0 && ($action === 'cat' || $publicCategoryCount === 0)) {
     $pageMetadata->noIndex();
 }
 

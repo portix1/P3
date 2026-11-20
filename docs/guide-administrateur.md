@@ -48,3 +48,15 @@ Si un écran 503 empêche l’accès au back-office après une interruption, uti
 ## Aider les rédacteurs
 
 Transmettez le [guide du rédacteur](guide-redacteur.md) avec l’adresse de connexion et indiquez si leur compte publie directement ou passe par une relecture.
+
+
+## Gérer les téléchargements
+
+Dans **Administration → Téléchargements**, vous pouvez déposer un fichier
+et le publier directement sur la page Téléchargements. Choisissez
+**Sans catégorie** dans le formulaire pour l’afficher sur cette page.
+Un fichier associé à une catégorie apparaît sur la page de cette catégorie.
+
+## Gestion des articles
+
+Dans Administration, ouvrir **Gestion des articles**. Cette page-menu donne accès aux catégories, aux séries et à l’ordre des articles. Le menu latéral conserve une seule entrée pour ces fonctions ; le fil d’Ariane permet de revenir à leur page-menu. Les anciennes adresses restent utilisables. La rédaction et la relecture restent accessibles depuis Rédaction selon les droits existants.

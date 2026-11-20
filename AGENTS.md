@@ -57,3 +57,7 @@ Ce travail est soumis à un accord explicite de Marc avant toute fusion dans `ma
 ## Configuration regroupée par module — 20 novembre 2026
 
 La page Configuration et son menu latéral affichent une seule entrée par module. Si plusieurs fonctions appartiennent au même module dans cet espace, elles sont accessibles depuis une page-menu dédiée. Une fonction unique reste accessible directement. Le regroupement utilise l’inventaire commun et s’applique aux modules tiers. Accueil présente Configuration de l’accueil, puis Réglages, Composer et Résultats. Les fonctions du moteur sont regroupées dans Configuration du site. Le fil d’Ariane relie chaque fonction à sa page-menu. Les accès administrateur restent contrôlés côté serveur.
+
+## Administration : gestion des articles — 20 novembre 2026
+
+Administration et son menu latéral présentent une entrée « Gestion des articles ». Elle ouvre une page-menu donnant accès aux catégories, aux séries et à l’ordre des articles. Les adresses et les fonctions existantes sont conservées. Le fil d’Ariane permet de revenir à cette page-menu et son entrée reste sélectionnée dans chaque fonction. Le regroupement partage le mécanisme de Configuration ; une fonction unique reste directe. Les permissions administrateur restent contrôlées côté serveur. Aucun changement de données ni de version propre au module Articles : ce parcours est fourni par le moteur candidat 0.9.10.

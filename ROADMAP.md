@@ -1,5 +1,9 @@
 # Feuille de route de P3
 
+## Archive regroupée pour tests locaux — 20 novembre 2026
+
+P3 0.9.10 regroupe les branches des PR #52 à #56. Inclut le classement de Téléchargements en Administration, les fichiers sans catégorie et les liens courts. Le test de rendu des téléchargements est actualisé pour ces liens. La refonte complète du module demeure un chantier ultérieur à cadrer. Cette archive de test ne constitue pas une publication stable.
+
 ## Priorité actuelle — consolidation vers 1.0 (validée le 14 novembre 2026)
 
 Cette séquence prime sur les anciens plans ci-dessous, conservés comme historique à réconcilier. Les versions indiquent des objectifs, non des dates ni des travaux déjà validés.
@@ -252,3 +256,7 @@ Avant tout nouvel envoi FTP, supprimer les anciens transferts en attente et vér
 Marc demande de terminer les travaux d’accueil, y compris les propositions de composition, d’aperçu, de réorganisation des zones et d’explication des zones vides. Accueil 1.1.0 regroupe ces fonctions, les derniers articles et le sélecteur visuel de médiathèque. La validation automatisée et la livraison sont suivies dans la [proposition #19](https://github.com/portix1/P3/pull/19). L’aperçu utilise les styles du module sans l’habillage du thème. La validation visuelle sur le site de Marc reste à effectuer après import du ZIP. La pondération reste inchangée tant qu’aucune analyse des mesures réelles ne justifie un ajustement.
 
 Marc confirme également que les en-têtes de tableaux illisibles sont corrigés. Ce point est clôturé.
+
+## Administration : gestion des articles — 20 novembre 2026
+
+Administration et son menu latéral présentent une entrée « Gestion des articles ». Elle ouvre une page-menu donnant accès aux catégories, aux séries et à l’ordre des articles. Les adresses et les fonctions existantes sont conservées. Le fil d’Ariane permet de revenir à cette page-menu et son entrée reste sélectionnée dans chaque fonction. Le regroupement partage le mécanisme de Configuration ; une fonction unique reste directe. Les permissions administrateur restent contrôlées côté serveur. Aucun changement de données ni de version propre au module Articles : ce parcours est fourni par le moteur candidat 0.9.10.

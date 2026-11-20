@@ -17,7 +17,8 @@ final class AdminNavigation
         }
         $owner = '';
         $ownerName = $translator->text('ux_site_configuration', 'Configuration du site');
-        $add = static function (string $section, string $label, string $url, string $icon, string $match = '') use (&$sections, $translator, &$owner, &$ownerName): void {
+        $managementName = $translator->text('ux_management', 'Administration');
+        $add = static function (string $section, string $label, string $url, string $icon, string $match = '') use (&$sections, $translator, &$owner, &$ownerName, &$managementName): void {
             $sections[$section][] = [
                 'name' => $translator->text($label, $label),
                 'url' => $url,
@@ -26,6 +27,7 @@ final class AdminNavigation
                 'current' => '',
                 'module' => $owner,
                 'configuration_name' => $ownerName,
+                'management_name' => $managementName,
             ];
         };
         if ($isAdmin) {
@@ -42,7 +44,7 @@ final class AdminNavigation
         $places = [
             'articles' => ['writing', 'file-text'], 'news' => ['writing', 'newspaper'],
             'media' => ['writing', 'images'], 'menu' => ['configuration', 'menu'],
-            'footer' => ['configuration', 'panel-bottom'], 'dwl' => ['writing', 'download'],
+            'footer' => ['configuration', 'panel-bottom'], 'dwl' => ['management', 'download'],
             'affiliation' => ['writing', 'dollar-sign'], 'contact' => ['management', 'mail'],
             'insights' => ['management', 'chart-bar'], 'search' => ['management', 'search'],
             'safety' => ['configuration', 'triangle-alert'],
@@ -78,6 +80,8 @@ final class AdminNavigation
             })($directory, $language, $manifest['default_language']);
             $moduleTranslator = new Translator($moduleMessages);
             $ownerName = $moduleTranslator->text($prefix . '_configuration', $manifest['name']);
+            $managementName = $moduleTranslator->text($prefix . '_management',
+                $translator->text('ux_management_' . $prefix, $manifest['name']));
             if ($manifest['admin_navigation'] !== []) {
                 foreach ($manifest['admin_navigation'] as $item) {
                     if (!$isAdmin && ($item['role'] !== 'editor' || $item['area'] !== 'writing')) { continue; }
@@ -131,6 +135,15 @@ final class AdminNavigation
     /** Group the same inventory for the Configuration page and its sidebar. */
     public static function configurationGroups(array $entries, array $arguments): array
     {
+        return self::workspaceGroups($entries, $arguments, 'configuration');
+    }
+
+    /** Reuse module grouping in administrative workspaces without changing leaf routes. */
+    public static function workspaceGroups(array $entries, array $arguments, string $area): array
+    {
+        if (!in_array($area, ['configuration', 'management'], true)) {
+            return $entries;
+        }
         $groups = [];
         foreach ($entries as $entry) {
             $key = $entry['module'] === '' ? 'site' : 'module:' . $entry['module'];
@@ -144,15 +157,15 @@ final class AdminNavigation
                 $result[] = [...$first, 'children' => []];
                 continue;
             }
-            $url = $first['module'] === '' ? 'Admin-configuration-site.html'
-                : 'Admin-configuration-module-' . $first['module'] . '.html';
+            $url = $first['module'] === '' ? 'Admin-' . $area . '-site.html'
+                : 'Admin-' . $area . '-module-' . $first['module'] . '.html';
             $current = $route === $url || in_array('is-current', array_column($items, 'current'), true);
             foreach ($items as &$item) {
-                $item['name'] = $item['configuration_action_name'] ?? $item['name'];
+                $item['name'] = $area === 'configuration' ? ($item['configuration_action_name'] ?? $item['name']) : $item['name'];
             }
             unset($item);
             $result[] = [
-                'name' => $first['configuration_name'],
+                'name' => $first[$area . '_name'],
                 'url' => $url,
                 'icon' => $first['icon'],
                 'module' => $first['module'],
