@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <modules>
-<Name>Gestionnaire de téléchargements</Name><Version>2.0.0-dev2</Version>
+<Name>Gestionnaire de téléchargements</Name><Version>2.0.0-dev3</Version>
 <Prefix>dl2</Prefix><Type>module</Type><Priority>8</Priority><DefLang>fr</DefLang>
 <Path>download2</Path><Enabled>0</Enabled><AdminAccess>admin</AdminAccess>
 <SchemaFormat>desc-csv</SchemaFormat><PublicRouteResolver>routes.php</PublicRouteResolver><MinimumP3>0.9.11</MinimumP3>
