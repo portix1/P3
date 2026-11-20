@@ -33,6 +33,10 @@ reste à reproduire sur une installation de test.
 | Configuration difficile à parcourir | Proposition pour la 0.9.10 : grouper les liens par usage. Vérifier qu’identité, thèmes, menus et maintenance se trouvent sans parcourir toute la liste. |
 | Recherche sur LWS | La récupération est testée en local et en CI. Confirmer la recherche publique sur LWS. [Ticket #47](https://github.com/portix1/P3/issues/47) |
 
+## MCP P3 — piste à explorer
+
+- [ ] Étudier un serveur MCP P3 pour permettre à une IA d’effectuer des tâches d’administration et de rédaction, avec les droits du compte connecté et les règles de relecture et de publication de P3. Examiner les usages et la faisabilité après les retours de bêta-test. Version cible à définir.
+
 ## Refonte du module Téléchargements
 
 Repartir de zéro sur le seul module Téléchargements. Attendre les retours de bêta-test avant de définir les besoins, de concevoir le nouveau module ou de commencer à coder. Version cible à définir.
