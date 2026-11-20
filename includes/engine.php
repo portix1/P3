@@ -250,6 +250,24 @@ if ($canAccessAdmin && $route === 'Admin') {
             $template->set('admin_core_update', $coreUpdate);
             $template->set('admin_module_count', (string) $visibleModuleCount);
             $template->set('admin_enabled_module_count', (string) $enabledModuleCount);
+            // The alert is only prepared for administrators and for an enabled Articles module.
+            // Read the current database state on each dashboard request: no stale badge cache.
+            $template->set('dashboard_review_visible', '0');
+            if ($isAdmin) {
+                $articlesModule = $repositories->modules()->findByPrefix('articles');
+                if (is_array($articlesModule) && !empty($articlesModule['enabled'])) {
+                    require_once dirname(__DIR__) . '/var/modules/articles/src/ArticleRepository.php';
+                    $pendingReview = (new \\PortixModule\\Articles\\ArticleRepository($database->connection()))->countPendingReview();
+                    if ($pendingReview > 0) {
+                        $template->set('dashboard_review_visible', '1');
+                        $template->set('dashboard_review_count', (string) $pendingReview);
+                        $template->set('dashboard_review_message', sprintf(
+                            $translator->text($pendingReview === 1 ? 'dashboard_review_one' : 'dashboard_review_many'),
+                            $pendingReview
+                        ));
+                    }
+                }
+            }
             $template->set('admin_news_count', $adminNewsEnabled ? (string) $repositories->news()->countAll() : '0');
             $template->set('admin_published_news_count', $adminNewsEnabled ? (string) $repositories->news()->countPublished() : '0');
             $themeInfo = (new \Portix\Theme\ThemeCatalog(dirname(__DIR__), trim((string) file_get_contents(dirname(__DIR__) . '/VERSION'))))->inspect(basename((string) $CONFIG['template']));
