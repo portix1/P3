@@ -1,3 +1,19 @@
+# P3 1.0.0 — première version stable, publication après signature
+
+Version construite à partir de la candidate 0.9.11 validée. Les corrections suivantes sont incluses :
+
+- Back-office séparé en trois espaces : Rédaction, Administration, Configuration ; fonctions regroupées par module.
+- Rédaction : publication directe selon les droits individuels ou soumission à relecture depuis le formulaire. Le tableau de bord administrateur signale les articles à valider, avec compteur et lien filtré.
+- Relecture : protection des actions d'approbation depuis une liste périmée.
+- Installation : correction des chemins en racine et sous-dossier, protections Apache et parcours de connexion.
+- Téléchargements : fichiers sans catégorie et liens courts.
+- Sécurité, permissions, restauration, performances et accessibilité : améliorations consolidées sur la série 0.9.
+- Modules intégrés : Articles 1.4.12, Accueil 1.1.2, Téléchargements 1.0.1.
+
+La distribution du module Articles 1.4.12 est incluse dans le noyau 1.0.0. Le catalogue autonome figé annonce encore Articles 1.4.9, qui reste inchangé jusqu'à sa publication autonome vérifiée.
+
+**Publication stable conditionnée à la signature hors dépôt du ZIP final et à la vérification de sa provenance.** Les essais réels sur d'autres hébergements et le parcours LWS demeurent des limites connues.
+
 # P3 0.9.11 — candidate de validation avant 1.0.0
 
 Candidate complète construite sur la 0.9.10 consolidée. Elle préserve les correctifs d'installation, de routage et de protection des validations d'articles obsolètes.
