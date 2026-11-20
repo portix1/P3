@@ -47,6 +47,41 @@ final class Library
         return $this->pdo->query('SELECT * FROM dm2_categories ORDER BY name COLLATE NOCASE, id')->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function findCategory(int $id): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM dm2_categories WHERE id = ?');
+        $stmt->execute([$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return is_array($row) ? $row : null;
+    }
+
+    public function categoryUsage(int $id): int
+    {
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM dm2_files WHERE category_id = ?');
+        $stmt->execute([$id]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function updateCategory(int $id, string $name, string $description): void
+    {
+        $name = trim($name);
+        if ($this->findCategory($id) === null || $name === '' || mb_strlen($name) > 120
+            || mb_strlen($description) > 5000) {
+            throw new RuntimeException('dl2_invalid_category');
+        }
+        $stmt = $this->pdo->prepare('UPDATE dm2_categories SET name = ?, description = ? WHERE id = ?');
+        $stmt->execute([$name, trim($description), $id]);
+    }
+
+    public function deleteCategory(int $id): void
+    {
+        if ($this->findCategory($id) === null || $this->categoryUsage($id) > 0) {
+            throw new RuntimeException('dl2_category_in_use');
+        }
+        $stmt = $this->pdo->prepare('DELETE FROM dm2_categories WHERE id = ?');
+        $stmt->execute([$id]);
+    }
+
     public function createCategory(string $name, string $slug, string $description = ''): int
     {
         $name = trim($name);
