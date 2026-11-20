@@ -41,7 +41,7 @@ foreach (['articles_return_url', 'name="from_page"', 'name="from_state"', 'name=
     if (!str_contains($form, $needle)) { throw new RuntimeException('Contexte absent du formulaire'); }
 }
 if (!str_contains($controller, "ArticleListPagination::context(")
-    || !str_contains($controller, "header('Location: ' . \$returnUrl, true, 303)")) {
+    || !str_contains($controller, "header('Location: ' . (\$requestReview ? 'Admin-articles.html?state=pending' : \$returnUrl), true, 303)")) {
     throw new RuntimeException('Retour après enregistrement non configuré');
 }
 echo "Contexte des articles, filtres et retour sécurisé : OK\n";
