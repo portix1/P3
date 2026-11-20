@@ -176,27 +176,30 @@ if (!base || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(base)) throw new
         const configurationCards = tab.locator('main .management-card');
         const componentUrls = await configurationCards.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
         assert.equal(componentUrls.length, new Set(componentUrls).size, 'Configuration has unique component entries');
-        assert.equal(await tab.locator('main a[href="Admin-configuration-module-home.html"]').count(), 1, 'One Home entry on Configuration');
-        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-configuration-module-home.html"]').count(), 1, 'One Home entry in the sidebar');
-        assert.equal(await tab.locator('main a[href="Admin-home-report.html"]').count(), 0, 'Home actions are on its module menu');
-        await tab.locator('main').getByRole('link', {name: 'Configuration de l’accueil', exact: true}).press('Enter');
-        await tab.waitForURL('**/Admin-configuration-module-home.html');
-        assert.deepEqual(await tab.locator('main .management-card strong').allTextContents(), ['Réglages', 'Composer', 'Résultats']);
-        await tab.locator('main').getByRole('link', {name: 'Réglages', exact: true}).press('Enter');
+        assert.equal(await tab.locator('main a[href="Admin-home-settings.html"]').count(), 1, 'Home settings appear once in Configuration');
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-home-settings.html"]').count(), 1, 'Home settings appear once in the Configuration sidebar');
+        await tab.locator('main a[href="Admin-home-settings.html"]').press('Enter');
         await tab.waitForURL('**/Admin-home-settings.html');
-        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-configuration-module-home.html"]').getAttribute('aria-current'), 'location');
-        await tab.locator('.ux-breadcrumb a[href="Admin-configuration-module-home.html"]').press('Enter');
-        await tab.waitForURL('**/Admin-configuration-module-home.html');
-        for (const [menu, count] of [['module-home', 3], ['module-safety', 2], ['site', 7]]) {
+        assert.equal(await tab.locator('#admin-sidebar a[href="Admin-home-settings.html"]').getAttribute('aria-current'), 'location');
+        await tab.goto(base + '/Admin-management.html');
+        assert.equal(await tab.locator('main a[href="Admin-management-module-home.html"]').count(), 1, 'One Home entry in Administration');
+        await tab.locator('main a[href="Admin-management-module-home.html"]').press('Enter');
+        await tab.waitForURL('**/Admin-management-module-home.html');
+        assert.deepEqual(await tab.locator('main .management-card strong').allTextContents(), ['Composer l’accueil', 'Résultats de l’accueil']);
+        for (const [url, count] of [
+          ['Admin-management-module-home.html', 2],
+          ['Admin-configuration-module-safety.html', 2],
+          ['Admin-configuration-site.html', 7]
+        ]) {
           for (const width of [1280, 375, 320]) {
             await tab.setViewportSize({width, height: 850});
-            assert.equal((await tab.goto(base + '/Admin-configuration-' + menu + '.html')).status(), 200);
-            assert.equal(await tab.locator('main .management-card').count(), count, menu + ' lists its functions');
-            assert.equal(await tab.locator('main .management-card svg').count(), count, menu + ' gives each action an icon');
+            assert.equal((await tab.goto(base + '/' + url)).status(), 200);
+            assert.equal(await tab.locator('main .management-card').count(), count, url + ' lists its functions');
+            assert.equal(await tab.locator('main .management-card svg').count(), count, url + ' gives each action an icon');
             assert.equal(await tab.locator('main h1').count(), 1, 'Module menu has one main heading');
-            assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), menu + ' fits at ' + width);
+            assert(await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), url + ' fits at ' + width);
             if (process.env.HOME_SCREENSHOT_DIR) {
-              await tab.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, 'configuration-' + menu + '-' + width + '.png'), fullPage: true});
+              await tab.screenshot({path: path.join(process.env.HOME_SCREENSHOT_DIR, url + '-' + width + '.png'), fullPage: true});
             }
           }
         }
