@@ -152,9 +152,12 @@ try {
         if (preg_match('/^Set-Cookie: (P3SID[a-f0-9]{24}=[^;]+)/mi',implode("\n",$logged[2]),$cookie)) { $headers[1]='Cookie: '.$cookie[1]; }
         $configArea=$request('/Admin-configuration.html','GET','',$headers);
         $check($configArea[0]===($actor==='admin'?200:403), 'Only administrators enter Configuration');
-        $check(str_contains($configArea[1],'Admin-home.html')===($actor==='admin'), 'Only administrators can find Home in Configuration');
+        $check(str_contains($configArea[1],'href="Admin-home-settings.html"')===($actor==='admin'), 'Only administrators can find Home settings in Configuration');
         $management=$request('/Admin-management.html','GET','',$headers);
         $check($management[0]===($actor==='admin'?200:403), 'Only administrators enter Administration');
+        $check(str_contains($management[1], 'href="Admin-home.html"')===($actor==='admin'), 'Only administrators can find Home composition in Administration');
+        $check(str_contains($management[1], 'href="Admin-home-report.html"')===($actor==='admin'), 'Only administrators can find Home report in Administration');
+        $check(!str_contains($management[1], 'href="Admin-home-settings.html"'), 'Home settings absent from Administration');
         $check(str_contains($configArea[1], 'href="Admin-menu.html"')===($actor==='admin'),
             'Main menu appears only in Configuration for administrators');
         $check(str_contains($configArea[1], 'href="Admin-footer.html"')===($actor==='admin'),

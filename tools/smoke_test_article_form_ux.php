@@ -34,6 +34,17 @@ foreach (["'articles_autosave_url'", "'articles_autosave_snapshot'",
         throw new RuntimeException('Sauvegarde automatique : élément absent : ' . $expected);
     }
 }
+// The direct review action must be visible only to accounts requiring review,
+// and the server must store an article as pending rather than publish it.
+if (!str_contains($source, 'name="submit_review"')
+    || !str_contains($source, '{% if review_required == "1" %}<button type="submit" name="submit_review"')) {
+    throw new RuntimeException('Bouton de demande de publication absent ou non limité au mode relecture.');
+}
+if (!str_contains($controller, "isset(\$_POST['submit_review'])")
+    || !str_contains($controller, "\$status = \$requestReview ? 'pending'")
+    || !str_contains($controller, "\$user->articlePermissions()['publish']")) {
+    throw new RuntimeException('Soumission éditoriale : contrôle des droits ou état de relecture manquant.');
+}
 $layout = (string) file_get_contents($root . '/var/admin/index.tpl');
 if (!str_contains($layout, 'var/modules/articles/article-autosave.js')) {
     throw new RuntimeException('Script de sauvegarde automatique non chargé.');
