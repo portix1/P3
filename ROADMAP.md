@@ -30,7 +30,7 @@ Version cible à définir.
 
 - Correction du `.htaccess` incluse dans la branche de la PR #52. Pages HTML dirigées vers `/index.php` à la racine et vers `index.php` en sous-dossier.
 - Parcours HTTP automatisé sur une installation neuve à la racine et en sous-dossier profond, avec nom SQLite généré ou personnalisé. Vérifier ouverture du site, redirection d’accueil, connexion, refus anonyme et accès administrateur aux trois espaces.
-- Routage Apache testé séparément à trois profondeurs, avec fichiers statiques, paramètres de recherche et routes accentuées.
+- Routage Apache testé séparément à trois profondeurs, avec fichiers statiques, paramètres de recherche et adresses encodées.
 - Windows, macOS, serveurs locaux et hébergements constituent des environnements de validation complémentaires. La validation Linux/PHP et Apache ne vaut pas validation exécutée sous IIS ou nginx.
 - Fusion, archive finale et publication restent à effectuer après validation et accord.
 

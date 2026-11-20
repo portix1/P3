@@ -46,10 +46,18 @@ test "$(curl --fail --silent "$url/login.html")" = "root route"
 test "$(curl --fail --silent "$url/accueil.html")" = "root route"
 test "$(curl --fail --silent "$url/nested/login.html")" = "nested route"
 test "$(curl --fail --silent "$url/static.html")" = "static route"
-for route in login.html accueil.html Admin.html Admin-writing.html Admin-management.html Admin-configuration.html 'search.html?q=guitare' 'article-%C3%A9tude.html'; do
-  test "$(curl --fail --silent --path-as-is "$url/$route")" = "root route"
-  test "$(curl --fail --silent --path-as-is "$url/nested/$route")" = "nested route"
-  test "$(curl --fail --silent --path-as-is "$url/nested/deeper/site/$route")" = "deep route"
+assert_route() {
+  local path="$1" expected="$2" actual
+  actual="$(curl --fail --silent --path-as-is "$url/$path")"
+  if [[ "$actual" != "$expected" ]]; then
+    echo "Route $path: expected '$expected', received '$actual'." >&2
+    return 1
+  fi
+}
+for route in login.html accueil.html Admin.html Admin-writing.html Admin-management.html Admin-configuration.html 'search.html?q=guitare' 'article-%65tude.html'; do
+  assert_route "$route" "root route"
+  assert_route "nested/$route" "nested route"
+  assert_route "nested/deeper/site/$route" "deep route"
 done
 test "$(curl --fail --silent "$url/nested/static.html")" = "nested static route"
 test "$(curl --fail --silent "$url/unknown.php")" = "root route"
