@@ -355,6 +355,7 @@ try {
         }, $unexpectedCookies)) . ')');
     $check($request($articleUrl . '?ug_audit=0', 'GET', '', [...$visitor, 'X-UG-Audit: 0'])[0] === 200, 'Public article is measurable with inactive audit markers');
     $request($articleUrl, 'GET', '', ['User-Agent: Googlebot']);
+    $request($articleUrl . '?utm_source=chatgpt.com', 'GET', '', ['User-Agent: Mozilla/5.0 (compatible; Claude-User/1.0; +claude-user@anthropic.com)']);
     $check($request($articleUrl, 'GET', '', ['User-Agent: UniversGuitare-Audit/1.0'])[0] === 200, 'Audit agent can read the article');
     $check($request($articleUrl, 'GET', '', [...$visitor, 'X-UG-Audit: 1'])[0] === 200, 'Audit header can read the article');
     $check($request($articleUrl . '?ug_audit=1', 'GET', '', $visitor)[0] === 200, 'Audit query can read the article');
@@ -367,16 +368,26 @@ try {
     $check($db->connection()->query("SELECT dimension FROM analytics_v2_counts WHERE kind = 'entry'")->fetchColumn() === '/', 'First entry preserved');
     $check($db->connection()->query("SELECT dimension FROM analytics_v2_counts WHERE kind = 'article'")->fetchColumn() === $slug, 'Canonical article slug measured');
     $check($db->connection()->query("SELECT dimension FROM analytics_v2_counts WHERE kind = 'referrer'")->fetchColumn() === 'example.test', 'Referrer stored as host only');
+    $check($db->connection()->query("SELECT dimension FROM analytics_v2_counts WHERE kind = 'source'")->fetchColumn() === 'site', 'Referrer classified as another site');
+    $robotKinds = $db->connection()->query("SELECT dimension, total FROM analytics_v2_counts WHERE kind = 'robot' ORDER BY dimension")->fetchAll(PDO::FETCH_KEY_PAIR);
+    $check($robotKinds == ['ai-user' => 1, 'search' => 1], 'Robots and AI agents counted apart by type');
+    $check($db->connection()->query("SELECT COUNT(*) FROM analytics_v2_counts WHERE kind = 'utm'")->fetchColumn() == 0, 'AI agent utm_source never counted as a reader source');
+    $check((int) $db->connection()->query("SELECT SUM(total) FROM analytics_v2_counts WHERE kind = 'robot_page' AND dimension LIKE 'ai-user|%'")->fetchColumn() === 1, 'Page read by an AI agent recorded');
     $dashboard = $request('/Admin-insights.html', 'GET', '', $auth);
     $check($dashboard[0] === 200 && str_contains($dashboard[1], 'Pages par visiteur journalier estimé') && str_contains($dashboard[1], '2,00'), 'New dashboard displays the daily ratio');
     $check(str_contains($dashboard[1], 'class="insights-chart"') && str_contains($dashboard[1], 'class="insights-daily-views" max="2" value="2"')
         && str_contains($dashboard[1], 'class="insights-daily-visitors" max="2" value="1"'),
         'Daily chart displays both measures on a common scale');
+    $check(str_contains($dashboard[1], 'Robots et assistants d’IA') && str_contains($dashboard[1], 'IA consultant une page pour un utilisateur')
+        && str_contains($dashboard[1], 'Provenance des visiteurs') && str_contains($dashboard[1], 'Autre site'),
+        'Dashboard displays sources and robot passages');
     $chartStyles = $request('/var/modules/insights/assets/daily-chart.css?v=2.0.2');
     $check($chartStyles[0] === 200 && str_contains($chartStyles[1], '.insights-daily-visitors'), 'Chart stylesheet is served');
     $csv = $request('/Admin-insights-export.html', 'GET', '', $auth);
-    $check($csv[0] === 200 && str_contains($csv[1], 'visiteurs_journaliers_estimes') && str_contains($csv[1], ';2;1'), 'CSV exports only daily aggregates');
-    echo "Statistiques HTTP : empreinte quotidienne, exclusions, article, entrée, référent et export vérifiés.\n";
+    $check($csv[0] === 200 && str_contains($csv[1], 'visiteurs_journaliers_estimes') && str_contains($csv[1], ';2;1')
+        && str_contains($csv[1], 'date_utc;mesure;element;titre;total') && str_contains($csv[1], ';robot;ai-user;;1'),
+        'CSV exports daily aggregates and per-day details');
+    echo "Statistiques HTTP : empreinte quotidienne, exclusions, robots et IA, provenance, article, entrée, référent et export vérifiés.\n";
 
     $searchFile = $fixture . '/var/modules/search/data/search.sqlite';
     if (!is_dir(dirname($searchFile))) {

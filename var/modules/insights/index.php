@@ -14,13 +14,14 @@ $insightsTracker = static function () use ($database, $pageMetadata, $request, &
     }
 
     $agent = substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 500);
-    if (preg_match('/universguitare-audit|bot|crawl|spider|slurp|bingpreview|facebookexternalhit|headless|monitor|uptime|ghost-rider|lighthouse|pagespeed/i', $agent)) {
+    if (stripos($agent, 'universguitare-audit') !== false) {
         return;
     }
 
     try {
         $settings = PortixSettings::read('insights', [
             'mode' => 'off',
+            'robots' => 1,
             'analytics_retention_days' => 730,
             'application_retention_days' => 30,
             'audit_retention_days' => 365,
@@ -29,10 +30,21 @@ $insightsTracker = static function () use ($database, $pageMetadata, $request, &
             return;
         }
 
+        require_once __DIR__ . '/src/AgentClassifier.php';
         require_once __DIR__ . '/src/DailyAudience.php';
         require_once __DIR__ . '/src/TrafficSources.php';
         $canonical = $pageMetadata->breadcrumbItem()['url'] ?? '';
         $page = $request->isFrontPage() ? '/' : ($canonical ?: $request->routeName() . '.html');
+        $agentCategory = \Portix\Insights\AgentClassifier::classify($agent);
+        if ($agentCategory !== \Portix\Insights\AgentClassifier::BROWSER) {
+            // Robots and AI agents never count as readers; only their passage is tallied.
+            if ((int) ($settings['robots'] ?? 1) === 1) {
+                (new \Portix\Insights\DailyAudience($database))->recordRobot(
+                    $page, $pageMetadata->documentTitle(), $agentCategory, $settings
+                );
+            }
+            return;
+        }
         $article = $route === 'articles' && $pageMetadata->type() === 'article'
             ? preg_replace('/\.html$/D', '', $canonical)
             : null;
@@ -48,7 +60,10 @@ $insightsTracker = static function () use ($database, $pageMetadata, $request, &
             $referrer,
             (string) ($_SERVER['REMOTE_ADDR'] ?? ''),
             $agent,
-            $settings
+            $settings,
+            null,
+            null,
+            \Portix\Insights\TrafficSources::utmSource($_GET['utm_source'] ?? null)
         );
     } catch (Throwable $error) {
         error_log('Insights collection failed: ' . $error::class);

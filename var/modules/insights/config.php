@@ -7,6 +7,7 @@ use Portix\Observability\EventLogger;
 PortixSecurity::requireRole($user, 'admin');
 require_once __DIR__ . '/src/AdminLabels.php';
 require_once __DIR__ . '/src/DailyAudience.php';
+require_once __DIR__ . '/src/AgentClassifier.php';
 $insightsLabels = \Portix\Insights\AdminLabels::forLanguage((string) ($CONFIG['lang'] ?? 'fr'));
 $translator = new \Portix\Support\Translator(array_merge($_LANG ?? [], $insightsLabels));
 foreach ($insightsLabels as $label => $value) {
@@ -16,6 +17,7 @@ foreach ($insightsLabels as $label => $value) {
 $audience = new DailyAudience($database);
 $settings = PortixSettings::read('insights', [
     'mode' => 'off',
+    'robots' => 1,
     'analytics_retention_days' => 730,
     'application_retention_days' => 30,
     'audit_retention_days' => 365,
@@ -33,6 +35,7 @@ if ($view === 'settings' && isset($_POST['insights_action'])) {
                 throw new RuntimeException($translator->text('insights_invalid_settings'));
             }
             $settings['mode'] = $mode;
+            $settings['robots'] = isset($_POST['robots']) && $_POST['robots'] === '1' ? 1 : 0;
             $settings['analytics_retention_days'] = max(30, min(3650, (int) ($_POST['analytics_days'] ?? 730)));
             $settings['application_retention_days'] = max(7, min(365, (int) ($_POST['application_days'] ?? 30)));
             $settings['audit_retention_days'] = max(30, min(3650, (int) ($_POST['audit_days'] ?? 365)));
@@ -90,6 +93,7 @@ if ($view === 'settings') {
     $template->setSlot('main', 'var/modules/insights/templates/settings.tpl');
     $template->set('insights_mode_daily', $settings['mode'] === 'daily' ? 'selected' : '');
     $template->set('insights_mode_off', $settings['mode'] !== 'daily' ? 'selected' : '');
+    $template->set('insights_robots_checked', (int) ($settings['robots'] ?? 1) === 1 ? 'checked' : '');
     $template->set('insights_analytics_days', (string) $settings['analytics_retention_days']);
     $template->set('insights_application_days', (string) $settings['application_retention_days']);
     $template->set('insights_audit_days', (string) $settings['audit_retention_days']);
@@ -111,6 +115,17 @@ if ($view === 'export') {
         fputcsv($stream, ['date_utc', 'pages_vues', 'visiteurs_journaliers_estimes'], ';', '"', '');
         foreach ($daily as $row) {
             fputcsv($stream, [$row['day'], $row['views'], $row['visitors']], ';', '"', '');
+        }
+        // Second block: every aggregated counter of the period, one line per day and item.
+        fputcsv($stream, [], ';', '"', '');
+        fputcsv($stream, ['date_utc', 'mesure', 'element', 'titre', 'total'], ';', '"', '');
+        foreach ($audience->details($days) as $row) {
+            $title = (string) $row['title'];
+            // Neutralise spreadsheet formulas in free text.
+            if ($title !== '' && in_array($title[0], ['=', '+', '-', '@'], true)) {
+                $title = "'" . $title;
+            }
+            fputcsv($stream, [$row['day'], $row['kind'], $row['dimension'], $title, $row['total']], ';', '"', '');
         }
         fclose($stream);
     }
@@ -140,6 +155,31 @@ foreach ($daily as $row) {
         'chart_max' => (string) $chartMax,
     ]);
 }
+$sourceName = static fn (string $category): string => $translator->text('insights_source_' . $category);
+$robotName = static fn (string $category): string => $translator->text('insights_robot_' . str_replace('-', '_', $category));
+foreach ($audience->ranking('source', $days) as $row) {
+    $template->addRow('insightsource', ['name' => $sourceName((string) $row['dimension']), 'total' => (string) $row['total']]);
+}
+foreach ($audience->ranking('utm', $days) as $row) {
+    $template->addRow('insightutm', ['name' => (string) $row['dimension'], 'total' => (string) $row['total']]);
+}
+foreach ($audience->ranking('entry_source', $days, 30) as $row) {
+    [$category, $page] = array_pad(explode('|', (string) $row['dimension'], 2), 2, '');
+    $template->addRow('insightentrysource', [
+        'source' => $sourceName($category),
+        'name' => $page,
+        'title' => $row['title'] ?: $page,
+        'total' => (string) $row['total'],
+    ]);
+}
+foreach ($audience->ranking('robot', $days) as $row) {
+    $template->addRow('insightrobot', ['name' => $robotName((string) $row['dimension']), 'total' => (string) $row['total']]);
+}
+foreach ($audience->ranking('robot_page', $days, 20, \Portix\Insights\AgentClassifier::AI_USER . '|') as $row) {
+    $page = substr((string) $row['dimension'], strlen(\Portix\Insights\AgentClassifier::AI_USER) + 1);
+    $template->addRow('insightaipage', ['name' => $page, 'title' => $row['title'] ?: $page, 'total' => (string) $row['total']]);
+}
+$template->set('insights_has_robots', $audience->ranking('robot', $days) === [] ? '0' : '1');
 foreach (['article', 'entry', 'referrer'] as $kind) {
     foreach ($audience->ranking($kind, $days) as $row) {
         $name = $row['dimension'];

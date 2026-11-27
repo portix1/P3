@@ -43,6 +43,7 @@ echo "Environnement PHP : OK\n";
 
 $tests = [
     '../var/modules/insights/tests/smoke_test_daily_audience.php',
+    '../var/modules/insights/tests/smoke_test_sources_and_robots.php',
     'check_php_syntax.php',
     'smoke_test_database.php',
     'smoke_test_routing_menu.php',

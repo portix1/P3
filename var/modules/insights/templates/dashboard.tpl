@@ -69,6 +69,28 @@
 </section>
 <section class="admin-section table-scroll">
     <table>
+        <caption>{{ insights_source_categories }}</caption>
+        <thead><tr><th scope="col">{{ insights_source_category }}</th><th scope="col">{{ insights_visits_label }}</th></tr></thead>
+        <tbody>{% for insightsource in insightsource %}<tr><td>{{ insightsource.name }}</td><td>{{ insightsource.total }}</td></tr>{% endfor %}</tbody>
+    </table>
+    <p>{{ insights_source_categories_help }}</p>
+</section>
+<section class="admin-section table-scroll">
+    <table>
+        <caption>{{ insights_entry_sources }}</caption>
+        <thead><tr><th scope="col">{{ insights_page }}</th><th scope="col">{{ insights_source_category }}</th><th scope="col">{{ insights_visits_label }}</th></tr></thead>
+        <tbody>{% for insightentrysource in insightentrysource %}<tr><td>{{ insightentrysource.title }} <small>{{ insightentrysource.name }}</small></td><td>{{ insightentrysource.source }}</td><td>{{ insightentrysource.total }}</td></tr>{% endfor %}</tbody>
+    </table>
+</section>
+<section class="admin-section table-scroll">
+    <table>
+        <caption>{{ insights_utm }}</caption>
+        <thead><tr><th scope="col">utm_source</th><th scope="col">{{ insights_visits_label }}</th></tr></thead>
+        <tbody>{% for insightutm in insightutm %}<tr><td>{{ insightutm.name }}</td><td>{{ insightutm.total }}</td></tr>{% endfor %}</tbody>
+    </table>
+</section>
+<section class="admin-section table-scroll">
+    <table>
         <caption>{{ insights_sources }}</caption>
         <thead><tr><th scope="col">{{ insights_source }}</th><th scope="col">{{ insights_visits_label }}</th></tr></thead>
         <tbody>{% for insightreferrer in insightreferrer %}<tr><td>{{ insightreferrer.name }}</td><td>{{ insightreferrer.total }}</td></tr>{% endfor %}</tbody>
@@ -76,4 +98,22 @@
 </section>
 {% else %}
 <p>{{ insights_no_data }}</p>
+{% endif %}
+{% if insights_has_robots == "1" %}
+<section class="admin-section table-scroll">
+    <h2>{{ insights_robots_title }}</h2>
+    <p>{{ insights_robots_help }}</p>
+    <table>
+        <caption>{{ insights_robots_by_type }}</caption>
+        <thead><tr><th scope="col">{{ insights_robot_type }}</th><th scope="col">{{ insights_robot_passages }}</th></tr></thead>
+        <tbody>{% for insightrobot in insightrobot %}<tr><td>{{ insightrobot.name }}</td><td>{{ insightrobot.total }}</td></tr>{% endfor %}</tbody>
+    </table>
+</section>
+<section class="admin-section table-scroll">
+    <table>
+        <caption>{{ insights_ai_pages }}</caption>
+        <thead><tr><th scope="col">{{ insights_page }}</th><th scope="col">{{ insights_robot_passages }}</th></tr></thead>
+        <tbody>{% for insightaipage in insightaipage %}<tr><td>{{ insightaipage.title }} <small>{{ insightaipage.name }}</small></td><td>{{ insightaipage.total }}</td></tr>{% endfor %}</tbody>
+    </table>
+</section>
 {% endif %}

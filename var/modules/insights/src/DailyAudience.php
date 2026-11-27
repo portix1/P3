@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Portix\Insights;
 
+require_once __DIR__ . '/TrafficSources.php';
+
 use PDO;
 use Portix\Infrastructure\Database;
 
@@ -20,9 +22,12 @@ final class DailyAudience
         string $ip,
         string $agent,
         array $retention,
-        ?int $now = null
+        ?int $now = null,
+        ?string $sourceCategory = null,
+        ?string $utmSource = null
     ): void {
         $now ??= time();
+        $sourceCategory ??= TrafficSources::category($referrer, $utmSource);
         $day = gmdate('Y-m-d', $now);
         $network = @inet_pton($ip);
         if ($network !== false) {
@@ -32,26 +37,8 @@ final class DailyAudience
             $network = substr($network, 0, strlen($network) === 4 ? 3 : 6);
         }
 
-        $this->database->transaction(function (PDO $pdo) use ($day, $now, $page, $title, $article, $referrer, $network, $agent, $retention): void {
-            // Start with a write so concurrent first requests share the same daily key.
-            $insert = $pdo->prepare(
-                'INSERT OR IGNORE INTO analytics_v2_daily (day, secret) '
-                . 'SELECT :day, lower(hex(randomblob(32))) '
-                . 'WHERE NOT EXISTS (SELECT 1 FROM analytics_v2_daily WHERE day = :day)'
-            );
-            $insert->execute(['day' => $day]);
-            if ($insert->rowCount() === 1) {
-                $this->purge((int) $retention['analytics_retention_days'], $now);
-                $logs = [
-                    'application_logs' => (int) $retention['application_retention_days'],
-                    'audit_logs' => (int) $retention['audit_retention_days'],
-                ];
-                foreach ($logs as $table => $days) {
-                    $pdo->prepare("DELETE FROM $table WHERE created_at < ?")
-                        ->execute([gmdate('Y-m-d H:i:s', $now - max(1, $days) * 86400)]);
-                }
-            }
-
+        $this->database->transaction(function (PDO $pdo) use ($day, $now, $page, $title, $article, $referrer, $network, $agent, $retention, $sourceCategory, $utmSource): void {
+            $this->openDay($pdo, $day, $now, $retention);
             $newVisitor = false;
             if ($network !== false && $agent !== '') {
                 $query = $pdo->prepare('SELECT secret FROM analytics_v2_daily WHERE day = ?');
@@ -80,11 +67,56 @@ final class DailyAudience
             if ($newVisitor) {
                 $counts[] = ['entry', $page, $title];
                 $counts[] = ['referrer', $referrer, ''];
+                $counts[] = ['source', $sourceCategory, ''];
+                $counts[] = ['entry_source', $sourceCategory . '|' . $page, $title];
+                if ($utmSource !== null) {
+                    $counts[] = ['utm', $utmSource, ''];
+                }
             }
             if ($counts !== []) {
                 $this->incrementCounts($pdo, $day, $counts);
             }
         });
+    }
+
+    /**
+     * Compte le passage d'un robot reconnu, à part des lecteurs.
+     * Ni empreinte, ni page vue, ni compteur d'Accueil.
+     */
+    public function recordRobot(string $page, string $title, string $category, array $retention, ?int $now = null): void
+    {
+        $now ??= time();
+        $day = gmdate('Y-m-d', $now);
+        $this->database->transaction(function (PDO $pdo) use ($day, $now, $page, $title, $category, $retention): void {
+            $this->openDay($pdo, $day, $now, $retention);
+            $this->incrementCounts($pdo, $day, [
+                ['robot', $category, ''],
+                ['robot_page', $category . '|' . $page, $title],
+            ]);
+        });
+    }
+
+    /** Crée la clé du jour et applique les durées de conservation au premier passage. */
+    private function openDay(PDO $pdo, string $day, int $now, array $retention): void
+    {
+        // Start with a write so concurrent first requests share the same daily key.
+        $insert = $pdo->prepare(
+            'INSERT OR IGNORE INTO analytics_v2_daily (day, secret) '
+            . 'SELECT :day, lower(hex(randomblob(32))) '
+            . 'WHERE NOT EXISTS (SELECT 1 FROM analytics_v2_daily WHERE day = :day)'
+        );
+        $insert->execute(['day' => $day]);
+        if ($insert->rowCount() === 1) {
+            $this->purge((int) $retention['analytics_retention_days'], $now);
+            $logs = [
+                'application_logs' => (int) $retention['application_retention_days'],
+                'audit_logs' => (int) $retention['audit_retention_days'],
+            ];
+            foreach ($logs as $table => $days) {
+                $pdo->prepare("DELETE FROM $table WHERE created_at < ?")
+                    ->execute([gmdate('Y-m-d H:i:s', $now - max(1, $days) * 86400)]);
+            }
+        }
     }
 
     /** @param list<array{string, string, string}> $counts */
@@ -123,13 +155,25 @@ final class DailyAudience
         return $query->fetchAll();
     }
 
-    public function ranking(string $kind, int $days): array
+    /** Détail par jour pour l'export : jour, type de mesure, élément, titre, total. */
+    public function details(int $days): array
+    {
+        $query = $this->database->connection()->prepare(
+            'SELECT day, kind, dimension, title, total FROM analytics_v2_counts
+            WHERE day >= ? ORDER BY day DESC, kind, total DESC, dimension'
+        );
+        $query->execute([gmdate('Y-m-d', time() - ($days - 1) * 86400)]);
+        return $query->fetchAll();
+    }
+
+    public function ranking(string $kind, int $days, int $limit = 20, string $prefix = ''): array
     {
         $query = $this->database->connection()->prepare(
             'SELECT dimension, MAX(title) AS title, SUM(total) AS total FROM analytics_v2_counts
-            WHERE kind = ? AND day >= ? GROUP BY dimension ORDER BY total DESC, dimension LIMIT 20'
+            WHERE kind = ? AND day >= ? AND substr(dimension, 1, ?) = ?
+            GROUP BY dimension ORDER BY total DESC, dimension LIMIT ' . max(1, min(200, $limit))
         );
-        $query->execute([$kind, gmdate('Y-m-d', time() - ($days - 1) * 86400)]);
+        $query->execute([$kind, gmdate('Y-m-d', time() - ($days - 1) * 86400), strlen($prefix), $prefix]);
         return $query->fetchAll();
     }
 }

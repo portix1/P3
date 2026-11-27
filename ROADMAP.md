@@ -1,5 +1,15 @@
 # Feuille de route de P3
 
+## Statistiques 2.1.0 — provenance et robots (27 novembre 2026)
+
+Demande de Marc issue du suivi d'Univers Guitare, utile à tout site P3. Statistiques réservées aux administrateurs (arbitrage du 27 novembre). [Cadrage et critères](docs/statistiques-2-1.md).
+
+- [x] Lecteurs : tout robot reconnu exclu, y compris les IA consultant une page pour un utilisateur (Claude-User, ChatGPT-User, Perplexity-User).
+- [x] Robots comptés à part par jour, type et page ; réglage pour arrêter ce comptage.
+- [x] Provenance classée, utm_source, provenance par page d'entrée, export CSV détaillé.
+- [ ] Essai sur une copie d'Univers Guitare puis validation par Marc avant installation en production.
+- [ ] Mesure de la charge ajoutée par le comptage des robots sur mutualisé (à rapprocher de #61).
+
 ## Archive regroupée pour tests locaux — 20 novembre 2026
 
 P3 0.9.10 regroupe les branches des PR #52 à #56. Inclut le classement de Téléchargements en Administration, les fichiers sans catégorie et les liens courts. Le test de rendu des téléchargements est actualisé pour ces liens. La refonte complète du module demeure un chantier ultérieur à cadrer. Cette archive de test ne constitue pas une publication stable.
