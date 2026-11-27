@@ -14,6 +14,8 @@
 
         <label><span>{{ insights_collection_mode }}</span><select name="mode"><option value="daily" {{ insights_mode_daily }}>{{ insights_mode_daily_label }}</option><option value="off" {{ insights_mode_off }}>{{ insights_mode_off_label }}</option></select><small>{{ insights_collection_help }}</small></label>
 
+        <label class="checkbox-line"><input type="checkbox" name="robots" value="1" {{ insights_robots_checked }}> <span>{{ insights_robots_setting }}<small>{{ insights_robots_setting_help }}</small></span></label>
+
         <label><span>{{ insights_analytics_retention }}</span><input type="number" name="analytics_days" min="30" max="3650" value="{{ insights_analytics_days }}" /><small>{{ insights_retention_days_help }}</small></label>
 
         <label><span>{{ insights_application_retention }}</span><input type="number" name="application_days" min="7" max="365" value="{{ insights_application_days }}" /><small>{{ insights_retention_days_help }}</small></label>

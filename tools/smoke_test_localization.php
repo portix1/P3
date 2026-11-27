@@ -149,6 +149,7 @@ try {
         'insights_pages_per_visitor', 'insights_avg_unique_day', 'insights_avg_views_day',
         'insights_period_7_selected', 'insights_period_30_selected',
         'insights_period_90_selected', 'insights_period_365_selected',
+        'insights_robots_checked', 'insights_has_robots',
     );
     $templateDirectories = array(
         $root . '/var/admin',

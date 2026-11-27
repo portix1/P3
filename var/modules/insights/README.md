@@ -1,4 +1,4 @@
-# Statistiques P3 2.0
+# Statistiques P3 2.1
 
 Le tableau de bord affiche les pages vues, les visiteurs journaliers estimés,
 les pages par visiteur journalier estimé, les articles consultés, les pages
@@ -29,7 +29,8 @@ des agrégats. Le module n’enregistre ni l’IP complète ni le User-Agent bru
 et ne crée aucun cookie statistique.
 
 Les administrateurs et rédacteurs connectés, les robots identifiés, les
-requêtes marquées DNT et les réponses non admissibles sont exclus. Une
+requêtes marquées DNT et les réponses non admissibles sont exclus des
+mesures de lecteurs. Les robots identifiés sont comptés à part (voir plus bas). Une
 requête sans IP valide ou User-Agent compte comme page vue, sans estimation
 de visiteur ni de page d’entrée. Des visiteurs sur un même réseau avec un
 navigateur similaire peuvent partager une empreinte. Les référents se
@@ -38,7 +39,49 @@ en dehors de P3 peut ne pas être comptée. Sur un hébergement avec proxy,
 la qualité de l’estimation dépend de l’adresse remise à PHP par le serveur.
 
 Le module alimente aussi les compteurs d’articles utilisés par Accueil
-pour la sélection pondérée. L’export CSV fournit les agrégats quotidiens.
+pour la sélection pondérée. Les robots n’alimentent jamais ces compteurs.
+
+## Provenance des visiteurs (2.1)
+
+À la première page vue de la journée, le domaine référent est rangé en
+moteur de recherche, assistant d’IA, autre site, lien interne ou accès
+direct. Le paramètre `utm_source` de l’adresse d’entrée est noté s’il est
+présent (lettres, chiffres, point, tiret, soulignement ; 64 caractères au
+plus). Un assistant d’IA reconnu par ce paramètre (par exemple
+`chatgpt.com`, ajouté par ChatGPT aux liens qu’il cite) compte comme
+assistant d’IA même sans référent. Le tableau de bord croise aussi la
+provenance et la page d’entrée. Les listes de moteurs et d’assistants se
+trouvent dans `src/TrafficSources.php`.
+
+## Robots et assistants d’IA (2.1)
+
+Le User-Agent est classé sans être conservé : navigateur, robot de moteur
+de recherche, collecte pour les IA (GPTBot, ClaudeBot, CCBot…), IA
+consultant une page pour un utilisateur (ChatGPT-User, Claude-User,
+Perplexity-User, OAI-SearchBot…) ou autre robot. Seuls les navigateurs
+comptent comme lecteurs. Jusqu’à 2.0.4, les IA consultant une page pour un
+utilisateur étaient comptées comme lecteurs ; elles ne le sont plus.
+
+Un passage de robot ajoute un compteur par jour, par type et par page,
+sans empreinte, page vue ni compteur d’Accueil. Le tableau de bord affiche
+les passages par type et les pages les plus lues par les IA pour un
+utilisateur. Le réglage « Compter les passages des robots », actif par
+défaut, arrête ce comptage ; chaque passage compté représente une écriture
+SQLite. Les listes se trouvent dans `src/AgentClassifier.php` et sont à
+entretenir.
+
+Limites : un robot qui se présente comme un navigateur reste compté comme
+lecteur ; une application qui n’envoie pas de référent apparaît en accès
+direct ; les visites issues des résumés IA de Google restent mêlées à
+Google.
+
+## Export CSV
+
+Le fichier contient d’abord les totaux quotidiens (pages vues, visiteurs
+journaliers estimés), puis, après une ligne vide, le détail de la période :
+date, mesure, élément, titre et total. Mesures : `article`, `entry`,
+`referrer`, `source`, `entry_source` (provenance|page), `utm`, `robot`
+(type) et `robot_page` (type|page).
 
 ## Exclure les visites d’audit
 
