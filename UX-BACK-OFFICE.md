@@ -1,6 +1,6 @@
 # Réorganisation du back-office
 
-Référence fonctionnelle. État de revue au 20 novembre 2026 dans [les consignes consolidées](docs/consignes-p3.md).
+Référence fonctionnelle, alignée sur le code 1.0.0 le 27 novembre 2026. État de revue au 20 novembre 2026 dans [les consignes consolidées](docs/consignes-p3.md).
 
 Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont classées dans Rédaction, Administration et Configuration. Chaque entrée possède une icône et un libellé. Rédaction est réservée aux opérations sur le contenu ; Administration regroupe la gestion courante et Configuration les choix durables qui définissent le site. Les deux derniers espaces sont réservés aux administrateurs.
 
@@ -12,11 +12,11 @@ Le menu et le tableau de bord utilisent un inventaire commun. Les fonctions sont
 | Médiathèque | Fichiers, images, insertion et gestion des médias | — | — |
 | Menu principal | — | — | Organisation des liens |
 | Menu de bas de page | — | — | Organisation des liens |
-| Accueil | — | — | Composition, réglages et résultats pour les administrateurs seulement |
-| Téléchargements | — | Fichiers et catégories, classement attendu encore en correction | — |
+| Accueil | — | Composition et résultats, administrateurs seulement | Réglages du tirage et de la mesure |
+| Téléchargements | — | Fichiers et catégories | — |
 | Contact | — | Messagerie pour les administrateurs | Destinataire, notifications, conservation de la corbeille |
-| Affiliation | — | Produits, offres et partenaires, accès administrateur uniquement, classement encore à corriger | Paramètres de présentation |
-| Statistiques | — | Audience, journaux applicatifs, journal d’audit | Mode de mesure et rétention |
+| Affiliation | — | Produits, offres et partenaires, accès administrateur uniquement | Paramètres de présentation |
+| Statistiques | — | Audience, provenance, passages des robots, journaux applicatifs, journal d’audit | Mode de mesure, comptage des robots et rétention |
 | Protection des contenus | — | — | Corbeille, révisions, points de restauration et durées de conservation |
 | Recherche | — | État et reconstruction de l’index | — |
 | Authentification interne | — | Service interne sans entrée de menu | — |
@@ -61,7 +61,7 @@ Chaque point dispose de « Supprimer ce point ». La suppression exige une confi
 
 ## Module Accueil
 
-Configuration → Composer l’accueil (`Admin-home.html`, administrateurs seulement) compose les zones, leurs images et leur ordre. Configuration → Réglages de l’accueil (`Admin-home-settings.html`, administrateurs) règle le tirage et la mesure facultative. Configuration → Résultats de l’accueil (`Admin-home-report.html`, administrateurs) consulte les compteurs. Les entrées sont centralisées dans AdminNavigation ; elles disparaissent quand le module est désactivé. Le raccordement à la racine utilise le choix existant de page d’accueil dans Configuration → Identité. Les écrans de composition, de réglages et de résultats sont interdits aux rédacteurs, y compris par accès direct.
+Administration → Composer l’accueil (`Admin-home.html`, administrateurs seulement) compose les zones, leurs images et leur ordre. Configuration → Réglages de l’accueil (`Admin-home-settings.html`, administrateurs) règle le tirage et la mesure facultative. Administration → Résultats de l’accueil (`Admin-home-report.html`, administrateurs) consulte les compteurs. Composer et Résultats relèvent de la gestion courante ; seuls les réglages, rarement modifiés, restent en Configuration. Les entrées sont centralisées dans AdminNavigation ; elles disparaissent quand le module est désactivé. Le raccordement à la racine utilise le choix existant de page d’accueil dans Configuration → Identité. Les écrans de composition, de réglages et de résultats sont interdits aux rédacteurs, y compris par accès direct.
 
 ## Déclarations des modules — socle 0.8.4
 
@@ -69,7 +69,7 @@ Les nouveaux modules déclarent leurs contributions dans `desc.xml`, bloc `Admin
 
 ## Composition de l’accueil — 1.1.0
 
-Configuration → Composer l’accueil conserve son accès administrateur uniquement. La composition propose les derniers articles, un choix visuel de médias, un ordre par glisser-déposer ou boutons clavier, un aperçu sans publication et un enregistrement global atomique. Les raisons de masquage des zones sont visibles uniquement dans cet écran. L’aperçu montre les contenus et styles du module, sans le thème public. Les fichiers à téléverser doivent être enregistrés dans la zone avant l’aperçu. La pondération statistique reste inchangée.
+Administration → Composer l’accueil conserve son accès administrateur uniquement. La composition propose les derniers articles, un choix visuel de médias, un ordre par glisser-déposer ou boutons clavier, un aperçu sans publication et un enregistrement global atomique. Les raisons de masquage des zones sont visibles uniquement dans cet écran. L’aperçu montre les contenus et styles du module, sans le thème public. Les fichiers à téléverser doivent être enregistrés dans la zone avant l’aperçu. La pondération statistique reste inchangée.
 
 ## Relecture des articles : choix individuel
 
@@ -89,7 +89,7 @@ Les actions de changement d’état portent l’empreinte de la version affiché
 
 ## Configuration regroupée par module — 20 novembre 2026
 
-La page Configuration et son menu latéral affichent une seule entrée par module. Si plusieurs fonctions appartiennent au même module dans cet espace, elles sont accessibles depuis une page-menu dédiée. Une fonction unique reste accessible directement. Le regroupement utilise l’inventaire commun et s’applique aux modules tiers. Accueil présente Configuration de l’accueil, puis Réglages, Composer et Résultats. Les fonctions du moteur sont regroupées dans Configuration du site. Le fil d’Ariane relie chaque fonction à sa page-menu. Les accès administrateur restent contrôlés côté serveur.
+La page Configuration et son menu latéral affichent une seule entrée par module. Si plusieurs fonctions appartiennent au même module dans cet espace, elles sont accessibles depuis une page-menu dédiée. Une fonction unique reste accessible directement. Le regroupement utilise l’inventaire commun et s’applique aux modules tiers. Accueil présente ses Réglages dans Configuration ; Composer et Résultats sont en Administration. Les fonctions du moteur sont regroupées dans Configuration du site. Le fil d’Ariane relie chaque fonction à sa page-menu. Les accès administrateur restent contrôlés côté serveur.
 
 Les adresses existantes des écrans restent valides. Les nouvelles pages-menu sont calculées à partir des fonctions accessibles et des modules actifs. Un module désactivé ne possède plus de page-menu accessible. Rédacteurs et visiteurs sont refusés. Les pages-menu sont en lecture seule et refusent POST.
 

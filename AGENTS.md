@@ -8,7 +8,7 @@ Pour une nouvelle fonctionnalité, appliquer la méthode convenue inspirée de S
 
 P3 est universel. LWS, Windows, macOS, les serveurs locaux et les environnements automatisés sont des plateformes de validation. Séparer les mécanismes génériques des particularités observées et indiquer les environnements effectivement testés. Les règles d’Univers Guitare ou de Six Cordes ne deviennent pas des valeurs imposées aux autres sites.
 
-Le 20 novembre 2026, Marc a demandé la reprise des corrections et prévoit ses tests sur une version regroupée plus avancée. La consolidation avant 1.0 reste prioritaire. Préserver le cadrage ultérieur de la réécriture du seul module Téléchargements et des autres pistes inscrites à la roadmap.
+P3 1.0.0 est publiée depuis le 20 novembre 2026. Les priorités en cours figurent en tête de ROADMAP.md. Préserver le cadrage ultérieur de la réécriture du seul module Téléchargements et des autres pistes inscrites à la roadmap.
 
 ## Organisation obligatoire du back-office
 
@@ -16,8 +16,8 @@ Cette organisation s’applique à toute création ou modification du moteur, d�
 
 - Le tableau de bord présente l’état du moteur, des modules et du thème actif, puis dirige vers trois pages distinctes.
 - Rédaction regroupe uniquement les fonctions éditoriales et utilise le bleu. Le rôle Rédacteur ne donne accès qu’aux contenus autorisés.
-- Administration regroupe la gestion courante du site, dont les comptes et les droits. Elle utilise l’orange et est réservée aux administrateurs.
-- Configuration regroupe les interventions rares qui définissent le site : composition de l’accueil, menus principal et de bas de page, identité, thèmes, modules, diagnostics et réglages techniques. Elle utilise le violet et est réservée aux administrateurs.
+- Administration regroupe la gestion courante du site, dont les comptes et les droits, la composition de l’accueil et ses résultats. Elle utilise l’orange et est réservée aux administrateurs.
+- Configuration regroupe les interventions rares qui définissent le site : réglages du tirage de l’accueil, menus principal et de bas de page, identité, thèmes, modules, diagnostics et réglages techniques. Elle utilise le violet et est réservée aux administrateurs.
 - Les thèmes, leur choix et leur installation appartiennent à Configuration.
 - Le menu latéral est limité à l’espace ouvert. Les trois accès d’espace restent disponibles selon les droits.
 - Chaque entrée possède un libellé et une icône. La couleur accompagne les libellés.
@@ -56,7 +56,7 @@ Ce travail est soumis à un accord explicite de Marc avant toute fusion dans `ma
 
 ## Configuration regroupée par module — 20 novembre 2026
 
-La page Configuration et son menu latéral affichent une seule entrée par module. Si plusieurs fonctions appartiennent au même module dans cet espace, elles sont accessibles depuis une page-menu dédiée. Une fonction unique reste accessible directement. Le regroupement utilise l’inventaire commun et s’applique aux modules tiers. Accueil présente Configuration de l’accueil, puis Réglages, Composer et Résultats. Les fonctions du moteur sont regroupées dans Configuration du site. Le fil d’Ariane relie chaque fonction à sa page-menu. Les accès administrateur restent contrôlés côté serveur.
+La page Configuration et son menu latéral affichent une seule entrée par module. Si plusieurs fonctions appartiennent au même module dans cet espace, elles sont accessibles depuis une page-menu dédiée. Une fonction unique reste accessible directement. Le regroupement utilise l’inventaire commun et s’applique aux modules tiers. Accueil présente ses Réglages dans Configuration ; Composer l’accueil et Résultats de l’accueil sont en Administration (classement du code 1.0.0, arbitrage technique délégué par Marc le 26 novembre 2026). Les fonctions du moteur sont regroupées dans Configuration du site. Le fil d’Ariane relie chaque fonction à sa page-menu. Les accès administrateur restent contrôlés côté serveur.
 
 ## Administration : gestion des articles — 20 novembre 2026
 

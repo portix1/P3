@@ -43,8 +43,8 @@ Les documents Drive contiennent de l’historique. Leurs anciennes mentions des 
 | Espace | Fonctions convenues |
 | --- | --- |
 | Rédaction, bleu | Articles, actualités et médias nécessaires à la rédaction, selon les droits individuels |
-| Administration, orange | Gestion courante, comptes, droits, messages, statistiques, affiliation et téléchargements |
-| Configuration, violet | Structure et réglages rares, accueil, menus principal et de bas de page, identité, thèmes, modules, diagnostics et protection des contenus |
+| Administration, orange | Gestion courante, comptes, droits, messages, statistiques, affiliation, téléchargements, composition et résultats de l’accueil |
+| Configuration, violet | Structure et réglages rares, réglages du tirage de l’accueil, menus principal et de bas de page, identité, thèmes, modules, diagnostics et protection des contenus |
 
 Le tableau de bord présente l’état du moteur, des composants et du thème actif et ouvre les trois espaces. Le menu latéral se limite à l’espace courant. Les accès, libellés, icônes et couleurs reposent sur l’inventaire commun AdminNavigation. Classer chaque fonction selon son usage, même lorsqu’un module contribue à plusieurs espaces.
 
