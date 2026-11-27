@@ -8,7 +8,7 @@ Pour une nouvelle fonctionnalité, appliquer la méthode convenue inspirée de S
 
 P3 est universel. LWS, Windows, macOS, les serveurs locaux et les environnements automatisés sont des plateformes de validation. Séparer les mécanismes génériques des particularités observées et indiquer les environnements effectivement testés. Les règles d’Univers Guitare ou de Six Cordes ne deviennent pas des valeurs imposées aux autres sites.
 
-Le 20 novembre 2026, Marc a demandé la reprise des corrections et prévoit ses tests sur une version regroupée plus avancée. La consolidation avant 1.0 reste prioritaire. Préserver le cadrage ultérieur de la réécriture du seul module Téléchargements et des autres pistes inscrites à la roadmap.
+P3 1.0.0 est publiée depuis le 20 novembre 2026. Les priorités en cours figurent en tête de ROADMAP.md. Préserver le cadrage ultérieur de la réécriture du seul module Téléchargements et des autres pistes inscrites à la roadmap.
 
 ## Organisation obligatoire du back-office
 
