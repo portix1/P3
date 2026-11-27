@@ -120,6 +120,31 @@ try {
     $pdo = null;
     coreTestAssert(is_file($site . '/var/private/update-backups/' . $point . '/manifest.json'), 'point de restauration créé');
     coreTestAssert(!is_file($site . '/var/sys/maintenance.lock'), 'maintenance désactivée');
+    // Windows/XAMPP denies copying a file opened and locked by the updater.
+    // The lock must remain in place but never be included in a snapshot.
+    $activeLock = fopen($site . '/var/sys/core-update.lock', 'c');
+    coreTestAssert(is_resource($activeLock), 'verrou ouvert pour le test Windows');
+    try {
+        coreTestAssert(flock($activeLock, LOCK_EX | LOCK_NB), 'verrou pris pour le test Windows');
+        $autoBackup = UpdateSafety::createBackup($site, '0.9.4');
+        coreTestAssert(is_file($autoBackup . '/manifest.json'), 'sauvegarde automatique possible avec verrou ouvert');
+        coreTestAssert(!file_exists($autoBackup . '/var/sys/core-update.lock'),
+            'verrou de mise à jour absent de la sauvegarde automatique');
+        coreTestAssert(is_file($autoBackup . '/var/sys/config.json'),
+            'configuration conservée dans la sauvegarde automatique');
+        $manualPoint = UpdateSafety::createRollbackPoint($site);
+        coreTestAssert(is_file($manualPoint . '/manifest.json'), 'point manuel possible avec verrou ouvert');
+        coreTestAssert(!file_exists($manualPoint . '/var/sys/core-update.lock'),
+            'verrou de mise à jour absent du point manuel');
+        coreTestAssert(is_file($manualPoint . '/var/sys/config.json'),
+            'configuration conservée dans le point manuel');
+        coreTestAssert(is_file($site . '/var/sys/core-update.lock'),
+            'verrou actif non supprimé pendant la sauvegarde');
+    } finally {
+        flock($activeLock, LOCK_UN);
+        fclose($activeLock);
+    }
+
 
     foreach ([
         ['P3/VERSION' => '0.9.4', 'P3/../../attack.php' => 'unsafe', 'P3/index.php' => 'bad', 'P3/includes/engine.php' => 'bad', 'P3/src/Core/Application.php' => 'bad'],

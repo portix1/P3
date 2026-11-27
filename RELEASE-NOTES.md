@@ -1,3 +1,14 @@
+# P3 1.0.1 — correctif Windows / XAMPP
+
+Correctif de la 1.0.0, sans changement de données ni de modules.
+
+- Sauvegardes et points de restauration : le verrou de mise à jour `var/sys/core-update.lock` n'est plus copié. Sous Windows (constaté sur XAMPP avec une installation 0.9.11), ce fichier reste ouvert par le moteur et sa copie faisait échouer l'opération avec le message « Point de restauration incomplet ». Le verrou lui-même reste en place ; la restauration l'ignorait déjà.
+- Tests : la sauvegarde automatique et le point de restauration manuel sont vérifiés avec ce verrou ouvert. Les contrôles de distribution acceptent désormais toute version stable à partir de 1.0.0, et plus seulement 1.0.0.
+
+Limites : les tests automatisés tournent sous Linux, où un fichier ouvert reste copiable ; ils vérifient l'exclusion du fichier, pas le refus de Windows lui-même. L'essai sous XAMPP Windows reste à faire par Marc. Modules intégrés inchangés : Articles 1.4.12, Accueil 1.1.2, Téléchargements 1.0.1. Retour arrière : réinstaller les fichiers 1.0.0 ; aucune migration n'est à annuler.
+
+**Publication conditionnée à l'accord de Marc, à la signature hors dépôt du ZIP final et à la vérification de sa provenance.**
+
 # P3 1.0.0 — première version stable, publication après signature
 
 Version construite à partir de la candidate 0.9.11 validée. Les corrections suivantes sont incluses :
