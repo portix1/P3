@@ -6,9 +6,9 @@ Module générique de composition de la page d’accueil, sans catégorie ni dom
 
 Ce ZIP est installé par **Configuration → Gestion des modules → Installer un module**, sur **P3 0.8.4-rc4 ou plus récent**. La 0.8.3-rc4 ne possède pas les déclarations génériques nécessaires aux trois espaces et aux actions publiques sans session : mettre d’abord le moteur à niveau avec le socle compatible, une seule fois. Le module ne copie ni fichier moteur, ni traduction globale, ni thème. Il est livré désactivé ; vérifier les éventuelles URL existantes `home` et `home-*`, puis l’activer. Une réinstallation conserve son état actif/inactif et les données existantes.
 
-Dans **Configuration → Composer l’accueil**, ajouter les zones et leur position. Dans **Configuration → Réglages de l’accueil**, régler le tirage et activer éventuellement sa mesure. Choisir ensuite `home.html` comme page d’accueil dans **Configuration → Identité**. La racine et ses métadonnées restent gérées par P3. L’installation du ZIP ne change pas cette cible.
+Dans **Administration → Composer l’accueil**, ajouter les zones et leur position. Dans **Configuration → Réglages de l’accueil**, régler le tirage et activer éventuellement sa mesure. Choisir ensuite `home.html` comme page d’accueil dans **Configuration → Identité**. La racine et ses métadonnées restent gérées par P3. L’installation du ZIP ne change pas cette cible.
 
-Seuls les administrateurs composent les zones, modifient les réglages et consultent **Configuration → Résultats de l’accueil**. Les rédacteurs ne disposent d’aucun accès à ces opérations, y compris par requête directe. Les écritures exigent POST et un jeton CSRF ; la suppression exige aussi une confirmation.
+Seuls les administrateurs composent les zones, modifient les réglages et consultent **Administration → Résultats de l’accueil**. Les rédacteurs ne disposent d’aucun accès à ces opérations, y compris par requête directe. Les écritures exigent POST et un jeton CSRF ; la suppression exige aussi une confirmation.
 
 ## Zones et images
 
@@ -54,7 +54,7 @@ Les noms des dérivés utilisent 32 caractères hexadécimaux suivis de `.webp`,
 
 ## Accueil 1.1.0 — composition et aperçu
 
-Dans Configuration → Composer l’accueil, le type « Derniers articles » propose par défaut trois publications, classées par date décroissante (ID décroissant en cas d’égalité). Sans date de publication, la date de création sert de repli. Brouillons, dates futures et catégories invisibles sont exclus. Ces articles sont réservés avant les sélections aléatoires pour éviter les doublons, quelle que soit la position du bloc. La vérification chronologique est refaite à chaque rendu PHP, sous réserve du cache HTTP existant.
+Dans Administration → Composer l’accueil, le type « Derniers articles » propose par défaut trois publications, classées par date décroissante (ID décroissant en cas d’égalité). Sans date de publication, la date de création sert de repli. Brouillons, dates futures et catégories invisibles sont exclus. Ces articles sont réservés avant les sélections aléatoires pour éviter les doublons, quelle que soit la position du bloc. La vérification chronologique est refaite à chaque rendu PHP, sous réserve du cache HTTP existant.
 
 Le bouton « Choisir dans la médiathèque » affiche les images et permet une recherche. Le choix réutilise le média, sans duplication. Retirer l’image enlève uniquement son association à la zone. Le téléversement existant reste disponible par l’enregistrement de la zone.
 

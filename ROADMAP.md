@@ -1,5 +1,27 @@
 # Feuille de route de P3
 
+## État après la 1.0.0 — 27 novembre 2026
+
+P3 1.0.0 est publiée depuis le 20 novembre 2026 (tag `v1.0.0`, archive signée) et installée sur Univers Guitare (confirmation de Marc du 26 novembre). La séquence de consolidation 0.9.3 à 0.9.11 ci-dessous est terminée et conservée comme historique. L'état de suivi détaillé est tenu dans le document 05 du référentiel Drive.
+
+### Travaux immédiats
+
+- [ ] 1.0.1 ([#63](https://github.com/portix1/P3/pull/63)) : sauvegardes et points de restauration sous Windows/XAMPP, verrou de mise à jour exclu. Accord de Marc pour une 1.0.1 (26 novembre) ; essai XAMPP, fusion, signature et publication à son feu vert.
+- [ ] Statistiques 2.1.0 ([#65](https://github.com/portix1/P3/pull/65)) : provenance classée et passages des robots et des IA. [Cadrage](docs/statistiques-2-1.md).
+- [x] Classement de l'accueil aligné sur le code 1.0.0 : Composer et Résultats en Administration, Réglages en Configuration (arbitrage délégué par Marc le 26 novembre). Documentation corrigée le 27 novembre.
+- [x] Téléchargements et Affiliation classés en Administration dans la 1.0.0 ; mentions « classement à corriger » retirées.
+- [ ] Propositions ouvertes dépassées à fermer par Marc : #45, #54, #56, #57, #58 (contenu dans `main`) ; #7, #46, #48 (remplacées par des versions ultérieures). #42 (README anglais, campagne de bêta-test, modèles de signalement) : à reprendre ou fermer.
+- [ ] Catalogue autonome : il propose Articles 1.4.9 alors que le moteur intègre 1.4.12. Choisir entre une archive autonome 1.4.12 vérifiée et une livraison avec le moteur seulement.
+
+### Chantiers décidés, développement à cadrer
+
+- Distribution découplée, catalogue GitHub et installeur autonome (décision du 20 novembre ; [#64](https://github.com/portix1/P3/pull/64)).
+- Contrat d'extension 1.1.0 (MOD-00 à MOD-11). Premier cas d'usage retenu pour les contributions SEO structurées : balisage FAQPage (27 novembre), sans développement dans le moteur à ce stade.
+- Téléchargements 2.0 ([#62](https://github.com/portix1/P3/pull/62)) : nouveau cadrage confirmé par Marc le 26 novembre, à rattacher au référentiel avant validation.
+- Tests de charge et de capacité sur mutualisé ([#61](https://github.com/portix1/P3/pull/61)).
+- Documentation exhaustive module par module avec captures annotées.
+- Pistes sans développement engagé : MCP P3, installation mutualisée, balises Open Graph et cartes X (ci-dessous), image d'affiliation, références Plausible/Matomo.
+
 ## Archive regroupée pour tests locaux — 20 novembre 2026
 
 P3 0.9.10 regroupe les branches des PR #52 à #56. Inclut le classement de Téléchargements en Administration, les fichiers sans catégorie et les liens courts. Le test de rendu des téléchargements est actualisé pour ces liens. La refonte complète du module demeure un chantier ultérieur à cadrer. Cette archive de test ne constitue pas une publication stable.
