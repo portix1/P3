@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import zipfile
@@ -33,7 +34,9 @@ if unreleased:
     # through the pinned catalogue: the older ZIP and its checksum remain
     # immutable until a separately reviewed catalogue publication.
     assert tuple(map(int, work_version.split('.'))) > tuple(map(int, official_version.split('.')))
-    assert os.environ.get('P3_DEVELOPMENT_VALIDATION') == '1' or (ROOT / 'VERSION').read_text().strip() == '1.0.0'
+    core = (ROOT / 'VERSION').read_text().strip()
+    stable = re.fullmatch(r'\d+\.\d+\.\d+', core) is not None and tuple(map(int, core.split('.'))) >= (1, 0, 0)
+    assert os.environ.get('P3_DEVELOPMENT_VALIDATION') == '1' or stable
 assert package['p3_min'] == ET.parse(ROOT / PREFIX / 'desc.xml').getroot().findtext('MinimumP3')
 
 tracked = sorted(

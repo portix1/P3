@@ -1,16 +1,15 @@
 # P3 — CMS PHP modulaire
 
-**Dernière version publiée :** `0.9.9`\
-**Version stable préparée :** `1.0.0` (signature et publication en attente)\
-**Dernière version publiée avant 1.0.0 :** `0.9.9`\
+**Dernière version publiée :** `1.0.0` (20 novembre 2026)\
+**Correctif préparé :** `1.0.1` (fusion, signature et publication en attente)\
 **Dernière candidate de la série 0.8 :** `0.8.4-rc4`  
 **Licence :** `GPL-3.0-or-later`
 
 P3 est un CMS PHP modulaire avec des espaces distincts pour la Rédaction, l'Administration courante et la Configuration du site.
 
-## Distribution de la version 1.0.0
+## Distribution de la version 1.0
 
-Cette archive complète 1.0.0 regroupe les correctifs validés après 0.9.9. Elle contient le moteur, les modules et les thèmes, avec Articles 1.4.12, Accueil 1.1.2 et Téléchargements 1.0.1. La distribution ne doit être annoncée comme publiée qu'après vérification de son archive et de sa signature.
+La 1.0.0, publiée le 20 novembre 2026, regroupe les correctifs validés après 0.9.9. Elle contient le moteur, les modules et les thèmes, avec Articles 1.4.12, Accueil 1.1.2 et Téléchargements 1.0.1. La 1.0.1 corrige uniquement la création des sauvegardes et points de restauration sous Windows (voir RELEASE-NOTES.md). Une distribution ne doit être annoncée comme publiée qu'après vérification de son archive et de sa signature.
 
 Pour une installation neuve, extraire le dossier P3 dans le répertoire Web local et ouvrir install.php. Le ZIP inclut les fichiers cachés de protection et de routage, dont le .htaccess corrigé. Pour tester une installation existante, travailler sur une copie sauvegardée et suivre le guide de maintenance, en conservant configuration, base, médias et personnalisations.
 

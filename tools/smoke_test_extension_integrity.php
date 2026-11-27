@@ -146,10 +146,12 @@ try {
     integrityCheck($workingVersion === $moduleVersion, 'Manifeste et MODULE-VERSION désynchronisés');
     $unreleasedVersion = $workingVersion !== $articlesEntry['version'];
     // The independently published catalogue is immutable. The full 1.0.0
-    // distribution may include a newer bundled Articles module, but it must
+    // distribution (and later stable cores) may include a newer bundled Articles module, but it must
     // never be advertised as an independently verified catalogue ZIP.
     if ($unreleasedVersion) {
-        $isBundledStable = trim((string)file_get_contents($root . '/VERSION')) === '1.0.0';
+        $coreVersion = trim((string)file_get_contents($root . '/VERSION'));
+        $isBundledStable = preg_match('/^\d+\.\d+\.\d+$/D', $coreVersion) === 1
+            && version_compare($coreVersion, '1.0.0', '>=');
         integrityCheck(
             (getenv('P3_DEVELOPMENT_VALIDATION') === '1' || $isBundledStable)
             && version_compare($workingVersion, (string)$articlesEntry['version'], '>'),
